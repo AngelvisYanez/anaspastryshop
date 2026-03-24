@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.md"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  password      String
+  role          String        @default("USER")
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  activities    ActivityLog[]
+  cursos        Curso[]       @relation("MentorCursos")
+  inscripciones Inscription[]
+  talleres      Taller[]      @relation("MentorTalleres")
+}
+
+model Taller {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  category     String
+  price        Float
+  date         DateTime
+  time         String
+  location     String
+  isOnline     Boolean       @default(false)
+  slots        Int           @default(0)
+  image        String?
+  agenda       String?
+  includes     String?
+  instructorId String
+  createdAt    DateTime      @default(now())
+  inscritos    Inscription[]
+  instructor   User          @relation("MentorTalleres", fields: [instructorId], references: [id])
+}
+
+model Curso {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  image        String?
+  price        Float
+  totalHours   Int
+  totalClasses Int
+  language     String        @default("Español")
+  level        String
+  content      String?
+  modules      String?
+  instructorId String
+  createdAt    DateTime      @default(now())
+  instructor   User          @relation("MentorCursos", fields: [instructorId], references: [id])
+  inscritos    Inscription[]
+}
+
+model Inscription {
+  id           String   @id @default(cuid())
+  status       String   @default("PENDING")
+  method       String
+  reference    String?
+  phoneNumber  String?
+  receiptImage String?
+  amountPaid   Float
+  userId       String
+  tallerId     String?
+  cursoId      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  curso        Curso?   @relation(fields: [cursoId], references: [id])
+  taller       Taller?  @relation(fields: [tallerId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  details    String?
+  userId     String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}

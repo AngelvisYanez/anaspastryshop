@@ -50,7 +50,7 @@ export default function Features() {
               <span className="block text-xs text-gray-500 uppercase font-bold tracking-[0.2em] mb-1">
                 Ubicación
               </span>
-              <span className="text-xl font-semibold">Coro, Falcón</span>
+              <span className="text-xl font-semibold">Venezuela</span>
             </div>
             <div className="bg-[#5A4FCF] w-10 h-10 rounded-full flex items-center justify-center italic font-serif text-lg">
               A

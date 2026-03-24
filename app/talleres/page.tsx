@@ -1,63 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   MapPin,
   Users,
   ArrowRight,
-  Sparkles,
   Clock,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const TALLERES = [
-  {
-    id: "taller-fotografia-iphone",
-    title: "Fotografía Pro con iPhone",
-    instructor: "Michelle Guerra",
-    date: "15 de Abril, 2026",
-    time: "09:00 AM - 04:00 PM",
-    location: "Sede 4101 Media, Coro",
-    price: 25,
-    slots: 12,
-    category: "Creatividad",
-    image:
-      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800",
-  },
-  {
-    id: "taller-ads-locales",
-    title: "Ads para Negocios en Coro",
-    instructor: "Newman Acosta",
-    date: "22 de Abril, 2026",
-    time: "02:00 PM - 06:00 PM",
-    location: "Online (En Vivo)",
-    price: 30,
-    slots: 20,
-    category: "Marketing",
-    image:
-      "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800",
-  },
-  {
-    id: "taller-video-reels",
-    title: "Creación de Reels Virales",
-    instructor: "Rodrigo Timaure",
-    date: "05 de Mayo, 2026",
-    time: "09:00 AM - 01:00 PM",
-    location: "Sede 4101 Media, Coro",
-    price: 20,
-    slots: 10,
-    category: "Producción",
-    image:
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=800",
-  },
-];
+import CheckoutModal from "@/components/CheckoutModal";
 
 export default function TalleresPage() {
+  const [talleres, setTalleres] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTaller, setSelectedTaller] = useState<any | null>(null);
+
+  // En una app real, usaríamos una Server Action o fetch. 
+  // Por ahora simulamos la carga de la DB o puedes crear una acción de lectura.
+  useEffect(() => {
+    async function fetchTalleres() {
+      try {
+        const res = await fetch("/api/talleres"); // Asumamos que existe o crearemos una acción
+        const data = await res.json();
+        setTalleres(data);
+      } catch (error) {
+        console.error("Error fetching talleres:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    // Para simplificar esta demo y que funcione de inmediato, usaremos los datos de Newman pero listos para el modal
+    fetchTalleres();
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#F4F4F7] pt-32 pb-20">
       <Navbar />
@@ -83,78 +64,95 @@ export default function TalleresPage() {
         </div>
 
         {/* --- GRID DE TALLERES --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <AnimatePresence>
-            {TALLERES.map((taller, index) => (
-              <motion.div
-                key={taller.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="group bg-white rounded-[3rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all flex flex-col md:flex-row h-full"
-              >
-                {/* Imagen del Taller */}
-                <div className="relative w-full md:w-2/5 h-64 md:h-auto overflow-hidden">
-                  <Image
-                    src={taller.image}
-                    alt={taller.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute top-6 left-6">
-                    <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#1A1A2E] shadow-sm">
-                      {taller.category}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Info del Taller */}
-                <div className="p-10 flex flex-col flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-2 text-[#5A4FCF] font-bold text-[10px] uppercase tracking-widest">
-                      <Clock size={12} /> {taller.date}
-                    </div>
-                    <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                      {taller.slots} cupos
-                    </span>
-                  </div>
-
-                  <h3 className="text-2xl md:text-3xl font-black text-[#1A1A2E] mb-4 group-hover:text-[#5A4FCF] transition-colors">
-                    {taller.title}
-                  </h3>
-
-                  <div className="space-y-3 mb-8">
-                    <div className="flex items-center gap-3 text-gray-400 text-sm font-medium">
-                      <MapPin size={16} className="text-gray-300" />{" "}
-                      {taller.location}
-                    </div>
-                    <div className="flex items-center gap-3 text-gray-400 text-sm font-medium">
-                      <Users size={16} className="text-gray-300" /> Mentor:{" "}
-                      {taller.instructor}
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="animate-spin text-[#5A4FCF]" size={48} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <AnimatePresence>
+              {talleres.map((taller, index) => (
+                <motion.div
+                  key={taller.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group bg-white rounded-[3rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all flex flex-col md:flex-row h-full"
+                >
+                  {/* Imagen del Taller */}
+                  <div className="relative w-full md:w-2/5 h-64 md:h-auto overflow-hidden">
+                    <Image
+                      src={taller.image || "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800"}
+                      alt={taller.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute top-6 left-6">
+                      <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#1A1A2E] shadow-sm">
+                        {taller.category}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">
-                        Inversión
-                      </p>
-                      <span className="text-3xl font-black text-[#1A1A2E]">
-                        ${taller.price}
+                  {/* Info del Taller */}
+                  <div className="p-10 flex flex-col flex-1">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-2 text-[#5A4FCF] font-bold text-[10px] uppercase tracking-widest">
+                        <Clock size={12} /> {new Date(taller.date).toLocaleDateString()}
+                      </div>
+                      <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        {taller.slots} cupos
                       </span>
                     </div>
 
                     <Link href={`/talleres/${taller.id}`}>
-                      <button className="bg-[#1A1A2E] text-white p-5 rounded-2xl hover:bg-[#5A4FCF] hover:scale-110 transition-all shadow-xl shadow-indigo-50">
-                        <ArrowRight size={24} />
-                      </button>
+                      <h3 className="text-2xl md:text-3xl font-black text-[#1A1A2E] mb-4 group-hover:text-[#5A4FCF] transition-colors">
+                        {taller.title}
+                      </h3>
                     </Link>
+
+                    <div className="space-y-3 mb-8">
+                      <div className="flex items-center gap-3 text-gray-400 text-sm font-medium">
+                        <MapPin size={16} className="text-gray-300" />{" "}
+                        {taller.location}
+                      </div>
+                      <div className="flex items-center gap-3 text-gray-400 text-sm font-medium">
+                        <Users size={16} className="text-gray-300" /> Mentor:{" "}
+                        {taller.instructor?.name || "Artica Mentor"}
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-6 border-t border-gray-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">
+                          Inversión
+                        </p>
+                        <span className="text-3xl font-black text-[#1A1A2E]">
+                          ${taller.price}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-2 w-full md:w-auto">
+                        <Link 
+                          href={`/talleres/${taller.id}`}
+                          className="bg-gray-100 text-[#1A1A2E] px-6 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all text-center flex-1 md:flex-none"
+                        >
+                          Ver Detalles
+                        </Link>
+                        <button 
+                          onClick={() => setSelectedTaller(taller)}
+                          className="bg-[#1A1A2E] text-white px-6 py-4 rounded-2xl font-bold hover:bg-[#5A4FCF] hover:scale-105 transition-all shadow-xl shadow-indigo-50 flex-1 md:flex-none"
+                        >
+                          Inscribirme
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* --- NEWSLETTER / CTA --- */}
         <section className="mt-32 bg-[#1A1A2E] rounded-[4rem] p-12 md:p-20 text-center relative overflow-hidden">
@@ -175,6 +173,18 @@ export default function TalleresPage() {
       </div>
 
       <Footer />
+
+      {/* MODAL DE PAGO */}
+      {selectedTaller && (
+        <CheckoutModal
+          isOpen={!!selectedTaller}
+          onClose={() => setSelectedTaller(null)}
+          title={selectedTaller.title}
+          price={selectedTaller.price}
+          tallerId={selectedTaller.id}
+        />
+      )}
     </main>
   );
 }
+
