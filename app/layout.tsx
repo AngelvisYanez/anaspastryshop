@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${jakarta.className} antialiased text-[#1A1A2E]`}>
+      <body className={`${jakarta.className} antialiased text-[#1A1A2E]`} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>
