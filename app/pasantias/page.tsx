@@ -29,7 +29,7 @@ const STEPS = [
   },
   {
     title: "Onboarding",
-    desc: "¡Bienvenido al equipo! Empieza a trabajar en proyectos de Venezuela o EEUU.",
+    desc: "¡Bienvenido al equipo! Empieza a trabajar en proyectos de Latinoamérica y EEUU.",
     icon: <CheckCircle2 className="text-green-500" />,
   },
 ];
@@ -99,7 +99,7 @@ export default function PasantiasPage() {
               </h2>
               <p className="text-gray-400 text-lg max-w-sm">
                 Al terminar tu pasantía, recibes una certificación avalada por
-                Artica Group (Miami) que valida tu experiencia en el mercado
+                Articademy — avalada por Artica Group (Miami) — que valida tu experiencia en el mercado
                 global.
               </p>
             </div>

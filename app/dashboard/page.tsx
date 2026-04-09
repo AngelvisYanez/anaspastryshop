@@ -1,189 +1,281 @@
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import {
   Users,
   Wallet,
   BookOpen,
   Clock,
-  CheckCircle,
   AlertCircle,
   ArrowRight,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
+import Link from "next/link";
+import { subDays, startOfDay, endOfDay, format } from "date-fns";
+import { es } from "date-fns/locale";
+import GrowthChart from "./charts/GrowthChart";
+import RevenueChart from "./charts/RevenueChart";
+import PaymentMethodsChart from "./charts/PaymentMethodsChart";
 
 export default async function DashboardPage() {
   const session = await auth();
-  
   if (!session?.user) return null;
   const role = session.user.role;
 
-  // 1. Lógica de Datos para el ADMIN (Tú)
-  const pendingPaymentsCount = await prisma.inscription.count({
-    where: { status: "PENDING" },
-  });
+  // --- LÓGICA DE DATOS AVANZADA (Solo para ADMIN) ---
+  let adminStats = null;
 
-  // @ts-ignore
-  const totalRevenue = await prisma.inscription.aggregate({
-    where: { status: "APPROVED" },
-    // @ts-ignore
-    _sum: { amountPaid: true },
-  });
+  if (role === "ADMIN") {
+    const now = new Date();
+    const thirtyDaysAgo = subDays(now, 30);
+    const sixtyDaysAgo = subDays(now, 60);
 
-  // 2. Lógica de Datos para el MENTOR (Michelle/Rodrigo)
+    // 1. Usuarios e Ingresos (Periodo Actual vs Anterior)
+    const currentUsersCount = await prisma.user.count({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+    });
+    const previousUsersCount = await prisma.user.count({
+      where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
+    });
+
+    const currentRevenue = await prisma.inscription.aggregate({
+      where: { status: "APPROVED", createdAt: { gte: thirtyDaysAgo } },
+      _sum: { amountPaid: true },
+    });
+    const previousRevenue = await prisma.inscription.aggregate({
+      where: { status: "APPROVED", createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
+      _sum: { amountPaid: true },
+    });
+
+    const totalRevenue = await prisma.inscription.aggregate({
+      where: { status: "APPROVED" },
+      _sum: { amountPaid: true },
+    });
+
+    // 2. Datos para Gráficas (Últimos 7 días para ejemplo visual claro, o 14)
+    const last14Days = Array.from({ length: 14 }, (_, i) => subDays(now, i)).reverse();
+    
+    const registrationsByDay = await Promise.all(
+      last14Days.map(async (day) => {
+        const count = await prisma.user.count({
+          where: { createdAt: { gte: startOfDay(day), lte: endOfDay(day) } },
+        });
+        return { date: format(day, "dd MMM", { locale: es }), count };
+      })
+    );
+
+    const revenueByDay = await Promise.all(
+      last14Days.map(async (day) => {
+        const result = await prisma.inscription.aggregate({
+          where: { status: "APPROVED", createdAt: { gte: startOfDay(day), lte: endOfDay(day) } },
+          _sum: { amountPaid: true },
+        });
+        return { date: format(day, "dd MMM", { locale: es }), revenue: result._sum.amountPaid || 0 };
+      })
+    );
+
+    // 3. Distribución por Métodos de Pago
+    const methods = await prisma.inscription.groupBy({
+      by: ["method"],
+      where: { status: "APPROVED" },
+      _sum: { amountPaid: true },
+    });
+
+    const paymentMethodsData = methods.map((m) => ({
+      name: m.method,
+      value: m._sum.amountPaid || 0,
+    }));
+
+    // Cálculos de Crecimiento
+    const calculateGrowth = (current: number, previous: number) => {
+      if (previous === 0) return current > 0 ? 100 : 0;
+      return Math.round(((current - previous) / previous) * 100);
+    };
+
+    adminStats = {
+      userGrowth: calculateGrowth(currentUsersCount, previousUsersCount),
+      revenueGrowth: calculateGrowth(currentRevenue._sum.amountPaid || 0, previousRevenue._sum.amountPaid || 0),
+      totalRevenue: totalRevenue._sum.amountPaid || 0,
+      registrationsByDay,
+      revenueByDay,
+      paymentMethodsData,
+      pendingPayments: await prisma.inscription.count({ where: { status: "PENDING" } }),
+      totalUsers: await prisma.user.count(),
+    };
+  }
+
+  // Común para MENTOR y ADMIN
   const myTalleresCount = await prisma.taller.count({
-    where: { instructorId: session.user.id },
+    where: role === "ADMIN" ? {} : { instructorId: session.user.id },
   });
 
-  // 3. Últimas inscripciones reales
   const lastInscriptions = await prisma.inscription.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
     include: {
       user: { select: { name: true, email: true } },
       taller: { select: { title: true } },
-      // @ts-ignore
       curso: { select: { title: true } },
     },
   });
 
   return (
-    <div className="p-8">
-      {/* ml-64 para no chocar con el sidebar fijo */}
-      {/* --- HEADER --- */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#1A1A2E]">
-          Bienvenido, {session.user.name?.split(" ")[0]} 👋
+    <div className="space-y-10">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-4xl font-black text-[#1A1A2E] tracking-tighter">
+          Hola, {session.user.name?.split(" ")[0]} 👋
         </h1>
         <p className="text-gray-400 font-medium">
           {role === "ADMIN"
-            ? "Panel de Control Global"
-            : "Gestiona tu contenido y alumnos"}
+            ? "Explora el rendimiento de tu academia en tiempo real."
+            : "Gestiona tu contenido y revisa el progreso de tus alumnos."}
         </p>
       </div>
 
-      {/* --- TARJETAS DE ESTADÍSTICAS (KPIs) --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {role === "ADMIN" && (
-          <>
-            <Link href="/dashboard/pagos" className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm group hover:shadow-xl transition-all">
+      {role === "ADMIN" && adminStats && (
+        <>
+          {/* KPI CARDS (ADMIN) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Total Balance */}
+            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-orange-50 text-orange-500 rounded-2xl group-hover:bg-orange-100 transition-colors">
-                  <Clock size={24} />
+                <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl"><Wallet size={20} /></div>
+                <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${adminStats.revenueGrowth >= 0 ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"}`}>
+                  {adminStats.revenueGrowth >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  {Math.abs(adminStats.revenueGrowth)}%
                 </div>
-                <span className="text-[10px] font-black uppercase text-gray-300">
-                  Pendientes
-                </span>
               </div>
-              <p className="text-4xl font-black text-[#1A1A2E]">
-                {pendingPaymentsCount}
-              </p>
-              <p className="text-sm text-gray-400 font-bold mt-1">
-                Pagos por validar
-              </p>
+              <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Balance Total</p>
+              <p className="text-3xl font-black text-[#1A1A2E] italic">${adminStats.totalRevenue}</p>
+              <p className="text-[10px] text-gray-400 font-bold mt-2">v.s. mes anterior</p>
+            </div>
+
+            {/* Alumnos Totales */}
+            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-blue-50 text-blue-500 rounded-2xl"><Users size={20} /></div>
+                <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${adminStats.userGrowth >= 0 ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"}`}>
+                  {adminStats.userGrowth >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  {Math.abs(adminStats.userGrowth)}%
+                </div>
+              </div>
+              <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Alumnos Totales</p>
+              <p className="text-3xl font-black text-[#1A1A2E]">{adminStats.totalUsers}</p>
+              <p className="text-[10px] text-gray-400 font-bold mt-2">v.s. mes anterior</p>
+            </div>
+
+            {/* Pagos Pendientes */}
+            <Link href="/dashboard/pagos" className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-orange-50 text-orange-500 rounded-2xl"><Clock size={20} /></div>
+                <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Pendientes</span>
+              </div>
+              <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Validaciones</p>
+              <p className="text-3xl font-black text-[#1A1A2E]">{adminStats.pendingPayments}</p>
+              <p className="text-[10px] text-gray-400 font-bold mt-2">Acción requerida</p>
             </Link>
 
-            <div className="bg-[#1A1A2E] p-8 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100">
+            {/* Talleres Totales */}
+            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-[#5A4FCF] text-white rounded-2xl">
-                  <Wallet size={24} />
-                </div>
-                <span className="text-[10px] font-black uppercase text-gray-500">
-                  Ingresos
-                </span>
+                <div className="p-3 bg-purple-50 text-purple-500 rounded-2xl"><BookOpen size={20} /></div>
+                <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Contenido</span>
               </div>
-              <p className="text-4xl font-black italic">
-                {/* @ts-ignore */}
-                ${totalRevenue?._sum?.amountPaid || 0}
-              </p>
-              <p className="text-sm text-gray-400 font-bold mt-1">
-                Ventas aprobadas
-              </p>
+              <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Talleres</p>
+              <p className="text-3xl font-black text-[#1A1A2E]">{myTalleresCount}</p>
+              <p className="text-[10px] text-gray-400 font-bold mt-2">Cursos & Talleres</p>
             </div>
-          </>
-        )}
+          </div>
 
-        {(role === "MENTOR" || role === "ADMIN") && (
-          <Link href="/dashboard/talleres" className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm group hover:shadow-xl transition-all">
-            <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl w-fit mb-4 group-hover:bg-indigo-100 transition-colors">
+          {/* CHARTS SECTION */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Balance Overview */}
+            <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h3 className="text-lg font-black text-[#1A1A2E]">Resumen de Ingresos</h3>
+                  <p className="text-xs text-gray-400 font-bold">Últimos 14 días</p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                  <span className="w-2 h-2 rounded-full bg-[#5A4FCF]"></span> Este periodo
+                </div>
+              </div>
+              <RevenueChart data={adminStats.revenueByDay} />
+            </div>
+
+            {/* Growth Overview */}
+            <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h3 className="text-lg font-black text-[#1A1A2E]">Crecimiento de Alumnos</h3>
+                  <p className="text-xs text-gray-400 font-bold">Nuevos registros diarios</p>
+                </div>
+              </div>
+              <GrowthChart data={adminStats.registrationsByDay} />
+            </div>
+
+            {/* Payment Methods */}
+            <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+              <h3 className="text-lg font-black text-[#1A1A2E] mb-2">Fuentes de Ingresos</h3>
+              <p className="text-xs text-gray-400 font-bold mb-8">Desglose por método de pago</p>
+              <PaymentMethodsChart data={adminStats.paymentMethodsData} />
+            </div>
+
+            {/* Últimas Inscripciones */}
+            <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm overflow-hidden">
+              <h3 className="text-lg font-black text-[#1A1A2E] mb-8 flex items-center gap-2">
+                <AlertCircle size={20} className="text-[#5A4FCF]" />
+                Inscripciones Recientes
+              </h3>
+              <div className="space-y-6">
+                {lastInscriptions.length > 0 ? lastInscriptions.map((ins) => (
+                  <div key={ins.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl border border-transparent hover:border-gray-100 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-[#5A4FCF] shadow-sm">
+                        {ins.user?.name ? ins.user.name.substring(0, 2).toUpperCase() : "??"}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-[#1A1A2E]">{ins.user?.name || ins.user?.email}</p>
+                        <p className="text-[10px] text-gray-400 font-bold truncate max-w-[150px]">
+                          {ins.taller?.title || ins.curso?.title || "S/N"}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-widest ${
+                      ins.status === "PENDING" ? "text-orange-500 bg-orange-50" : 
+                      ins.status === "APPROVED" ? "text-green-500 bg-green-50" : "text-red-500 bg-red-50"
+                    }`}>
+                      {ins.status === "PENDING" ? "Pendiente" : ins.status === "APPROVED" ? "Aprobado" : "Rechazado"}
+                    </span>
+                  </div>
+                )) : (
+                  <p className="text-center text-gray-400 py-4 italic">Sin actividad reciente.</p>
+                )}
+                <Link href="/dashboard/pagos" className="block text-center text-xs font-black text-[#5A4FCF] hover:underline mt-4">
+                  Ver todas las transacciones
+                </Link>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* MENTOR VIEW (Keep original simplificando) */}
+      {role === "MENTOR" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+            <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl w-fit mb-4">
               <BookOpen size={24} />
             </div>
-            <p className="text-4xl font-black text-[#1A1A2E]">
-              {myTalleresCount}
-            </p>
-            <p className="text-sm text-gray-400 font-bold mt-1">
-              {role === "ADMIN" ? "Talleres Totales" : "Mis Talleres Activos"}
-            </p>
-          </Link>
-        )}
-
-        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-          <div className="p-3 bg-green-50 text-green-500 rounded-2xl w-fit mb-4">
-            <Users size={24} />
+            <p className="text-4xl font-black text-[#1A1A2E]">{myTalleresCount}</p>
+            <p className="text-sm text-gray-400 font-bold mt-1">Mis Talleres</p>
           </div>
-          <p className="text-4xl font-black text-[#1A1A2E]">
-            {role === "ADMIN" ? "128" : "12"}
-          </p>
-          <p className="text-sm text-gray-400 font-bold mt-1">
-            Alumnos {role === "ADMIN" ? "totales" : "en mis cursos"}
-          </p>
+          {/* ... otros KPIs de Mentor */}
         </div>
-      </div>
-
-      {/* --- SECCIÓN INFERIOR: ACCIÓN INMEDIATA --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Lista de Actividad Reciente */}
-        <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
-            <AlertCircle size={20} className="text-[#5A4FCF]" />
-            Últimas Inscripciones
-          </h3>
-
-          <div className="space-y-6">
-            {(lastInscriptions as any[]).length > 0 ? (lastInscriptions as any[]).map((ins) => (
-              <div key={ins.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-2xl transition-colors border border-transparent hover:border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center font-bold text-[#5A4FCF]">
-                    {ins.user?.name ? ins.user.name.substring(0, 2).toUpperCase() : "??"}
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#1A1A2E]">{ins.user?.name || ins.user?.email}</p>
-                    <p className="text-xs text-gray-400">
-                      {ins.taller?.title || ins.curso?.title || "S/N"}
-                    </p>
-                  </div>
-                </div>
-                <span className={`text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest ${
-                  ins.status === "PENDING" ? "text-orange-500 bg-orange-50" : 
-                  ins.status === "APPROVED" ? "text-green-500 bg-green-50" : "text-red-500 bg-red-50"
-                }`}>
-                  {ins.status === "PENDING" ? "Pendiente" : ins.status === "APPROVED" ? "Aprobado" : "Rechazado"}
-                </span>
-              </div>
-            )) : (
-              <p className="text-center text-gray-400 py-4 italic">No hay inscripciones recientes.</p>
-            )}
-          </div>
-        </div>
-
-
-        {/* Accesos Rápidos */}
-        <div className="bg-indigo-50/50 rounded-[3rem] p-10 border border-indigo-100">
-          <h3 className="text-xl font-bold mb-8">Acciones Rápidas</h3>
-          <div className="grid grid-cols-1 gap-4">
-            {role === "ADMIN" && (
-              <Link href="/dashboard/pagos" className="w-full bg-white p-5 rounded-2xl font-bold text-[#1A1A2E] flex items-center justify-between hover:scale-[1.02] transition-transform shadow-sm">
-                Ir a Validar Pagos <ArrowRight size={18} />
-              </Link>
-            )}
-            {(role === "ADMIN" || role === "MENTOR") && (
-              <Link href="/dashboard/talleres/create" className="w-full bg-white p-5 rounded-2xl font-bold text-[#1A1A2E] flex items-center justify-between hover:scale-[1.02] transition-transform shadow-sm">
-                Crear Nuevo Taller <ArrowRight size={18} />
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
+
 

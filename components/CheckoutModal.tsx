@@ -225,7 +225,7 @@ export default function CheckoutModal({
                     >
                       <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Binance Pay ID:</p>
                       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 mb-6">
-                        <span className="font-bold text-[#1A1A2E]">123456789 (Artica Group)</span>
+                        <span className="font-bold text-[#1A1A2E]">123456789 (Articademy)</span>
                         <button type="button" onClick={() => copyToClipboard("123456789")}>
                           {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                         </button>

@@ -6,7 +6,10 @@ import {
   Clock,
   MapPin,
   Users,
+  Globe,
+  Zap,
   ChevronRight,
+  ChevronDown,
   ArrowRight,
   CheckCircle2,
   Coffee,
@@ -18,9 +21,9 @@ import CheckoutModal from "@/components/CheckoutModal";
 
 export default function TallerDetailClient({ taller }: { taller: any }) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<number | null>(0);
 
-  // Parsear la data JSON y CSV
-  const agenda = typeof taller.agenda === "string" ? JSON.parse(taller.agenda || "[]") : [];
+  // Parsear la data CSV
   const includes = typeof taller.includes === "string" ? taller.includes.split(",") : [];
 
   return (
@@ -66,26 +69,103 @@ export default function TallerDetailClient({ taller }: { taller: any }) {
                 {taller.description}
               </p>
 
-              {/* Agenda del Día */}
-              {agenda.length > 0 && (
-                <>
-                  <h2 className="text-3xl font-bold mb-8">Agenda del Taller</h2>
-                  <div className="space-y-4 mb-16">
-                    {agenda.map((item: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="bg-white p-6 rounded-[2rem] border border-gray-100 flex items-center gap-6 shadow-sm group hover:border-[#5A4FCF] transition-all"
-                      >
-                        <div className="text-sm font-black text-[#5A4FCF] w-20 flex-shrink-0">
-                          {item.hour}
-                        </div>
-                        <div className="h-8 w-px bg-gray-100" />
-                        <div className="text-gray-700 font-bold">{item.task}</div>
+              {/* Stats Rápidas (igual que Cursos) */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                  <Clock className="mx-auto mb-2 text-gray-300" size={20} />
+                  <span className="block text-sm font-bold text-[#1A1A2E]">
+                    {taller.duration || "Por confirmar"}
+                  </span>
+                </div>
+                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                  <Calendar className="mx-auto mb-2 text-gray-300" size={20} />
+                  <span className="block text-sm font-bold text-[#1A1A2E]">
+                    {new Date(taller.date).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
+                  </span>
+                </div>
+                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                  <Globe className="mx-auto mb-2 text-gray-300" size={20} />
+                  <span className="block text-sm font-bold text-[#1A1A2E]">
+                    {taller.language || "Español"}
+                  </span>
+                </div>
+                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                  <Zap className="mx-auto mb-2 text-gray-300" size={20} />
+                  <span className="block text-sm font-bold text-[#1A1A2E]">
+                    {taller.level || "Todos los niveles"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Temario del Taller */}
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 tracking-tight">
+                Temario del Taller
+              </h2>
+
+              <div className="space-y-4 mb-20">
+                {taller.modules?.map((module: any, idx: number) => (
+                  <div key={module.id} className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden group shadow-sm transition-all">
+                    <button
+                      onClick={() => setOpenAccordion(openAccordion === idx ? null : idx)}
+                      className="w-full p-8 flex justify-between items-center hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <div>
+                        <span className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest block mb-1">
+                          Módulo 0{idx + 1}
+                        </span>
+                        <span className="text-xl font-bold text-[#1A1A2E] group-hover:text-[#5A4FCF] transition-colors">
+                          {module.title}
+                        </span>
+                        {/* Vista previa de tópicos cuando está cerrado */}
+                        {openAccordion !== idx && module.topics?.length > 0 && (
+                          <div className="mt-4 space-y-3">
+                            {module.topics.map((topic: any) => (
+                              <div key={topic.id} className="flex items-start gap-3 text-sm text-gray-500">
+                                <div className="w-2 h-2 rounded-full bg-indigo-200 mt-1.5 shrink-0" />
+                                <span>
+                                  <span className="font-semibold text-gray-600">{topic.title}</span>
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    ))}
+                      <ChevronDown className={`text-gray-300 transition-transform shrink-0 ml-4 ${openAccordion === idx ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {openAccordion === idx && (
+                      <div className="border-t border-gray-50 bg-white">
+                        <div className="px-8 pb-8 pt-6 space-y-3">
+                          {module.topics?.map((topic: any) => (
+                            <div key={topic.id} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                              <div className="w-2 h-2 rounded-full bg-indigo-300 mt-2.5 shrink-0" />
+                              <div className="flex-1">
+                                <div className="text-sm leading-relaxed text-[#1A1A2E]">
+                                  <span className="font-bold">{topic.title}</span>
+                                  {topic.summary && (
+                                    <span className="text-gray-500 ml-1 whitespace-pre-wrap">
+                                      : {topic.summary}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {(!module.topics || module.topics.length === 0) && (
+                            <p className="text-sm text-gray-400 italic">Este módulo no tiene temas definidos aún.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </>
-              )}
+                ))}
+
+                {(!taller.modules || taller.modules.length === 0) && (
+                   <div className="text-center p-12 bg-white rounded-[2rem] border border-gray-100 text-gray-400">
+                     No hay contenido publicado en este taller todavía.
+                   </div>
+                )}
+              </div>
 
               {/* Qué incluye */}
               {includes.length > 0 && (

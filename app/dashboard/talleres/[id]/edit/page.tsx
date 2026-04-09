@@ -13,7 +13,13 @@ export default async function EditWorkshopPage({ params }: { params: Promise<{ i
 
   const taller = await prisma.taller.findUnique({
     where: { id },
-    include: { _count: { select: { inscritos: true } } }
+    include: { 
+      _count: { select: { inscritos: true } },
+      modules: {
+        include: { topics: true },
+        orderBy: { order: "asc" }
+      }
+    }
   });
 
   if (!taller) redirect("/dashboard/talleres");

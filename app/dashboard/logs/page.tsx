@@ -1,7 +1,64 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { Activity, Calendar, User, Tag, ShieldAlert } from "lucide-react";
+import { Calendar, Tag, ShieldAlert } from "lucide-react";
+
+/** Convierte el JSON de detalles en texto legible */
+function formatDetails(raw: string | null): string {
+  if (!raw) return "—";
+  try {
+    const obj = JSON.parse(raw);
+    const labels: Record<string, string> = {
+      title: "Título",
+      name: "Nombre",
+      email: "Email",
+      role: "Rol",
+      message: "Mensaje",
+    };
+    const roleNames: Record<string, string> = {
+      USER: "Alumno",
+      MENTOR: "Mentor",
+      ADMIN: "Administrador",
+    };
+
+    const parts = Object.entries(obj)
+      .filter(([, v]) => v !== null && v !== undefined && v !== "")
+      .map(([k, v]) => {
+        const label = labels[k] || k;
+        const value = k === "role" ? (roleNames[v as string] ?? v) : String(v);
+        return `${label}: ${value}`;
+      });
+
+    return parts.length > 0 ? parts.join(" · ") : "Sin detalles";
+  } catch {
+    return raw;
+  }
+}
+
+const ACTION_STYLES: Record<string, string> = {
+  CREATE:  "bg-green-50 text-green-600",
+  UPDATE:  "bg-indigo-50 text-[#5A4FCF]",
+  DELETE:  "bg-red-50 text-red-600",
+  APPROVE: "bg-emerald-50 text-emerald-600",
+  REVOKE:  "bg-orange-50 text-orange-500",
+};
+
+const ACTION_LABELS: Record<string, string> = {
+  CREATE:  "Crear",
+  UPDATE:  "Editar",
+  DELETE:  "Eliminar",
+  APPROVE: "Aprobar",
+  REVOKE:  "Revocar",
+};
+
+const ENTITY_LABELS: Record<string, string> = {
+  USER:        "Usuario",
+  MENTOR:      "Mentor",
+  TALLER:      "Taller",
+  CURSO:       "Curso",
+  CATEGORY:    "Categoría",
+  INSCRIPTION: "Inscripción",
+};
 
 export default async function LogsPage() {
   const session = await auth();
@@ -13,11 +70,9 @@ export default async function LogsPage() {
   const logs = await prisma.activityLog.findMany({
     orderBy: { createdAt: "desc" },
     include: {
-      user: {
-        select: { name: true, email: true, role: true },
-      },
+      user: { select: { name: true, email: true, role: true } },
     },
-    take: 100, // Limitar a los 100 más recientes para rendimiento
+    take: 100,
   });
 
   return (
@@ -50,36 +105,52 @@ export default async function LogsPage() {
               <tbody>
                 {logs.map((log) => (
                   <tr key={log.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    {/* Fecha */}
                     <td className="py-4 pl-4 text-sm font-medium text-gray-500 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Calendar size={14} />
-                        {new Date(log.createdAt).toLocaleString()}
+                        <Calendar size={14} className="text-gray-300" />
+                        {new Date(log.createdAt).toLocaleString("es-ES", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
                     </td>
+
+                    {/* Usuario */}
                     <td className="py-4 text-sm font-bold text-[#1A1A2E]">
                       <div className="flex flex-col">
-                        <span>{log.user.name || "Sin Nombre"}</span>
-                        <span className="text-[10px] text-gray-400 uppercase tracking-wider">{log.user.email}</span>
+                        <span>{log.user.name || "Sin nombre"}</span>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
+                          {log.user.email}
+                        </span>
                       </div>
                     </td>
+
+                    {/* Acción */}
                     <td className="py-4">
-                      <span className={`px-3 py-1 rounded-lg text-xs font-black tracking-widest w-fit block ${
-                        log.action === "CREATE" ? "bg-green-50 text-green-600" :
-                        log.action === "DELETE" ? "bg-red-50 text-red-600" :
-                        "bg-indigo-50 text-[#5A4FCF]"
+                      <span className={`px-3 py-1.5 rounded-lg text-xs font-black tracking-widest inline-block ${
+                        ACTION_STYLES[log.action] ?? "bg-gray-100 text-gray-500"
                       }`}>
-                        {log.action}
+                        {ACTION_LABELS[log.action] ?? log.action}
                       </span>
                     </td>
+
+                    {/* Entidad */}
                     <td className="py-4">
                       <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600">
-                        <Tag size={14} className="text-[#5A4FCF]" /> {log.entityType}
+                        <Tag size={13} className="text-[#5A4FCF]" />
+                        {ENTITY_LABELS[log.entityType] ?? log.entityType}
                       </div>
                     </td>
-                    <td className="py-4">
-                      <pre className="text-[10px] text-gray-500 bg-gray-50 p-2 rounded-xl max-w-sm overflow-x-auto">
-                        {log.details ? log.details : "-"}
-                      </pre>
+
+                    {/* Detalles — legible */}
+                    <td className="py-4 pr-4">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {formatDetails(log.details)}
+                      </span>
                     </td>
                   </tr>
                 ))}

@@ -1,6 +1,9 @@
-import { auth } from "@/lib/auth";
-import Sidebar from "./Sidebar";
+import { auth, signOut } from "@/lib/auth";
+import DashboardShell from "./DashboardShell";
 import { redirect } from "next/navigation";
+import { Lock } from "lucide-react";
+import RealTimeGuard from "@/components/RealTimeGuard";
+import { prisma } from "@/lib/prisma";
 
 export default async function DashboardLayout({
   children,
@@ -13,15 +16,105 @@ export default async function DashboardLayout({
     redirect("/auth/login");
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar Fijo */}
-      <Sidebar userRole={session.user.role as string} />
-      
-      {/* Contenido Principal */}
-      <main className="flex-1 ml-64 min-h-screen">
-        {children}
+  // Validación en tiempo real (Base de Datos) ya que no podemos hacerlo en el Middleware (Edge)
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { 
+      isActive: true, 
+      deactivationReason: true,
+      name: true,
+      email: true,
+      role: true,
+      image: true
+    }
+  });
+
+  const isActive = dbUser?.isActive !== false;
+  const deactivationReason = dbUser?.deactivationReason;
+
+  if (!isActive) {
+    // ... (Deactivation screen remains same)
+    return (
+      <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
+        <RealTimeGuard />
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/40 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-orange-100/40 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="w-full max-w-lg bg-white rounded-[3rem] p-12 shadow-2xl shadow-red-100/30 text-center border border-white z-10 relative">
+          <div className="relative w-20 h-20 mx-auto mb-8">
+            <div className="absolute inset-0 bg-red-100 rounded-3xl animate-pulse" />
+            <div className="relative w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center">
+              <Lock className="text-red-500" size={36} />
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-black text-[#1A1A2E] mb-4 leading-tight">
+            Sesión Terminada (Cuenta Desactivada)
+          </h1>
+          <p className="text-gray-500 leading-relaxed mb-6">
+            Tu cuenta acaba de ser desactivada por un administrador:
+          </p>
+
+          <div className="bg-red-50 text-red-600 font-bold p-4 rounded-2xl mb-8">
+            {deactivationReason || "Sin razón especificada"}
+          </div>
+
+          <p className="text-xs text-gray-400 mb-6">
+            No tienes acceso al panel. Contacta a soporte:{" "}
+            <a href="mailto:soporte@artica.group" className="text-red-500 font-bold hover:underline">
+              soporte@artica.group
+            </a>
+          </p>
+
+          <div className="flex flex-col items-center gap-4">
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/auth/login" });
+              }}
+            >
+              <button
+                type="submit"
+                className="bg-[#1A1A2E] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg hover:bg-[#5A4FCF] transition-all"
+              >
+                Cerrar Sesión y Salir
+              </button>
+            </form>
+          </div>
+        </div>
       </main>
-    </div>
+    );
+  }
+
+  // Si por alguna razón no existe en la BD, cerramos sesión
+  if (!dbUser) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <RealTimeGuard />
+        <p>Cargando perfil...</p>
+      </main>
+    );
+  }
+
+  // --- MENTOR PHOTO VALIDATION ---
+  // Bloqueo si el mentor no tiene foto de perfil (usamos dbUser.image)
+  const isMentor = dbUser.role === "MENTOR";
+  const hasPhoto = !!dbUser.image;
+  const isBlockedMentor = isMentor && !hasPhoto;
+
+  return (
+    <DashboardShell 
+      user={{
+        ...session.user,
+        name: dbUser.name,
+        email: dbUser.email,
+        role: dbUser.role,
+        image: dbUser.image
+      }} 
+      isBlockedMentor={isBlockedMentor}
+    >
+      <RealTimeGuard />
+      {children}
+    </DashboardShell>
   );
 }

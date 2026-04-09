@@ -36,7 +36,7 @@ export default function NotFound() {
           </h2>
 
           <p className="text-lg text-gray-500 mb-12 leading-relaxed">
-            Parece que el link que buscas se fue de pasantías a **Artica Group**
+            Parece que el link que buscas se fue de pasantías a **Articademy**
             en Miami o simplemente no existe. No te preocupes, el camino a la
             formación sigue abierto.
           </p>

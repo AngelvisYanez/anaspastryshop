@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Camera, Loader2, Save, CheckCircle } from "lucide-react";
+import { User, Mail, Lock, Camera, Loader2, Save, CheckCircle, AlertCircle, Trash2, RefreshCcw } from "lucide-react";
 import { updateProfile } from "@/lib/actions/user";
+import { useSession } from "next-auth/react";
 
 interface UserProfile {
   name: string | null;
@@ -11,9 +12,28 @@ interface UserProfile {
 }
 
 export default function ProfileForm({ initialUser }: { initialUser: UserProfile }) {
+  const { update, data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(initialUser.image);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Convertir file a Base64 para guardarlo en la DB
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError("La imagen es muy pesada (máx 2MB)");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,6 +42,12 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     setSuccess(false);
 
     const formData = new FormData(e.currentTarget);
+    
+    // Si hay una previsualización (Base64), la enviamos como el valor de image
+    if (previewImage) {
+      formData.set("image", previewImage);
+    }
+
     const result = await updateProfile(formData);
 
     if (result.error) {
@@ -30,8 +56,21 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     } else {
       setSuccess(true);
       setLoading(false);
-      // Ocultar mensaje de éxito tras unos segundos
+      
+      // Actualizamos la sesión de NextAuth en el cliente
+      await update({
+        name: formData.get("name"),
+        image: previewImage
+      });
+
+      // Actualizamos caché local para la Navbar
+      if (previewImage && session?.user?.id) {
+        localStorage.setItem(`user-img-${session.user.id}`, previewImage);
+      }
+
       setTimeout(() => setSuccess(false), 3000);
+      // Recargar para asegurar que el Layout del Dashboard (Server Component) detecte el cambio de imagen
+      window.location.reload();
     }
   }
 
@@ -42,17 +81,67 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-[100px] -z-1" />
 
         <div className="mb-10 text-center">
-          <div className="relative inline-block group mb-6">
-            <div className="w-24 h-24 bg-indigo-50 rounded-3xl flex items-center justify-center font-black text-[#5A4FCF] text-3xl overflow-hidden border-4 border-white shadow-xl shadow-indigo-100">
-              {initialUser.image ? (
-                <img src={initialUser.image} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                initialUser.name?.substring(0, 2).toUpperCase() || "??"
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="relative inline-block group">
+              <div className="w-28 h-28 bg-indigo-50 rounded-3xl flex items-center justify-center font-black text-[#5A4FCF] text-4xl overflow-hidden border-4 border-white shadow-xl shadow-indigo-100 relative group">
+                {previewImage ? (
+                  <img src={previewImage} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  initialUser.name?.substring(0, 2).toUpperCase() || "??"
+                )}
+                {/* Overlay en hover (solo si no hay controles abajo, o como atajo) */}
+                {!previewImage && (
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                  >
+                    <Camera size={28} className="text-white" />
+                  </div>
+                )}
+              </div>
+              
+              {/* Botón flotante rápido si NO hay imagen */}
+              {!previewImage && (
+                <button 
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-2 -right-2 bg-[#1A1A2E] text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform"
+                >
+                  <Camera size={16} />
+                </button>
               )}
             </div>
-            <button className="absolute -bottom-2 -right-2 bg-[#1A1A2E] text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform">
-              <Camera size={16} />
-            </button>
+
+            {/* Controles de Foto - Estilo Premium */}
+            {previewImage && (
+              <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 px-4 py-2 bg-white text-[#1A1A2E] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all border border-gray-100"
+                >
+                  <RefreshCcw size={14} /> Reemplazar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewImage(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-100 transition-all border border-red-100"
+                >
+                  <Trash2 size={14} /> Eliminar
+                </button>
+              </div>
+            )}
+            
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden" 
+            />
           </div>
           <h1 className="text-3xl font-black text-[#1A1A2E]">Ajustes de Perfil</h1>
           <p className="text-gray-400 font-medium">Actualiza tu información personal en AMA</p>
@@ -60,8 +149,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {error && (
-            <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold animate-shake">
-              {error}
+            <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold flex items-center gap-2 animate-shake">
+              <AlertCircle size={18} /> {error}
             </div>
           )}
 
@@ -105,22 +194,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
               </div>
             </div>
 
-            {/* Foto Mock */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">
-                URL de Foto de Perfil
-              </label>
-              <div className="relative">
-                <Camera className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  name="image"
-                  defaultValue={initialUser.image || ""}
-                  placeholder="https://urldeimagen.com"
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#5A4FCF] transition-all outline-none font-bold"
-                />
-              </div>
-            </div>
+            {/* Hidden field for image if we want to also allow URL or just keep it consistent */}
+            <input type="hidden" name="image" value={previewImage || ""} />
 
             {/* Password */}
             <div className="space-y-2 pt-4 border-t border-gray-100">
@@ -152,3 +227,4 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     </div>
   );
 }
+

@@ -32,7 +32,7 @@ const TEAM = [
   {
     name: "Newman Acosta",
     role: "Systems Engineer & Full Stack Dev",
-    agency: "Artica Media Academy",
+    agency: "Articademy",
     image:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400",
   },
@@ -65,8 +65,8 @@ export default function NosotrosPage() {
               <span className="text-gray-300 italic">digital de Falcón.</span>
             </h1>
             <p className="text-xl text-gray-500 leading-relaxed mb-12">
-              Artica Group Academy nace de la unión estratégica entre **Artica
-              Group (Miami)** y **4101 Media (Coro)**.
+              Articademy nace de la unión estratégica entre **Artica
+              Group (Miami)** y **4101 Media (Latinoamérica)**.
             </p>
           </motion.div>
 
@@ -151,7 +151,7 @@ export default function NosotrosPage() {
         <section className="bg-white rounded-[4rem] p-12 md:p-20 border border-gray-100 flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1">
             <h2 className="text-4xl font-black text-[#1A1A2E] mb-6">
-              Visítanos en Coro.
+              Estamos en toda Latinoamérica.
             </h2>
             <button className="bg-[#1A1A2E] text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-black transition-all">
               Ver en Google Maps <ArrowRight size={18} />

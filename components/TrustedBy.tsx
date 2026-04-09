@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const PARTNERS = [
   { name: "Artica Group", location: "Miami, USA" },
-  { name: "4101 Media", location: "Coro, VE" },
+  { name: "4101 Media", location: "Latinoamérica" },
   { name: "Next.js", location: "Tech Partner" },
   { name: "Prisma", location: "Database" },
   { name: "Stripe", location: "Payments" },

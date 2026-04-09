@@ -16,6 +16,14 @@ export default async function TallerDetailPage({
       instructor: {
         select: { name: true, image: true, email: true },
       },
+      modules: {
+        orderBy: { order: "asc" },
+        include: {
+          topics: {
+            orderBy: { order: "asc" }
+          }
+        }
+      }
     },
   });
 

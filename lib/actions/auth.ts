@@ -75,3 +75,22 @@ export async function loginUser(formData: FormData) {
     throw error;
   }
 }
+
+export async function checkPreloginStatus(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user) {
+    const isValid = await bcrypt.compare(password, user.password!);
+    if (isValid) {
+      if (user.role === "MENTOR" && !user.isApproved) {
+        return { isPendingMentor: true };
+      }
+      if (user.role === "USER" && !user.isActive) {
+        return { isSuspended: true, reason: user.deactivationReason };
+      }
+    }
+  }
+  return { isPendingMentor: false, isSuspended: false };
+}

@@ -7,9 +7,10 @@ interface CourseProps {
   category: string;
   price: number;
   icon: string;
+  level?: string;
 }
 
-export default function CourseCard({ title, category, price, icon }: CourseProps) {
+export default function CourseCard({ title, category, price, icon, level }: CourseProps) {
   return (
     <motion.div 
       whileHover={{ y: -10 }}
@@ -19,9 +20,16 @@ export default function CourseCard({ title, category, price, icon }: CourseProps
         {icon}
       </div>
       <div className="px-4 pb-6">
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#5A4FCF] mb-2 block">
-          {category}
-        </span>
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#5A4FCF]">
+            {category}
+          </span>
+          {level && (
+            <span className="text-[9px] font-black uppercase text-gray-400 border border-gray-100 px-2 py-0.5 rounded-md bg-gray-50/50">
+              {level}
+            </span>
+          )}
+        </div>
         <h3 className="text-xl font-bold text-[#1A1A2E] mb-6 leading-snug h-14 overflow-hidden">
           {title}
         </h3>

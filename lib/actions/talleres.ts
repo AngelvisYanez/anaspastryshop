@@ -6,7 +6,7 @@ import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function crearTaller(formData: FormData, agenda: any[], includes: string[]) {
+export async function crearTaller(formData: FormData, includes: string[], modules: any[] = []) {
   const session = await auth();
 
   // 1. Seguridad: Solo ADMIN o MENTOR
@@ -24,11 +24,13 @@ export async function crearTaller(formData: FormData, agenda: any[], includes: s
   const category = formData.get("category") as string;
   const time = formData.get("time") as string;
   const image = formData.get("image") as string | null;
+  const duration = formData.get("duration") as string | null;
+  const language = (formData.get("language") as string) || "Español";
+  const level = formData.get("level") as string | null;
 
   // Lógica de asignación de instructor
   let instructorId = session.user.id as string;
   
-  // Si es ADMIN y seleccionó un mentor específico
   if (session.user.role === "ADMIN") {
     const selectedInstructor = formData.get("instructorId") as string;
     if (selectedInstructor) instructorId = selectedInstructor;
@@ -47,13 +49,27 @@ export async function crearTaller(formData: FormData, agenda: any[], includes: s
         location,
         slots,
         instructorId,
-        agenda: JSON.stringify(agenda), 
         includes: includes.join(","), 
         image: image || null,
+        duration: duration || null,
+        language,
+        level: level || null,
+        modules: {
+          create: modules.map((m, mIndex) => ({
+            title: m.title,
+            order: mIndex,
+            topics: {
+              create: m.topics.map((t, tIndex) => ({
+                title: t.title,
+                summary: t.summary || null,
+                order: tIndex,
+              }))
+            }
+          }))
+        }
       },
     });
 
-    // Registrar en BD
     await logActivity({
       userId: session.user.id as string,
       action: "CREATE",
@@ -61,19 +77,18 @@ export async function crearTaller(formData: FormData, agenda: any[], includes: s
       entityId: newTaller.id,
       details: { title: newTaller.title },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creando taller:", error);
-    return { error: "No se pudo crear el taller" };
+    return { error: error.message || "No se pudo crear el taller" };
   }
 
-  // 4. Limpiar caché y redireccionar
   revalidatePath("/talleres");
   revalidatePath("/dashboard/talleres");
   redirect("/dashboard/talleres");
 }
 
 // 5. Editar Taller
-export async function editarTaller(id: string, formData: FormData, agenda: any[], includes: string[]) {
+export async function editarTaller(id: string, formData: FormData, includes: string[], modules: any[] = []) {
   const session = await auth();
   if (!session?.user) throw new Error("No autorizado");
 
@@ -84,14 +99,8 @@ export async function editarTaller(id: string, formData: FormData, agenda: any[]
 
   if (!workshop) throw new Error("Taller no encontrado");
 
-  // Seguridad: ADMIN puede todo, MENTOR solo lo suyo
   if (session.user.role !== "ADMIN" && workshop.instructorId !== session.user.id) {
     throw new Error("No tienes permiso para editar este taller");
-  }
-
-  // Regla de Negocio: Bloqueo si hay 5 o más inscritos (Admin puede saltar esto)
-  if (session.user.role !== "ADMIN" && workshop._count.inscritos >= 5) {
-    throw new Error("No puedes editar un taller con 5 o más alumnos inscritos. Contacta a soporte.");
   }
 
   const title = formData.get("title") as string;
@@ -103,31 +112,52 @@ export async function editarTaller(id: string, formData: FormData, agenda: any[]
   const category = formData.get("category") as string;
   const time = formData.get("time") as string;
   const image = formData.get("image") as string | null;
+  const duration = formData.get("duration") as string | null;
+  const language = (formData.get("language") as string) || "Español";
+  const level = formData.get("level") as string | null;
 
   try {
-    const updatedTaller = await prisma.taller.update({
-      where: { id },
-      data: {
-        title,
-        description,
-        category,
-        price,
-        date,
-        time,
-        location,
-        slots,
-        agenda: JSON.stringify(agenda),
-        includes: includes.join(","),
-        image: image || null,
-      },
-    });
+    await prisma.$transaction([
+      prisma.tallerModule.deleteMany({ where: { tallerId: id } }),
+      prisma.taller.update({
+        where: { id },
+        data: {
+          title,
+          description,
+          category,
+          price,
+          date,
+          time,
+          location,
+          slots,
+          includes: includes.join(","),
+          image: image || null,
+          duration: duration || null,
+          language,
+          level: level || null,
+          modules: {
+            create: modules.map((m, mIndex) => ({
+              title: m.title,
+              order: mIndex,
+              topics: {
+                create: m.topics.map((t, tIndex) => ({
+                  title: t.title,
+                  summary: t.summary || null,
+                  order: tIndex,
+                }))
+              }
+            }))
+          }
+        },
+      })
+    ]);
 
     await logActivity({
       userId: session.user.id as string,
       action: "UPDATE",
       entityType: "TALLER",
       entityId: id,
-      details: { title: updatedTaller.title },
+      details: { title },
     });
   } catch (error) {
     console.error("Error editando taller:", error);

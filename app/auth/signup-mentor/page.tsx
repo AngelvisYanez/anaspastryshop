@@ -43,7 +43,7 @@ export default function MentorSignUpPage() {
             href="/"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-[#5A4FCF] transition-colors mb-8 text-xs font-black uppercase tracking-[0.2em]"
           >
-            <ArrowLeft size={14} /> Volver a la academia
+            <ArrowLeft size={14} /> Volver a Articademy
           </Link>
           <div className="inline-flex p-3 bg-indigo-50 rounded-2xl text-[#5A4FCF] mb-4">
             <BookOpen size={24} />

@@ -29,3 +29,22 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI Agents & Tools (Exclusions from image)
+.agents/
+.claude/
+.codebuddy/
+.continue/
+.junie/
+.kiro/
+
+# Config files from image
+eslint.config.mjs
+
+# Markdown files (Necessary docs included)
+# *.md
+# !CONTEXTO_IA.md
+
+# Backups and locks
+*.bak
+skills-lock.json

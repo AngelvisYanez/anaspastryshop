@@ -2,10 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "./ERD.md"
-}
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "./ERD.md"
+// }
 
 datasource db {
   provider = "sqlite"
@@ -13,22 +13,36 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String        @unique
-  password      String
-  role          String        @default("USER")
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  activities    ActivityLog[]
-  cursos        Curso[]       @relation("MentorCursos")
-  inscripciones Inscription[]
-  talleres      Taller[]      @relation("MentorTalleres")
+  id                 String        @id @default(cuid())
+  name               String?
+  email              String        @unique
+  password           String
+  role               String        @default("USER")
+  isApproved         Boolean       @default(false)
+  isActive           Boolean       @default(true)
+  deactivationReason String?
+  image              String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  activities         ActivityLog[]
+  cursos             Curso[]       @relation("MentorCursos")
+  inscripciones      Inscription[]
+  talleres           Taller[]      @relation("MentorTalleres")
+  subscription       Subscription?
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  plan      String   // "BASIC", "STANDARD", "PREMIUM"
+  status    String   @default("ACTIVE")
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Taller {
-  id           String        @id @default(cuid())
+  id           String         @id @default(cuid())
   title        String
   description  String
   category     String
@@ -36,33 +50,82 @@ model Taller {
   date         DateTime
   time         String
   location     String
-  isOnline     Boolean       @default(false)
-  slots        Int           @default(0)
+  isOnline     Boolean        @default(false)
+  slots        Int            @default(0)
   image        String?
   agenda       String?
   includes     String?
+  duration     String?
+  language     String         @default("Español")
+  level        String?
   instructorId String
-  createdAt    DateTime      @default(now())
+  createdAt    DateTime       @default(now())
   inscritos    Inscription[]
-  instructor   User          @relation("MentorTalleres", fields: [instructorId], references: [id])
+  instructor   User           @relation("MentorTalleres", fields: [instructorId], references: [id])
+  modules      TallerModule[] @relation("TallerToModules")
+}
+
+model TallerModule {
+  id        String        @id @default(cuid())
+  title     String
+  order     Int           @default(0)
+  tallerId  String
+  createdAt DateTime      @default(now())
+  taller    Taller        @relation("TallerToModules", fields: [tallerId], references: [id], onDelete: Cascade)
+  topics    TallerTopic[] @relation("ModuleToTopics")
+}
+
+model TallerTopic {
+  id             String       @id @default(cuid())
+  title          String
+  summary        String?
+  order          Int          @default(0)
+  tallerModuleId String
+  createdAt      DateTime     @default(now())
+  tallerModule   TallerModule @relation("ModuleToTopics", fields: [tallerModuleId], references: [id], onDelete: Cascade)
 }
 
 model Curso {
-  id           String        @id @default(cuid())
-  title        String
-  description  String
-  image        String?
-  price        Float
-  totalHours   Int
-  totalClasses Int
-  language     String        @default("Español")
-  level        String
-  content      String?
-  modules      String?
-  instructorId String
-  createdAt    DateTime      @default(now())
-  instructor   User          @relation("MentorCursos", fields: [instructorId], references: [id])
-  inscritos    Inscription[]
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  image         String?
+  introVideo    String?
+  price         Float
+  category      String         @default("General")
+  totalHours    Int
+  totalClasses  Int
+  language      String         @default("Español")
+  level         String
+  content       String?
+  isLive        Boolean        @default(false)
+  liveUrl       String?
+  instructorId  String
+  createdAt     DateTime       @default(now())
+  courseModules CourseModule[] @relation("CursoToModules")
+  instructor    User           @relation("MentorCursos", fields: [instructorId], references: [id])
+  inscritos     Inscription[]
+}
+
+model CourseModule {
+  id        String   @id @default(cuid())
+  title     String
+  videoUrl  String?
+  order     Int      @default(0)
+  cursoId   String
+  createdAt DateTime @default(now())
+  curso     Curso    @relation("CursoToModules", fields: [cursoId], references: [id], onDelete: Cascade)
+  lessons   Lesson[] @relation("ModuleToLessons")
+}
+
+model Lesson {
+  id             String       @id @default(cuid())
+  title          String
+  summary        String?
+  order          Int          @default(0)
+  courseModuleId String
+  createdAt      DateTime     @default(now())
+  courseModule   CourseModule @relation("ModuleToLessons", fields: [courseModuleId], references: [id], onDelete: Cascade)
 }
 
 model Inscription {

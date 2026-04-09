@@ -7,6 +7,9 @@ erDiagram
     String email 
     String password 
     String role 
+    Boolean isApproved 
+    Boolean isActive 
+    String deactivationReason "❓"
     String image "❓"
     DateTime createdAt 
     DateTime updatedAt 
@@ -27,6 +30,26 @@ erDiagram
     String image "❓"
     String agenda "❓"
     String includes "❓"
+    String duration "❓"
+    String language 
+    String level "❓"
+    DateTime createdAt 
+    }
+  
+
+  "TallerModule" {
+    String id "🗝️"
+    String title 
+    Int order 
+    DateTime createdAt 
+    }
+  
+
+  "TallerTopic" {
+    String id "🗝️"
+    String title 
+    String summary "❓"
+    Int order 
     DateTime createdAt 
     }
   
@@ -36,13 +59,33 @@ erDiagram
     String title 
     String description 
     String image "❓"
+    String introVideo "❓"
     Float price 
     Int totalHours 
     Int totalClasses 
     String language 
     String level 
     String content "❓"
-    String modules "❓"
+    Boolean isLive 
+    String liveUrl "❓"
+    DateTime createdAt 
+    }
+  
+
+  "CourseModule" {
+    String id "🗝️"
+    String title 
+    String videoUrl "❓"
+    Int order 
+    DateTime createdAt 
+    }
+  
+
+  "Lesson" {
+    String id "🗝️"
+    String title 
+    String summary "❓"
+    Int order 
     DateTime createdAt 
     }
   
@@ -77,7 +120,11 @@ erDiagram
     }
   
     "Taller" }o--|| "User" : "instructor"
+    "TallerModule" }o--|| "Taller" : "taller"
+    "TallerTopic" }o--|| "TallerModule" : "tallerModule"
     "Curso" }o--|| "User" : "instructor"
+    "CourseModule" }o--|| "Curso" : "curso"
+    "Lesson" }o--|| "CourseModule" : "courseModule"
     "Inscription" }o--|o "Curso" : "curso"
     "Inscription" }o--|o "Taller" : "taller"
     "Inscription" }o--|| "User" : "user"

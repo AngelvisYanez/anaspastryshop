@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, ChevronRight, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, ChevronRight, LogOut, LayoutDashboard, Bell } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { getUserImage } from "@/lib/actions/user";
 
 import Image from "next/image";
 
@@ -14,7 +15,33 @@ import logo from "@/public/logo_II.webp"; // Asegúrate que la ruta sea correcta
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const loading = status === "loading";
+
+  // Cargar imagen de forma independiente para evitar cookies pesadas (Error 431)
+  useEffect(() => {
+    if (session?.user) {
+      const fetchImage = async () => {
+        // 1. Intentar desde localStorage para velocidad
+        const cached = localStorage.getItem(`user-img-${session.user.id}`);
+        if (cached) {
+          setProfileImage(cached);
+          return;
+        }
+
+        // 2. Si no hay cache, pedir al servidor
+        const img = await getUserImage();
+        if (img) {
+          setProfileImage(img);
+          localStorage.setItem(`user-img-${session.user.id}`, img);
+        }
+      };
+      
+      fetchImage();
+    } else {
+      setProfileImage(null);
+    }
+  }, [session]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -22,6 +49,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Cursos", href: "/cursos" },
     { name: "Talleres", href: "/talleres" },
+    { name: "Membresías", href: "/planes" },
     { name: "Pasantías", href: "/pasantias" },
     { name: "Nosotros", href: "/nosotros" },
   ];
@@ -62,11 +90,21 @@ export default function Navbar() {
           {!loading && (
             <>
               {session ? (
-                <Link href="/dashboard" className="hidden sm:block">
-                  <button className="bg-[#1A1A2E] text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-black hover:scale-105 transition-all shadow-lg shadow-indigo-100 flex items-center gap-2">
-                    <LayoutDashboard size={14} /> Ir al Panel
+                <div className="hidden sm:flex items-center gap-4">
+                  <button className="relative p-2 text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 rounded-full transition-colors" title="Notificaciones">
+                    <Bell size={20} />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                   </button>
-                </Link>
+                  <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-[#5A4FCF] transition-all relative shadow-sm group">
+                    {profileImage ? (
+                      <img src={profileImage} alt={session.user.name || "Usuario"} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#1A1A2E] to-[#2D2B52] text-white flex items-center justify-center font-bold text-sm">
+                        {session.user.name ? session.user.name.substring(0, 2).toUpperCase() : <User size={16} />}
+                      </div>
+                    )}
+                  </Link>
+                </div>
               ) : (
                 <>
                   <Link href="/auth/signup-mentor" className="hidden lg:block">

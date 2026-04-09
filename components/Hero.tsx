@@ -22,7 +22,7 @@ export default function Hero() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
             <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-              Inscripciones Abiertas - Coro & Online
+              Inscripciones Abiertas - LATAM & Online
             </span>
           </div>
 
@@ -36,7 +36,7 @@ export default function Hero() {
           <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
             Formación profesional impulsada por{" "}
             <span className="text-[#5A4FCF]">4101 Media</span> &{" "}
-            <span className="text-[#5A4FCF]">Artica Group</span>. Aprende
+            <span className="text-[#5A4FCF]">Articademy</span>. Aprende
             producción, marketing y código con proyectos reales.
           </p>
 

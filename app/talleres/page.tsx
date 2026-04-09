@@ -9,6 +9,9 @@ import {
   ArrowRight,
   Clock,
   Loader2,
+  Search,
+  Filter,
+  Sparkles
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,12 +24,16 @@ export default function TalleresPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTaller, setSelectedTaller] = useState<any | null>(null);
 
-  // En una app real, usaríamos una Server Action o fetch. 
-  // Por ahora simulamos la carga de la DB o puedes crear una acción de lectura.
+  // Filtros
+  const [activeLevel, setActiveLevel] = useState("Todos");
+  const [activeCategory, setActiveCategory] = useState("Todas");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
   useEffect(() => {
     async function fetchTalleres() {
       try {
-        const res = await fetch("/api/talleres"); // Asumamos que existe o crearemos una acción
+        const res = await fetch("/api/talleres"); 
         const data = await res.json();
         setTalleres(data);
       } catch (error) {
@@ -35,9 +42,18 @@ export default function TalleresPage() {
         setLoading(false);
       }
     }
-    // Para simplificar esta demo y que funcione de inmediato, usaremos los datos de Newman pero listos para el modal
     fetchTalleres();
   }, []);
+
+  const categories = ["Todas", ...Array.from(new Set(talleres.map(t => t.category)))];
+  const levels = ["Todos", "Principiante", "Intermedio", "Avanzado"];
+
+  const filteredTalleres = talleres.filter(t => {
+    const matchCategory = activeCategory === "Todas" || t.category === activeCategory;
+    const matchLevel = activeLevel === "Todos" || t.level === activeLevel;
+    const matchSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchLevel && matchSearch;
+  });
 
   return (
     <main className="min-h-screen bg-[#F4F4F7] pt-32 pb-20">
@@ -47,20 +63,95 @@ export default function TalleresPage() {
         {/* --- CABECERA --- */}
         <div className="mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-[#5A4FCF] font-bold text-sm uppercase tracking-[0.3em] mb-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-2 text-[#5A4FCF] font-bold text-sm uppercase tracking-widest mb-4"
           >
-            <Calendar size={16} /> Experiencias en Vivo
+            <Sparkles size={16} /> Catálogo de Experiencias
           </motion.div>
           <h1 className="text-5xl md:text-8xl font-black text-[#1A1A2E] tracking-tighter mb-6 leading-none">
             Talleres <br />{" "}
             <span className="text-gray-300 italic">Intensivos.</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl leading-relaxed">
-            Aprende haciendo. Sesiones prácticas de un solo día para dominar
-            habilidades específicas con el equipo de Artica.
+            Aprende haciendo. Sesiones prácticas de un solo día para dominar habilidades específicas con el equipo de Artica.
           </p>
+        </div>
+
+        {/* --- CONTROLES: BÚSQUEDA Y FILTROS --- */}
+        <div className="flex flex-col gap-6 mb-12">
+          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+            {/* Buscador */}
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Buscar por nombre..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-gray-100 rounded-[1.5rem] py-5 pl-14 pr-4 shadow-sm focus:ring-2 focus:ring-[#5A4FCF] outline-none transition-all font-bold text-gray-600"
+              />
+            </div>
+
+            {/* Icono Filtro + Niveles */}
+            <div className="flex gap-4 items-center w-full md:w-auto">
+              <button 
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-5 rounded-[1.5rem] border transition-all shadow-sm ${
+                  showFilters 
+                    ? "bg-[#5A4FCF] text-white border-[#5A4FCF] scale-105" 
+                    : "bg-white text-gray-400 border-gray-100 hover:text-[#5A4FCF]"
+                }`}
+                title="Mostrar categorías"
+              >
+                <Filter size={20} />
+              </button>
+
+              <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                {levels.map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setActiveLevel(level)}
+                    className={`px-8 py-5 rounded-[1.2rem] text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${
+                      activeLevel === level
+                        ? "bg-[#1A1A2E] text-white shadow-xl shadow-indigo-100"
+                        : "bg-white text-gray-400 hover:bg-gray-50 border border-gray-100"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Barra de Categorías (Expandible) */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        activeCategory === cat
+                          ? "bg-indigo-50 text-[#5A4FCF] border border-indigo-200"
+                          : "bg-white text-gray-400 border border-gray-100 hover:text-[#5A4FCF]"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* --- GRID DE TALLERES --- */}
@@ -71,7 +162,7 @@ export default function TalleresPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <AnimatePresence>
-              {talleres.map((taller, index) => (
+              {filteredTalleres.map((taller, index) => (
                 <motion.div
                   key={taller.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -162,7 +253,7 @@ export default function TalleresPage() {
             </h2>
             <p className="text-gray-400 mb-10 max-w-xl mx-auto">
               Ofrecemos capacitaciones personalizadas para empresas y equipos en
-              Falcón. Potencia a tu personal con Artica Group.
+              Falcón. Potencia a tu personal con Articademy.
             </p>
             <button className="bg-[#5A4FCF] text-white px-10 py-5 rounded-full font-bold hover:bg-white hover:text-[#1A1A2E] transition-all">
               Contactar con Ventas

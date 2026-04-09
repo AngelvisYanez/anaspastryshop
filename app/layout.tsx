@@ -6,8 +6,8 @@ import Providers from "@/components/Providers";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Artica Group Academy | Formación Digital",
-  description: "Academia de 4101 Media & Artica Group en Coro, Venezuela.",
+  title: "Articademy | Formación Digital",
+  description: "Articademy — Academia de 4101 Media & Artica Group en toda Latinoamérica.",
 };
 
 export default function RootLayout({

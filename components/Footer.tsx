@@ -15,8 +15,7 @@ export default function Footer() {
         </div>
 
         <p className="text-sm text-gray-400 font-medium">
-          © {new Date().getFullYear()} 4101 Media & Artica Group. Coro,
-          Venezuela.
+          © {new Date().getFullYear()} Articademy — 4101 Media & Artica Group. Latinoamérica.
         </p>
 
         <div className="flex gap-8">
