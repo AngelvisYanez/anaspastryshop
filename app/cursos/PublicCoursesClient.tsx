@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles } from "lucide-react";
+import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

@@ -59,7 +59,7 @@ export async function crearTaller(formData: FormData, includes: string[], module
             title: m.title,
             order: mIndex,
             topics: {
-              create: m.topics.map((t, tIndex) => ({
+              create: m.topics.map((t: any, tIndex: number) => ({
                 title: t.title,
                 summary: t.summary || null,
                 order: tIndex,
@@ -140,7 +140,7 @@ export async function editarTaller(id: string, formData: FormData, includes: str
               title: m.title,
               order: mIndex,
               topics: {
-                create: m.topics.map((t, tIndex) => ({
+                create: m.topics.map((t: any, tIndex: number) => ({
                   title: t.title,
                   summary: t.summary || null,
                   order: tIndex,
