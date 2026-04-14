@@ -20,6 +20,7 @@ type Plan = {
   price: number;
   description: string | null;
   hasLiveAccess: boolean;
+  hasWebinarAccess: boolean;
   moduleIds: string[];
   paymentMethods: string[];
   isActive: boolean;

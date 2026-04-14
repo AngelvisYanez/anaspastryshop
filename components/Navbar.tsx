@@ -73,6 +73,12 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
+          {session && (
+            <Link href="/webinars" className="text-sm font-bold text-gray-500 hover:text-[#5A4FCF] transition-colors relative group">
+              Webinars
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full" />
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-3 z-50">
@@ -141,6 +147,13 @@ export default function Navbar() {
                     <ChevronRight size={20} className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors" />
                   </Link>
                 ))}
+                {session && (
+                  <Link href="/webinars" onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 text-xl font-bold text-[#1A1A2E] group transition-colors">
+                    Webinars
+                    <ChevronRight size={20} className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors" />
+                  </Link>
+                )}
               </div>
 
               <div className="h-px bg-gray-100 my-2" />

@@ -13,7 +13,6 @@ export default async function UsuariosPage() {
 
   const role = session.user.role;
 
-  // Para ADMIN: traemos TODOS los usuarios registrados (mentores + alumnos comunes)
   const allUsers = role === "ADMIN"
     ? await prisma.user.findMany({
         select: {
@@ -26,13 +25,13 @@ export default async function UsuariosPage() {
           isActive: true,
           deactivationReason: true,
           createdAt: true,
+          subscription: { select: { plan: true, status: true } },
           _count: { select: { talleres: true, inscripciones: true } },
         },
         orderBy: { createdAt: "desc" },
       })
     : [];
 
-  // Para talleres con inscritos (vista de mentores y alumnos por taller)
   const talleres = await prisma.taller.findMany({
     where: role === "ADMIN" ? {} : { instructorId: session.user.id },
     select: {
@@ -52,6 +51,14 @@ export default async function UsuariosPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const plans = role === "ADMIN"
+    ? await prisma.subscriptionPlan.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, slug: true, price: true },
+        orderBy: { price: "asc" },
+      })
+    : [];
+
   return (
     <div className="p-8">
       <div className="mb-10">
@@ -63,16 +70,15 @@ export default async function UsuariosPage() {
         </p>
       </div>
 
-      {/* Admin ve el panel completo de todos los usuarios */}
       {role === "ADMIN" && (
         <AllUsersView
-          allUsers={allUsers}
+          allUsers={allUsers as any}
           talleres={talleres}
+          plans={plans}
           currentUserId={session.user.id as string}
         />
       )}
 
-      {/* Mentor solo ve sus alumnos por taller */}
       {role === "MENTOR" && (
         <StudentsView talleres={talleres} userRole={role} />
       )}

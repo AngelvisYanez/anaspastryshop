@@ -164,6 +164,29 @@ export async function adminToggleUserStatus(userId: string, isActive: boolean, r
   }
 }
 
+/** ADMIN: Asigna o cambia el plan de suscripción de un usuario */
+export async function adminAssignPlan(userId: string, planSlug: string | null) {
+  await assertAdmin();
+
+  if (!planSlug) {
+    await prisma.subscription.deleteMany({ where: { userId } });
+    revalidatePath("/dashboard/usuarios");
+    return { success: true };
+  }
+
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { slug: planSlug } });
+  if (!plan) return { error: "Plan no encontrado" };
+
+  await prisma.subscription.upsert({
+    where: { userId },
+    update: { plan: planSlug, status: "ACTIVE", startDate: new Date(), endDate: null },
+    create: { userId, plan: planSlug, status: "ACTIVE" },
+  });
+
+  revalidatePath("/dashboard/usuarios");
+  return { success: true };
+}
+
 /** Obtener imagen de perfil del usuario actual (evita cookies pesadas) */
 export async function getUserImage() {
   const session = await auth();

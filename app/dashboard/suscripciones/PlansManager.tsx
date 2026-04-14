@@ -17,6 +17,7 @@ type Plan = {
   price: number;
   description: string | null;
   hasLiveAccess: boolean;
+  hasWebinarAccess: boolean;
   moduleIds: string[];
   paymentMethods: string[];
   isActive: boolean;
@@ -45,6 +46,7 @@ const EMPTY: PlanData = {
   price: 0,
   description: "",
   hasLiveAccess: false,
+  hasWebinarAccess: false,
   moduleIds: [],
   paymentMethods: [],
   isActive: true,
@@ -77,6 +79,7 @@ export default function PlansManager({
       price: plan.price,
       description: plan.description ?? "",
       hasLiveAccess: plan.hasLiveAccess,
+      hasWebinarAccess: plan.hasWebinarAccess,
       moduleIds: plan.moduleIds,
       paymentMethods: plan.paymentMethods,
       isActive: plan.isActive,
@@ -264,6 +267,30 @@ export default function PlansManager({
               <div
                 className={`w-5 h-5 bg-white rounded-full shadow absolute top-0.5 transition-transform ${
                   form.hasLiveAccess ? "translate-x-5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* ACCESO A WEBINARS */}
+          <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-2xl">
+            <div className="flex items-center gap-2">
+              <Video size={16} className="text-[#5A4FCF]" />
+              <div>
+                <span className="text-sm font-bold text-[#3730a3]">Acceso a Webinars</span>
+                <p className="text-[10px] text-indigo-400 font-medium">Ver y unirse a webinars en vivo</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, hasWebinarAccess: !f.hasWebinarAccess }))}
+              className={`w-11 h-6 rounded-full relative transition-colors ${
+                form.hasWebinarAccess ? "bg-[#5A4FCF]" : "bg-gray-200"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 bg-white rounded-full shadow absolute top-0.5 transition-transform ${
+                  form.hasWebinarAccess ? "translate-x-5" : "translate-x-0.5"
                 }`}
               />
             </button>

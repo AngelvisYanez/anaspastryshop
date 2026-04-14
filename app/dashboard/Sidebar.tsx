@@ -7,7 +7,7 @@ import * as LucideIcons from "lucide-react";
 import {
   LayoutDashboard, BookOpen, Calendar, CreditCard,
   Users, Settings, LogOut, Tag, Activity, X,
-  Radio, Star, LayoutGrid, Wallet,
+  Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
 } from "lucide-react";
 
 type PlatformSection = {
@@ -32,10 +32,12 @@ const SYSTEM_ITEMS = [
   { name: "Gestionar Talleres",href: "/dashboard/talleres",      icon: Calendar,        roles: ["ADMIN", "MENTOR"] },
   { name: "Gestionar Cursos",  href: "/dashboard/cursos",        icon: BookOpen,        roles: ["ADMIN", "MENTOR"] },
   { name: "Gestionar Lives",   href: "/dashboard/lives",         icon: Radio,           roles: ["ADMIN", "MENTOR"] },
+  { name: "Webinars",          href: "/dashboard/webinars",      icon: Video,           roles: ["ADMIN"] },
   { name: "Validar Pagos",     href: "/dashboard/pagos",         icon: CreditCard,      roles: ["ADMIN"] },
   { name: "Métodos de Pago",   href: "/dashboard/metodos-pago",  icon: Wallet,          roles: ["ADMIN"] },
   { name: "Suscripciones",     href: "/dashboard/suscripciones", icon: Star,            roles: ["ADMIN"] },
   { name: "Módulos",           href: "/dashboard/modulos",       icon: LayoutGrid,      roles: ["ADMIN"] },
+  { name: "Config. APIs",      href: "/dashboard/api-config",    icon: KeyRound,        roles: ["ADMIN"] },
   { name: "Usuarios",          href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN", "MENTOR"] },
   { name: "Categorías",        href: "/dashboard/categorias",    icon: Tag,             roles: ["ADMIN"] },
   { name: "Auditoría",         href: "/dashboard/logs",          icon: Activity,        roles: ["ADMIN"] },

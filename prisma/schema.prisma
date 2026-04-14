@@ -30,6 +30,7 @@ model User {
   talleres           Taller[]      @relation("MentorTalleres")
   subscription       Subscription?
   lives              LiveStream[]  @relation("InstructorLives")
+  webinars           Webinar[]     @relation("InstructorWebinars")
 }
 
 model Subscription {
@@ -176,17 +177,18 @@ model PlatformSection {
 }
 
 model LiveStream {
-  id           String    @id @default(cuid())
-  title        String
-  description  String?
-  streamKey    String?
-  rtmpsUrl     String?
-  playbackId   String?
-  status       String    @default("SCHEDULED")
-  scheduledAt  DateTime?
-  instructorId String
-  createdAt    DateTime  @default(now())
-  instructor   User      @relation("InstructorLives", fields: [instructorId], references: [id])
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  streamKey     String?
+  rtmpsUrl      String?
+  playbackId    String?
+  status        String    @default("SCHEDULED")
+  scheduledAt   DateTime?
+  instructorId  String
+  rtkMeetingId  String?
+  createdAt     DateTime  @default(now())
+  instructor    User      @relation("InstructorLives", fields: [instructorId], references: [id])
 }
 
 model PaymentGatewayConfig {
@@ -201,15 +203,49 @@ model PaymentGatewayConfig {
 }
 
 model SubscriptionPlan {
-  id             String   @id @default(cuid())
-  name           String   @unique
-  slug           String   @unique
-  price          Float
-  description    String?
-  hasLiveAccess  Boolean  @default(false)
-  moduleIds      String[]
-  paymentMethods String[]
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                String   @id @default(cuid())
+  name              String   @unique
+  slug              String   @unique
+  price             Float
+  description       String?
+  hasLiveAccess     Boolean  @default(false)
+  hasWebinarAccess  Boolean  @default(false)
+  moduleIds         String[]
+  paymentMethods    String[]
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Webinar {
+  id              String           @id @default(cuid())
+  title           String
+  description     String?
+  thumbnail       String?
+  status          String           @default("SCHEDULED")
+  scheduledAt     DateTime?
+  instructorId    String
+  rtkMeetingId    String?
+  maxParticipants Int?
+  createdAt       DateTime         @default(now())
+  instructor      User             @relation("InstructorWebinars", fields: [instructorId], references: [id])
+  sessions        WebinarSession[]
+}
+
+model WebinarSession {
+  id        String   @id @default(cuid())
+  webinarId String
+  userId    String
+  createdAt DateTime @default(now())
+  webinar   Webinar  @relation(fields: [webinarId], references: [id], onDelete: Cascade)
+
+  @@unique([webinarId, userId])
+}
+
+model PlatformApiConfig {
+  id        String   @id @default(cuid())
+  provider  String   @unique
+  label     String
+  config    Json
+  updatedAt DateTime @updatedAt
 }

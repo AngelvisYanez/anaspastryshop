@@ -25,6 +25,7 @@ export type PlanData = {
   price: number;
   description?: string;
   hasLiveAccess: boolean;
+  hasWebinarAccess: boolean;
   moduleIds: string[];
   paymentMethods: string[];
   isActive?: boolean;
@@ -45,6 +46,7 @@ export async function createPlan(data: PlanData) {
         price: data.price,
         description: data.description || null,
         hasLiveAccess: data.hasLiveAccess,
+        hasWebinarAccess: data.hasWebinarAccess,
         moduleIds: data.moduleIds,
         paymentMethods: data.paymentMethods,
         isActive: data.isActive ?? true,
@@ -69,6 +71,7 @@ export async function updatePlan(id: string, data: Partial<PlanData>) {
         price: data.price,
         description: data.description,
         hasLiveAccess: data.hasLiveAccess,
+        hasWebinarAccess: data.hasWebinarAccess,
         moduleIds: data.moduleIds,
         paymentMethods: data.paymentMethods,
         isActive: data.isActive,
