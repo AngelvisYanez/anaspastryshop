@@ -29,16 +29,17 @@ model User {
   inscripciones      Inscription[]
   talleres           Taller[]      @relation("MentorTalleres")
   subscription       Subscription?
+  lives              LiveStream[]  @relation("InstructorLives")
 }
 
 model Subscription {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  plan      String   // "BASIC", "STANDARD", "PREMIUM"
-  status    String   @default("ACTIVE")
-  startDate DateTime @default(now())
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  plan      String
+  status    String    @default("ACTIVE")
+  startDate DateTime  @default(now())
   endDate   DateTime?
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Taller {
@@ -161,4 +162,54 @@ model ActivityLog {
   userId     String
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model PlatformSection {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  icon      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  roles     String[]
+  createdAt DateTime @default(now())
+}
+
+model LiveStream {
+  id           String    @id @default(cuid())
+  title        String
+  description  String?
+  streamKey    String?
+  rtmpsUrl     String?
+  playbackId   String?
+  status       String    @default("SCHEDULED")
+  scheduledAt  DateTime?
+  instructorId String
+  createdAt    DateTime  @default(now())
+  instructor   User      @relation("InstructorLives", fields: [instructorId], references: [id])
+}
+
+model PaymentGatewayConfig {
+  id            String   @id @default(cuid())
+  provider      String   @unique
+  isEnabled     Boolean  @default(false)
+  publicKey     String?
+  secretKey     String?
+  webhookSecret String?
+  extraConfig   Json?
+  updatedAt     DateTime @updatedAt
+}
+
+model SubscriptionPlan {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  slug           String   @unique
+  price          Float
+  description    String?
+  hasLiveAccess  Boolean  @default(false)
+  moduleIds      String[]
+  paymentMethods String[]
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

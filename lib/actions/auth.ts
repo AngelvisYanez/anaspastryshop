@@ -10,7 +10,7 @@ export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const roleStr = formData.get("role") as string || "USER"; // Capturamos el rol
+  const roleStr = formData.get("role") as string || "USER";
 
   if (!name || !email || !password) {
     return { error: "Todos los campos son obligatorios" };
@@ -77,10 +77,15 @@ export async function loginUser(formData: FormData) {
 }
 
 export async function checkPreloginStatus(formData: FormData) {
-  const email = formData.get("email") as string;
+  const identifier = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = identifier.includes("@")
+    ? await prisma.user.findUnique({ where: { email: identifier } })
+    : await prisma.user.findFirst({
+        where: { name: { equals: identifier, mode: "insensitive" } },
+      });
+
   if (user) {
     const isValid = await bcrypt.compare(password, user.password!);
     if (isValid) {

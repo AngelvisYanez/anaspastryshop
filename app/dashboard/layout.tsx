@@ -16,24 +16,28 @@ export default async function DashboardLayout({
     redirect("/auth/login");
   }
 
-  // Validación en tiempo real (Base de Datos) ya que no podemos hacerlo en el Middleware (Edge)
-  const dbUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { 
-      isActive: true, 
-      deactivationReason: true,
-      name: true,
-      email: true,
-      role: true,
-      image: true
-    }
-  });
+  const [dbUser, platformSections] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        isActive: true,
+        deactivationReason: true,
+        name: true,
+        email: true,
+        role: true,
+        image: true,
+      },
+    }),
+    prisma.platformSection.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    }),
+  ]);
 
   const isActive = dbUser?.isActive !== false;
   const deactivationReason = dbUser?.deactivationReason;
 
   if (!isActive) {
-    // ... (Deactivation screen remains same)
     return (
       <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
         <RealTimeGuard />
@@ -86,7 +90,6 @@ export default async function DashboardLayout({
     );
   }
 
-  // Si por alguna razón no existe en la BD, cerramos sesión
   if (!dbUser) {
     return (
       <main className="min-h-screen flex items-center justify-center">
@@ -96,22 +99,21 @@ export default async function DashboardLayout({
     );
   }
 
-  // --- MENTOR PHOTO VALIDATION ---
-  // Bloqueo si el mentor no tiene foto de perfil (usamos dbUser.image)
   const isMentor = dbUser.role === "MENTOR";
   const hasPhoto = !!dbUser.image;
   const isBlockedMentor = isMentor && !hasPhoto;
 
   return (
-    <DashboardShell 
+    <DashboardShell
       user={{
         ...session.user,
         name: dbUser.name,
         email: dbUser.email,
         role: dbUser.role,
-        image: dbUser.image
-      }} 
+        image: dbUser.image,
+      }}
       isBlockedMentor={isBlockedMentor}
+      platformSections={platformSections}
     >
       <RealTimeGuard />
       {children}

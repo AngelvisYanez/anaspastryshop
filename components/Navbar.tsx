@@ -6,53 +6,45 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, ChevronRight, LogOut, LayoutDashboard, Bell } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { getUserImage } from "@/lib/actions/user";
-
+import { getSections } from "@/lib/actions/platformSections";
 import Image from "next/image";
+import logo from "@/public/logo_II.webp";
 
-//logo
-import logo from "@/public/logo_II.webp"; // Asegúrate que la ruta sea correcta
+type NavLink = { name: string; href: string };
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const loading = status === "loading";
 
-  // Cargar imagen de forma independiente para evitar cookies pesadas (Error 431)
+  useEffect(() => {
+    getSections().then((sections) => {
+      const links = sections
+        .filter((s) => s.isActive && s.roles.includes("USER"))
+        .sort((a, b) => a.order - b.order)
+        .map((s) => ({ name: s.name, href: `/${s.slug}` }));
+      setNavLinks(links);
+    });
+  }, []);
+
   useEffect(() => {
     if (session?.user) {
       const fetchImage = async () => {
-        // 1. Intentar desde localStorage para velocidad
         const cached = localStorage.getItem(`user-img-${session.user.id}`);
-        if (cached) {
-          setProfileImage(cached);
-          return;
-        }
-
-        // 2. Si no hay cache, pedir al servidor
+        if (cached) { setProfileImage(cached); return; }
         const img = await getUserImage();
         if (img) {
           setProfileImage(img);
           localStorage.setItem(`user-img-${session.user.id}`, img);
         }
       };
-      
       fetchImage();
     } else {
       setProfileImage(null);
     }
   }, [session]);
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-
-  // Enlaces de navegación para evitar repetir código
-  const navLinks = [
-    { name: "Cursos", href: "/cursos" },
-    { name: "Talleres", href: "/talleres" },
-    { name: "Membresías", href: "/planes" },
-    { name: "Pasantías", href: "/pasantias" },
-    { name: "Nosotros", href: "/nosotros" },
-  ];
 
   return (
     <motion.nav
@@ -62,7 +54,6 @@ export default function Navbar() {
       className="fixed top-0 w-full z-[100] px-4 md:px-6 py-4"
     >
       <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur-xl border border-white/40 rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative">
-        {/* --- LOGO --- */}
         <Link href="/" className="flex items-center gap-2 group z-50">
           <Image
             src={logo}
@@ -71,21 +62,19 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* --- LINKS ESCRITORIO --- */}
         <div className="hidden md:flex gap-8 items-center">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.href}
               href={link.href}
               className="text-sm font-bold text-gray-500 hover:text-[#5A4FCF] transition-colors relative group"
             >
               {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
         </div>
 
-        {/* --- BOTONES DE ACCIÓN --- */}
         <div className="flex items-center gap-3 z-50">
           {!loading && (
             <>
@@ -93,9 +82,9 @@ export default function Navbar() {
                 <div className="hidden sm:flex items-center gap-4">
                   <button className="relative p-2 text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 rounded-full transition-colors" title="Notificaciones">
                     <Bell size={20} />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
                   </button>
-                  <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-[#5A4FCF] transition-all relative shadow-sm group">
+                  <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-[#5A4FCF] transition-all relative shadow-sm">
                     {profileImage ? (
                       <img src={profileImage} alt={session.user.name || "Usuario"} className="w-full h-full object-cover" />
                     ) : (
@@ -122,9 +111,8 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Botón Menú Móvil */}
           <button
-            onClick={toggleMenu}
+            onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2.5 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Menu"
           >
@@ -132,7 +120,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* --- MENÚ DESPLEGABLE MÓVIL --- */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -145,16 +132,13 @@ export default function Navbar() {
               <div className="flex flex-col gap-2">
                 {navLinks.map((link) => (
                   <Link
-                    key={link.name}
+                    key={link.href}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 text-xl font-bold text-[#1A1A2E] group transition-colors"
                   >
                     {link.name}
-                    <ChevronRight
-                      size={20}
-                      className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors"
-                    />
+                    <ChevronRight size={20} className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors" />
                   </Link>
                 ))}
               </div>
@@ -171,11 +155,7 @@ export default function Navbar() {
                   <Link href="/auth/signup-mentor" onClick={() => setIsOpen(false)} className="text-center py-2 text-[#5A4FCF] font-bold text-sm">
                     Postularme como Mentor
                   </Link>
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setIsOpen(false)}
-                    className="text-center py-2"
-                  >
+                  <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-center py-2">
                     <span className="text-sm font-bold text-gray-400">¿Ya tienes cuenta? </span>
                     <span className="text-sm font-bold text-[#5A4FCF]">Inicia Sesión</span>
                   </Link>
@@ -187,8 +167,8 @@ export default function Navbar() {
                       <LayoutDashboard size={18} /> Ir al Panel
                     </button>
                   </Link>
-                  <button 
-                    onClick={() => { signOut(); setIsOpen(false); }} 
+                  <button
+                    onClick={() => { signOut(); setIsOpen(false); }}
                     className="w-full bg-red-50 text-red-500 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-sm"
                   >
                     <LogOut size={18} /> Cerrar Sesión
@@ -202,4 +182,3 @@ export default function Navbar() {
     </motion.nav>
   );
 }
-
