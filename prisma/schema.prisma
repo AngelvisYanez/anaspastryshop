@@ -27,7 +27,6 @@ model User {
   activities         ActivityLog[]
   cursos             Curso[]       @relation("MentorCursos")
   inscripciones      Inscription[]
-  talleres           Taller[]      @relation("MentorTalleres")
   subscription       Subscription?
   lives              LiveStream[]  @relation("InstructorLives")
   webinars           Webinar[]     @relation("InstructorWebinars")
@@ -41,50 +40,6 @@ model Subscription {
   startDate DateTime  @default(now())
   endDate   DateTime?
   user      User      @relation(fields: [userId], references: [id])
-}
-
-model Taller {
-  id           String         @id @default(cuid())
-  title        String
-  description  String
-  category     String
-  price        Float
-  date         DateTime
-  time         String
-  location     String
-  isOnline     Boolean        @default(false)
-  slots        Int            @default(0)
-  image        String?
-  agenda       String?
-  includes     String?
-  duration     String?
-  language     String         @default("Español")
-  level        String?
-  instructorId String
-  createdAt    DateTime       @default(now())
-  inscritos    Inscription[]
-  instructor   User           @relation("MentorTalleres", fields: [instructorId], references: [id])
-  modules      TallerModule[] @relation("TallerToModules")
-}
-
-model TallerModule {
-  id        String        @id @default(cuid())
-  title     String
-  order     Int           @default(0)
-  tallerId  String
-  createdAt DateTime      @default(now())
-  taller    Taller        @relation("TallerToModules", fields: [tallerId], references: [id], onDelete: Cascade)
-  topics    TallerTopic[] @relation("ModuleToTopics")
-}
-
-model TallerTopic {
-  id             String       @id @default(cuid())
-  title          String
-  summary        String?
-  order          Int          @default(0)
-  tallerModuleId String
-  createdAt      DateTime     @default(now())
-  tallerModule   TallerModule @relation("ModuleToTopics", fields: [tallerModuleId], references: [id], onDelete: Cascade)
 }
 
 model Curso {
@@ -139,12 +94,10 @@ model Inscription {
   receiptImage String?
   amountPaid   Float
   userId       String
-  tallerId     String?
   cursoId      String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   curso        Curso?   @relation(fields: [cursoId], references: [id])
-  taller       Taller?  @relation(fields: [tallerId], references: [id])
   user         User     @relation(fields: [userId], references: [id])
 }
 

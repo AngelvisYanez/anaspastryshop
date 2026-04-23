@@ -1,54 +1,101 @@
 "use client";
-import { motion } from "framer-motion";
-import { ArrowUpRight, Play } from "lucide-react";
+import { m } from "framer-motion";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import Link from "next/link";
+
+const FEATURES = [
+  "Módulos completos de crédito personal y empresarial",
+  "Sesiones en vivo con Rami Noureddine, mes a mes",
+  "Comunidad activa con actualizaciones en tiempo real",
+  "Estrategias probadas para construir y reparar crédito",
+  "Acceso a grabaciones y material exclusivo",
+  "Orientación directa para tu situación específica",
+];
 
 export default function Hero() {
   return (
     <section className="px-4 md:px-10 pt-24">
-      <div className="relative overflow-hidden bg-white rounded-[3.5rem] min-h-[85vh] flex flex-col items-center justify-center text-center p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/50">
-        {/* Luces de Fondo (Glows) */}
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-purple-200/40 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-indigo-100/40 blur-[100px] rounded-full pointer-events-none" />
+      <div className="relative overflow-hidden bg-card rounded-[3.5rem] min-h-[85vh] flex items-center p-8 md:p-16 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-card-border">
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-glow-a blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-glow-b blur-[100px] rounded-full pointer-events-none" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="z-10 max-w-4xl"
-        >
-          <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 px-4 py-2 rounded-full mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-              Inscripciones Abiertas - LATAM & Online
-            </span>
-          </div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <m.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 bg-accent-subtle border border-card-border px-4 py-2 rounded-full mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
+                La academia de crédito para hispanohablantes
+              </span>
+            </div>
 
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter text-[#1A1A2E] mb-8 leading-[0.85]">
-            Donde el talento <br />
-            <span className="text-gray-300 italic font-serif">
-              encuentra su voz.
-            </span>
-          </h1>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground mb-6 leading-[0.9]">
+              Domina el sistema de crédito en{" "}
+              <span className="text-accent italic">Estados Unidos</span>
+            </h1>
 
-          <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
-            Formación profesional impulsada por{" "}
-            <span className="text-[#5A4FCF]">4101 Media</span> &{" "}
-            <span className="text-[#5A4FCF]">Articademy</span>. Aprende
-            producción, marketing y código con proyectos reales.
-          </p>
+            <p className="text-lg text-muted max-w-xl mb-10 leading-relaxed font-medium">
+              Lo que los bancos no te explican. Aprende a dominar el crédito en
+              Estados Unidos para mejorar tu vida financiera, calificar para las
+              mejores condiciones del mercado, y emprender negocios con capital
+              del banco.
+            </p>
 
-          <div className="flex flex-wrap justify-center gap-5">
-            <button className="bg-[#1A1A2E] text-white px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-2xl shadow-indigo-200/50">
-              Explorar Cursos <ArrowUpRight size={20} />
-            </button>
-            <button className="bg-white text-[#1A1A2E] px-10 py-5 rounded-full font-bold border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2">
-              <Play size={18} fill="currentColor" /> Ver Demo
-            </button>
-          </div>
-        </motion.div>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/planes">
+                <button className="bg-navy dark:bg-accent text-white dark:text-navy px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-2xl shadow-accent/20">
+                  Quiero unirme ahora <ArrowRight size={20} />
+                </button>
+              </Link>
+              <a href="#para-ti">
+                <button className="bg-card text-foreground px-10 py-5 rounded-full font-bold border border-card-border hover:bg-card-hover transition-all flex items-center gap-2">
+                  <ChevronDown size={18} /> ¿Es para mí?
+                </button>
+              </a>
+            </div>
+          </m.div>
+
+          <m.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="bg-section-alt rounded-[2.5rem] p-8 md:p-10 border border-card-border"
+          >
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-6">
+              Acceso instantáneo a todo lo que necesitas
+            </p>
+
+            <ul className="space-y-0">
+              {FEATURES.map((feat) => (
+                <li
+                  key={feat}
+                  className="flex items-start gap-3 py-3.5 border-b border-card-border last:border-b-0 text-sm text-muted font-medium leading-snug"
+                >
+                  <span className="text-accent mt-0.5 shrink-0">→</span>
+                  {feat}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 pt-6 border-t border-card-border">
+              <p className="text-xs text-muted font-bold mb-1">
+                Precio de membresía mensual
+              </p>
+              <p className="text-4xl font-black text-accent tracking-tighter">
+                $XX{" "}
+                <span className="text-base font-bold text-muted tracking-normal">
+                  / mes
+                </span>
+              </p>
+            </div>
+          </m.div>
+        </div>
       </div>
     </section>
   );

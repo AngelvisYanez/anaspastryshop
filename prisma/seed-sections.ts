@@ -4,8 +4,7 @@ const prisma = new PrismaClient()
 
 const SECTIONS = [
   { name: "Cursos",      slug: "cursos",      icon: "BookOpen",    order: 1, roles: ["ADMIN", "MENTOR", "USER"] },
-  { name: "Talleres",    slug: "talleres",    icon: "Calendar",    order: 2, roles: ["ADMIN", "MENTOR", "USER"] },
-  { name: "Lives",       slug: "lives",       icon: "Radio",       order: 3, roles: ["ADMIN", "MENTOR", "USER"] },
+  { name: "Lives",       slug: "lives",       icon: "Radio",       order: 2, roles: ["ADMIN", "MENTOR", "USER"] },
   { name: "Planes",      slug: "planes",      icon: "Star",        order: 4, roles: ["USER"] },
   { name: "Nosotros",    slug: "nosotros",    icon: "Users",       order: 5, roles: ["USER"] },
   { name: "Pasantías",   slug: "pasantias",   icon: "Briefcase",   order: 6, roles: ["USER"] },

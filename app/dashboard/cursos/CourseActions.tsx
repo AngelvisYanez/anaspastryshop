@@ -42,7 +42,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 transition-opacity drop-shadow-md">
         <Link
           href={`/dashboard/cursos/${courseId}/edit`}
-          className="bg-white text-indigo-600 hover:bg-indigo-50 p-2.5 rounded-xl shadow-lg border border-gray-100 transition-all hover:scale-105"
+          className="bg-white text-amber-700 hover:bg-amber-50 p-2.5 rounded-xl shadow-lg border border-gray-100 transition-all hover:scale-105"
           title="Editar Curso"
         >
           <Edit2 size={16} />
@@ -75,7 +75,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle size={32} />
             </div>
-            <h3 className="text-xl font-black text-center text-[#1A1A2E] mb-2">¿Eliminar Curso?</h3>
+            <h3 className="text-xl font-black text-center text-[#0B1F3A] mb-2">¿Eliminar Curso?</h3>
             <p className="text-sm text-center text-gray-500 mb-6 leading-relaxed">
               Esta acción es permanente y eliminará todos los módulos, lecciones integradas y progreso estructural. No se puede deshacer.
             </p>

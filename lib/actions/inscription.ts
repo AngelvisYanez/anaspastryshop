@@ -6,7 +6,6 @@ import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 
 type CreateInscriptionParams = {
-  tallerId?: string;
   cursoId?: string;
   method: "ZELLE" | "PAGO_MOVIL" | "USDT" | "TRANSFERENCIA";
   reference?: string;
@@ -22,25 +21,21 @@ export async function createInscription(data: CreateInscriptionParams) {
     return { error: "Debes iniciar sesión para inscribirte" };
   }
 
-  if (!data.tallerId && !data.cursoId) {
-    return { error: "Debe proveer un ID de Taller o Curso" };
+  if (!data.cursoId) {
+    return { error: "Debe proveer un ID de Curso" };
   }
 
   try {
-    // Verificar si ya está inscrito
     // @ts-ignore
     const existing = await prisma.inscription.findFirst({
       where: {
         userId: session.user.id,
-        OR: [
-          { tallerId: data.tallerId || undefined },
-          { cursoId: data.cursoId || undefined },
-        ],
+        cursoId: data.cursoId,
       },
     });
 
     if (existing) {
-      return { error: "Ya existe una inscripción para este evento o curso" };
+      return { error: "Ya existe una inscripción para este curso" };
     }
 
     // @ts-ignore
@@ -51,7 +46,6 @@ export async function createInscription(data: CreateInscriptionParams) {
         phoneNumber: data.phoneNumber || null,
         amountPaid: data.amountPaid,
         receiptImage: data.receiptImage || null,
-        tallerId: data.tallerId,
         cursoId: data.cursoId,
         userId: session.user.id,
         status: "PENDING",
@@ -64,14 +58,13 @@ export async function createInscription(data: CreateInscriptionParams) {
       entityType: "INSCRIPTION",
       entityId: inscription.id,
       details: { 
-        type: data.tallerId ? "TALLER" : "CURSO", 
-        targetId: data.tallerId || data.cursoId,
+        type: "CURSO", 
+        targetId: data.cursoId,
         method: data.method 
       },
     });
 
     revalidatePath("/dashboard");
-    revalidatePath("/talleres");
     revalidatePath("/cursos");
     
     return { success: true, inscriptionId: inscription.id };
@@ -80,4 +73,3 @@ export async function createInscription(data: CreateInscriptionParams) {
     return { error: "Ocurrió un error al procesar tu pago. Inténtalo de nuevo." };
   }
 }
-

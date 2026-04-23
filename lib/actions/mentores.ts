@@ -13,19 +13,6 @@ async function assertAdmin() {
   return session;
 }
 
-/** Lista todos los usuarios con role MENTOR */
-export async function getMentores() {
-  await assertAdmin();
-  return prisma.user.findMany({
-    where: { role: "MENTOR" },
-    include: {
-      _count: { select: { talleres: true, cursos: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-}
-
-/** Aprueba un mentor (isApproved = true) */
 export async function aprobarMentor(id: string) {
   const session = await assertAdmin();
 
@@ -93,20 +80,14 @@ export async function editarMentor(id: string, formData: FormData) {
   revalidatePath("/dashboard/mentores");
 }
 
-/** Elimina un mentor si no tiene talleres activos */
 export async function eliminarMentor(id: string) {
   const session = await assertAdmin();
 
   const mentor = await prisma.user.findUnique({
     where: { id },
-    include: { _count: { select: { talleres: true } } },
   });
 
   if (!mentor) return { error: "Mentor no encontrado." };
-
-  if (mentor._count.talleres > 0) {
-    return { error: "No puedes eliminar un mentor con talleres activos. Reasigna o elimina sus talleres primero." };
-  }
 
   await prisma.user.delete({ where: { id } });
 

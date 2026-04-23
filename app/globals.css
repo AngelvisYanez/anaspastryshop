@@ -1,20 +1,58 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8F4EE;
+  --foreground: #0B1F3A;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+  --card-hover: rgba(251,248,240,0.4);
+  --muted: #6b7280;
+  --accent: #C9A84C;
+  --accent-hover: #B89640;
+  --accent-subtle: rgba(201,168,76,0.08);
+  --glow-a: rgba(217,196,130,0.4);
+  --glow-b: rgba(201,168,76,0.25);
+  --section-alt: #F0EBD8;
+  --navy: #0B1F3A;
+  --navy-light: #1A3A5C;
+}
+
+.dark {
+  --background: #060F1C;
+  --foreground: #F8F4EE;
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(201,168,76,0.15);
+  --card-hover: rgba(201,168,76,0.06);
+  --muted: #8899AA;
+  --accent: #C9A84C;
+  --accent-hover: #E8C87A;
+  --accent-subtle: rgba(201,168,76,0.1);
+  --glow-a: rgba(201,168,76,0.07);
+  --glow-b: rgba(26,58,92,0.4);
+  --section-alt: #0B1F3A;
+  --navy: #0B1F3A;
+  --navy-light: #1A3A5C;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-card-hover: var(--card-hover);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-glow-a: var(--glow-a);
+  --color-glow-b: var(--glow-b);
+  --color-section-alt: var(--section-alt);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
 }
 
 body {
@@ -22,7 +60,6 @@ body {
   color: var(--foreground);
 }
 
-/* Global Interactivity Cursor */
 button, 
 a, 
 select,
@@ -35,4 +72,13 @@ button:disabled,
 a[disabled],
 .disabled {
   cursor: not-allowed !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

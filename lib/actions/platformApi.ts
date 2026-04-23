@@ -34,10 +34,6 @@ export async function saveApiConfig(
   }
 }
 
-export async function getApiConfig(provider: string) {
-  return prisma.platformApiConfig.findUnique({ where: { provider } });
-}
-
 export async function getRtkConfig() {
   const dbConfig = await prisma.platformApiConfig.findUnique({
     where: { provider: "CLOUDFLARE_RTK" },

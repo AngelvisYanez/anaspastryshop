@@ -6,7 +6,7 @@ import { Video, Plus, Calendar, Users } from "lucide-react";
 import WebinarActions from "./WebinarActions";
 
 const STATUS_CONFIG = {
-  SCHEDULED: { label: "Programado", class: "bg-indigo-50 text-[#5A4FCF]", dot: "bg-indigo-400" },
+  SCHEDULED: { label: "Programado", class: "bg-amber-50 text-[#C9A84C]", dot: "bg-indigo-400" },
   LIVE: { label: "En Vivo", class: "bg-green-50 text-green-600", dot: "bg-green-500 animate-pulse" },
   ENDED: { label: "Finalizado", class: "bg-gray-100 text-gray-400", dot: "bg-gray-300" },
 };
@@ -29,11 +29,11 @@ export default async function WebinarsDashboardPage() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">Webinars & Meetings</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A]">Webinars & Meetings</h1>
           <p className="text-gray-400 font-medium">Gestiona tus sesiones en tiempo real con RealtimeKit.</p>
         </div>
         <Link href="/dashboard/webinars/create">
-          <button className="bg-[#5A4FCF] text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-[#483dbb] transition-all shadow-lg shadow-indigo-100">
+          <button className="bg-[#C9A84C] text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-[#B89640] transition-all shadow-lg shadow-amber-100">
             <Plus size={20} /> Nuevo Webinar
           </button>
         </Link>
@@ -43,7 +43,7 @@ export default async function WebinarsDashboardPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Total</p>
-            <p className="text-3xl font-black text-[#1A1A2E]">{webinars.length}</p>
+            <p className="text-3xl font-black text-[#0B1F3A]">{webinars.length}</p>
           </div>
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">En Vivo</p>
@@ -51,7 +51,7 @@ export default async function WebinarsDashboardPage() {
           </div>
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Programados</p>
-            <p className="text-3xl font-black text-[#5A4FCF]">{programados}</p>
+            <p className="text-3xl font-black text-[#C9A84C]">{programados}</p>
           </div>
         </div>
       )}
@@ -61,7 +61,7 @@ export default async function WebinarsDashboardPage() {
           <Video className="mx-auto text-gray-200 mb-4" size={48} />
           <p className="text-gray-400 font-bold mb-4">No hay webinars creados.</p>
           <Link href="/dashboard/webinars/create">
-            <span className="text-[#5A4FCF] font-bold hover:underline text-sm">Crear el primer webinar</span>
+            <span className="text-[#C9A84C] font-bold hover:underline text-sm">Crear el primer webinar</span>
           </Link>
         </div>
       ) : (
@@ -78,7 +78,7 @@ export default async function WebinarsDashboardPage() {
                   <span className="text-[10px] text-gray-400 font-bold">{webinar.instructor.name}</span>
                 </div>
 
-                <h3 className="text-xl font-bold text-[#1A1A2E] mb-2 leading-snug">{webinar.title}</h3>
+                <h3 className="text-xl font-bold text-[#0B1F3A] mb-2 leading-snug">{webinar.title}</h3>
 
                 {webinar.description && (
                   <p className="text-sm text-gray-400 font-medium mb-4 line-clamp-2">{webinar.description}</p>
@@ -87,13 +87,13 @@ export default async function WebinarsDashboardPage() {
                 <div className="flex items-center gap-4 mb-6">
                   {webinar.scheduledAt && (
                     <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
-                      <Calendar size={13} className="text-[#5A4FCF]" />
+                      <Calendar size={13} className="text-[#C9A84C]" />
                       {new Date(webinar.scheduledAt).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" })}
                     </div>
                   )}
                   {webinar.maxParticipants && (
                     <div className="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
-                      <Users size={13} className="text-[#5A4FCF]" />
+                      <Users size={13} className="text-[#C9A84C]" />
                       Máx. {webinar.maxParticipants}
                     </div>
                   )}

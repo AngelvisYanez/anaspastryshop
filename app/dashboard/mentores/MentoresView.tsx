@@ -1,6 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   Users,
   CheckCircle2,
@@ -21,6 +21,7 @@ import {
   editarMentor,
   eliminarMentor,
 } from "@/lib/actions/mentores";
+import Image from "next/image";
 
 type Mentor = {
   id: string;
@@ -29,7 +30,7 @@ type Mentor = {
   image: string | null;
   isApproved: boolean;
   createdAt: Date;
-  _count: { talleres: number; cursos: number };
+  _count: { cursos: number };
 };
 
 type Tab = "todos" | "pendientes" | "aprobados";
@@ -88,7 +89,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
       {/* Error banner */}
       <AnimatePresence>
         {error && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -98,18 +99,18 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             <button onClick={() => setError(null)}>
               <X size={16} />
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6">
-          <div className="p-4 bg-indigo-50 text-[#5A4FCF] rounded-2xl">
+          <div className="p-4 bg-amber-50 text-[#C9A84C] rounded-2xl">
             <GraduationCap size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#1A1A2E]">{mentores.length}</p>
+            <p className="text-4xl font-black text-[#0B1F3A]">{mentores.length}</p>
             <p className="text-sm text-gray-400 font-bold mt-1">Total Mentores</p>
           </div>
         </div>
@@ -118,7 +119,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             <Clock size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#1A1A2E]">{pendientes.length}</p>
+            <p className="text-4xl font-black text-[#0B1F3A]">{pendientes.length}</p>
             <p className="text-sm text-gray-400 font-bold mt-1">Por Validar</p>
           </div>
         </div>
@@ -127,7 +128,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             <CheckCircle2 size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#1A1A2E]">{aprobados.length}</p>
+            <p className="text-4xl font-black text-[#0B1F3A]">{aprobados.length}</p>
             <p className="text-sm text-gray-400 font-bold mt-1">Aprobados</p>
           </div>
         </div>
@@ -141,8 +142,8 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             onClick={() => setTab(t)}
             className={`px-6 py-3 rounded-xl font-bold transition-all text-sm capitalize relative ${
               tab === t
-                ? "bg-[#1A1A2E] text-white shadow-lg"
-                : "text-gray-400 hover:text-[#1A1A2E]"
+                ? "bg-[#0B1F3A] text-white shadow-lg"
+                : "text-gray-400 hover:text-[#0B1F3A]"
             }`}
           >
             {t === "pendientes" && pendientes.length > 0 && (
@@ -168,7 +169,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                 <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400">
                   <th className="pb-4 pl-4">Mentor</th>
                   <th className="pb-4">Email</th>
-                  <th className="pb-4">Talleres</th>
+                  <th className="pb-4">Cursos</th>
                   <th className="pb-4">Miembro desde</th>
                   <th className="pb-4 text-center">Estado</th>
                   <th className="pb-4 pr-4 text-right">Acciones</th>
@@ -185,9 +186,11 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex-shrink-0 flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-sm">
                           {mentor.image ? (
-                            <img
+                            <Image
                               src={mentor.image}
                               alt={mentor.name || ""}
+                              width={44}
+                              height={44}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -199,7 +202,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                               .toUpperCase()
                           )}
                         </div>
-                        <span className="font-bold text-[#1A1A2E]">
+                        <span className="font-bold text-[#0B1F3A]">
                           {mentor.name || "Sin nombre"}
                         </span>
                       </div>
@@ -213,10 +216,10 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                       </div>
                     </td>
 
-                    {/* Talleres */}
+                    {/* Cursos */}
                     <td className="py-4">
-                      <span className="bg-indigo-50 text-[#5A4FCF] px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 w-fit">
-                        <Users size={12} /> {mentor._count.talleres}
+                      <span className="bg-amber-50 text-[#C9A84C] px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 w-fit">
+                        <Users size={12} /> {mentor._count.cursos}
                       </span>
                     </td>
 
@@ -273,7 +276,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                         <button
                           onClick={() => setEditingMentor(mentor)}
                           title="Editar mentor"
-                          className="p-2.5 bg-indigo-50 text-[#5A4FCF] hover:bg-indigo-100 rounded-xl transition-all"
+                          className="p-2.5 bg-amber-50 text-[#C9A84C] hover:bg-amber-100 rounded-xl transition-all"
                         >
                           <Pencil size={16} />
                         </button>
@@ -299,14 +302,14 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
       {/* ===== MODAL DE EDICIÓN ===== */}
       <AnimatePresence>
         {editingMentor && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setEditingMentor(null)}
           >
-            <motion.div
+            <m.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -314,7 +317,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black text-[#1A1A2E]">
+                <h2 className="text-2xl font-black text-[#0B1F3A]">
                   Editar Mentor
                 </h2>
                 <button
@@ -335,7 +338,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                     defaultValue={editingMentor.name || ""}
                     required
                     placeholder="Ej. María González"
-                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#5A4FCF] font-medium transition-all"
+                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#C9A84C] font-medium transition-all"
                   />
                 </div>
                 <div className="space-y-2">
@@ -346,14 +349,14 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                     name="image"
                     defaultValue={editingMentor.image || ""}
                     placeholder="https://..."
-                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#5A4FCF] font-medium transition-all"
+                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#C9A84C] font-medium transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full bg-[#1A1A2E] text-white py-4 rounded-2xl font-bold hover:bg-[#5A4FCF] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full bg-[#0B1F3A] text-white py-4 rounded-2xl font-bold hover:bg-[#C9A84C] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {isPending ? (
                     <Loader2 className="animate-spin" size={18} />
@@ -362,22 +365,22 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                   )}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* ===== MODAL DE CONFIRMACIÓN ELIMINAR ===== */}
       <AnimatePresence>
         {deletingId && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setDeletingId(null)}
           >
-            <motion.div
+            <m.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -387,11 +390,11 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
               <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <Trash2 className="text-red-500" size={28} />
               </div>
-              <h2 className="text-2xl font-black text-[#1A1A2E] mb-3">
+              <h2 className="text-2xl font-black text-[#0B1F3A] mb-3">
                 ¿Eliminar Mentor?
               </h2>
               <p className="text-gray-500 mb-8 text-sm leading-relaxed">
-                Esta acción es irreversible. Si el mentor tiene talleres activos,
+                Esta acción es irreversible. Si el mentor tiene cursos activos,
                 deberás reasignarlos primero.
               </p>
               <div className="flex gap-4">
@@ -413,8 +416,8 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                   )}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

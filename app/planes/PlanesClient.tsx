@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Check, Zap, Star, Shield, ArrowRight,
   Video, CreditCard, DollarSign, Bitcoin,
@@ -45,21 +45,21 @@ function DynamicIcon({ name, size = 12 }: { name: string; size?: number }) {
 function colorStyles(color: CardColor, suggested: boolean) {
   if (suggested) {
     return {
-      card: "border-[#5A4FCF] shadow-xl shadow-indigo-100 scale-105 z-10",
-      badge: "bg-indigo-50 text-indigo-600",
-      btn: "bg-[#5A4FCF] text-white shadow-xl shadow-indigo-200 hover:bg-[#483ecb]",
+      card: "border-[#C9A84C] shadow-xl shadow-amber-100 scale-105 z-10",
+      badge: "bg-amber-50 text-amber-700",
+      btn: "bg-[#C9A84C] text-white shadow-xl shadow-amber-200 hover:bg-[#B89640]",
     };
   }
   if (color === "dark") {
     return {
       card: "border-gray-100",
       badge: "bg-gray-100 text-gray-800",
-      btn: "bg-[#1A1A2E] text-white hover:bg-black",
+      btn: "bg-[#0B1F3A] text-white hover:bg-gray-950",
     };
   }
   const map = {
-    indigo: { card: "border-gray-100", badge: "bg-indigo-50 text-indigo-600", btn: "bg-[#1A1A2E] text-white hover:bg-black" },
-    purple: { card: "border-gray-100", badge: "bg-purple-50 text-purple-600", btn: "bg-[#1A1A2E] text-white hover:bg-black" },
+    indigo: { card: "border-gray-100", badge: "bg-amber-50 text-amber-700", btn: "bg-[#0B1F3A] text-white hover:bg-gray-950" },
+    purple: { card: "border-gray-100", badge: "bg-amber-50 text-amber-700", btn: "bg-[#0B1F3A] text-white hover:bg-gray-950" },
   };
   return map[color] ?? map.indigo;
 }
@@ -89,28 +89,28 @@ export default function PlanesClient({
   return (
     <div className="max-w-7xl mx-auto px-6">
       <div className="text-center mb-20">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-block bg-indigo-50 text-[#5A4FCF] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6"
+          className="inline-block bg-amber-50 text-[#C9A84C] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6"
         >
           Membresías
-        </motion.div>
-        <h1 className="text-5xl md:text-8xl font-black text-[#1A1A2E] tracking-tighter mb-8 leading-[0.9]">
+        </m.div>
+        <h1 className="text-5xl md:text-8xl font-black text-[#0B1F3A] tracking-tighter mb-8 leading-[0.9]">
           Inversión en tu <br />
-          <span className="text-[#5A4FCF] italic">Crecimiento.</span>
+          <span className="text-[#C9A84C] italic">Crecimiento.</span>
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
           Elige el plan que mejor se adapte a tu nivel y comienza a escalar tus habilidades hoy.
         </p>
 
         <div className="mt-12 flex items-center justify-center gap-4">
-          <span className={`text-sm font-bold ${billing === "monthly" ? "text-[#1A1A2E]" : "text-gray-400"}`}>
+          <span className={`text-sm font-bold ${billing === "monthly" ? "text-[#0B1F3A]" : "text-gray-400"}`}>
             Mensual
           </span>
           <button
             onClick={() => setBilling(billing === "monthly" ? "yearly" : "monthly")}
-            className="w-14 h-8 bg-[#1A1A2E] rounded-full relative p-1 transition-all"
+            className="w-14 h-8 bg-[#0B1F3A] rounded-full relative p-1 transition-all"
           >
             <div
               className={`w-6 h-6 bg-white rounded-full shadow-lg transform transition-transform ${
@@ -118,7 +118,7 @@ export default function PlanesClient({
               }`}
             />
           </button>
-          <span className={`text-sm font-bold ${billing === "yearly" ? "text-[#1A1A2E]" : "text-gray-400"}`}>
+          <span className={`text-sm font-bold ${billing === "yearly" ? "text-[#0B1F3A]" : "text-gray-400"}`}>
             Anual <span className="text-green-500 text-[10px] ml-1">(-20%)</span>
           </span>
         </div>
@@ -139,9 +139,10 @@ export default function PlanesClient({
             const suggested = idx === featuredIdx;
             const color = CARD_COLORS[idx % CARD_COLORS.length];
             const styles = colorStyles(color, suggested);
-            const includedModules = plan.moduleIds
-              .map((id) => sectionMap[id])
-              .filter(Boolean);
+            const includedModules = plan.moduleIds.flatMap((id) => {
+              const s = sectionMap[id];
+              return s ? [s] : [];
+            });
 
             const features: { text: string; icon?: React.ReactNode }[] = [];
             if (plan.description) features.push({ text: plan.description });
@@ -149,15 +150,15 @@ export default function PlanesClient({
             includedModules.forEach((s) => features.push({ text: s.name, icon: <DynamicIcon name={s.icon} size={12} /> }));
 
             return (
-              <motion.div
+              <m.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className={`relative bg-white rounded-[3.5rem] p-10 border shadow-sm transition-all hover:shadow-2xl hover:shadow-indigo-100 group ${styles.card}`}
+                className={`relative bg-white rounded-[3.5rem] p-10 border shadow-sm transition-all hover:shadow-2xl hover:shadow-amber-100 group ${styles.card}`}
               >
                 {suggested && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#5A4FCF] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C9A84C] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
                     Recomendado
                   </div>
                 )}
@@ -166,11 +167,11 @@ export default function PlanesClient({
                   <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg mb-4 inline-block ${styles.badge}`}>
                     {plan.slug}
                   </span>
-                  <h3 className="text-3xl font-black text-[#1A1A2E] mb-2">{plan.name}</h3>
+                  <h3 className="text-3xl font-black text-[#0B1F3A] mb-2">{plan.name}</h3>
                 </div>
 
                 <div className="flex items-end gap-1 mb-2">
-                  <span className="text-6xl font-black text-[#1A1A2E] tracking-tighter">
+                  <span className="text-6xl font-black text-[#0B1F3A] tracking-tighter">
                     ${displayPrice(plan.price)}
                   </span>
                   <span className="text-gray-400 font-bold mb-2 uppercase text-[10px] tracking-widest">
@@ -185,11 +186,11 @@ export default function PlanesClient({
 
                 {features.length > 0 && (
                   <div className="space-y-4 mb-8 mt-6">
-                    <p className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest border-b border-gray-50 pb-2">
+                    <p className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest border-b border-gray-50 pb-2">
                       ¿Qué incluye?
                     </p>
-                    {features.map((f, i) => (
-                      <div key={i} className="flex items-start gap-3">
+                    {features.map((f) => (
+                      <div key={f.text} className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-green-50 flex items-center justify-center shrink-0 mt-0.5">
                           {f.icon ?? <Check size={12} className="text-green-500" />}
                         </div>
@@ -229,23 +230,23 @@ export default function PlanesClient({
                     Seleccionar Plan <ArrowRight size={18} />
                   </button>
                 </Link>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>
       )}
 
-      <div className="bg-[#1A1A2E] rounded-[4rem] p-12 md:p-20 text-white relative overflow-hidden">
+      <div className="bg-[#0B1F3A] rounded-[4rem] p-12 md:p-20 text-white relative overflow-hidden">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-5xl font-bold mb-8 tracking-tighter">
               ¿Aún tienes dudas? <br />
-              <span className="text-indigo-400">Te ayudamos a decidir.</span>
+              <span className="text-amber-400">Te ayudamos a decidir.</span>
             </h2>
             <div className="space-y-6">
               <div className="flex gap-4">
-                <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center shrink-0">
-                  <Zap size={20} className="text-indigo-400" />
+                <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
+                  <Zap size={20} className="text-amber-400" />
                 </div>
                 <div>
                   <h4 className="font-bold mb-1">Cambio de plan en cualquier momento</h4>
@@ -253,8 +254,8 @@ export default function PlanesClient({
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center shrink-0">
-                  <Shield size={20} className="text-indigo-400" />
+                <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
+                  <Shield size={20} className="text-amber-400" />
                 </div>
                 <div>
                   <h4 className="font-bold mb-1">Pagos 100% seguros</h4>
@@ -278,7 +279,7 @@ export default function PlanesClient({
             </div>
           </div>
         </div>
-        <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-[#5A4FCF]/20 blur-[120px] rounded-full" />
+        <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-[#C9A84C]/20 blur-[120px] rounded-full" />
       </div>
     </div>
   );

@@ -94,17 +94,11 @@ export async function adminDeleteUser(id: string) {
   const user = await prisma.user.findUnique({
     where: { id },
     include: {
-      _count: { select: { talleres: true, inscripciones: true } },
+      _count: { select: { inscripciones: true } },
     },
   });
 
   if (!user) return { error: "Usuario no encontrado." };
-
-  if (user._count.talleres > 0) {
-    return {
-      error: `Este mentor tiene ${user._count.talleres} taller(es) activo(s). Elimínalos o reasígnalos primero.`,
-    };
-  }
 
   // Eliminar inscripciones primero (FK constraint)
   await prisma.inscription.deleteMany({ where: { userId: id } });

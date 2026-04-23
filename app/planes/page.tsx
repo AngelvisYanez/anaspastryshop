@@ -16,7 +16,7 @@ export default async function PlanesPage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-[#F4F4F7] pt-32 pb-20">
+    <main className="min-h-screen bg-[#F8F4EE] pt-32 pb-20">
       <Navbar />
       <PlanesClient plans={plans as any} sections={sections} />
       <Footer />

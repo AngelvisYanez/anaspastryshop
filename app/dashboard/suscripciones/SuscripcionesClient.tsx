@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Star, Users, Video, BookOpen } from "lucide-react";
@@ -45,7 +45,7 @@ export default function SuscripcionesClient({
     <>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">Suscripciones</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A]">Suscripciones</h1>
           <p className="text-gray-400 font-medium">Gestiona planes y suscriptores.</p>
         </div>
         <div className="flex bg-gray-100 rounded-2xl p-1 gap-1">
@@ -53,7 +53,7 @@ export default function SuscripcionesClient({
             onClick={() => setTab("planes")}
             className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
               tab === "planes"
-                ? "bg-white text-[#1A1A2E] shadow-sm"
+                ? "bg-white text-[#0B1F3A] shadow-sm"
                 : "text-gray-400 hover:text-gray-600"
             }`}
           >
@@ -63,13 +63,13 @@ export default function SuscripcionesClient({
             onClick={() => setTab("suscriptores")}
             className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
               tab === "suscriptores"
-                ? "bg-white text-[#1A1A2E] shadow-sm"
+                ? "bg-white text-[#0B1F3A] shadow-sm"
                 : "text-gray-400 hover:text-gray-600"
             }`}
           >
             <Users size={15} /> Suscriptores
             {suscripciones.length > 0 && (
-              <span className="bg-indigo-100 text-[#5A4FCF] text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="bg-amber-100 text-[#C9A84C] text-[10px] font-black px-2 py-0.5 rounded-full">
                 {suscripciones.length}
               </span>
             )}
@@ -86,7 +86,7 @@ export default function SuscripcionesClient({
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Total</p>
-              <p className="text-3xl font-black text-[#1A1A2E]">{suscripciones.length}</p>
+              <p className="text-3xl font-black text-[#0B1F3A]">{suscripciones.length}</p>
             </div>
             <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Activas</p>
@@ -117,11 +117,11 @@ export default function SuscripcionesClient({
                   key={sub.id}
                   className="grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 px-8 py-5 border-b border-gray-50 last:border-0 items-center hover:bg-gray-50/50 transition-colors"
                 >
-                  <span className="font-bold text-[#1A1A2E] text-sm truncate">
+                  <span className="font-bold text-[#0B1F3A] text-sm truncate">
                     {sub.user.name || "Sin nombre"}
                   </span>
                   <span className="text-gray-400 text-sm truncate">{sub.user.email}</span>
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-[#5A4FCF] bg-indigo-50 px-3 py-1 rounded-lg w-fit">
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-[#C9A84C] bg-amber-50 px-3 py-1 rounded-lg w-fit">
                     <BookOpen size={12} /> {sub.plan}
                   </span>
                   <span className="flex items-center justify-center">

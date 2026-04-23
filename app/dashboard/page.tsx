@@ -104,17 +104,11 @@ export default async function DashboardPage() {
     };
   }
 
-  // Común para MENTOR y ADMIN
-  const myTalleresCount = await prisma.taller.count({
-    where: role === "ADMIN" ? {} : { instructorId: session.user.id },
-  });
-
   const lastInscriptions = await prisma.inscription.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
     include: {
       user: { select: { name: true, email: true } },
-      taller: { select: { title: true } },
       curso: { select: { title: true } },
     },
   });
@@ -123,7 +117,7 @@ export default async function DashboardPage() {
     <div className="space-y-10">
       {/* HEADER */}
       <div>
-        <h1 className="text-4xl font-black text-[#1A1A2E] tracking-tighter">
+        <h1 className="text-4xl font-black text-[#0B1F3A] tracking-tighter">
           Hola, {session.user.name?.split(" ")[0]} 👋
         </h1>
         <p className="text-gray-400 font-medium">
@@ -136,18 +130,18 @@ export default async function DashboardPage() {
       {role === "ADMIN" && adminStats && (
         <>
           {/* KPI CARDS (ADMIN) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Total Balance */}
             <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl"><Wallet size={20} /></div>
+                <div className="p-3 bg-amber-50 text-[#C9A84C] rounded-2xl"><Wallet size={20} /></div>
                 <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${adminStats.revenueGrowth >= 0 ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"}`}>
                   {adminStats.revenueGrowth >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                   {Math.abs(adminStats.revenueGrowth)}%
                 </div>
               </div>
               <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Balance Total</p>
-              <p className="text-3xl font-black text-[#1A1A2E] italic">${adminStats.totalRevenue}</p>
+              <p className="text-3xl font-black text-[#0B1F3A] italic">${adminStats.totalRevenue}</p>
               <p className="text-[10px] text-gray-400 font-bold mt-2">v.s. mes anterior</p>
             </div>
 
@@ -161,7 +155,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Alumnos Totales</p>
-              <p className="text-3xl font-black text-[#1A1A2E]">{adminStats.totalUsers}</p>
+              <p className="text-3xl font-black text-[#0B1F3A]">{adminStats.totalUsers}</p>
               <p className="text-[10px] text-gray-400 font-bold mt-2">v.s. mes anterior</p>
             </div>
 
@@ -172,20 +166,9 @@ export default async function DashboardPage() {
                 <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Pendientes</span>
               </div>
               <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Validaciones</p>
-              <p className="text-3xl font-black text-[#1A1A2E]">{adminStats.pendingPayments}</p>
+              <p className="text-3xl font-black text-[#0B1F3A]">{adminStats.pendingPayments}</p>
               <p className="text-[10px] text-gray-400 font-bold mt-2">Acción requerida</p>
             </Link>
-
-            {/* Talleres Totales */}
-            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
-              <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-purple-50 text-purple-500 rounded-2xl"><BookOpen size={20} /></div>
-                <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Contenido</span>
-              </div>
-              <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest mb-1">Talleres</p>
-              <p className="text-3xl font-black text-[#1A1A2E]">{myTalleresCount}</p>
-              <p className="text-[10px] text-gray-400 font-bold mt-2">Cursos & Talleres</p>
-            </div>
           </div>
 
           {/* CHARTS SECTION */}
@@ -194,11 +177,11 @@ export default async function DashboardPage() {
             <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h3 className="text-lg font-black text-[#1A1A2E]">Resumen de Ingresos</h3>
+                  <h3 className="text-lg font-black text-[#0B1F3A]">Resumen de Ingresos</h3>
                   <p className="text-xs text-gray-400 font-bold">Últimos 14 días</p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-[#5A4FCF]"></span> Este periodo
+                  <span className="w-2 h-2 rounded-full bg-[#C9A84C]"></span> Este periodo
                 </div>
               </div>
               <RevenueChart data={adminStats.revenueByDay} />
@@ -208,7 +191,7 @@ export default async function DashboardPage() {
             <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h3 className="text-lg font-black text-[#1A1A2E]">Crecimiento de Alumnos</h3>
+                  <h3 className="text-lg font-black text-[#0B1F3A]">Crecimiento de Alumnos</h3>
                   <p className="text-xs text-gray-400 font-bold">Nuevos registros diarios</p>
                 </div>
               </div>
@@ -217,28 +200,28 @@ export default async function DashboardPage() {
 
             {/* Payment Methods */}
             <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-              <h3 className="text-lg font-black text-[#1A1A2E] mb-2">Fuentes de Ingresos</h3>
+              <h3 className="text-lg font-black text-[#0B1F3A] mb-2">Fuentes de Ingresos</h3>
               <p className="text-xs text-gray-400 font-bold mb-8">Desglose por método de pago</p>
               <PaymentMethodsChart data={adminStats.paymentMethodsData} />
             </div>
 
             {/* Últimas Inscripciones */}
             <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm overflow-hidden">
-              <h3 className="text-lg font-black text-[#1A1A2E] mb-8 flex items-center gap-2">
-                <AlertCircle size={20} className="text-[#5A4FCF]" />
+              <h3 className="text-lg font-black text-[#0B1F3A] mb-8 flex items-center gap-2">
+                <AlertCircle size={20} className="text-[#C9A84C]" />
                 Inscripciones Recientes
               </h3>
               <div className="space-y-6">
                 {lastInscriptions.length > 0 ? lastInscriptions.map((ins) => (
                   <div key={ins.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl border border-transparent hover:border-gray-100 transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-[#5A4FCF] shadow-sm">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-[#C9A84C] shadow-sm">
                         {ins.user?.name ? ins.user.name.substring(0, 2).toUpperCase() : "??"}
                       </div>
                       <div>
-                        <p className="text-sm font-black text-[#1A1A2E]">{ins.user?.name || ins.user?.email}</p>
+                        <p className="text-sm font-black text-[#0B1F3A]">{ins.user?.name || ins.user?.email}</p>
                         <p className="text-[10px] text-gray-400 font-bold truncate max-w-[150px]">
-                          {ins.taller?.title || ins.curso?.title || "S/N"}
+                          {ins.curso?.title || "S/N"}
                         </p>
                       </div>
                     </div>
@@ -252,7 +235,7 @@ export default async function DashboardPage() {
                 )) : (
                   <p className="text-center text-gray-400 py-4 italic">Sin actividad reciente.</p>
                 )}
-                <Link href="/dashboard/pagos" className="block text-center text-xs font-black text-[#5A4FCF] hover:underline mt-4">
+                <Link href="/dashboard/pagos" className="block text-center text-xs font-black text-[#C9A84C] hover:underline mt-4">
                   Ver todas las transacciones
                 </Link>
               </div>
@@ -260,22 +243,6 @@ export default async function DashboardPage() {
           </div>
         </>
       )}
-
-      {/* MENTOR VIEW (Keep original simplificando) */}
-      {role === "MENTOR" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-            <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl w-fit mb-4">
-              <BookOpen size={24} />
-            </div>
-            <p className="text-4xl font-black text-[#1A1A2E]">{myTalleresCount}</p>
-            <p className="text-sm text-gray-400 font-bold mt-1">Mis Talleres</p>
-          </div>
-          {/* ... otros KPIs de Mentor */}
-        </div>
-      )}
     </div>
   );
 }
-
-

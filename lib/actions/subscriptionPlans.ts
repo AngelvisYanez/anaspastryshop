@@ -31,10 +31,6 @@ export type PlanData = {
   isActive?: boolean;
 };
 
-export async function getPlans() {
-  return prisma.subscriptionPlan.findMany({ orderBy: { price: "asc" } });
-}
-
 export async function createPlan(data: PlanData) {
   await requireAdmin();
   const slug = slugify(data.name);

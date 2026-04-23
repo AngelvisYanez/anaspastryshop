@@ -52,6 +52,3 @@ export async function saveGatewayConfig(
   }
 }
 
-export async function getGatewayConfig(provider: string) {
-  return prisma.paymentGatewayConfig.findUnique({ where: { provider } });
-}

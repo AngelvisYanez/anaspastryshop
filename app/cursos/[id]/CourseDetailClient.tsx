@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { PlayCircle, Clock, Globe, ChevronDown, ArrowRight, Zap, ChevronRight, HelpCircle, LockIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import Image from "next/image";
 import CheckoutModal from "@/components/CheckoutModal";
 
 function getEmbedUrl(url: string | null | undefined): string | null {
@@ -29,32 +30,32 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
   const embedUrl = getEmbedUrl(course.introVideo);
 
   return (
-    <main className="min-h-screen bg-[#F4F4F7] pt-28 pb-20">
+    <main className="min-h-screen bg-[#F8F4EE] pt-28 pb-20">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6">
         {/* --- BREADCRUMBS --- */}
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8">
-          <Link href="/cursos" className="hover:text-[#5A4FCF] transition-colors">Cursos</Link>
+          <Link href="/cursos" className="hover:text-[#C9A84C] transition-colors">Cursos</Link>
           <ChevronRight size={12} />
-          <span className="text-[#1A1A2E]">{course.title}</span>
+          <span className="text-[#0B1F3A]">{course.title}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* --- COLUMNA IZQUIERDA (CONTENIDO) --- */}
           <div className="lg:col-span-8">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <m.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               
               {course.isLive && (
                  <span className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block mr-3 shadow-sm border border-orange-200">
                     🔴 EVENTO EN VIVO
                  </span>
               )}
-              <span className="bg-indigo-100 text-[#5A4FCF] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block shadow-sm">
+              <span className="bg-amber-100 text-[#C9A84C] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block shadow-sm">
                 NUEVO
               </span>
               
-              <h1 className="text-4xl md:text-7xl font-black text-[#1A1A2E] mb-6 leading-[0.9] tracking-tighter">
+              <h1 className="text-4xl md:text-7xl font-black text-[#0B1F3A] mb-6 leading-[0.9] tracking-tighter">
                 {course.title}
               </h1>
               <p className="text-xl text-gray-500 mb-10 leading-relaxed max-w-2xl whitespace-pre-wrap">
@@ -65,19 +66,19 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
                 <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
                   <Clock className="mx-auto mb-2 text-gray-300" size={20} />
-                  <span className="block text-sm font-bold text-[#1A1A2E]">{course.totalHours} horas</span>
+                  <span className="block text-sm font-bold text-[#0B1F3A]">{course.totalHours} horas</span>
                 </div>
                 <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
                   <PlayCircle className="mx-auto mb-2 text-gray-300" size={20} />
-                  <span className="block text-sm font-bold text-[#1A1A2E]">{course.totalClasses} tareas</span>
+                  <span className="block text-sm font-bold text-[#0B1F3A]">{course.totalClasses} tareas</span>
                 </div>
                 <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
                   <Globe className="mx-auto mb-2 text-gray-300" size={20} />
-                  <span className="block text-sm font-bold text-[#1A1A2E]">{course.language}</span>
+                  <span className="block text-sm font-bold text-[#0B1F3A]">{course.language}</span>
                 </div>
                 <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
                   <Zap className="mx-auto mb-2 text-gray-300" size={20} />
-                  <span className="block text-sm font-bold text-[#1A1A2E]">{course.level}</span>
+                  <span className="block text-sm font-bold text-[#0B1F3A]">{course.level}</span>
                 </div>
               </div>
 
@@ -94,10 +95,10 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                       className="w-full p-8 flex justify-between items-center hover:bg-gray-50 transition-colors text-left"
                     >
                       <div>
-                        <span className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest block mb-1">
+                        <span className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest block mb-1">
                           Módulo 0{idx + 1}
                         </span>
-                        <span className="text-xl font-bold text-[#1A1A2E] group-hover:text-[#5A4FCF] transition-colors">
+                        <span className="text-xl font-bold text-[#0B1F3A] group-hover:text-[#C9A84C] transition-colors">
                           {module.title}
                         </span>
                         {/* Vista previa de tareas cuando está cerrado */}
@@ -127,7 +128,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                           <div className="px-8 pt-6">
                             <Link 
                               href={`/clases/${encodeURIComponent(course.title)}/${encodeURIComponent(module.title)}`}
-                              className="w-full bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold py-4 px-6 rounded-2xl flex items-center justify-between transition-all group"
+                              className="w-full bg-amber-50 hover:bg-amber-100 border border-indigo-200 text-indigo-700 font-bold py-4 px-6 rounded-2xl flex items-center justify-between transition-all group"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-indigo-300">
@@ -135,16 +136,16 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                                 </div>
                                 <div className="text-left">
                                   <span className="block text-sm">Entrar al Aula</span>
-                                  <span className="block text-xs text-indigo-400 font-normal group-hover:text-indigo-500">Reproducir clase maestra</span>
+                                  <span className="block text-xs text-amber-400 font-normal group-hover:text-indigo-500">Reproducir clase maestra</span>
                                 </div>
                               </div>
-                              <ArrowRight size={20} className="text-indigo-400 group-hover:translate-x-1 transition-transform" />
+                              <ArrowRight size={20} className="text-amber-400 group-hover:translate-x-1 transition-transform" />
                             </Link>
                           </div>
                         ) : !hasPaid && module.videoUrl ? (
-                          <div className="mx-8 mt-6 bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex items-center gap-3">
-                            <LockIcon size={16} className="text-[#5A4FCF] shrink-0" />
-                            <p className="text-sm font-bold text-[#5A4FCF]">Inscríbete para ver el video de este módulo.</p>
+                          <div className="mx-8 mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+                            <LockIcon size={16} className="text-[#C9A84C] shrink-0" />
+                            <p className="text-sm font-bold text-[#C9A84C]">Inscríbete para ver el video de este módulo.</p>
                           </div>
                         ) : null}
 
@@ -154,7 +155,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                             <div key={lesson.id} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
                               <div className="w-2 h-2 rounded-full bg-indigo-300 mt-2.5 shrink-0" />
                               <div className="flex-1">
-                                <div className="text-sm leading-relaxed text-[#1A1A2E]">
+                                <div className="text-sm leading-relaxed text-[#0B1F3A]">
                                   <span className="font-bold">{lesson.title}</span>
                                   {lesson.summary && (
                                     <span className="text-gray-500 ml-1 whitespace-pre-wrap">
@@ -183,20 +184,20 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
               </div>
 
               {/* --- FAQ SECTION --- */}
-              <div className="bg-indigo-50/50 rounded-[3rem] p-10 md:p-14 border border-indigo-100/50 mb-10 pb-10">
+              <div className="bg-amber-50/50 rounded-[3rem] p-10 md:p-14 border border-amber-200/50 mb-10 pb-10">
                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
-                  <HelpCircle className="text-[#5A4FCF]" /> Preguntas Frecuentes
+                  <HelpCircle className="text-[#C9A84C]" /> Preguntas Frecuentes
                 </h3>
                 <div className="space-y-8">
                   {FAQS.map((faq, index) => (
-                    <div key={index} className="space-y-2">
-                      <h4 className="font-bold text-[#1A1A2E]">{faq.q}</h4>
+                    <div key={faq.q} className="space-y-2">
+                      <h4 className="font-bold text-[#0B1F3A]">{faq.q}</h4>
                       <p className="text-gray-500 text-sm leading-relaxed">{faq.a}</p>
                     </div>
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* --- COLUMNA DERECHA (STICKY CTA) --- */}
@@ -204,7 +205,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
             <div className="sticky top-32 space-y-6">
               <div className="bg-white rounded-[3rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white relative overflow-hidden">
                 <div className="relative z-10">
-                  <div className="mb-4 rounded-[2rem] overflow-hidden relative h-56 bg-[#1A1A2E] shadow-[inset_0_-10px_30px_rgba(0,0,0,0.5)] group flex items-center justify-center border border-gray-100">
+                  <div className="mb-4 rounded-[2rem] overflow-hidden relative h-56 bg-[#0B1F3A] shadow-[inset_0_-10px_30px_rgba(0,0,0,0.5)] group flex items-center justify-center border border-gray-100">
                      {embedUrl && embedUrl.includes('http') ? (
                         <iframe 
                            src={embedUrl}
@@ -224,13 +225,13 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                   </div>
 
                   <div className="text-center mb-8 border-b border-gray-50 pb-6">
-                    <p className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest bg-indigo-50 inline-block px-3 py-1.5 rounded-full">
+                    <p className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest bg-amber-50 inline-block px-3 py-1.5 rounded-full">
                       ¿De qué trata este curso?
                     </p>
                   </div>
 
                   <div className="flex items-end gap-2 mb-8">
-                    <span className="text-6xl font-black text-[#1A1A2E] tracking-tighter">${course.price}</span>
+                    <span className="text-6xl font-black text-[#0B1F3A] tracking-tighter">${course.price}</span>
                     <span className="text-gray-400 font-bold mb-3 uppercase text-[10px] tracking-widest">Pago único</span>
                   </div>
 
@@ -247,10 +248,10 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                   ) : (
                     <div className="space-y-4">
                       {/* Mensaje Informativo de Plan */}
-                      <div className="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl mb-2">
-                        <p className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest mb-1">Nivel del Curso: {course.level}</p>
+                      <div className="bg-amber-50 border border-amber-200 p-5 rounded-2xl mb-2">
+                        <p className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest mb-1">Nivel del Curso: {course.level}</p>
                         <p className="text-[11px] text-gray-500 font-medium">
-                          Incluído en el <span className="text-[#1A1A2E] font-black">Plan {
+                          Incluído en el <span className="text-[#0B1F3A] font-black">Plan {
                             course.level === "Principiante" ? "Esencial" : 
                             course.level === "Intermedio" ? "Profesional" : "Elite"
                           }</span> o superior.
@@ -259,7 +260,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
 
                       <button
                         onClick={() => setIsCheckoutOpen(true)}
-                        className="w-full bg-[#1A1A2E] text-white py-6 rounded-[1.5rem] font-bold flex items-center justify-center gap-3 hover:bg-[#5A4FCF] transition-all shadow-xl shadow-indigo-100 uppercase tracking-widest text-xs"
+                        className="w-full bg-[#0B1F3A] text-white py-6 rounded-[1.5rem] font-bold flex items-center justify-center gap-3 hover:bg-[#C9A84C] transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-xs"
                       >
                         Comprar Curso Individual <ArrowRight size={18} />
                       </button>
@@ -271,7 +272,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
 
                       <Link
                         href="/planes"
-                        className="w-full bg-white text-[#5A4FCF] py-5 rounded-[1.5rem] font-bold flex items-center justify-center gap-2 border-2 border-indigo-50 hover:border-[#5A4FCF]/20 hover:bg-indigo-50/30 transition-all uppercase tracking-widest text-[10px]"
+                        className="w-full bg-white text-[#C9A84C] py-5 rounded-[1.5rem] font-bold flex items-center justify-center gap-2 border-2 border-indigo-50 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
                       >
                         <Zap size={14} className="fill-current" /> Suscribirme a un Plan
                       </Link>
@@ -292,16 +293,16 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
               </div>
 
               {/* Card de Instructor */}
-              <div className="bg-[#1A1A2E] rounded-[2.5rem] p-8 text-white flex items-center gap-5 border border-white/5 shadow-2xl">
+              <div className="bg-[#0B1F3A] rounded-[2.5rem] p-8 text-white flex items-center gap-5 border border-white/5 shadow-2xl">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex-shrink-0 flex items-center justify-center font-bold text-2xl shadow-[0_10px_20px_rgba(90,79,207,0.3)] overflow-hidden">
                   {course.instructor.image ? (
-                    <img src={course.instructor.image} alt={course.instructor.name} className="w-full h-full object-cover" />
+                    <Image src={course.instructor.image} alt={course.instructor.name} width={64} height={64} className="w-full h-full object-cover" />
                   ) : (
                     course.instructor.name ? course.instructor.name.charAt(0).toUpperCase() : 'M'
                   )}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Tutor Guía</p>
+                  <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Tutor Guía</p>
                   <p className="text-xl font-bold tracking-tight">{course.instructor.name}</p>
                 </div>
               </div>

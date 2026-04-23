@@ -2,8 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { signIn } from "@/lib/auth";
-import { AuthError } from "next-auth";
 import { logActivity } from "@/lib/logger";
 
 export async function registerUser(formData: FormData) {
@@ -49,30 +47,6 @@ export async function registerUser(formData: FormData) {
   } catch (error) {
     console.error("Error al registrar:", error);
     return { error: "Hubo un error al registrar el usuario" };
-  }
-}
-
-export async function loginUser(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    return { success: true };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "Credenciales invalidas" };
-        default:
-          return { error: "Algo salio mal" };
-      }
-    }
-    throw error;
   }
 }
 

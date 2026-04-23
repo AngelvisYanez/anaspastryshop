@@ -1,8 +1,9 @@
 "use client";
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { User, Mail, Lock, Camera, Loader2, Save, CheckCircle, AlertCircle, Trash2, RefreshCcw } from "lucide-react";
 import { updateProfile } from "@/lib/actions/user";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 
 interface UserProfile {
@@ -78,25 +79,26 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     <div className="max-w-2xl mx-auto py-10">
       <div className="bg-white rounded-[3rem] p-10 md:p-14 shadow-xl border border-gray-100 relative overflow-hidden">
         {/* Adorno decorativo */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-[100px] -z-1" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50/50 rounded-bl-[100px] -z-1" />
 
         <div className="mb-10 text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="relative inline-block group">
-              <div className="w-28 h-28 bg-indigo-50 rounded-3xl flex items-center justify-center font-black text-[#5A4FCF] text-4xl overflow-hidden border-4 border-white shadow-xl shadow-indigo-100 relative group">
+              <div className="w-28 h-28 bg-amber-50 rounded-3xl flex items-center justify-center font-black text-[#C9A84C] text-4xl overflow-hidden border-4 border-white shadow-xl shadow-amber-100 relative group">
                 {previewImage ? (
-                  <img src={previewImage} alt="Avatar" className="w-full h-full object-cover" />
+                  <Image src={previewImage} alt="Avatar" width={112} height={112} className="w-full h-full object-cover" />
                 ) : (
                   initialUser.name?.substring(0, 2).toUpperCase() || "??"
                 )}
                 {/* Overlay en hover (solo si no hay controles abajo, o como atajo) */}
                 {!previewImage && (
-                  <div 
+                  <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                   >
                     <Camera size={28} className="text-white" />
-                  </div>
+                  </button>
                 )}
               </div>
               
@@ -105,7 +107,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button 
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 bg-[#1A1A2E] text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform"
+                  className="absolute -bottom-2 -right-2 bg-[#0B1F3A] text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform"
                 >
                   <Camera size={16} />
                 </button>
@@ -118,7 +120,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-[#1A1A2E] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all border border-gray-100"
+                  className="flex items-center gap-2 px-4 py-2 bg-white text-[#0B1F3A] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all border border-gray-100"
                 >
                   <RefreshCcw size={14} /> Reemplazar
                 </button>
@@ -143,7 +145,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
               className="hidden" 
             />
           </div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">Ajustes de Perfil</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A]">Ajustes de Perfil</h1>
           <p className="text-gray-400 font-medium">Actualiza tu información personal en AMA</p>
         </div>
 
@@ -155,7 +157,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
           )}
 
           {success && (
-            <div className="bg-green-50 text-green-600 p-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 animate-bounce">
+            <div className="bg-green-50 text-green-600 p-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 animate-pulse">
               <CheckCircle size={18} /> ¡Perfil actualizado con éxito!
             </div>
           )}
@@ -173,7 +175,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                   name="name"
                   defaultValue={initialUser.name || ""}
                   required
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#5A4FCF] transition-all outline-none font-bold"
+                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none font-bold"
                 />
               </div>
             </div>
@@ -208,7 +210,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                   type="password"
                   name="newPassword"
                   placeholder="Nueva contraseña (dejar vacío para no cambiar)"
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#5A4FCF] transition-all outline-none font-bold"
+                  className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none font-bold"
                 />
               </div>
               <p className="text-[10px] text-gray-400 font-medium px-2">Solo llena este campo si deseas actualizar tu clave actual.</p>
@@ -217,7 +219,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
           <button
             disabled={loading}
-            className="w-full bg-[#1A1A2E] text-white py-5 rounded-[2rem] font-black flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-indigo-100 uppercase tracking-widest text-sm"
+            className="w-full bg-[#0B1F3A] text-white py-5 rounded-[2rem] font-black flex items-center justify-center gap-3 hover:bg-gray-950 transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-sm"
           >
             {loading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
             Guardar Cambios

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -42,7 +42,7 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
           <>
             <button
               onClick={() => router.push(`/webinars/${id}`)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm bg-indigo-50 text-[#5A4FCF] hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-[#C9A84C] hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
             >
               <ExternalLink size={15} /> Entrar
             </button>
@@ -66,7 +66,7 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
         )}
         <button
           onClick={() => router.push(`/dashboard/webinars/${id}/edit`)}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#1A1A2E] hover:bg-gray-100 transition-colors"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#0B1F3A] hover:bg-gray-100 transition-colors"
         >
           <Edit size={15} />
         </button>

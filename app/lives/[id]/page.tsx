@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import LiveRoom from "./LiveRoom";
+import { joinLiveRoom } from "@/lib/actions/lives";
 
 export default async function LiveRoomPage({
   params,
@@ -20,9 +21,13 @@ export default async function LiveRoomPage({
 
   if (!live) redirect("/lives");
 
+  const result = await joinLiveRoom(id);
+  const token = "token" in result ? result.token : null;
+  const tokenError = "error" in result ? result.error : null;
+
   return (
     <div className="h-screen w-full overflow-hidden">
-      <LiveRoom liveId={live.id} />
+      <LiveRoom liveId={live.id} token={token} tokenError={tokenError} />
     </div>
   );
 }

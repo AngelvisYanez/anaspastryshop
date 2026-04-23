@@ -1,0 +1,16 @@
+= : El t‚rmino '=' no se reconoce como nombre de un cmdlet, funci¢n, archivo de script o programa ejecutable. 
+Compruebe si escribi¢ correctamente el nombre o, si incluy¢ una ruta de acceso, compruebe que dicha ruta es correcta e 
+int‚ntelo de nuevo.
+En l¡nea: 1 Car cter: 1
++ = Get-Content C:\Users\angel\OneDrive\Documentos\GitHub\Academia-Cred ...
++ ~
+    + CategoryInfo          : ObjectNotFound: (=:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+No se puede indizar en una matriz nula.
+En l¡nea: 1 Car cter: 324
++ ... Credito-USA\app\dashboard\settings\ProfileForm.tsx'; $content[93..99]
++                                                          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : NullArray
+ 

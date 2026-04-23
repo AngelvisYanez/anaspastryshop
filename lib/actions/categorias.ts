@@ -33,7 +33,6 @@ export async function createCategory(formData: FormData) {
     });
     
     revalidatePath("/dashboard/categorias");
-    revalidatePath("/dashboard/talleres/create");
     return { category: newCategory };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -66,7 +65,6 @@ export async function deleteCategory(id: string) {
     });
     
     revalidatePath("/dashboard/categorias");
-    revalidatePath("/dashboard/talleres/create");
     return { success: true };
   } catch (error) {
     console.error("Error deleting category:", error);

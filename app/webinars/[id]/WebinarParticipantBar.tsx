@@ -36,7 +36,7 @@ export default function WebinarParticipantBar({ client }: { client: any }) {
 
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="bg-[#1A1A2E]/90 backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
+      <div className="bg-[#0B1F3A]/90 backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
 
         {/* Estado del escenario */}
         {!isOnStage && (
@@ -50,7 +50,7 @@ export default function WebinarParticipantBar({ client }: { client: any }) {
               <button
                 onClick={handleRaiseHand}
                 disabled={loading}
-                className="flex items-center gap-2 bg-[#5A4FCF] hover:bg-[#483dbb] disabled:opacity-60 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all"
+                className="flex items-center gap-2 bg-[#C9A84C] hover:bg-[#B89640] disabled:opacity-60 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all"
               >
                 {loading ? <Loader2 size={15} className="animate-spin" /> : <Hand size={15} />}
                 Solicitar usar micrófono / cámara

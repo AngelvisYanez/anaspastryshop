@@ -1,8 +1,16 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  // refetchInterval={5} consultará la sesión cada 5 segundos 
-  // permitiendo que los baneos se reflejen en tiempo casi real.
-  return <SessionProvider refetchInterval={5}>{children}</SessionProvider>;
+  return (
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <SessionProvider refetchInterval={5}>
+        <LazyMotion features={domAnimation} strict>
+          {children}
+        </LazyMotion>
+      </SessionProvider>
+    </ThemeProvider>
+  );
 }

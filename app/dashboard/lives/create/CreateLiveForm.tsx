@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,10 +55,10 @@ export default function CreateLiveForm() {
           href="/dashboard/lives"
           className="p-2 hover:bg-white rounded-xl transition-colors border border-transparent hover:border-gray-100"
         >
-          <ArrowLeft size={24} className="text-[#1A1A2E]" />
+          <ArrowLeft size={24} className="text-[#0B1F3A]" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E] tracking-tighter">Nuevo Live</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tighter">Nuevo Live</h1>
           <p className="text-gray-500 font-medium mt-1">
             Configura los datos de tu transmisión en vivo.
           </p>
@@ -71,24 +71,24 @@ export default function CreateLiveForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-5">
-          <h2 className="text-lg font-bold text-[#1A1A2E] flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
+          <h2 className="text-lg font-bold text-[#0B1F3A] flex items-center gap-2">
+            <span className="bg-[#C9A84C] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
             Información General
           </h2>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Título del Live</label>
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Título del Live</label>
             <input
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ej. Clase magistral: Reparación de crédito paso a paso"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E]"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">
               Descripción <span className="text-gray-400 font-normal">(Opcional)</span>
             </label>
             <textarea
@@ -96,26 +96,26 @@ export default function CreateLiveForm() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="¿Qué verán los participantes en esta sesión?"
               rows={3}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] resize-none"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">
               Fecha y hora programada <span className="text-gray-400 font-normal">(Opcional)</span>
             </label>
             <input
               type="datetime-local"
               value={scheduledAt}
               onChange={(e) => setScheduledAt(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E]"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A]"
             />
           </div>
         </div>
 
         <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-5">
-          <h2 className="text-lg font-bold text-[#1A1A2E] flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
+          <h2 className="text-lg font-bold text-[#0B1F3A] flex items-center gap-2">
+            <span className="bg-[#C9A84C] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
             Configuración OBS / Streaming
           </h2>
           <p className="text-xs text-gray-400 font-medium -mt-2">
@@ -123,7 +123,7 @@ export default function CreateLiveForm() {
           </p>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">
               RTMPS Server URL <span className="text-gray-400 font-normal">(Opcional)</span>
             </label>
             <div className="flex gap-2">
@@ -131,13 +131,13 @@ export default function CreateLiveForm() {
                 value={rtmpsUrl}
                 onChange={(e) => setRtmpsUrl(e.target.value)}
                 placeholder="rtmps://live.cloudflare.com:443/live/"
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all font-mono text-sm text-[#1A1A2E]"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all font-mono text-sm text-[#0B1F3A]"
               />
               {rtmpsUrl && (
                 <button
                   type="button"
                   onClick={() => copyToClipboard(rtmpsUrl, "rtmps")}
-                  className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#5A4FCF] transition-colors"
+                  className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#C9A84C] transition-colors"
                 >
                   {copied === "rtmps" ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
@@ -146,7 +146,7 @@ export default function CreateLiveForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">
               Stream Key <span className="text-gray-400 font-normal">(Opcional)</span>
             </label>
             <div className="flex gap-2">
@@ -155,12 +155,12 @@ export default function CreateLiveForm() {
                 value={streamKey}
                 onChange={(e) => setStreamKey(e.target.value)}
                 placeholder="Tu clave de transmisión"
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all font-mono text-sm text-[#1A1A2E]"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all font-mono text-sm text-[#0B1F3A]"
               />
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#5A4FCF] transition-colors"
+                className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#C9A84C] transition-colors"
               >
                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -168,7 +168,7 @@ export default function CreateLiveForm() {
                 <button
                   type="button"
                   onClick={() => copyToClipboard(streamKey, "key")}
-                  className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#5A4FCF] transition-colors"
+                  className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 hover:text-[#C9A84C] transition-colors"
                 >
                   {copied === "key" ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
@@ -177,14 +177,14 @@ export default function CreateLiveForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">
+            <label className="block text-sm font-bold text-[#0B1F3A] mb-2">
               Playback URL / ID <span className="text-gray-400 font-normal">(Opcional)</span>
             </label>
             <input
               value={playbackId}
               onChange={(e) => setPlaybackId(e.target.value)}
               placeholder="ID o URL que usarán los espectadores para ver el live"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-sm text-[#1A1A2E]"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-sm text-[#0B1F3A]"
             />
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function CreateLiveForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#1A1A2E] text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-[#5A4FCF] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-[#0B1F3A] text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-[#C9A84C] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? <Loader2 className="animate-spin" size={20} /> : <Radio size={20} />}
           {loading ? "Creando..." : "Crear Live"}

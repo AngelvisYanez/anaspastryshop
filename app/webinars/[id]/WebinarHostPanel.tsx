@@ -53,18 +53,18 @@ export default function WebinarHostPanel({ client }: { client: any }) {
       {/* Toggle */}
       <button
         onClick={() => setOpen(!open)}
-        className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#5A4FCF] text-white rounded-full flex items-center justify-center shadow-lg z-10"
+        className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#C9A84C] text-white rounded-full flex items-center justify-center shadow-lg z-10"
       >
         {open ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
 
       {open && (
-        <div className="bg-[#1A1A2E]/95 backdrop-blur-sm rounded-[1.5rem] flex flex-col h-full overflow-hidden border border-white/10">
+        <div className="bg-[#0B1F3A]/95 backdrop-blur-sm rounded-[1.5rem] flex flex-col h-full overflow-hidden border border-white/10">
           {/* Header */}
           <div className="px-5 py-4 border-b border-white/10 flex items-center gap-3">
-            <Users size={16} className="text-[#5A4FCF]" />
+            <Users size={16} className="text-[#C9A84C]" />
             <span className="text-white font-bold text-sm">Control de participantes</span>
-            <span className="ml-auto bg-[#5A4FCF]/30 text-[#a89cf0] text-[10px] font-black px-2 py-0.5 rounded-full">
+            <span className="ml-auto bg-[#C9A84C]/30 text-[#C9A84C] text-[10px] font-black px-2 py-0.5 rounded-full">
               {participants.length}
             </span>
           </div>
@@ -165,7 +165,7 @@ export default function WebinarHostPanel({ client }: { client: any }) {
                       <button
                         onClick={() => grantAccess(p.id)}
                         title="Invitar al escenario"
-                        className="flex items-center gap-1 bg-[#5A4FCF]/30 hover:bg-[#5A4FCF]/60 text-[#a89cf0] text-[10px] font-black px-2 py-1.5 rounded-lg transition-all"
+                        className="flex items-center gap-1 bg-[#C9A84C]/30 hover:bg-[#C9A84C]/60 text-[#C9A84C] text-[10px] font-black px-2 py-1.5 rounded-lg transition-all"
                       >
                         <UserCheck size={11} /> Invitar
                       </button>
@@ -204,7 +204,7 @@ export default function WebinarHostPanel({ client }: { client: any }) {
 function Avatar({ name }: { name: string }) {
   const initials = name?.split(" ").map((w) => w[0]).join("").substring(0, 2).toUpperCase() || "?";
   return (
-    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#5A4FCF] to-purple-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">
+    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#C9A84C] to-purple-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">
       {initials}
     </div>
   );

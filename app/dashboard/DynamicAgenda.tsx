@@ -20,7 +20,7 @@ export default function DynamicAgenda({
 
   return (
     <div className="space-y-4">
-      <label className="text-xs font-black uppercase text-gray-400 tracking-widest block ml-2">Cronograma del Taller</label>
+      <label className="text-xs font-black uppercase text-gray-400 tracking-widest block ml-2">Cronograma del Curso</label>
       {agenda.map((item, index) => (
         <div key={index} className="flex gap-4 items-center">
           <div className="relative flex-1">
@@ -30,7 +30,7 @@ export default function DynamicAgenda({
               placeholder="09:00 AM" 
               value={item.hour}
               onChange={(e) => updateItem(index, "hour", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#5A4FCF] text-sm font-medium"
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#C9A84C] text-sm font-medium"
               required
             />
           </div>
@@ -41,7 +41,7 @@ export default function DynamicAgenda({
               placeholder="Ej. Introducción y Setup" 
               value={item.task}
               onChange={(e) => updateItem(index, "task", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#5A4FCF] text-sm font-medium"
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#C9A84C] text-sm font-medium"
               required
             />
           </div>
@@ -56,7 +56,7 @@ export default function DynamicAgenda({
       ))}
       <button 
         type="button" onClick={addItem}
-        className="flex items-center gap-2 text-[#5A4FCF] font-bold text-sm hover:underline ml-2"
+        className="flex items-center gap-2 text-[#C9A84C] font-bold text-sm hover:underline ml-2"
       >
         <Plus size={16} /> Añadir actividad
       </button>

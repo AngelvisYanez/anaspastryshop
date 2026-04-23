@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { BookOpen, Clock, BarChart2, ArrowRight } from "lucide-react";
 
 export default async function MisCursosPage() {
@@ -30,7 +31,7 @@ export default async function MisCursosPage() {
   return (
     <div className="p-8">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#1A1A2E]">Mis Cursos</h1>
+        <h1 className="text-3xl font-black text-[#0B1F3A]">Mis Cursos</h1>
         <p className="text-gray-400 font-medium">
           Cursos a los que tienes acceso actualmente.
         </p>
@@ -44,7 +45,7 @@ export default async function MisCursosPage() {
           </p>
           <Link
             href="/cursos"
-            className="inline-flex items-center gap-2 text-[#5A4FCF] font-bold hover:underline text-sm"
+            className="inline-flex items-center gap-2 text-[#C9A84C] font-bold hover:underline text-sm"
           >
             Explorar cursos disponibles <ArrowRight size={16} />
           </Link>
@@ -59,20 +60,22 @@ export default async function MisCursosPage() {
                 className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col"
               >
                 {curso.image && (
-                  <div className="w-full h-36 rounded-2xl overflow-hidden mb-6 bg-gray-100">
-                    <img
+                  <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-6 bg-gray-100">
+                    <Image
                       src={curso.image}
                       alt={curso.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      className="object-cover"
                     />
                   </div>
                 )}
 
-                <span className="text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-[#5A4FCF] px-3 py-1 rounded-lg w-fit mb-3">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-amber-50 text-[#C9A84C] px-3 py-1 rounded-lg w-fit mb-3">
                   {curso.level}
                 </span>
 
-                <h3 className="text-lg font-bold text-[#1A1A2E] mb-2 leading-snug flex-1">
+                <h3 className="text-lg font-bold text-[#0B1F3A] mb-2 leading-snug flex-1">
                   {curso.title}
                 </h3>
 
@@ -82,17 +85,17 @@ export default async function MisCursosPage() {
 
                 <div className="flex items-center gap-4 text-xs text-gray-500 font-medium mb-6">
                   <span className="flex items-center gap-1">
-                    <Clock size={13} className="text-[#5A4FCF]" />
+                    <Clock size={13} className="text-[#C9A84C]" />
                     {curso.totalHours}h
                   </span>
                   <span className="flex items-center gap-1">
-                    <BarChart2 size={13} className="text-[#5A4FCF]" />
+                    <BarChart2 size={13} className="text-[#C9A84C]" />
                     {curso._count.courseModules} módulos
                   </span>
                 </div>
 
                 <Link href={`/cursos/${curso.id}`}>
-                  <button className="w-full bg-[#1A1A2E] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#5A4FCF] transition-all flex items-center justify-center gap-2">
+                  <button className="w-full bg-[#0B1F3A] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#C9A84C] transition-all flex items-center justify-center gap-2">
                     Ir al Curso <ArrowRight size={16} />
                   </button>
                 </Link>

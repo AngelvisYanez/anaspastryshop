@@ -13,11 +13,13 @@ type PlatformSection = {
   roles: string[];
 };
 
+const EMPTY_SECTIONS: PlatformSection[] = [];
+
 export default function DashboardShell({
   user,
   children,
   isBlockedMentor = false,
-  platformSections = [],
+  platformSections = EMPTY_SECTIONS,
 }: {
   user: any;
   children: React.ReactNode;
@@ -29,7 +31,9 @@ export default function DashboardShell({
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden">
       {isSidebarOpen && (
-        <div
+        <button
+          type="button"
+          aria-label="Cerrar menú"
           className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />

@@ -42,9 +42,9 @@ export default function GrowthChart({ data }: { data: DataPoint[] }) {
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#5A4FCF"
+            stroke="#C9A84C"
             strokeWidth={3}
-            dot={{ r: 4, fill: "#5A4FCF", strokeWidth: 2, stroke: "#fff" }}
+            dot={{ r: 4, fill: "#C9A84C", strokeWidth: 2, stroke: "#fff" }}
             activeDot={{ r: 6, strokeWidth: 0 }}
           />
         </LineChart>

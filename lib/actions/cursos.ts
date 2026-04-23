@@ -12,7 +12,7 @@ async function assertMentorOrAdmin() {
   return session;
 }
 
-export type CoursePayload = {
+type CoursePayload = {
   title: string;
   description: string;
   price: number;

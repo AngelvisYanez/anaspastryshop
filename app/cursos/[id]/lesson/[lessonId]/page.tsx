@@ -85,7 +85,7 @@ export default async function LessonPage({ params }: { params: { id: string, les
          </div>
 
          {/* Reproductor */}
-         <div className="w-full bg-black aspect-video flex items-center justify-center border-b border-white/5 relative">
+         <div className="w-full bg-gray-950 aspect-video flex items-center justify-center border-b border-white/5 relative">
             {embedUrl ? (
                <iframe 
                   src={embedUrl}
@@ -109,7 +109,7 @@ export default async function LessonPage({ params }: { params: { id: string, les
             </h1>
             {currentLesson.summary && (
                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-gray-300 leading-relaxed">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-3">Resumen de la Clase</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-3">Resumen de la Clase</h3>
                   <div className="whitespace-pre-wrap">{currentLesson.summary}</div>
                </div>
             )}
@@ -121,7 +121,7 @@ export default async function LessonPage({ params }: { params: { id: string, les
          <div className="p-6 border-b border-white/10 sticky top-0 bg-[#111111]/90 backdrop-blur z-10">
             <h2 className="text-lg font-black tracking-tight">Contenido</h2>
             <div className="w-full bg-white/10 h-1.5 mt-4 rounded-full overflow-hidden">
-               <div className="bg-[#5A4FCF] w-1/3 h-full rounded-full" />
+               <div className="bg-[#C9A84C] w-1/3 h-full rounded-full" />
             </div>
          </div>
 
@@ -140,11 +140,11 @@ export default async function LessonPage({ params }: { params: { id: string, les
                               href={`/cursos/${cursoId}/lesson/${less.id}`}
                               className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
                                  isCurrent 
-                                 ? "bg-[#5A4FCF]/20 border border-[#5A4FCF]/50 text-white shadow-[0_0_20px_rgba(90,79,207,0.15)]" 
+                                 ? "bg-[#C9A84C]/20 border border-[#C9A84C]/50 text-white shadow-[0_0_20px_rgba(90,79,207,0.15)]" 
                                  : "text-gray-400 hover:bg-white/5 hover:text-white border border-transparent"
                               }`}
                            >
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isCurrent ? 'bg-[#5A4FCF] text-white' : 'bg-white/10'}`}>
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isCurrent ? 'bg-[#C9A84C] text-white' : 'bg-white/10'}`}>
                                  <PlayCircle size={14} className={isCurrent ? "fill-white/20" : ""} />
                               </div>
                               <div>

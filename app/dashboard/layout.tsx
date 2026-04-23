@@ -39,7 +39,7 @@ export default async function DashboardLayout({
 
   if (!isActive) {
     return (
-      <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
+      <main className="min-h-screen bg-[#F8F4EE] flex items-center justify-center p-6 relative overflow-hidden">
         <RealTimeGuard />
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/40 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-orange-100/40 blur-[100px] rounded-full pointer-events-none" />
@@ -52,7 +52,7 @@ export default async function DashboardLayout({
             </div>
           </div>
 
-          <h1 className="text-3xl font-black text-[#1A1A2E] mb-4 leading-tight">
+          <h1 className="text-3xl font-black text-[#0B1F3A] mb-4 leading-tight">
             Sesión Terminada (Cuenta Desactivada)
           </h1>
           <p className="text-gray-500 leading-relaxed mb-6">
@@ -79,7 +79,7 @@ export default async function DashboardLayout({
             >
               <button
                 type="submit"
-                className="bg-[#1A1A2E] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg hover:bg-[#5A4FCF] transition-all"
+                className="bg-[#0B1F3A] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg hover:bg-[#C9A84C] transition-all"
               >
                 Cerrar Sesión y Salir
               </button>

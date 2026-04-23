@@ -1,4 +1,4 @@
-import { getPendingPayments } from "@/lib/actions/payments";
+﻿import { getPendingPayments } from "@/lib/actions/payments";
 import PaymentCard from "./PaymentCard";
 import Link from "next/link";
 import { ArrowLeft, Wallet } from "lucide-react";
@@ -17,15 +17,15 @@ export default async function PagosPage() {
       <div className="mb-10">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-[#5A4FCF] transition-colors mb-6 text-xs font-black uppercase tracking-[0.2em]"
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-[#C9A84C] transition-colors mb-6 text-xs font-black uppercase tracking-[0.2em]"
         >
           <ArrowLeft size={14} /> Volver al Dashboard
         </Link>
         <div className="flex items-center gap-4 mb-2">
-          <div className="p-3 bg-indigo-50 text-[#5A4FCF] rounded-2xl">
+          <div className="p-3 bg-amber-50 text-[#C9A84C] rounded-2xl">
             <Wallet size={28} />
           </div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">
+          <h1 className="text-3xl font-black text-[#0B1F3A]">
             Validación de Pagos
           </h1>
         </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,7 @@ export default function LiveActions({
         )}
         <button
           onClick={() => router.push(`/dashboard/lives/${id}/edit`)}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#1A1A2E] hover:bg-gray-100 transition-colors flex items-center gap-2"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#0B1F3A] hover:bg-gray-100 transition-colors flex items-center gap-2"
         >
           <Edit size={15} />
         </button>

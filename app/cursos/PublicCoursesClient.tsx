@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -45,20 +46,20 @@ export default function PublicCoursesClient({
   });
 
   return (
-    <main className="min-h-screen bg-[#F4F4F7] pt-32 pb-20">
+    <main className="min-h-screen bg-[#F8F4EE] pt-32 pb-20">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6">
         {/* --- HEADER DEL MÓDULO --- */}
         <div className="mb-16">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 text-[#5A4FCF] font-bold text-sm uppercase tracking-widest mb-4"
+            className="flex items-center gap-2 text-[#C9A84C] font-bold text-sm uppercase tracking-widest mb-4"
           >
             <Sparkles size={16} /> Catálogo de Formación
-          </motion.div>
-          <h1 className="text-5xl md:text-7xl font-bold text-[#1A1A2E] tracking-tighter mb-6">
+          </m.div>
+          <h1 className="text-5xl md:text-7xl font-bold text-[#0B1F3A] tracking-tighter mb-6">
             Lleva tu talento al <br /> <span className="text-gray-400">siguiente nivel.</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl leading-relaxed">
@@ -77,7 +78,7 @@ export default function PublicCoursesClient({
                 placeholder="Buscar por nombre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-gray-100 rounded-[1.5rem] py-5 pl-14 pr-4 shadow-sm focus:ring-2 focus:ring-[#5A4FCF] outline-none transition-all font-bold text-gray-600"
+                className="w-full bg-white border border-gray-100 rounded-[1.5rem] py-5 pl-14 pr-4 shadow-sm focus:ring-2 focus:ring-[#C9A84C] outline-none transition-all font-bold text-gray-600"
               />
             </div>
 
@@ -87,8 +88,8 @@ export default function PublicCoursesClient({
                 onClick={() => setShowFilters(!showFilters)}
                 className={`p-5 rounded-[1.5rem] border transition-all shadow-sm ${
                   showFilters 
-                    ? "bg-[#5A4FCF] text-white border-[#5A4FCF] scale-105" 
-                    : "bg-white text-gray-400 border-gray-100 hover:text-[#5A4FCF]"
+                    ? "bg-[#C9A84C] text-white border-[#C9A84C] scale-105" 
+                    : "bg-white text-gray-400 border-gray-100 hover:text-[#C9A84C]"
                 }`}
                 title="Mostrar categorías"
               >
@@ -102,7 +103,7 @@ export default function PublicCoursesClient({
                     onClick={() => setActiveLevel(level)}
                     className={`px-8 py-5 rounded-[1.2rem] text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${
                       activeLevel === level
-                        ? "bg-[#1A1A2E] text-white shadow-xl shadow-indigo-100"
+                        ? "bg-[#0B1F3A] text-white shadow-xl shadow-amber-100"
                         : "bg-white text-gray-400 hover:bg-gray-50 border border-gray-100"
                     }`}
                   >
@@ -116,7 +117,7 @@ export default function PublicCoursesClient({
           {/* Barra de Categorías (Expandible) */}
           <AnimatePresence>
             {showFilters && (
-              <motion.div 
+              <m.div 
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -129,15 +130,15 @@ export default function PublicCoursesClient({
                       onClick={() => setActiveCategory(cat)}
                       className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                         activeCategory === cat
-                          ? "bg-indigo-50 text-[#5A4FCF] border border-indigo-200"
-                          : "bg-white text-gray-400 border border-gray-100 hover:text-[#5A4FCF]"
+                          ? "bg-amber-50 text-[#C9A84C] border border-indigo-200"
+                          : "bg-white text-gray-400 border border-gray-100 hover:text-[#C9A84C]"
                       }`}
                     >
                       {cat}
                     </button>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
@@ -146,7 +147,7 @@ export default function PublicCoursesClient({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
             {filteredCourses.map((curso) => (
-              <motion.div
+              <m.div
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -156,10 +157,12 @@ export default function PublicCoursesClient({
                 className="bg-white rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-gray-100 flex flex-col h-full group"
               >
                 <div className="relative h-64 w-full bg-gray-100 overflow-hidden">
-                  <img
+                  <Image
                     src={curso.image}
                     alt={curso.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute top-5 left-5">
                     <span
@@ -177,7 +180,7 @@ export default function PublicCoursesClient({
 
                 <div className="p-8 flex flex-col flex-1">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[#5A4FCF] text-[10px] font-black uppercase tracking-[0.2em]">
+                    <span className="text-[#C9A84C] text-[10px] font-black uppercase tracking-[0.2em]">
                       {curso.level}
                     </span>
                     {curso.hasAccess && (
@@ -186,7 +189,7 @@ export default function PublicCoursesClient({
                       </span>
                     )}
                   </div>
-                  <h3 className="text-2xl font-bold text-[#1A1A2E] mb-2 leading-tight">
+                  <h3 className="text-2xl font-bold text-[#0B1F3A] mb-2 leading-tight">
                     {curso.title}
                   </h3>
                   <div className="flex items-center gap-2 mb-8">
@@ -202,20 +205,20 @@ export default function PublicCoursesClient({
 
                   <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between">
                     <div>
-                      <span className="text-3xl font-black text-[#1A1A2E]">${curso.price}</span>
+                      <span className="text-3xl font-black text-[#0B1F3A]">${curso.price}</span>
                       <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 italic">
                         Zelle • USDT • Bolívares
                       </p>
                     </div>
 
                     <Link href={`/cursos/${curso.id}`}>
-                      <button className="bg-[#1A1A2E] text-white p-4 rounded-2xl hover:bg-[#5A4FCF] hover:scale-110 transition-all shadow-lg shadow-indigo-50">
+                      <button className="bg-[#0B1F3A] text-white p-4 rounded-2xl hover:bg-[#C9A84C] hover:scale-110 transition-all shadow-lg shadow-amber-50">
                         <ArrowRight size={22} />
                       </button>
                     </Link>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
         </div>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia Crédito USA – Rami Noureddine</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1F3A;
+    --navy-light: #1A3A5C;
+    --gold: #C9A84C;
+    --gold-light: #E8C87A;
+    --cream: #F8F4EE;
+    --white: #FFFFFF;
+    --gray: #8899AA;
+    --dark: #060F1C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 18px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(6,15,28,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--gold); letter-spacing: 0.05em;
+  }
+  .nav-cta {
+    background: var(--gold); color: var(--navy);
+    padding: 10px 24px; border-radius: 4px;
+    font-weight: 600; font-size: 0.85rem;
+    text-decoration: none; letter-spacing: 0.03em;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-light); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 80% at 10% 80%, rgba(26,58,92,0.4) 0%, transparent 60%);
+  }
+  .hero-grid {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 6px 16px; border-radius: 2px;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 4vw, 3.6rem);
+    line-height: 1.12; font-weight: 900;
+    margin-bottom: 24px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero-sub {
+    font-size: 1.05rem; color: rgba(255,255,255,0.65);
+    line-height: 1.7; margin-bottom: 40px; max-width: 480px;
+  }
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--navy);
+    padding: 16px 36px; border-radius: 4px;
+    font-weight: 700; font-size: 0.95rem;
+    text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-secondary {
+    border: 1px solid rgba(255,255,255,0.25); color: var(--white);
+    padding: 16px 36px; border-radius: 4px;
+    font-weight: 500; font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Hero card */
+  .hero-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px; padding: 40px;
+    backdrop-filter: blur(8px);
+  }
+  .hero-card-title {
+    font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px;
+  }
+  .hero-features { list-style: none; }
+  .hero-features li {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.95rem; color: rgba(255,255,255,0.8);
+    line-height: 1.5;
+  }
+  .hero-features li:last-child { border-bottom: none; }
+  .hero-features li::before {
+    content: '→';
+    color: var(--gold); font-size: 0.9rem;
+    margin-top: 2px; flex-shrink: 0;
+  }
+  .price-block {
+    margin-top: 32px; padding-top: 28px;
+    border-top: 1px solid rgba(201,168,76,0.2);
+  }
+  .price-note {
+    font-size: 0.8rem; color: var(--gray); margin-bottom: 6px;
+  }
+  .price-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 900; color: var(--gold);
+  }
+  .price-main span { font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--gray); }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 100px 48px; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 900; line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .section-title span { color: var(--gold); }
+  .section-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 1rem; line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ── FOR YOU ── */
+  .foryou { background: var(--navy); }
+  .foryou-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; overflow: hidden;
+    margin-top: 60px;
+  }
+  .foryou-item {
+    background: var(--navy);
+    padding: 32px 28px;
+    transition: background 0.2s;
+  }
+  .foryou-item:hover { background: rgba(201,168,76,0.06); }
+  .foryou-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 1rem;
+    margin-bottom: 16px;
+  }
+  .foryou-item p {
+    font-size: 0.9rem; color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+  .foryou-item p strong { color: var(--white); }
+
+  /* ── WHAT YOU GET ── */
+  .whatyouget { background: var(--dark); }
+  .wyg-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    margin-top: 60px; align-items: start;
+  }
+  .wyg-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 12px; padding: 40px;
+  }
+  .wyg-card-icon {
+    font-size: 1.8rem; margin-bottom: 20px;
+  }
+  .wyg-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; margin-bottom: 12px;
+  }
+  .wyg-card p {
+    font-size: 0.9rem; color: rgba(255,255,255,0.55);
+    line-height: 1.7; margin-bottom: 24px;
+  }
+  .wyg-list { list-style: none; }
+  .wyg-list li {
+    font-size: 0.88rem; color: rgba(255,255,255,0.7);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .wyg-list li:last-child { border-bottom: none; }
+  .wyg-list li::before { content: '✦'; color: var(--gold); font-size: 0.6rem; }
+
+  /* Results list */
+  .results-list {
+    margin-top: 40px; list-style: none;
+  }
+  .results-list li {
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex; gap: 16px; align-items: flex-start;
+    font-size: 0.95rem; color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
+  .results-list li:last-child { border-bottom: none; }
+  .results-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; color: var(--gold);
+    font-weight: 700; flex-shrink: 0; width: 28px;
+  }
+
+  /* ── ABOUT ── */
+  .about { background: var(--navy); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px;
+    align-items: center; margin-top: 60px;
+  }
+  .about-img-box {
+    aspect-ratio: 3/4;
+    background: linear-gradient(135deg, var(--navy-light), var(--dark));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; color: rgba(201,168,76,0.3);
+    position: relative; overflow: hidden;
+  }
+  .about-img-box::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(to top, var(--navy), transparent);
+  }
+  .about-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; margin-bottom: 6px;
+  }
+  .about-title {
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px;
+  }
+  .about-bio {
+    font-size: 0.95rem; color: rgba(255,255,255,0.65);
+    line-height: 1.75; margin-bottom: 36px;
+  }
+  .about-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-bottom: 36px;
+  }
+  .stat-box {
+    text-align: center;
+    padding: 20px 12px;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--gold); display: block; margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 0.72rem; color: var(--gray);
+    letter-spacing: 0.05em;
+  }
+  .quote-block {
+    border-left: 2px solid var(--gold);
+    padding: 20px 28px;
+    background: rgba(201,168,76,0.05);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem; line-height: 1.7;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: var(--dark);
+    text-align: center;
+  }
+  .cta-box {
+    max-width: 720px; margin: 0 auto;
+    padding: 80px 60px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(26,58,92,0.15));
+    position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(201,168,76,0.1), transparent 70%);
+    border-radius: 50%;
+  }
+  .cta-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 900; margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+  .cta-box h2 span { color: var(--gold); }
+  .cta-box p {
+    color: rgba(255,255,255,0.6); font-size: 1rem;
+    line-height: 1.7; margin-bottom: 40px;
+    position: relative; z-index: 1;
+  }
+  .cta-price {
+    margin-bottom: 32px; position: relative; z-index: 1;
+  }
+  .cta-price-note { font-size: 0.8rem; color: var(--gray); margin-bottom: 4px; }
+  .cta-price-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem; font-weight: 900; color: var(--gold);
+  }
+  .cta-price-num span { font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--gray); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; color: var(--gold); font-weight: 700;
+  }
+  .footer-copy {
+    font-size: 0.8rem; color: var(--gray);
+  }
+  .footer-link {
+    font-size: 0.8rem; color: var(--gray);
+    text-decoration: none;
+  }
+  .footer-link:hover { color: var(--gold); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    section { padding: 72px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .wyg-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-img-box { aspect-ratio: 16/9; }
+    .about-stats { grid-template-columns: repeat(3, 1fr); }
+    footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-badge { animation: fadeUp 0.6s ease both; }
+  .hero h1 { animation: fadeUp 0.6s 0.1s ease both; }
+  .hero-sub { animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-btns { animation: fadeUp 0.6s 0.3s ease both; }
+  .hero-card { animation: fadeUp 0.6s 0.2s ease both; }
+
+  /* Gold line accent */
+  .gold-line {
+    width: 48px; height: 2px;
+    background: var(--gold);
+    margin-bottom: 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Academia Crédito</div>
+  <a href="#unirse" class="nav-cta">Empieza hoy →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-badge">La academia de crédito para hispanohablantes</div>
+      <h1>Domina el sistema de crédito en <span>Estados Unidos</span></h1>
+      <p class="hero-sub">Lo que los bancos no te explican. Aprende a dominar el crédito en Estados Unidos para mejorar tu vida financiera, calificar para las mejores condiciones del mercado, y emprender negocios con capital del banco.</p>
+      <div class="hero-btns">
+        <a href="#unirse" class="btn-primary">Quiero unirme ahora</a>
+        <a href="#para-ti" class="btn-secondary">¿Es para mí?</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-title">Acceso instantáneo a todo lo que necesitas</div>
+      <ul class="hero-features">
+        <li>Módulos completos de crédito personal y empresarial</li>
+        <li>Sesiones en vivo con Rami Noureddine, mes a mes</li>
+        <li>Comunidad activa con actualizaciones en tiempo real</li>
+        <li>Estrategias probadas para construir y reparar crédito</li>
+        <li>Acceso a grabaciones y material exclusivo</li>
+        <li>Orientación directa para tu situación específica</li>
+      </ul>
+      <div class="price-block">
+        <div class="price-note">Precio de membresía mensual</div>
+        <div class="price-main">$XX <span>/ mes</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR YOU -->
+<section class="foryou" id="para-ti">
+  <div class="section-inner">
+    <div class="section-label">Esta academia es para ti si…</div>
+    <h2 class="section-title">¿Te identificas con <span>alguna de estas situaciones?</span></h2>
+    <div class="foryou-grid">
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Has intentado aplicar a un crédito para tu casa, carro o negocio <strong>y te lo han negado sin entender por qué.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Te acaba de llegar el Social Security Number o tienes menos de 5 años con él y <strong>todavía no sabes cómo aprovecharlo.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Sientes que el sistema financiero americano es una caja negra y <strong>no sabes cómo usarlo a tu favor.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Tienes deudas que no sabes cómo manejar y <strong>el mínimo no alcanza para pagarlas.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>No sabes cómo mejorar tu puntaje de crédito <strong>ni qué factores lo están bajando.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Pagas tasas de interés <strong>demasiado altas</strong> en tus tarjetas o préstamos porque nadie te ha explicado cómo negociar mejores condiciones.</p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Te sientes confundido con el lenguaje bancario y <strong>firmas documentos sin entender completamente lo que aceptas.</strong></p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Quieres comprar una casa o un carro pero <strong>tu puntaje no está donde necesita estar</strong> para conseguir buenas condiciones.</p>
+      </div>
+      <div class="foryou-item">
+        <div class="foryou-icon">✗</div>
+        <p>Te han negado tarjetas de crédito constantemente <strong>y no sabes cuál es el problema ni cómo resolverlo.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO INTRO -->
+<section style="background: var(--dark); padding: 80px 48px;">
+  <div class="section-inner">
+    <div class="section-label" style="font-size: 1rem; letter-spacing: 0.05em; text-transform: none; margin-bottom: 40px;">Antes de empezar</div>
+    <div style="
+      max-width: 800px; margin: 0 auto;
+      aspect-ratio: 16/9;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.85rem; letter-spacing: 0.05em;
+    ">
+      <!-- COLOCA AQUÍ TU VIDEO -->
+      <!-- YouTube: <iframe width="100%" height="100%" src="https://www.youtube.com/embed/TU_ID" frameborder="0" allowfullscreen style="border-radius:12px;"></iframe> -->
+      <!-- Vimeo:   <iframe width="100%" height="100%" src="https://player.vimeo.com/video/TU_ID" frameborder="0" allowfullscreen style="border-radius:12px;"></iframe> -->
+      <div style="font-size: 3rem; opacity: 0.3;">▶</div>
+      <div>VIDEO INTRODUCTORIO</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="whatyouget">
+  <div class="section-inner">
+    <div class="section-label">Lo que incluye la academia</div>
+    <h2 class="section-title">Todo lo que necesitas para <span>dominar tu crédito</span></h2>
+    <div class="wyg-grid">
+      <div>
+        <div class="wyg-card">
+          <div class="wyg-card-icon">📡</div>
+          <h3>Sesiones en Vivo</h3>
+          <p>Sesiones prácticas donde puedes traer tus preguntas específicas y recibir orientación directa para tu situación.</p>
+          <ul class="wyg-list">
+            <li>Sesiones dinámicas 100% en vivo</li>
+            <li>Varios encuentros al mes</li>
+            <li>Preguntas y respuestas en tiempo real</li>
+            <li>Grabaciones disponibles para miembros</li>
+          </ul>
+        </div>
+        <br>
+        <div class="wyg-card">
+          <div class="wyg-card-icon">📚</div>
+          <h3>Módulos Completos</h3>
+          <p>Contenido estructurado desde los básicos hasta estrategias avanzadas de crédito personal y empresarial.</p>
+          <ul class="wyg-list">
+            <li>Básicos del crédito americano</li>
+            <li>Construcción y reparación de crédito</li>
+            <li>Manejo estratégico de deudas</li>
+            <li>Relación con los bancos</li>
+            <li>Crédito empresarial</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="gold-line"></div>
+        <div class="section-label">Al terminar la academia podrás:</div>
+        <ul class="results-list">
+          <li><span class="results-num">01</span>Entender el sistema crediticio americano y usarlo estratégicamente a tu favor.</li>
+          <li><span class="results-num">02</span>Leer e interpretar tu reporte de crédito e identificar errores que te están costando puntos.</li>
+          <li><span class="results-num">03</span>Aplicar estrategias concretas para subir tu puntaje, incluso si tienes historial dañado.</li>
+          <li><span class="results-num">04</span>Manejar tus deudas de forma inteligente y salir del ciclo de pagos mínimos.</li>
+          <li><span class="results-num">05</span>Construir una relación sólida con los bancos que te dé acceso a mejor financiamiento.</li>
+          <li><span class="results-num">06</span>Calificar para las mejores condiciones en hipotecas, préstamos de auto y tarjetas de crédito.</li>
+          <li><span class="results-num">07</span>Usar tu crédito como herramienta para invertir y generar patrimonio — dentro y fuera de Estados Unidos.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="section-inner">
+    <div class="section-label">Quién soy</div>
+    <div class="about-grid">
+      <div class="about-img-box">👤</div>
+      <div>
+        <h2 class="about-name">Rami Noureddine</h2>
+        <div class="about-title">Fundador · Academia Crédito USA</div>
+        <p class="about-bio">Soy venezolano, residente en Estados Unidos. Mi primer contacto con el crédito americano fue a los 18 años — sin número de seguro social, sin historial, y con una tarjeta de $5,000 que terminó financiando mis estudios en el Líbano durante una crisis bancaria. Desde ese momento me obsesioné con entender cómo funciona este sistema desde adentro.</p>
+        <p class="about-bio">Trabajé como banquero comercial, donde ayudé a decenas de clientes a mejorar su perfil crediticio y acceder a financiamiento real. Ese tiempo adentro del banco me cambió la perspectiva completamente — vi exactamente cómo piensan las instituciones, qué buscan, y qué decisiones toman. Hoy comparto todo eso en esta academia. Lo que yo ojalá hubiera sabido desde el primer día.</p>
+        <div class="about-stats">
+          <div class="stat-box">
+            <span class="stat-num">7+</span>
+            <span class="stat-label">Años construyendo crédito en USA</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">8</span>
+            <span class="stat-label">Módulos completos</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">∞</span>
+            <span class="stat-label">Actualizaciones incluidas</span>
+          </div>
+        </div>
+        <div class="quote-block">
+          "El objetivo no es darte una lista de pasos a seguir ciegamente. Es que desarrolles tu propio sentido lógico para tomar decisiones financieras."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background: var(--dark); padding: 100px 48px;">
+  <div class="section-inner">
+    <div class="section-label">Lo que dicen los miembros</div>
+    <h2 class="section-title" style="margin-bottom: 60px;">Resultados <span>reales</span></h2>
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    ">
+      <!-- TESTIMONIO 1 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIO 2 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIO 3 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIO 4 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIO 5 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIO 6 -->
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 12px; padding: 32px;
+        display: flex; flex-direction: column; gap: 20px;
+      ">
+        <div style="color: var(--gold); font-size: 1.4rem; letter-spacing: 0.1em;">★★★★★</div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.7; font-style: italic;">
+          "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes."
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: auto;">
+          <div style="
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(201,168,76,0.15);
+            border: 1px solid rgba(201,168,76,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+          ">👤</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">Nombre del Miembro</div>
+            <div style="font-size: 0.75rem; color: var(--gray);">Ciudad, Estado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="unirse">
+  <div class="section-inner">
+    <div class="cta-box">
+      <h2>El conocimiento sin acción <span>no cambia nada.</span></h2>
+      <p>Empieza hoy. Aprende a tu ritmo. Accede a sesiones en vivo, módulos completos, y una comunidad que se actualiza constantemente con las últimas oportunidades y cambios del sistema crediticio americano.</p>
+      <div class="cta-price">
+        <div class="cta-price-note">Membresía mensual</div>
+        <div class="cta-price-num">$XX <span>/ mes</span></div>
+      </div>
+      <a href="#" class="btn-primary" style="font-size:1rem; padding: 18px 48px;">Unirme a la Academia →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Academia Crédito USA</div>
+  <div class="footer-copy">© 2026 Academia Crédito USA · Rami Noureddine</div>
+  <a href="#" class="footer-link">Políticas de Privacidad</a>
+</footer>
+
+</body>
+</html>

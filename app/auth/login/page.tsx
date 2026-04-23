@@ -1,6 +1,6 @@
 "use client";
 import { useState, Suspense } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowLeft, User, Lock, Chrome, Loader2, Clock, CheckCircle2, BookOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -69,7 +69,7 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-2">
+          <label htmlFor="login-email" className="text-xs font-black uppercase tracking-widest text-gray-500 ml-2">
             Email o nombre de usuario
           </label>
           <div className="relative">
@@ -78,17 +78,18 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
               size={18}
             />
             <input
+              id="login-email"
               type="text"
               name="email"
               required
               placeholder="tu@email.com o ACUADMIN"
-              className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#5A4FCF] transition-all outline-none"
+              className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-2">
+          <label htmlFor="login-password" className="text-xs font-black uppercase tracking-widest text-gray-500 ml-2">
             Contraseña
           </label>
           <div className="relative">
@@ -97,16 +98,17 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
               size={18}
             />
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
               name="password"
               required
               placeholder="••••••••"
-              className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-12 focus:ring-2 focus:ring-[#5A4FCF] transition-all outline-none"
+              className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-12 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#5A4FCF] transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#C9A84C] transition-colors"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -116,7 +118,7 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
 
         <button
           disabled={loading}
-          className="w-full bg-[#1A1A2E] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-indigo-100 mt-4 flex justify-center items-center"
+          className="w-full bg-[#0B1F3A] text-white py-4 rounded-2xl font-bold hover:bg-gray-950 transition-all shadow-lg shadow-amber-100 mt-4 flex justify-center items-center"
         >
           {loading ? <Loader2 className="animate-spin" /> : "Entrar a mi cuenta"}
         </button>
@@ -131,7 +133,7 @@ export default function LoginPage() {
 
   if (suspendedReason) {
     return (
-      <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
+      <main className="min-h-screen bg-[#F8F4EE] flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/40 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-orange-100/40 blur-[100px] rounded-full pointer-events-none" />
 
@@ -143,7 +145,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl font-black text-[#1A1A2E] mb-4 leading-tight">
+          <h1 className="text-3xl font-black text-[#0B1F3A] mb-4 leading-tight">
             Cuenta Desactivada
           </h1>
           <p className="text-gray-500 leading-relaxed mb-6">
@@ -177,11 +179,11 @@ export default function LoginPage() {
 
   if (isPendingMentor) {
     return (
-      <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
+      <main className="min-h-screen bg-[#F8F4EE] flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/40 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-purple-100/40 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="w-full max-w-lg bg-white rounded-[3rem] p-12 shadow-2xl shadow-indigo-100/30 text-center border border-white z-10 relative">
+        <div className="w-full max-w-lg bg-white rounded-[3rem] p-12 shadow-2xl shadow-amber-100/30 text-center border border-white z-10 relative">
           <div className="relative w-20 h-20 mx-auto mb-8">
             <div className="absolute inset-0 bg-orange-100 rounded-3xl animate-pulse" />
             <div className="relative w-20 h-20 bg-orange-50 rounded-3xl flex items-center justify-center">
@@ -189,28 +191,28 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl font-black text-[#1A1A2E] mb-4 leading-tight">
+          <h1 className="text-3xl font-black text-[#0B1F3A] mb-4 leading-tight">
             Tu cuenta está en revisión
           </h1>
           <p className="text-gray-500 leading-relaxed mb-8">
             Gracias por registrarte como mentor en{" "}
-            <span className="font-bold text-[#5A4FCF]">Articademy</span>.
+            <span className="font-bold text-[#C9A84C]">Articademy</span>.
             Un administrador revisará tu solicitud y te dará acceso en las próximas{" "}
-            <span className="font-bold text-[#1A1A2E]">24 horas</span>.
+            <span className="font-bold text-[#0B1F3A]">24 horas</span>.
           </p>
 
           <div className="space-y-3 mb-10 text-left">
             <div className="flex items-center gap-4 p-4 bg-green-50 rounded-2xl">
               <CheckCircle2 className="text-green-500 flex-shrink-0" size={20} />
               <div>
-                <p className="text-sm font-bold text-[#1A1A2E]">Registro completado</p>
+                <p className="text-sm font-bold text-[#0B1F3A]">Registro completado</p>
                 <p className="text-xs text-gray-400">Tu cuenta fue creada exitosamente.</p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-2xl border-2 border-orange-100">
               <Clock className="text-orange-400 flex-shrink-0" size={20} />
               <div>
-                <p className="text-sm font-bold text-[#1A1A2E]">Revisión del administrador</p>
+                <p className="text-sm font-bold text-[#0B1F3A]">Revisión del administrador</p>
                 <p className="text-xs text-gray-400">En proceso — suele tardar hasta 24 horas.</p>
               </div>
             </div>
@@ -227,7 +229,7 @@ export default function LoginPage() {
             ¿Tienes dudas? Escríbenos a{" "}
             <a
               href="mailto:hola@artica.group"
-              className="text-[#5A4FCF] font-bold hover:underline"
+              className="text-[#C9A84C] font-bold hover:underline"
             >
               hola@artica.group
             </a>
@@ -235,7 +237,7 @@ export default function LoginPage() {
 
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#5A4FCF] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#C9A84C] transition-colors"
           >
             ← Volver al inicio
           </Link>
@@ -245,23 +247,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F4F7] flex items-center justify-center p-6 relative overflow-hidden">
+    <main className="min-h-screen bg-[#F8F4EE] flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-200/50 blur-[120px] rounded-full" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-indigo-100/50 blur-[100px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-amber-100/50 blur-[100px] rounded-full" />
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-xl shadow-indigo-100/50 z-10 border border-white"
+        className="w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-xl shadow-amber-100/50 z-10 border border-white"
       >
         <div className="text-center mb-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-[#5A4FCF] transition-colors mb-6 text-sm font-bold uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-[#C9A84C] transition-colors mb-6 text-sm font-bold uppercase tracking-widest"
           >
             <ArrowLeft size={16} /> Volver al inicio
           </Link>
-          <h1 className="text-3xl font-black text-[#1A1A2E] mb-2">
+          <h1 className="text-3xl font-black text-[#0B1F3A] mb-2">
             Bienvenido de nuevo
           </h1>
           <p className="text-gray-400 font-medium">
@@ -269,7 +271,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Suspense fallback={<div className="text-center"><Loader2 className="animate-spin mx-auto text-[#5A4FCF]" /></div>}>
+        <Suspense fallback={<div className="text-center"><Loader2 className="animate-spin mx-auto text-[#C9A84C]" /></div>}>
           <LoginForm onPendingMentor={() => setIsPendingMentor(true)} onSuspended={(r) => setSuspendedReason(r)} />
         </Suspense>
 
@@ -280,7 +282,7 @@ export default function LoginPage() {
           </span>
         </div>
 
-        <button className="w-full bg-white border border-gray-100 text-[#1A1A2E] py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-50 transition-all">
+        <button className="w-full bg-white border border-gray-100 text-[#0B1F3A] py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-50 transition-all">
           <Chrome size={20} /> Google
         </button>
 
@@ -288,12 +290,12 @@ export default function LoginPage() {
           ¿No tienes cuenta?{" "}
           <Link
             href="/auth/signup"
-            className="text-[#5A4FCF] font-bold hover:underline"
+            className="text-[#C9A84C] font-bold hover:underline"
           >
             Regístrate gratis
           </Link>
         </p>
-      </motion.div>
+      </m.div>
     </main>
   );
 }

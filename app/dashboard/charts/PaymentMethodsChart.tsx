@@ -13,7 +13,7 @@ type DataPoint = {
   value: number;
 };
 
-const COLORS = ["#5A4FCF", "#8B5CF6", "#D8B4FE", "#EDE9FE", "#C7D2FE"];
+const COLORS = ["#C9A84C", "#8B5CF6", "#D8B4FE", "#EDE9FE", "#C7D2FE"];
 
 export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
   return (
@@ -30,7 +30,7 @@ export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip 

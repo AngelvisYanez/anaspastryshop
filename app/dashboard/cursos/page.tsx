@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 import { PlusCircle, Video, Users, Trash2, Edit } from "lucide-react";
 import CourseActions from "./CourseActions";
 
@@ -26,7 +27,7 @@ export default async function CursosDashboardPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E] tracking-tighter">
+          <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tighter">
             Cursos & Contenido
           </h1>
           <p className="text-gray-500 mt-2">
@@ -35,7 +36,7 @@ export default async function CursosDashboardPage() {
         </div>
         <Link
           href="/dashboard/cursos/create"
-          className="bg-[#5A4FCF] text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-bold shadow-lg hover:bg-indigo-600 transition-colors"
+          className="bg-[#C9A84C] text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-bold shadow-lg hover:bg-indigo-600 transition-colors"
         >
           <PlusCircle size={20} />
           <span>Crear Curso</span>
@@ -44,14 +45,14 @@ export default async function CursosDashboardPage() {
 
       {cursos.length === 0 ? (
         <div className="bg-white rounded-[2rem] p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center">
-          <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-            <Video className="text-indigo-400" size={32} />
+          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-4">
+            <Video className="text-amber-400" size={32} />
           </div>
-          <h3 className="text-xl font-bold text-[#1A1A2E]">No tienes cursos publicados</h3>
+          <h3 className="text-xl font-bold text-[#0B1F3A]">No tienes cursos publicados</h3>
           <p className="text-gray-400 mt-2 mb-6">El catálogo está vacío. Comienza tu primer curso ahora.</p>
           <Link
             href="/dashboard/cursos/create"
-            className="bg-[#1A1A2E] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-90"
+            className="bg-[#0B1F3A] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-90"
           >
             Publicar Curso
           </Link>
@@ -62,19 +63,18 @@ export default async function CursosDashboardPage() {
             <div key={c.id} className="relative bg-white rounded-[2rem] border border-gray-100 p-6 flex flex-col hover:shadow-xl transition-all h-full group">
               <CourseActions courseId={c.id} hasEnrolled={c._count.inscritos > 0} />
               {c.image ? (
-                <div className="w-full h-40 bg-gray-100 rounded-2xl mb-5 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
+                <div className="relative w-full h-40 bg-gray-100 rounded-2xl mb-5 overflow-hidden">
+                  <Image src={c.image} alt={c.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                 </div>
               ) : (
-                <div className="w-full h-40 bg-indigo-50 rounded-2xl mb-5 flex items-center justify-center">
+                <div className="w-full h-40 bg-amber-50 rounded-2xl mb-5 flex items-center justify-center">
                   <Video className="text-indigo-200" size={32} />
                 </div>
               )}
               
               <div className="flex-1">
                 <div className="flex justify-between items-start gap-2 mb-2">
-                  <h3 className="font-bold text-[#1A1A2E] leading-tight line-clamp-2">{c.title}</h3>
+                  <h3 className="font-bold text-[#0B1F3A] leading-tight line-clamp-2">{c.title}</h3>
                   <span className="font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg text-xs whitespace-nowrap">
                     ${c.price}
                   </span>

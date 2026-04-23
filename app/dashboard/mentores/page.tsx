@@ -13,7 +13,7 @@ export default async function MentoresPage() {
   const mentores = await prisma.user.findMany({
     where: { role: "MENTOR" },
     include: {
-      _count: { select: { talleres: true, cursos: true } },
+      _count: { select: { cursos: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -21,7 +21,7 @@ export default async function MentoresPage() {
   return (
     <div className="p-8">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#1A1A2E]">Mentores</h1>
+        <h1 className="text-3xl font-black text-[#0B1F3A]">Mentores</h1>
         <p className="text-gray-400 font-medium">
           Gestiona, valida y administra los mentores de la plataforma.
         </p>

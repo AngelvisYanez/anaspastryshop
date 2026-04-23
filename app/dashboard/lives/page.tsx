@@ -8,7 +8,7 @@ import LiveActions from "./LiveActions";
 const STATUS_CONFIG = {
   SCHEDULED: {
     label: "Programado",
-    class: "bg-indigo-50 text-[#5A4FCF]",
+    class: "bg-amber-50 text-[#C9A84C]",
     dot: "bg-indigo-400",
   },
   LIVE: {
@@ -45,13 +45,13 @@ export default async function LivesDashboardPage() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">Gestionar Lives</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A]">Gestionar Lives</h1>
           <p className="text-gray-400 font-medium">
             Crea y administra tus transmisiones en vivo.
           </p>
         </div>
         <Link href="/dashboard/lives/create">
-          <button className="bg-[#5A4FCF] text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-[#483dbb] transition-all shadow-lg shadow-indigo-100">
+          <button className="bg-[#C9A84C] text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-[#B89640] transition-all shadow-lg shadow-amber-100">
             <Plus size={20} /> Nuevo Live
           </button>
         </Link>
@@ -61,7 +61,7 @@ export default async function LivesDashboardPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Total</p>
-            <p className="text-3xl font-black text-[#1A1A2E]">{lives.length}</p>
+            <p className="text-3xl font-black text-[#0B1F3A]">{lives.length}</p>
           </div>
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">En Vivo</p>
@@ -69,7 +69,7 @@ export default async function LivesDashboardPage() {
           </div>
           <div className="bg-white rounded-[2rem] p-5 border border-gray-100 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Programados</p>
-            <p className="text-3xl font-black text-[#5A4FCF]">{programados}</p>
+            <p className="text-3xl font-black text-[#C9A84C]">{programados}</p>
           </div>
         </div>
       )}
@@ -79,7 +79,7 @@ export default async function LivesDashboardPage() {
           <Radio className="mx-auto text-gray-200 mb-4" size={48} />
           <p className="text-gray-400 font-bold mb-4">No hay transmisiones creadas.</p>
           <Link href="/dashboard/lives/create">
-            <span className="text-[#5A4FCF] font-bold hover:underline text-sm">
+            <span className="text-[#C9A84C] font-bold hover:underline text-sm">
               Crear la primera transmisión
             </span>
           </Link>
@@ -107,7 +107,7 @@ export default async function LivesDashboardPage() {
                   )}
                 </div>
 
-                <h3 className="text-xl font-bold text-[#1A1A2E] mb-2 leading-snug">
+                <h3 className="text-xl font-bold text-[#0B1F3A] mb-2 leading-snug">
                   {live.title}
                 </h3>
 
@@ -119,7 +119,7 @@ export default async function LivesDashboardPage() {
 
                 {live.scheduledAt && (
                   <div className="flex items-center gap-2 text-sm text-gray-500 font-medium mb-6">
-                    <Calendar size={14} className="text-[#5A4FCF]" />
+                    <Calendar size={14} className="text-[#C9A84C]" />
                     {new Date(live.scheduledAt).toLocaleString("es-ES", {
                       dateStyle: "medium",
                       timeStyle: "short",

@@ -202,8 +202,9 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </h2>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Título</label>
+            <label htmlFor="edit-live-title" className="block text-sm font-bold text-[#1A1A2E] mb-2">Título</label>
             <input
+              id="edit-live-title"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -212,8 +213,9 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Descripción</label>
+            <label htmlFor="edit-live-desc" className="block text-sm font-bold text-[#1A1A2E] mb-2">Descripción</label>
             <textarea
+              id="edit-live-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -222,8 +224,9 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Fecha y hora programada</label>
+            <label htmlFor="edit-live-date" className="block text-sm font-bold text-[#1A1A2E] mb-2">Fecha y hora programada</label>
             <input
+              id="edit-live-date"
               type="datetime-local"
               value={scheduledAt}
               onChange={(e) => setScheduledAt(e.target.value)}
@@ -239,9 +242,10 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </h2>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">RTMPS Server URL</label>
+            <label htmlFor="edit-live-rtmps" className="block text-sm font-bold text-[#1A1A2E] mb-2">RTMPS Server URL</label>
             <div className="flex gap-2">
               <input
+                id="edit-live-rtmps"
                 value={rtmpsUrl}
                 onChange={(e) => setRtmpsUrl(e.target.value)}
                 placeholder="rtmps://live.cloudflare.com:443/live/"
@@ -260,9 +264,10 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Stream Key</label>
+            <label htmlFor="edit-live-key" className="block text-sm font-bold text-[#1A1A2E] mb-2">Stream Key</label>
             <div className="flex gap-2">
               <input
+                id="edit-live-key"
                 type={showKey ? "text" : "password"}
                 value={streamKey}
                 onChange={(e) => setStreamKey(e.target.value)}
@@ -289,8 +294,9 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Playback URL / ID</label>
+            <label htmlFor="edit-live-playback" className="block text-sm font-bold text-[#1A1A2E] mb-2">Playback URL / ID</label>
             <input
+              id="edit-live-playback"
               value={playbackId}
               onChange={(e) => setPlaybackId(e.target.value)}
               placeholder="ID o URL para los espectadores"

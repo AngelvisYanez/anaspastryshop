@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Briefcase,
   CheckCircle2,
@@ -36,20 +36,20 @@ const STEPS = [
 
 export default function PasantiasPage() {
   return (
-    <main className="min-h-screen bg-[#F4F4F7] pt-32 pb-20">
+    <main className="min-h-screen bg-[#F8F4EE] pt-32 pb-20">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6">
         {/* --- HEADER --- */}
         <section className="text-center mb-24">
-          <motion.span
+          <m.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[#5A4FCF] font-black uppercase tracking-[0.3em] text-xs mb-4 block"
+            className="text-[#C9A84C] font-black uppercase tracking-[0.3em] text-xs mb-4 block"
           >
             Career Path
-          </motion.span>
-          <h1 className="text-5xl md:text-8xl font-black text-[#1A1A2E] tracking-tighter mb-8 leading-none">
+          </m.span>
+          <h1 className="text-5xl md:text-8xl font-black text-[#0B1F3A] tracking-tighter mb-8 leading-none">
             De Alumno a <br />{" "}
             <span className="text-gray-300 italic">Professional.</span>
           </h1>
@@ -66,8 +66,8 @@ export default function PasantiasPage() {
           <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gray-200 -z-10" />
 
           {STEPS.map((step, index) => (
-            <motion.div
-              key={index}
+            <m.div
+              key={step.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -76,7 +76,7 @@ export default function PasantiasPage() {
               <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
                 {step.icon}
               </div>
-              <h3 className="text-xl font-bold text-[#1A1A2E] mb-3">
+              <h3 className="text-xl font-bold text-[#0B1F3A] mb-3">
                 {step.title}
               </h3>
               <p className="text-sm text-gray-400 leading-relaxed">
@@ -85,15 +85,15 @@ export default function PasantiasPage() {
               <div className="mt-6 text-[10px] font-black text-gray-200">
                 STEP 0{index + 1}
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </section>
 
         {/* --- SECCIÓN DE BENEFICIOS (Bento Style) --- */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32">
-          <div className="bg-[#1A1A2E] text-white rounded-[3rem] p-12 md:p-16 flex flex-col justify-between overflow-hidden relative">
+          <div className="bg-[#0B1F3A] text-white rounded-[3rem] p-12 md:p-16 flex flex-col justify-between overflow-hidden relative">
             <div className="z-10">
-              <ShieldCheck className="text-[#5A4FCF] mb-6" size={40} />
+              <ShieldCheck className="text-[#C9A84C] mb-6" size={40} />
               <h2 className="text-4xl font-bold mb-6">
                 Certificación con <br /> Respaldo Internacional
               </h2>
@@ -111,7 +111,7 @@ export default function PasantiasPage() {
           <div className="bg-white rounded-[3rem] p-12 md:p-16 border border-gray-100 flex flex-col justify-center">
             <div className="space-y-8">
               <div className="flex gap-6 items-start">
-                <div className="p-4 bg-indigo-50 rounded-2xl text-[#5A4FCF] font-bold">
+                <div className="p-4 bg-amber-50 rounded-2xl text-[#C9A84C] font-bold">
                   01
                 </div>
                 <div>
@@ -123,7 +123,7 @@ export default function PasantiasPage() {
                 </div>
               </div>
               <div className="flex gap-6 items-start">
-                <div className="p-4 bg-purple-50 rounded-2xl text-[#5A4FCF] font-bold">
+                <div className="p-4 bg-amber-50 rounded-2xl text-[#C9A84C] font-bold">
                   02
                 </div>
                 <div>
@@ -135,7 +135,7 @@ export default function PasantiasPage() {
                 </div>
               </div>
               <div className="flex gap-6 items-start">
-                <div className="p-4 bg-green-50 rounded-2xl text-[#5A4FCF] font-bold">
+                <div className="p-4 bg-green-50 rounded-2xl text-[#C9A84C] font-bold">
                   03
                 </div>
                 <div>
@@ -153,7 +153,7 @@ export default function PasantiasPage() {
         </section>
 
         {/* --- CTA FINAL --- */}
-        <section className="bg-gradient-to-br from-[#5A4FCF] to-[#1A1A2E] rounded-[4rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
+        <section className="bg-gradient-to-br from-[#C9A84C] to-[#0B1F3A] rounded-[4rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
           <div className="z-10 relative">
             <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">
               ¿Listo para el desafío?
@@ -162,7 +162,7 @@ export default function PasantiasPage() {
               Solo abrimos 5 cupos de pasantía por trimestre para garantizar la
               calidad del aprendizaje.
             </p>
-            <button className="bg-white text-[#1A1A2E] px-12 py-6 rounded-full font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-3 mx-auto shadow-2xl">
+            <button className="bg-white text-[#0B1F3A] px-12 py-6 rounded-full font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-3 mx-auto shadow-2xl">
               Postularme ahora <ArrowRight size={20} />
             </button>
           </div>

@@ -21,7 +21,6 @@ export async function getPendingPayments() {
       },
       include: {
         user: { select: { name: true, email: true } },
-        taller: { select: { title: true, price: true } },
         curso: { select: { title: true, price: true } },
       },
       orderBy: { createdAt: "desc" },

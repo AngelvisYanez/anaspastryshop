@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as LucideIcons from "lucide-react";
 import {
-  LayoutDashboard, BookOpen, Calendar, CreditCard,
+  LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Tag, Activity, X,
   Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
 } from "lucide-react";
@@ -29,7 +29,6 @@ function DynamicIcon({ name, size = 20 }: { name: string; size?: number }) {
 const SYSTEM_ITEMS = [
   { name: "Inicio",            href: "/dashboard",               icon: LayoutDashboard, roles: ["ADMIN", "MENTOR", "USER"] },
   { name: "Mis Cursos",        href: "/dashboard/mis-cursos",    icon: BookOpen,        roles: ["USER"] },
-  { name: "Gestionar Talleres",href: "/dashboard/talleres",      icon: Calendar,        roles: ["ADMIN", "MENTOR"] },
   { name: "Gestionar Cursos",  href: "/dashboard/cursos",        icon: BookOpen,        roles: ["ADMIN", "MENTOR"] },
   { name: "Gestionar Lives",   href: "/dashboard/lives",         icon: Radio,           roles: ["ADMIN", "MENTOR"] },
   { name: "Webinars",          href: "/dashboard/webinars",      icon: Video,           roles: ["ADMIN"] },
@@ -44,11 +43,13 @@ const SYSTEM_ITEMS = [
   { name: "Configuración",     href: "/dashboard/settings",      icon: Settings,        roles: ["ADMIN", "MENTOR", "USER"] },
 ];
 
+const EMPTY_SECTIONS: PlatformSection[] = [];
+
 export default function Sidebar({
   user,
   onMenuClick,
   isBlockedMentor = false,
-  platformSections = [],
+  platformSections = EMPTY_SECTIONS,
 }: {
   user: any;
   onMenuClick?: () => void;
@@ -73,8 +74,8 @@ export default function Sidebar({
   const linkClass = (href: string) =>
     `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
       isActive(href)
-        ? "bg-[#5A4FCF] text-white shadow-lg shadow-indigo-100"
-        : "text-gray-400 hover:bg-gray-50 hover:text-[#1A1A2E]"
+        ? "bg-[#C9A84C] text-white shadow-lg shadow-amber-100"
+        : "text-gray-400 hover:bg-gray-50 hover:text-[#0B1F3A]"
     }`;
 
   return (
@@ -85,6 +86,7 @@ export default function Sidebar({
             src="/logo_II.webp"
             alt="ARTICADEMY"
             fill
+            sizes="144px"
             className="object-contain object-left"
             priority
           />

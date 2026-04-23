@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+﻿import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Calendar, Tag, ShieldAlert } from "lucide-react";
@@ -37,7 +37,7 @@ function formatDetails(raw: string | null): string {
 
 const ACTION_STYLES: Record<string, string> = {
   CREATE:  "bg-green-50 text-green-600",
-  UPDATE:  "bg-indigo-50 text-[#5A4FCF]",
+  UPDATE:  "bg-amber-50 text-[#C9A84C]",
   DELETE:  "bg-red-50 text-red-600",
   APPROVE: "bg-emerald-50 text-emerald-600",
   REVOKE:  "bg-orange-50 text-orange-500",
@@ -54,7 +54,6 @@ const ACTION_LABELS: Record<string, string> = {
 const ENTITY_LABELS: Record<string, string> = {
   USER:        "Usuario",
   MENTOR:      "Mentor",
-  TALLER:      "Taller",
   CURSO:       "Curso",
   CATEGORY:    "Categoría",
   INSCRIPTION: "Inscripción",
@@ -82,7 +81,7 @@ export default async function LogsPage() {
           <ShieldAlert size={32} />
         </div>
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E]">Registro de Actividad</h1>
+          <h1 className="text-3xl font-black text-[#0B1F3A]">Registro de Actividad</h1>
           <p className="text-gray-400 font-medium">Panel de auditoría del sistema (Solo Administradores).</p>
         </div>
       </div>
@@ -120,7 +119,7 @@ export default async function LogsPage() {
                     </td>
 
                     {/* Usuario */}
-                    <td className="py-4 text-sm font-bold text-[#1A1A2E]">
+                    <td className="py-4 text-sm font-bold text-[#0B1F3A]">
                       <div className="flex flex-col">
                         <span>{log.user.name || "Sin nombre"}</span>
                         <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
@@ -141,7 +140,7 @@ export default async function LogsPage() {
                     {/* Entidad */}
                     <td className="py-4">
                       <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600">
-                        <Tag size={13} className="text-[#5A4FCF]" />
+                        <Tag size={13} className="text-[#C9A84C]" />
                         {ENTITY_LABELS[log.entityType] ?? log.entityType}
                       </div>
                     </td>

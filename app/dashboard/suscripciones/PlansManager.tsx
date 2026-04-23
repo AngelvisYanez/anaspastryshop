@@ -24,10 +24,10 @@ type Plan = {
 };
 
 const PAYMENT_METHODS = [
-  { key: "STRIPE",     label: "Stripe",       Icon: CreditCard,  color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+  { key: "STRIPE",     label: "Stripe",       Icon: CreditCard,  color: "bg-amber-50 text-amber-700 border-indigo-200" },
   { key: "PAYPAL",     label: "PayPal",        Icon: DollarSign,  color: "bg-blue-50 text-blue-600 border-blue-200" },
   { key: "BINANCE",    label: "Binance Pay",   Icon: Bitcoin,     color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
-  { key: "ZELLE",      label: "Zelle",         Icon: Zap,         color: "bg-purple-50 text-purple-600 border-purple-200" },
+  { key: "ZELLE",      label: "Zelle",         Icon: Zap,         color: "bg-amber-50 text-amber-700 border-purple-200" },
   { key: "PAGO_MOVIL", label: "Pago Móvil",    Icon: Smartphone,  color: "bg-green-50 text-green-600 border-green-200" },
   { key: "USDT",       label: "USDT / Crypto", Icon: Wallet,      color: "bg-orange-50 text-orange-600 border-orange-200" },
 ];
@@ -150,7 +150,7 @@ export default function PlansManager({
       {/* FORM */}
       <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm h-fit">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2 text-[#5A4FCF] font-bold text-sm uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-[#C9A84C] font-bold text-sm uppercase tracking-widest">
             <Star size={16} />
             {editingId ? "Editar Plan" : "Nuevo Plan"}
           </div>
@@ -180,7 +180,7 @@ export default function PlansManager({
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="Ej. Plan Esencial"
-              className="w-full bg-gray-50 border-none rounded-2xl py-4 px-5 focus:ring-2 focus:ring-[#5A4FCF] outline-none font-bold text-[#1A1A2E]"
+              className="w-full bg-gray-50 border-none rounded-2xl py-4 px-5 focus:ring-2 focus:ring-[#C9A84C] outline-none font-bold text-[#0B1F3A]"
             />
           </div>
 
@@ -196,7 +196,7 @@ export default function PlansManager({
               value={form.price}
               onChange={(e) => setForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))}
               placeholder="29.00"
-              className="w-full bg-gray-50 border-none rounded-2xl py-4 px-5 focus:ring-2 focus:ring-[#5A4FCF] outline-none font-bold text-[#1A1A2E]"
+              className="w-full bg-gray-50 border-none rounded-2xl py-4 px-5 focus:ring-2 focus:ring-[#C9A84C] outline-none font-bold text-[#0B1F3A]"
             />
           </div>
 
@@ -209,7 +209,7 @@ export default function PlansManager({
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               placeholder="Breve descripción del plan..."
               rows={2}
-              className="w-full bg-gray-50 border-none rounded-2xl py-3 px-5 focus:ring-2 focus:ring-[#5A4FCF] outline-none text-sm text-[#1A1A2E] resize-none"
+              className="w-full bg-gray-50 border-none rounded-2xl py-3 px-5 focus:ring-2 focus:ring-[#C9A84C] outline-none text-sm text-[#0B1F3A] resize-none"
             />
           </div>
 
@@ -273,19 +273,19 @@ export default function PlansManager({
           </div>
 
           {/* ACCESO A WEBINARS */}
-          <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-2xl">
+          <div className="flex items-center justify-between p-4 bg-amber-50 rounded-2xl">
             <div className="flex items-center gap-2">
-              <Video size={16} className="text-[#5A4FCF]" />
+              <Video size={16} className="text-[#C9A84C]" />
               <div>
                 <span className="text-sm font-bold text-[#3730a3]">Acceso a Webinars</span>
-                <p className="text-[10px] text-indigo-400 font-medium">Ver y unirse a webinars en vivo</p>
+                <p className="text-[10px] text-amber-400 font-medium">Ver y unirse a webinars en vivo</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, hasWebinarAccess: !f.hasWebinarAccess }))}
               className={`w-11 h-6 rounded-full relative transition-colors ${
-                form.hasWebinarAccess ? "bg-[#5A4FCF]" : "bg-gray-200"
+                form.hasWebinarAccess ? "bg-[#C9A84C]" : "bg-gray-200"
               }`}
             >
               <div
@@ -312,13 +312,13 @@ export default function PlansManager({
                       onClick={() => toggleModule(sec.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border-2 transition-all text-left ${
                         checked
-                          ? "border-[#5A4FCF] bg-indigo-50 text-[#5A4FCF]"
+                          ? "border-[#C9A84C] bg-amber-50 text-[#C9A84C]"
                           : "border-gray-100 text-gray-500 hover:border-gray-200"
                       }`}
                     >
                       <div
                         className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
-                          checked ? "bg-[#5A4FCF] border-[#5A4FCF]" : "border-gray-300"
+                          checked ? "bg-[#C9A84C] border-[#C9A84C]" : "border-gray-300"
                         }`}
                       >
                         {checked && <CheckCircle size={12} className="text-white" />}
@@ -345,7 +345,7 @@ export default function PlansManager({
               type="button"
               onClick={() => setForm((f) => ({ ...f, isActive: !f.isActive }))}
               className={`w-11 h-6 rounded-full relative transition-colors ${
-                form.isActive ? "bg-[#5A4FCF]" : "bg-gray-200"
+                form.isActive ? "bg-[#C9A84C]" : "bg-gray-200"
               }`}
             >
               <div
@@ -359,7 +359,7 @@ export default function PlansManager({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#1A1A2E] text-white py-4 rounded-[2rem] font-bold hover:bg-[#5A4FCF] transition-all uppercase tracking-widest text-xs flex justify-center items-center gap-2"
+            className="w-full bg-[#0B1F3A] text-white py-4 rounded-[2rem] font-bold hover:bg-[#C9A84C] transition-all uppercase tracking-widest text-xs flex justify-center items-center gap-2"
           >
             {loading ? (
               <Loader2 size={15} className="animate-spin" />
@@ -375,7 +375,7 @@ export default function PlansManager({
 
       {/* LISTA */}
       <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
-        <h3 className="text-xl font-bold text-[#1A1A2E] mb-6">Planes Actuales</h3>
+        <h3 className="text-xl font-bold text-[#0B1F3A] mb-6">Planes Actuales</h3>
         {plans.length === 0 ? (
           <p className="text-sm text-gray-400 italic text-center py-10 bg-gray-50 rounded-3xl">
             No hay planes creados aún.
@@ -391,8 +391,8 @@ export default function PlansManager({
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
-                    <p className="font-bold text-[#1A1A2E]">{plan.name}</p>
-                    <p className="text-2xl font-black text-[#5A4FCF]">
+                    <p className="font-bold text-[#0B1F3A]">{plan.name}</p>
+                    <p className="text-2xl font-black text-[#C9A84C]">
                       ${plan.price}
                       <span className="text-xs text-gray-400 font-normal ml-1">/mes</span>
                     </p>
@@ -400,13 +400,13 @@ export default function PlansManager({
                   <div className="flex gap-2">
                     <button
                       onClick={() => startEdit(plan)}
-                      className="p-2 rounded-xl text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 transition-colors"
+                      className="p-2 rounded-xl text-gray-500 hover:text-[#C9A84C] hover:bg-amber-50 transition-colors"
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       onClick={() => handleDelete(plan.id)}
-                      className="p-2 rounded-xl text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      className="p-2 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -454,7 +454,7 @@ export default function PlansManager({
                       .map((s) => (
                         <span
                           key={s.id}
-                          className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-[#5A4FCF] px-2 py-1 rounded-lg"
+                          className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest bg-amber-50 text-[#C9A84C] px-2 py-1 rounded-lg"
                         >
                           <DynamicIcon name={s.icon} size={10} /> {s.name}
                         </span>

@@ -17,7 +17,6 @@ export default function DashboardHeader({
   // Mapeo simple de títulos según la ruta
   const getPageTitle = (path: string) => {
     if (path === "/dashboard") return "Inicio";
-    if (path.includes("/talleres")) return "Talleres";
     if (path.includes("/cursos")) return "Cursos";
     if (path.includes("/pagos")) return "Pagos";
     if (path.includes("/usuarios")) return "Usuarios";
@@ -40,7 +39,7 @@ export default function DashboardHeader({
           <Menu size={24} />
         </button>
         <div>
-          <h2 className="text-xl font-bold text-[#1A1A2E] tracking-tight transition-all">
+          <h2 className="text-xl font-bold text-[#0B1F3A] tracking-tight transition-all">
             {isBlockedMentor ? "Perfil Incompleto" : getPageTitle(pathname)}
           </h2>
           {isBlockedMentor ? (
@@ -59,10 +58,10 @@ export default function DashboardHeader({
       <div className="flex items-center gap-6">
         {/* Buscador e Iconos */}
         <div className="flex items-center gap-2 pr-4 md:pr-6 border-r border-gray-100">
-          <button className="hidden sm:block p-2.5 text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 rounded-full transition-all" title="Buscar">
+          <button className="hidden sm:block p-2.5 text-gray-500 hover:text-[#C9A84C] hover:bg-amber-50 rounded-full transition-all" title="Buscar">
             <Search size={20} />
           </button>
-          <button className="relative p-2.5 text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 rounded-full transition-all" title="Notificaciones">
+          <button className="relative p-2.5 text-gray-500 hover:text-[#C9A84C] hover:bg-amber-50 rounded-full transition-all" title="Notificaciones">
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
           </button>
@@ -72,7 +71,7 @@ export default function DashboardHeader({
         <div className="flex items-center gap-3 bg-gray-50/50 p-1.5 md:pr-5 rounded-2xl border border-gray-100/50 hover:bg-gray-100/50 transition-colors cursor-pointer group">
           <div className="w-10 h-10 rounded-xl overflow-hidden border border-white shadow-sm relative shrink-0">
             {user.image ? (
-              <img src={user.image} alt={user.name || "Perfil"} className="w-full h-full object-cover" />
+              <Image src={user.image} alt={user.name || "Perfil"} width={40} height={40} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs uppercase">
                 {user.name ? user.name.substring(0, 2) : <UserIcon size={16} />}
@@ -80,7 +79,7 @@ export default function DashboardHeader({
             )}
           </div>
           <div className="hidden md:flex flex-col">
-            <span className="text-sm font-black text-[#1A1A2E] leading-tight truncate max-w-[120px]">
+            <span className="text-sm font-black text-[#0B1F3A] leading-tight truncate max-w-[120px]">
               {user.name || "Usuario"}
             </span>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">

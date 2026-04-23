@@ -111,10 +111,10 @@ const GATEWAYS: GatewayDef[] = [
 ];
 
 const COLOR_MAP: Record<string, string> = {
-  indigo: "bg-indigo-50 text-indigo-600 border-indigo-100",
+  indigo: "bg-amber-50 text-amber-700 border-amber-200",
   blue: "bg-blue-50 text-blue-600 border-blue-100",
   yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
-  purple: "bg-purple-50 text-purple-600 border-purple-100",
+  purple: "bg-amber-50 text-amber-700 border-purple-100",
   green: "bg-green-50 text-green-600 border-green-100",
   orange: "bg-orange-50 text-orange-600 border-orange-100",
 };
@@ -197,8 +197,11 @@ function GatewayCard({
       }`}
     >
       <div
+        role="button"
+        tabIndex={0}
         className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-gray-50/50 transition-colors"
         onClick={() => setOpen(!open)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!open); } }}
       >
         <div className="flex items-center gap-4">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${colorClass}`}>
@@ -206,11 +209,11 @@ function GatewayCard({
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <p className="font-bold text-[#1A1A2E]">{def.label}</p>
+              <p className="font-bold text-[#0B1F3A]">{def.label}</p>
               <span
                 className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
                   def.type === "automatic"
-                    ? "bg-indigo-50 text-[#5A4FCF]"
+                    ? "bg-amber-50 text-[#C9A84C]"
                     : "bg-gray-100 text-gray-500"
                 }`}
               >
@@ -227,7 +230,7 @@ function GatewayCard({
               setForm((f) => ({ ...f, isEnabled: !f.isEnabled }));
             }}
             className={`w-12 h-6 rounded-full relative transition-colors ${
-              form.isEnabled ? "bg-[#5A4FCF]" : "bg-gray-200"
+              form.isEnabled ? "bg-[#C9A84C]" : "bg-gray-200"
             }`}
           >
             <div
@@ -257,20 +260,20 @@ function GatewayCard({
 
             return (
               <div key={field.key}>
-                <label className="block text-xs font-bold text-[#1A1A2E] mb-1.5">{field.label}</label>
+                <label className="block text-xs font-bold text-[#0B1F3A] mb-1.5">{field.label}</label>
                 <div className="flex gap-2">
                   <input
                     type={isSecret && !visible ? "password" : "text"}
                     value={value}
                     onChange={(e) => setField(field.key, e.target.value, isExtra)}
                     placeholder={field.placeholder}
-                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#5A4FCF] transition-all font-mono text-[#1A1A2E] placeholder:font-sans placeholder:text-gray-400"
+                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#C9A84C] transition-all font-mono text-[#0B1F3A] placeholder:font-sans placeholder:text-gray-400"
                   />
                   {isSecret && (
                     <button
                       type="button"
                       onClick={() => toggleSecret(field.key)}
-                      className="px-4 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#5A4FCF] transition-colors"
+                      className="px-4 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#C9A84C] transition-colors"
                     >
                       {visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -290,7 +293,7 @@ function GatewayCard({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-[#1A1A2E] text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-[#5A4FCF] transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-[#0B1F3A] text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-[#C9A84C] transition-all disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {saving ? "Guardando..." : "Guardar"}
@@ -311,7 +314,7 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
   return (
     <div className="max-w-3xl">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#1A1A2E] mb-2">Métodos de Pago</h1>
+        <h1 className="text-3xl font-black text-[#0B1F3A] mb-2">Métodos de Pago</h1>
         <p className="text-gray-400 font-medium">
           Configura las pasarelas activas y los datos de las cuentas de pago manual.
         </p>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { approvePayment, rejectPayment } from "@/lib/actions/payments";
 import { Check, X, Loader2, FileImage } from "lucide-react";
@@ -20,8 +20,8 @@ export default function PaymentCard({ inscription }: { inscription: InscriptionP
     setLoading(null);
   }
 
-  const itemTitle = inscription.taller?.title || inscription.curso?.title || "Elemento Desconocido";
-  const expectedPrice = inscription.taller?.price || inscription.curso?.price || 0;
+  const itemTitle = inscription.curso?.title || "Elemento Desconocido";
+  const expectedPrice = inscription.curso?.price || 0;
 
   return (
     <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -34,28 +34,28 @@ export default function PaymentCard({ inscription }: { inscription: InscriptionP
             {new Date(inscription.createdAt).toLocaleDateString()}
           </span>
         </div>
-        <h3 className="text-xl font-bold text-[#1A1A2E] mb-1">{inscription.user.name || inscription.user.email}</h3>
+        <h3 className="text-xl font-bold text-[#0B1F3A] mb-1">{inscription.user.name || inscription.user.email}</h3>
         <p className="text-sm text-gray-500 font-medium mb-4">
-          Quiere acceder a: <span className="text-[#5A4FCF] font-bold">{itemTitle}</span>
+          Quiere acceder a: <span className="text-[#C9A84C] font-bold">{itemTitle}</span>
         </p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-2xl">
           <div>
             <p className="text-[10px] font-black uppercase text-gray-400">Método</p>
-            <p className="text-sm font-bold text-[#1A1A2E]">{inscription.method}</p>
+            <p className="text-sm font-bold text-[#0B1F3A]">{inscription.method}</p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase text-gray-400">Referencia</p>
-            <p className="text-sm font-bold text-[#1A1A2E]">{inscription.reference || "N/A"}</p>
+            <p className="text-sm font-bold text-[#0B1F3A]">{inscription.reference || "N/A"}</p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase text-gray-400">Monto Reportado</p>
-            <p className="text-sm font-bold text-[#1A1A2E]">${inscription.amountPaid} / ${expectedPrice}</p>
+            <p className="text-sm font-bold text-[#0B1F3A]">${inscription.amountPaid} / ${expectedPrice}</p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase text-gray-400">Captura</p>
             {inscription.receiptImage ? (
-              <a href={inscription.receiptImage} target="_blank" rel="noreferrer" className="text-[#5A4FCF] text-sm font-bold flex items-center gap-1 hover:underline">
+              <a href={inscription.receiptImage} target="_blank" rel="noreferrer" className="text-[#C9A84C] text-sm font-bold flex items-center gap-1 hover:underline">
                 <FileImage size={14} /> Ver
               </a>
             ) : (

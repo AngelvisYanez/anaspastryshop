@@ -130,10 +130,10 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
     <div className="p-8 max-w-5xl mx-auto pb-24 bg-white md:bg-transparent">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/dashboard/cursos" className="p-2 hover:bg-white rounded-xl transition-colors border border-transparent hover:border-gray-100">
-          <ArrowLeft size={24} className="text-[#1A1A2E]" />
+          <ArrowLeft size={24} className="text-[#0B1F3A]" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E] tracking-tighter">
+          <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tighter">
             Crear Nuevo Curso
           </h1>
           <p className="text-gray-600 mt-1 font-medium">
@@ -151,16 +151,16 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* PARTE 1: Información Base */}
         <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
-          <h2 className="text-xl font-bold text-[#1A1A2E] mb-6 flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
+          <h2 className="text-xl font-bold text-[#0B1F3A] mb-6 flex items-center gap-2">
+            <span className="bg-[#C9A84C] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
             Información del Curso
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Solo Admin: Asignar Mentor */}
             {isAdmin && (
-              <div className="col-span-1 md:col-span-2 bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 flex flex-col gap-2 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+              <div className="col-span-1 md:col-span-2 bg-amber-50/50 p-5 rounded-2xl border border-amber-200 flex flex-col gap-2 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
                 <label className="block text-sm font-black text-indigo-900 uppercase tracking-widest">
                   Mentor Asignado
                 </label>
@@ -180,20 +180,20 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
             )}
 
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Título del Curso</label>
-              <input required value={title} onChange={e => setTitle(e.target.value)} type="text" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] placeholder:text-gray-500/80" placeholder="Ej. Publicidad en Meta Ads desde Cero" />
+              <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Título del Curso</label>
+              <input required value={title} onChange={e => setTitle(e.target.value)} type="text" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="Ej. Publicidad en Meta Ads desde Cero" />
             </div>
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Descripción del Curso</label>
-              <textarea required value={description} onChange={e => setDescription(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all min-h-[100px] text-[#1A1A2E] placeholder:text-gray-500/80" placeholder="Domina las herramientas esenciales..." />
+              <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Descripción del Curso</label>
+              <textarea required value={description} onChange={e => setDescription(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all min-h-[100px] text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="Domina las herramientas esenciales..." />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Precio (USD)</label>
-              <input required value={price} onChange={e => setPrice(e.target.value)} type="number" step="0.01" min="0" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] placeholder:text-gray-500/80" placeholder="45.00" />
+              <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Precio (USD)</label>
+              <input required value={price} onChange={e => setPrice(e.target.value)} type="number" step="0.01" min="0" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="45.00" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Nivel</label>
-              <select value={level} onChange={e => setLevel(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E]">
+              <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Nivel</label>
+              <select value={level} onChange={e => setLevel(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A]">
                 <option value="Principiante">Principiante</option>
                 <option value="Intermedio">Intermedio</option>
                 <option value="Avanzado">Avanzado</option>
@@ -204,27 +204,27 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
 
         {/* PARTE 2: Media y Live Streaming */}
         <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
-          <h2 className="text-xl font-bold text-[#1A1A2E] mb-6 flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
+          <h2 className="text-xl font-bold text-[#0B1F3A] mb-6 flex items-center gap-2">
+            <span className="bg-[#C9A84C] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
             Media & Streaming del Curso
           </h2>
           <div className="space-y-6">
             <div>
-              <label className="flex items-center justify-between text-sm font-bold text-[#1A1A2E] mb-2">
+              <label className="flex items-center justify-between text-sm font-bold text-[#0B1F3A] mb-2">
                 <span>Video de Introducción / Venta (Opcional)</span>
-                <span className="text-[9px] text-[#5A4FCF] uppercase tracking-widest bg-indigo-50 px-2 py-1 rounded-md">⚡ Cloudflare Stream / YouTube</span>
+                <span className="text-[9px] text-[#C9A84C] uppercase tracking-widest bg-amber-50 px-2 py-1 rounded-md">⚡ Cloudflare Stream / YouTube</span>
               </label>
               <div className="flex flex-col md:flex-row gap-3">
                 <button type="button" disabled className="flex items-center justify-center gap-2 bg-gray-100 text-gray-400 font-bold py-3 px-6 rounded-xl border border-gray-200 cursor-not-allowed shrink-0">
                   <Upload size={18} /> Subir Archivo (.mp4)
                 </button>
-                <input value={introVideo} onChange={e => setIntroVideo(e.target.value)} type="url" className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] placeholder:text-gray-500/80" placeholder="O pega el link directo..." />
+                <input value={introVideo} onChange={e => setIntroVideo(e.target.value)} type="url" className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="O pega el link directo..." />
               </div>
               <p className="text-xs text-gray-500 mt-2 font-medium">Este video se reproducirá como portada del curso para usuarios que aún no hayan pagado.</p>
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Imagen de Portada Opcional (URL)</label>
-              <input value={coverImage} onChange={e => setCoverImage(e.target.value)} type="url" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] placeholder:text-gray-500/80" placeholder="https://..." />
+              <label className="block text-sm font-bold text-[#0B1F3A] mb-2">Imagen de Portada Opcional (URL)</label>
+              <input value={coverImage} onChange={e => setCoverImage(e.target.value)} type="url" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="https://..." />
             </div>
             <div className="p-5 bg-orange-50 border border-orange-100 rounded-2xl">
               <div className="flex items-center gap-3 mb-4">
@@ -257,7 +257,7 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
 
                   <div className="pl-4 border-l-2 border-orange-200">
                     <label className="block text-sm font-bold text-orange-800 mb-2">Alternativa: URL Externa (Zoom, Google Meet, etc)</label>
-                    <input value={liveUrl} onChange={e => setLiveUrl(e.target.value)} type="url" className="w-full bg-white border border-orange-200 rounded-xl px-4 py-3 outline-none focus:border-orange-500 transition-all text-[#1A1A2E]" placeholder="Si no usas Cloudflare, pega el enlace aquí..." />
+                    <input value={liveUrl} onChange={e => setLiveUrl(e.target.value)} type="url" className="w-full bg-white border border-orange-200 rounded-xl px-4 py-3 outline-none focus:border-orange-500 transition-all text-[#0B1F3A]" placeholder="Si no usas Cloudflare, pega el enlace aquí..." />
                   </div>
                 </div>
               )}
@@ -268,11 +268,11 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
         {/* PARTE 3: Módulos con Tareas */}
         <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-[#1A1A2E] flex items-center gap-2">
-              <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">3</span>
+            <h2 className="text-xl font-bold text-[#0B1F3A] flex items-center gap-2">
+              <span className="bg-[#C9A84C] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">3</span>
               Módulos del Curso
             </h2>
-            <button type="button" onClick={handleAddModule} className="text-sm font-bold text-[#5A4FCF] hover:bg-indigo-50 px-4 py-2 rounded-xl transition-colors flex items-center gap-2">
+            <button type="button" onClick={handleAddModule} className="text-sm font-bold text-[#C9A84C] hover:bg-amber-50 px-4 py-2 rounded-xl transition-colors flex items-center gap-2">
               <Plus size={16} /> Añadir Módulo
             </button>
           </div>
@@ -284,7 +284,10 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                 <div key={mIndex} className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm transition-all">
                   {/* CABEZAL ACCORDION */}
                   <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setOpenModuleIndex(isOpen ? null : mIndex)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenModuleIndex(isOpen ? null : mIndex); } }}
                     className="w-full p-8 flex justify-between items-start hover:bg-gray-50 transition-colors cursor-pointer group relative"
                   >
                     {modules.length > 1 && (
@@ -297,10 +300,10 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                       </button>
                     )}
                     <div className="text-left flex-1 pr-16">
-                      <span className="text-[10px] font-black text-[#5A4FCF] uppercase tracking-widest block mb-1">
+                      <span className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest block mb-1">
                         Módulo 0{mIndex + 1}
                       </span>
-                      <span className="text-xl font-bold text-[#1A1A2E] group-hover:text-[#5A4FCF] transition-colors">
+                      <span className="text-xl font-bold text-[#0B1F3A] group-hover:text-[#C9A84C] transition-colors">
                         {m.title || `Módulo ${mIndex + 1}`}
                       </span>
 
@@ -343,20 +346,20 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                           required
                           value={m.title}
                           onChange={(e) => handleModuleChange(mIndex, "title", e.target.value)}
-                          className="w-full text-lg font-bold bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#5A4FCF] outline-none transition-colors text-[#1A1A2E]"
+                          className="w-full text-lg font-bold bg-white border border-gray-200 rounded-xl px-4 py-3 focus:border-[#C9A84C] outline-none transition-colors text-[#0B1F3A]"
                           placeholder="Ej. Módulo 1: Fundamentos y Estructura"
                         />
                       </div>
 
                       {/* Video del módulo (Oculto si es Streaming en Vivo) */}
                       {!isLive && (
-                        <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5">
-                          <label className="flex items-center justify-between text-xs font-bold text-[#5A4FCF] uppercase tracking-wider mb-2">
+                        <div className="bg-amber-50/50 border border-amber-200 rounded-2xl p-5">
+                          <label className="flex items-center justify-between text-xs font-bold text-[#C9A84C] uppercase tracking-wider mb-2">
                             <span className="flex items-center gap-2"><Video size={14} /> Video de este Módulo (Opcional)</span>
-                            <span className="text-[9px] bg-white px-2 py-1 rounded shadow-sm text-indigo-400">⚡ Cloudflare Ready</span>
+                            <span className="text-[9px] bg-white px-2 py-1 rounded shadow-sm text-amber-400">⚡ Cloudflare Ready</span>
                           </label>
                           <div className="flex flex-col sm:flex-row gap-3">
-                            <button type="button" disabled className="flex xl:w-auto w-full items-center justify-center gap-2 bg-white/50 text-indigo-300 font-bold py-3 px-4 rounded-xl border border-indigo-100 cursor-not-allowed shrink-0 text-sm">
+                            <button type="button" disabled className="flex xl:w-auto w-full items-center justify-center gap-2 bg-white/50 text-indigo-300 font-bold py-3 px-4 rounded-xl border border-amber-200 cursor-not-allowed shrink-0 text-sm">
                               <Upload size={16} /> Subir Video
                             </button>
                             <input
@@ -364,10 +367,10 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                               onChange={(e) => handleModuleChange(mIndex, "videoUrl", e.target.value)}
                               type="url"
                               placeholder="O pega el link aquí..."
-                              className="flex-1 bg-white border border-indigo-200 rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] text-[#5A4FCF] placeholder:text-gray-400 transition-all text-sm"
+                              className="flex-1 bg-white border border-indigo-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] text-[#C9A84C] placeholder:text-gray-400 transition-all text-sm"
                             />
                           </div>
-                          <p className="text-[10px] text-indigo-400 mt-2 font-medium">Cada módulo tiene su propio video. Los alumnos lo verán al acceder a este módulo.</p>
+                          <p className="text-[10px] text-amber-400 mt-2 font-medium">Cada módulo tiene su propio video. Los alumnos lo verán al acceder a este módulo.</p>
                         </div>
                       )}
 
@@ -377,7 +380,7 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                         <div className="space-y-4">
                           {m.tasks.map((t, tIndex) => (
                             <div key={tIndex} className="bg-white border border-gray-100 rounded-2xl p-5 relative">
-                              <div className="absolute left-5 top-5 w-6 h-6 bg-indigo-50 text-indigo-400 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+                              <div className="absolute left-5 top-5 w-6 h-6 bg-amber-50 text-amber-400 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
                                 {tIndex + 1}
                               </div>
                               <div className="pl-9 pr-8">
@@ -387,22 +390,22 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                                   </button>
                                 </div>
                                 <div className="mb-3">
-                                  <label className="block text-xs font-bold text-[#1A1A2E] mb-1">Nombre de la Tarea</label>
+                                  <label className="block text-xs font-bold text-[#0B1F3A] mb-1">Nombre de la Tarea</label>
                                   <input
                                     required
                                     value={t.title}
                                     onChange={e => handleTaskChange(mIndex, tIndex, "title", e.target.value)}
                                     placeholder="Ej. El Ecosistema de Meta"
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5A4FCF] text-[#1A1A2E] placeholder:text-gray-400"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#C9A84C] text-[#0B1F3A] placeholder:text-gray-400"
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-xs font-bold text-[#1A1A2E] mb-1 flex items-center gap-1.5"><AlignLeft size={12}/> Descripción de la Tarea</label>
+                                  <label className="block text-xs font-bold text-[#0B1F3A] mb-1 flex items-center gap-1.5"><AlignLeft size={12}/> Descripción de la Tarea</label>
                                   <textarea
                                     value={t.summary}
                                     onChange={e => handleTaskChange(mIndex, tIndex, "summary", e.target.value)}
                                     placeholder="Ej. Diferencia entre botón Promocionar vs. Ads Manager..."
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#5A4FCF] min-h-[80px] text-[#1A1A2E] placeholder:text-gray-400 leading-relaxed"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#C9A84C] min-h-[80px] text-[#0B1F3A] placeholder:text-gray-400 leading-relaxed"
                                   />
                                 </div>
                               </div>
@@ -411,7 +414,7 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                         </div>
 
                         <div className="mt-4">
-                          <button type="button" onClick={() => handleAddTask(mIndex)} className="text-sm font-bold text-[#5A4FCF] bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors flex items-center gap-2">
+                          <button type="button" onClick={() => handleAddTask(mIndex)} className="text-sm font-bold text-[#C9A84C] bg-amber-50 hover:bg-amber-100 px-4 py-2 rounded-xl transition-colors flex items-center gap-2">
                             <Plus size={16} /> Agregar Tarea a este Módulo
                           </button>
                         </div>
@@ -428,7 +431,7 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#1A1A2E] text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-gray-200 hover:bg-[#5A4FCF] hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0 flex items-center gap-3"
+            className="bg-[#0B1F3A] text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-gray-200 hover:bg-[#C9A84C] hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0 flex items-center gap-3"
           >
             {loading ? <Loader2 size={24} className="animate-spin" /> : null}
             Publicar Curso

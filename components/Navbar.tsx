@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, ChevronRight, LogOut, LayoutDashboard, Bell } from "lucide-react";
+import { m, AnimatePresence } from "framer-motion";
+import { Menu, X, User, ChevronRight, LogOut, LayoutDashboard, Bell, Sun, Moon } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { getUserImage } from "@/lib/actions/user";
 import { getSections } from "@/lib/actions/platformSections";
 import Image from "next/image";
@@ -17,7 +18,11 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const loading = status === "loading";
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     getSections().then((sections) => {
@@ -47,18 +52,18 @@ export default function Navbar() {
   }, [session]);
 
   return (
-    <motion.nav
+    <m.nav
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="fixed top-0 w-full z-[100] px-4 md:px-6 py-4"
     >
-      <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur-xl border border-white/40 rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative">
+      <div className="max-w-7xl mx-auto bg-card/70 backdrop-blur-xl border border-card-border rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative">
         <Link href="/" className="flex items-center gap-2 group z-50">
           <Image
             src={logo}
             alt="ARTICADEMY"
-            className="h-8 w-auto object-contain brightness-0 transition-all group-hover:scale-110"
+            className="h-8 w-auto object-contain brightness-0 dark:brightness-0 dark:invert transition-all group-hover:scale-110"
           />
         </Link>
 
@@ -67,34 +72,34 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-bold text-gray-500 hover:text-[#5A4FCF] transition-colors relative group"
+              className="text-sm font-bold text-muted hover:text-accent transition-colors relative group"
             >
               {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
           {session && (
-            <Link href="/webinars" className="text-sm font-bold text-gray-500 hover:text-[#5A4FCF] transition-colors relative group">
+            <Link href="/webinars" className="text-sm font-bold text-muted hover:text-accent transition-colors relative group">
               Webinars
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#5A4FCF] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
           )}
         </div>
 
-        <div className="flex items-center gap-3 z-50">
+        <div className="flex items-center gap-3 z-50" suppressHydrationWarning>
           {!loading && (
             <>
               {session ? (
                 <div className="hidden sm:flex items-center gap-4">
-                  <button className="relative p-2 text-gray-400 hover:text-[#5A4FCF] hover:bg-indigo-50 rounded-full transition-colors" title="Notificaciones">
+                  <button className="relative p-2 text-muted hover:text-accent hover:bg-amber-50 rounded-full transition-colors" title="Notificaciones">
                     <Bell size={20} />
                     <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
                   </button>
-                  <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-[#5A4FCF] transition-all relative shadow-sm">
+                  <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-accent transition-all relative shadow-sm">
                     {profileImage ? (
-                      <img src={profileImage} alt={session.user.name || "Usuario"} className="w-full h-full object-cover" />
+                      <Image src={profileImage} alt={session.user.name || "Usuario"} width={40} height={40} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-[#1A1A2E] to-[#2D2B52] text-white flex items-center justify-center font-bold text-sm">
+                      <div className="w-full h-full bg-gradient-to-br from-[#0B1F3A] to-[#1A3A5C] text-white flex items-center justify-center font-bold text-sm">
                         {session.user.name ? session.user.name.substring(0, 2).toUpperCase() : <User size={16} />}
                       </div>
                     )}
@@ -102,24 +107,27 @@ export default function Navbar() {
                 </div>
               ) : (
                 <>
-                  <Link href="/auth/signup-mentor" className="hidden lg:block">
-                    <button className="text-[#5A4FCF] px-4 py-2 text-xs font-black uppercase tracking-widest hover:text-black transition-colors">
-                      Ser Mentor
-                    </button>
-                  </Link>
-                  <Link href="/auth/signup" className="hidden sm:block">
-                    <button className="bg-[#1A1A2E] text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-black hover:scale-105 transition-all shadow-lg shadow-indigo-100 flex items-center gap-2">
-                      <User size={14} /> Únete ahora
-                    </button>
+                  <Link href="/auth/signup" className="hidden sm:flex items-center gap-2 bg-accent text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-accent/80 hover:scale-105 transition-all shadow-lg shadow-accent/30">
+                    <User size={14} /> Únete ahora
                   </Link>
                 </>
               )}
             </>
           )}
 
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-colors"
+              aria-label="Cambiar tema"
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+          )}
+
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2.5 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            className="md:hidden p-2.5 text-muted hover:bg-card-hover rounded-full transition-colors"
             aria-label="Menu"
           >
             {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -128,12 +136,12 @@ export default function Navbar() {
 
         <AnimatePresence>
           {isOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-[calc(100%+12px)] left-0 right-0 bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 md:hidden flex flex-col gap-4 overflow-hidden"
+              className="absolute top-[calc(100%+12px)] left-0 right-0 bg-card rounded-[2.5rem] p-8 shadow-2xl border border-card-border md:hidden flex flex-col gap-4 overflow-hidden"
             >
               <div className="flex flex-col gap-2">
                 {navLinks.map((link) => (
@@ -141,17 +149,17 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 text-xl font-bold text-[#1A1A2E] group transition-colors"
+                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors"
                   >
                     {link.name}
-                    <ChevronRight size={20} className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors" />
+                    <ChevronRight size={20} className="text-gray-300 group-hover:text-accent transition-colors" />
                   </Link>
                 ))}
                 {session && (
                   <Link href="/webinars" onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 text-xl font-bold text-[#1A1A2E] group transition-colors">
+                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors">
                     Webinars
-                    <ChevronRight size={20} className="text-gray-300 group-hover:text-[#5A4FCF] transition-colors" />
+                    <ChevronRight size={20} className="text-gray-300 group-hover:text-accent transition-colors" />
                   </Link>
                 )}
               </div>
@@ -160,23 +168,18 @@ export default function Navbar() {
 
               {!session ? (
                 <>
-                  <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-                    <button className="w-full bg-[#1A1A2E] text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-indigo-50">
-                      <User size={18} /> Empezar Registro
-                    </button>
-                  </Link>
-                  <Link href="/auth/signup-mentor" onClick={() => setIsOpen(false)} className="text-center py-2 text-[#5A4FCF] font-bold text-sm">
-                    Postularme como Mentor
+                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="w-full bg-navy text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
+                    <User size={18} /> Empezar Registro
                   </Link>
                   <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-center py-2">
                     <span className="text-sm font-bold text-gray-400">¿Ya tienes cuenta? </span>
-                    <span className="text-sm font-bold text-[#5A4FCF]">Inicia Sesión</span>
+                    <span className="text-sm font-bold text-accent">Inicia Sesión</span>
                   </Link>
                 </>
               ) : (
                 <>
                   <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                    <button className="w-full bg-[#1A1A2E] text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-indigo-50">
+                    <button className="w-full bg-navy text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
                       <LayoutDashboard size={18} /> Ir al Panel
                     </button>
                   </Link>
@@ -188,10 +191,10 @@ export default function Navbar() {
                   </button>
                 </>
               )}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.nav>
+    </m.nav>
   );
 }
