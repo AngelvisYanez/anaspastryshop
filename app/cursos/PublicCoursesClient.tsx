@@ -63,7 +63,7 @@ export default function PublicCoursesClient({
             Lleva tu talento al <br /> <span className="text-gray-400">siguiente nivel.</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl leading-relaxed">
-            Formación técnica de alto nivel respaldada por 4101 Media y Artica Group.
+            Formación de alto nivel en crédito y finanzas respaldada por Academia Credito USA.
           </p>
         </div>
 

@@ -1,4 +1,3 @@
-"use client";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import ForYou from "@/components/ForYou";

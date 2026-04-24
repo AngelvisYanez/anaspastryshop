@@ -3,11 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 import * as LucideIcons from "lucide-react";
 import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Tag, Activity, X,
   Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
+  Sun, Moon,
 } from "lucide-react";
 
 type PlatformSection = {
@@ -38,7 +41,6 @@ const SYSTEM_ITEMS = [
   { name: "Módulos",           href: "/dashboard/modulos",       icon: LayoutGrid,      roles: ["ADMIN"] },
   { name: "Config. APIs",      href: "/dashboard/api-config",    icon: KeyRound,        roles: ["ADMIN"] },
   { name: "Usuarios",          href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN", "MENTOR"] },
-  { name: "Categorías",        href: "/dashboard/categorias",    icon: Tag,             roles: ["ADMIN"] },
   { name: "Auditoría",         href: "/dashboard/logs",          icon: Activity,        roles: ["ADMIN"] },
   { name: "Configuración",     href: "/dashboard/settings",      icon: Settings,        roles: ["ADMIN", "MENTOR", "USER"] },
 ];
@@ -58,6 +60,10 @@ export default function Sidebar({
 }) {
   const userRole = user.role as string;
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const systemItems = isBlockedMentor
     ? SYSTEM_ITEMS.filter((i) => i.name === "Configuración")
@@ -74,26 +80,26 @@ export default function Sidebar({
   const linkClass = (href: string) =>
     `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
       isActive(href)
-        ? "bg-[#C9A84C] text-white shadow-lg shadow-amber-100"
-        : "text-gray-400 hover:bg-gray-50 hover:text-[#0B1F3A]"
+        ? "bg-accent text-white shadow-lg shadow-accent/20"
+        : "text-muted hover:bg-card-hover hover:text-foreground"
     }`;
 
   return (
-    <aside className="w-64 bg-white h-full border-r border-gray-100 p-6 flex flex-col relative">
+    <aside className="w-64 bg-card h-full border-r border-card-border p-6 flex flex-col relative">
       <div className="mb-10 px-2 flex justify-between items-center">
         <Link href="/dashboard" className="relative w-36 h-12">
           <Image
             src="/logo_II.webp"
-            alt="ARTICADEMY"
+            alt="Academia Credito USA"
             fill
             sizes="144px"
-            className="object-contain object-left"
+            className="object-contain object-left brightness-0 dark:brightness-0 dark:invert"
             priority
           />
         </Link>
         <button
           onClick={onMenuClick}
-          className="p-2 lg:hidden text-gray-400 hover:bg-gray-50 rounded-xl transition-colors"
+          className="p-2 lg:hidden text-muted hover:bg-card-hover rounded-xl transition-colors"
         >
           <X size={20} />
         </button>
@@ -115,7 +121,7 @@ export default function Sidebar({
         {!isBlockedMentor && dynamicSections.length > 0 && (
           <>
             <div className="pt-4 pb-2 px-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-gray-300">
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted/50">
                 Plataforma
               </p>
             </div>
@@ -137,12 +143,23 @@ export default function Sidebar({
         )}
       </nav>
 
-      <button
-        onClick={() => signOut({ callbackUrl: "/" })}
-        className="flex items-center gap-3 px-4 py-3 text-red-400 font-bold text-sm hover:bg-red-50 rounded-2xl transition-all w-full"
-      >
-        <LogOut size={20} /> Cerrar Sesión
-      </button>
+      <div className="pt-4 border-t border-card-border space-y-1">
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex items-center gap-3 px-4 py-3 text-muted font-bold text-sm hover:bg-card-hover rounded-2xl transition-all w-full"
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+          </button>
+        )}
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="flex items-center gap-3 px-4 py-3 text-red-400 font-bold text-sm hover:bg-red-50 dark:hover:bg-red-950/20 rounded-2xl transition-all w-full"
+        >
+          <LogOut size={20} /> Cerrar Sesión
+        </button>
+      </div>
     </aside>
   );
 }

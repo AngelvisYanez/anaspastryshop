@@ -25,21 +25,24 @@ model User {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   activities         ActivityLog[]
-  cursos             Curso[]       @relation("MentorCursos")
+  cursos             Curso[]         @relation("MentorCursos")
   inscripciones      Inscription[]
   subscription       Subscription?
-  lives              LiveStream[]  @relation("InstructorLives")
-  webinars           Webinar[]     @relation("InstructorWebinars")
+  coursePurchases    CoursePurchase[]
+  lives              LiveStream[]    @relation("InstructorLives")
+  webinars           Webinar[]       @relation("InstructorWebinars")
 }
 
 model Subscription {
-  id        String    @id @default(cuid())
-  userId    String    @unique
-  plan      String
-  status    String    @default("ACTIVE")
-  startDate DateTime  @default(now())
-  endDate   DateTime?
-  user      User      @relation(fields: [userId], references: [id])
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  plan                 String
+  status               String    @default("ACTIVE")
+  startDate            DateTime  @default(now())
+  endDate              DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  user                 User      @relation(fields: [userId], references: [id])
 }
 
 model Curso {
@@ -59,9 +62,10 @@ model Curso {
   liveUrl       String?
   instructorId  String
   createdAt     DateTime       @default(now())
-  courseModules CourseModule[] @relation("CursoToModules")
-  instructor    User           @relation("MentorCursos", fields: [instructorId], references: [id])
+  courseModules CourseModule[]   @relation("CursoToModules")
+  instructor    User             @relation("MentorCursos", fields: [instructorId], references: [id])
   inscritos     Inscription[]
+  purchases     CoursePurchase[]
 }
 
 model CourseModule {
@@ -201,4 +205,34 @@ model PlatformApiConfig {
   label     String
   config    Json
   updatedAt DateTime @updatedAt
+}
+
+model CoursePurchase {
+  id                   String   @id @default(cuid())
+  userId               String
+  cursoId              String
+  stripePaymentIntentId String?
+  amount               Float
+  status               String   @default("PENDING")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id])
+  curso                Curso    @relation(fields: [cursoId], references: [id])
+
+  @@unique([userId, cursoId])
+}
+
+model SiteConfig {
+  id                String   @id @default(cuid())
+  siteName          String   @default("Academia Credito USA")
+  logoUrl           String?
+  ctaText           String   @default("Quiero unirme ahora")
+  ctaUrl            String   @default("/planes")
+  instagramUrl      String?
+  linkedinUrl       String?
+  tiktokUrl         String?
+  subscriptionPrice Float    @default(97)
+  subscriptionPriceId String?
+  navItems          Json     @default("[]")
+  updatedAt         DateTime @updatedAt
 }

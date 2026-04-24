@@ -18,6 +18,8 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  const [ctaText, setCtaText] = useState("Únete ahora");
+  const [ctaUrl, setCtaUrl] = useState("/planes");
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const loading = status === "loading";
@@ -32,6 +34,19 @@ export default function Navbar() {
         .map((s) => ({ name: s.name, href: `/${s.slug}` }));
       setNavLinks(links);
     });
+    fetch("/api/settings/site-config")
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (cfg.ctaText) setCtaText(cfg.ctaText);
+        if (cfg.ctaUrl) setCtaUrl(cfg.ctaUrl);
+        if (cfg.navItems?.length) {
+          setNavLinks((prev) => [
+            ...prev,
+            ...(cfg.navItems as NavLink[]).map((i: any) => ({ name: i.label, href: i.href })),
+          ]);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -62,7 +77,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-2 group z-50">
           <Image
             src={logo}
-            alt="ARTICADEMY"
+            alt="Academia Credito USA"
             className="h-8 w-auto object-contain brightness-0 dark:brightness-0 dark:invert transition-all group-hover:scale-110"
           />
         </Link>
@@ -107,8 +122,8 @@ export default function Navbar() {
                 </div>
               ) : (
                 <>
-                  <Link href="/auth/signup" className="hidden sm:flex items-center gap-2 bg-accent text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-accent/80 hover:scale-105 transition-all shadow-lg shadow-accent/30">
-                    <User size={14} /> Únete ahora
+                  <Link href={ctaUrl} className="hidden sm:flex items-center gap-2 bg-accent text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-accent/80 hover:scale-105 transition-all shadow-lg shadow-accent/30">
+                    <User size={14} /> {ctaText}
                   </Link>
                 </>
               )}

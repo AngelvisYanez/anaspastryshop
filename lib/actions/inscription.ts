@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 
 type CreateInscriptionParams = {
   cursoId?: string;
-  method: "ZELLE" | "PAGO_MOVIL" | "USDT" | "TRANSFERENCIA";
+  method: "ZELLE" | "PAGO_MOVIL" | "USDT" | "TRANSFERENCIA" | "STRIPE";
   reference?: string;
   phoneNumber?: string;
   amountPaid: number;

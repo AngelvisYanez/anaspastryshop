@@ -2,14 +2,7 @@
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
-  X,
-  CreditCard,
-  Smartphone,
-  Bitcoin,
-  Upload,
-  Copy,
-  Check,
-  Loader2,
+  X, CreditCard, Smartphone, Bitcoin, Copy, Check, Loader2,
 } from "lucide-react";
 import { createInscription } from "@/lib/actions/inscription";
 import { useRouter } from "next/navigation";
@@ -28,11 +21,10 @@ export default function CheckoutModal({
   cursoId?: string;
 }) {
   const router = useRouter();
-  const [method, setMethod] = useState<"zelle" | "bcv" | "usdt" | null>(null);
+  const [method, setMethod] = useState<"stripe" | "zelle" | "bcv" | "usdt" | null>(null);
   const [copied, setCopied] = useState(false);
-  const tasaBCV = 36.5; 
+  const tasaBCV = 36.5;
   const montoBS = (price * tasaBCV).toFixed(2);
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -43,12 +35,32 @@ export default function CheckoutModal({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  async function handleStripeCheckout() {
+    if (!cursoId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/checkout/course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cursoId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError(data.error || "Error al iniciar el pago");
+        setLoading(false);
+      }
+    } catch {
+      setError("Error de conexión. Intenta de nuevo.");
+      setLoading(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!method) {
-      setError("Selecciona un método de pago");
-      return;
-    }
+    if (!method || method === "stripe") return;
 
     setLoading(true);
     setError(null);
@@ -91,19 +103,16 @@ export default function CheckoutModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[#0B1F3A]/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-navy/60 backdrop-blur-sm"
           />
 
           <m.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white w-full max-w-xl rounded-[3rem] p-8 md:p-12 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="bg-card border border-card-border w-full max-w-xl rounded-[3rem] p-8 md:p-12 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
           >
-            <button
-              onClick={onClose}
-              className="absolute top-8 right-8 text-gray-400 hover:text-black"
-            >
+            <button onClick={onClose} className="absolute top-8 right-8 text-muted hover:text-foreground">
               <X />
             </button>
 
@@ -112,19 +121,18 @@ export default function CheckoutModal({
                 <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Check size={40} />
                 </div>
-                <h2 className="text-3xl font-black text-[#0B1F3A] mb-4">¡Inscripción en Revisión!</h2>
-                <p className="text-gray-500 font-medium text-lg">
-                  Hemos recibido tu reporte de pago exitosamente para <span className="text-[#C9A84C]">{title}</span>. Te daremos acceso pronto.
+                <h2 className="text-3xl font-black text-foreground mb-4">¡Solicitud Recibida!</h2>
+                <p className="text-muted font-medium text-lg">
+                  Hemos recibido tu pago para <span className="text-accent">{title}</span>. Te daremos acceso pronto.
                 </p>
               </div>
             ) : (
               <>
-                <h2 className="text-3xl font-black mb-1 text-[#0B1F3A]">
-                  Inscribirme en <span className="text-[#C9A84C]">{title}</span>
+                <h2 className="text-3xl font-black mb-1 text-foreground">
+                  Acceder a <span className="text-accent">{title}</span>
                 </h2>
-                <p className="text-gray-400 mb-8 font-medium">
-                  Selecciona tu método de pago preferido para finalizar
-                </p>
+                <p className="text-muted mb-2 font-medium">Precio: <span className="font-black text-foreground">${price} USD</span></p>
+                <p className="text-muted mb-8 font-medium text-sm">Selecciona tu método de pago preferido</p>
 
                 {error && (
                   <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm font-bold mb-6 text-center">
@@ -132,124 +140,128 @@ export default function CheckoutModal({
                   </div>
                 )}
 
-                <div className="grid grid-cols-3 gap-4 mb-10">
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <button
+                    onClick={() => setMethod("stripe")}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "stripe" ? "border-accent bg-accent-subtle" : "border-card-border"}`}
+                  >
+                    <CreditCard size={20} className={method === "stripe" ? "text-accent" : "text-muted"} />
+                    <span className="text-[10px] font-black uppercase">Tarjeta / Stripe</span>
+                    <span className="text-[9px] text-green-500 font-bold">Recomendado</span>
+                  </button>
                   <button
                     onClick={() => setMethod("zelle")}
-                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "zelle" ? "border-[#C9A84C] bg-amber-50" : "border-gray-100"}`}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "zelle" ? "border-accent bg-accent-subtle" : "border-card-border"}`}
                   >
-                    <CreditCard
-                      size={20}
-                      className={method === "zelle" ? "text-[#C9A84C]" : "text-gray-400"}
-                    />
+                    <CreditCard size={20} className={method === "zelle" ? "text-accent" : "text-muted"} />
                     <span className="text-[10px] font-black uppercase">Zelle</span>
                   </button>
                   <button
                     onClick={() => setMethod("bcv")}
-                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "bcv" ? "border-[#C9A84C] bg-amber-50" : "border-gray-100"}`}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "bcv" ? "border-accent bg-accent-subtle" : "border-card-border"}`}
                   >
-                    <Smartphone
-                      size={20}
-                      className={method === "bcv" ? "text-[#C9A84C]" : "text-gray-400"}
-                    />
+                    <Smartphone size={20} className={method === "bcv" ? "text-accent" : "text-muted"} />
                     <span className="text-[10px] font-black uppercase">Pago Móvil</span>
                   </button>
                   <button
                     onClick={() => setMethod("usdt")}
-                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "usdt" ? "border-[#C9A84C] bg-amber-50" : "border-gray-100"}`}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${method === "usdt" ? "border-accent bg-accent-subtle" : "border-card-border"}`}
                   >
-                    <Bitcoin
-                      size={20}
-                      className={method === "usdt" ? "text-[#C9A84C]" : "text-gray-400"}
-                    />
+                    <Bitcoin size={20} className={method === "usdt" ? "text-accent" : "text-muted"} />
                     <span className="text-[10px] font-black uppercase">Binance</span>
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                  {method === "zelle" && (
-                    <m.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-50 p-6 rounded-[2rem] mb-8"
-                    >
-                      <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Enviar a:</p>
-                      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 mb-6">
-                        <span className="font-bold text-[#0B1F3A]">pagos@artica.group</span>
-                        <button type="button" onClick={() => copyToClipboard("pagos@artica.group")}>
-                          {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Referencia / Titular</label>
-                        <input name="reference" required type="text" placeholder="Ej. Newman Acosta" className="w-full p-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#C9A84C] text-sm" />
-                      </div>
-                    </m.div>
-                  )}
+                {method === "stripe" && (
+                  <button
+                    onClick={handleStripeCheckout}
+                    disabled={loading}
+                    className="w-full bg-accent text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-accent-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
+                    Pagar con Tarjeta — ${price}
+                  </button>
+                )}
 
-                  {method === "bcv" && (
-                    <m.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-50 p-6 rounded-[2rem] mb-8 space-y-4"
-                    >
-                      <div className="flex justify-between items-end mb-4">
-                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Monto a pagar (BCV):</p>
-                        <span className="text-2xl font-black text-[#0B1F3A]">Bs. {montoBS}</span>
-                      </div>
-                      <div className="text-sm text-gray-500 space-y-1 bg-white p-4 rounded-xl border border-gray-100">
-                        <p><b>Banco:</b> Banesco (0134)</p>
-                        <p><b>Teléfono:</b> 0412-1234567</p>
-                        <p><b>RIF:</b> J-123456789</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Referencia</label>
-                          <input name="reference" required type="text" placeholder="Ej. 123456" className="w-full p-3 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#C9A84C] text-sm" />
+                {(method === "zelle" || method === "bcv" || method === "usdt") && (
+                  <form onSubmit={handleSubmit}>
+                    {method === "zelle" && (
+                      <m.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6"
+                      >
+                        <p className="text-xs font-black text-muted uppercase tracking-widest mb-2">Enviar a:</p>
+                        <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-card-border mb-4">
+                          <span className="font-bold text-foreground">pagos@academiacreditousa.com</span>
+                          <button type="button" onClick={() => copyToClipboard("pagos@academiacreditousa.com")}>
+                            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-muted" />}
+                          </button>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Teléfono emisor</label>
-                          <input name="phoneNumber" required type="text" placeholder="Ej. 0412..." className="w-full p-3 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#C9A84C] text-sm" />
+                          <label className="text-xs font-black text-muted uppercase tracking-widest ml-2">Referencia / Titular</label>
+                          <input name="reference" required type="text" placeholder="Ej. Juan García" className="w-full p-4 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground" />
                         </div>
-                      </div>
-                    </m.div>
-                  )}
+                      </m.div>
+                    )}
 
-                  {method === "usdt" && (
-                    <m.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-50 p-6 rounded-[2rem] mb-8"
-                    >
-                      <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Binance Pay ID:</p>
-                      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 mb-6">
-                        <span className="font-bold text-[#0B1F3A]">123456789 (Articademy)</span>
-                        <button type="button" onClick={() => copyToClipboard("123456789")}>
-                          {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">ID de Transacción / Usuario</label>
-                        <input name="reference" required type="text" placeholder="Ej. newman_acosta" className="w-full p-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#C9A84C] text-sm" />
-                      </div>
-                    </m.div>
-                  )}
+                    {method === "bcv" && (
+                      <m.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6 space-y-4"
+                      >
+                        <div className="flex justify-between items-end">
+                          <p className="text-xs font-black text-muted uppercase tracking-widest">Monto (BCV):</p>
+                          <span className="text-2xl font-black text-foreground">Bs. {montoBS}</span>
+                        </div>
+                        <div className="text-sm text-muted space-y-1 bg-card p-4 rounded-xl border border-card-border">
+                          <p><b className="text-foreground">Banco:</b> Banesco (0134)</p>
+                          <p><b className="text-foreground">Teléfono:</b> 0412-1234567</p>
+                          <p><b className="text-foreground">RIF:</b> J-123456789</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-2">Referencia</label>
+                            <input name="reference" required type="text" placeholder="Ej. 123456" className="w-full p-3 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-muted uppercase tracking-widest ml-2">Teléfono emisor</label>
+                            <input name="phoneNumber" required type="text" placeholder="Ej. 0412..." className="w-full p-3 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground" />
+                          </div>
+                        </div>
+                      </m.div>
+                    )}
 
-                  <div className="space-y-4">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest block ml-2">Sube tu comprobante (Opcional)</label>
-                    <div className="border-2 border-dashed border-gray-200 rounded-[2rem] p-8 text-center hover:border-[#C9A84C] transition-colors cursor-pointer group">
-                      <Upload className="mx-auto mb-2 text-gray-300 group-hover:text-[#C9A84C] transition-colors" />
-                      <span className="text-xs font-bold text-gray-400">JPG, PNG o PDF</span>
-                    </div>
-                    
-                    <button 
+                    {method === "usdt" && (
+                      <m.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6"
+                      >
+                        <p className="text-xs font-black text-muted uppercase tracking-widest mb-2">Binance Pay ID:</p>
+                        <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-card-border mb-4">
+                          <span className="font-bold text-foreground">Academia Credito USA</span>
+                          <button type="button" onClick={() => copyToClipboard("AcademiaCreditoUSA")}>
+                            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-muted" />}
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-muted uppercase tracking-widest ml-2">ID de Transacción</label>
+                          <input name="reference" required type="text" placeholder="Ej. TX-123456" className="w-full p-4 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground" />
+                        </div>
+                      </m.div>
+                    )}
+
+                    <button
                       type="submit"
-                      disabled={loading || !method}
-                      className="w-full bg-[#0B1F3A] text-white py-5 rounded-2xl font-bold shadow-xl shadow-amber-100 hover:bg-gray-950 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      disabled={loading}
+                      className="w-full bg-navy dark:bg-accent text-white py-5 rounded-2xl font-bold shadow-xl hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {loading ? <Loader2 className="animate-spin" /> : "Confirmar Pago"}
+                      {loading ? <Loader2 className="animate-spin" size={20} /> : "Confirmar Pago"}
                     </button>
-                  </div>
-                </form>
+                  </form>
+                )}
               </>
             )}
           </m.div>

@@ -6,8 +6,8 @@ import Providers from "@/components/Providers";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Articademy | Formación Digital",
-  description: "Articademy — Academia de 4101 Media & Artica Group en toda Latinoamérica.",
+  title: "Academia Credito USA | Domina el Crédito en Estados Unidos",
+  description: "Academia Credito USA — La plataforma líder en educación financiera y crédito en Estados Unidos para hispanohablantes.",
 };
 
 export default function RootLayout({

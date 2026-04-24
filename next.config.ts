@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.cloudflarestream.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'customer-*.cloudflarestream.com',
+        pathname: '**',
+      },
     ],
   },
   transpilePackages: [

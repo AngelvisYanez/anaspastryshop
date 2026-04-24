@@ -24,7 +24,7 @@ const STEPS = [
   },
   {
     title: "Entrevista Técnica",
-    desc: "Reunión directa con Rodrigo, Michelle o el equipo senior de Artica Group.",
+    desc: "Reunión directa con Rodrigo, Michelle o el equipo senior de Academia Credito USA.",
     icon: <Briefcase className="text-blue-500" />,
   },
   {
@@ -55,7 +55,7 @@ export default function PasantiasPage() {
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
             Nuestro programa de pasantías no es para "sacar copias". Es para
-            construir el futuro de **4101 Media** y **Artica Group** junto a
+            construir el futuro de **Academia Credito USA** y **Academia Credito USA** junto a
             nosotros.
           </p>
         </section>
@@ -99,7 +99,7 @@ export default function PasantiasPage() {
               </h2>
               <p className="text-gray-400 text-lg max-w-sm">
                 Al terminar tu pasantía, recibes una certificación avalada por
-                Articademy — avalada por Artica Group (Miami) — que valida tu experiencia en el mercado
+                Academia Credito USAdemy — avalada por Academia Credito USA (Miami) — que valida tu experiencia en el mercado
                 global.
               </p>
             </div>

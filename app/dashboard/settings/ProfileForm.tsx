@@ -146,7 +146,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             />
           </div>
           <h1 className="text-3xl font-black text-[#0B1F3A]">Ajustes de Perfil</h1>
-          <p className="text-gray-400 font-medium">Actualiza tu información personal en AMA</p>
+          <p className="text-muted font-medium">Actualiza tu información personal en Academia Credito USA</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

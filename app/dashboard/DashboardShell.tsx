@@ -29,7 +29,7 @@ export default function DashboardShell({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="h-screen bg-gray-50 flex overflow-hidden">
+    <div className="h-screen bg-background flex overflow-hidden">
       {isSidebarOpen && (
         <button
           type="button"
@@ -57,7 +57,7 @@ export default function DashboardShell({
           onMenuClick={() => setIsSidebarOpen(true)}
           isBlockedMentor={isBlockedMentor}
         />
-        <main className="flex-1 overflow-y-auto w-full p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 bg-background">
           {children}
         </main>
       </div>

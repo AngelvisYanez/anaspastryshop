@@ -18,28 +18,28 @@ const TEAM = [
   {
     name: "Rodrigo Timaure",
     role: "Founder & Creative Director",
-    agency: "Artica Group",
+    agency: "Academia Credito USA",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
   },
   {
     name: "Michelle Guerra",
     role: "Co-Founder & Producer",
-    agency: "4101 Media",
+    agency: "Academia Credito USA",
     image:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
   },
   {
     name: "Newman Acosta",
     role: "Systems Engineer & Full Stack Dev",
-    agency: "Articademy",
+    agency: "Academia Credito USA",
     image:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400",
   },
   {
     name: "Cesar Arteaga",
     role: "Lead Developer",
-    agency: "Artica Group",
+    agency: "Academia Credito USA",
     image:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400",
   },
@@ -65,8 +65,8 @@ export default function NosotrosPage() {
               <span className="text-gray-300 italic">digital de Falcón.</span>
             </h1>
             <p className="text-xl text-gray-500 leading-relaxed mb-12">
-              Articademy nace de la unión estratégica entre **Artica
-              Group (Miami)** y **4101 Media (Latinoamérica)**.
+              Academia Credito USA nace de la unión estratégica entre **Artica
+              Group (Miami)** y **Academia Credito USA (Latinoamérica)**.
             </p>
           </m.div>
 

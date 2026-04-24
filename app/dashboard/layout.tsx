@@ -53,7 +53,7 @@ export default async function DashboardLayout({
           </div>
 
           <h1 className="text-3xl font-black text-[#0B1F3A] mb-4 leading-tight">
-            Sesión Terminada (Cuenta Desactivada)
+            Acceso Suspendido
           </h1>
           <p className="text-gray-500 leading-relaxed mb-6">
             Tu cuenta acaba de ser desactivada por un administrador:
@@ -65,8 +65,8 @@ export default async function DashboardLayout({
 
           <p className="text-xs text-gray-400 mb-6">
             No tienes acceso al panel. Contacta a soporte:{" "}
-            <a href="mailto:soporte@artica.group" className="text-red-500 font-bold hover:underline">
-              soporte@artica.group
+            <a href="mailto:soporte@academiacreditousa.com" className="text-red-500 font-bold hover:underline">
+              soporte@academiacreditousa.com
             </a>
           </p>
 

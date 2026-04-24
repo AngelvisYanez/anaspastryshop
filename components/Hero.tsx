@@ -2,6 +2,7 @@
 import { m } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const FEATURES = [
   "Módulos completos de crédito personal y empresarial",
@@ -13,6 +14,21 @@ const FEATURES = [
 ];
 
 export default function Hero() {
+  const [price, setPrice] = useState<number | null>(null);
+  const [ctaText, setCtaText] = useState("Quiero unirme ahora");
+  const [ctaUrl, setCtaUrl] = useState("/planes");
+
+  useEffect(() => {
+    fetch("/api/settings/site-config")
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (cfg.subscriptionPrice) setPrice(cfg.subscriptionPrice);
+        if (cfg.ctaText) setCtaText(cfg.ctaText);
+        if (cfg.ctaUrl) setCtaUrl(cfg.ctaUrl);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="px-4 md:px-10 pt-24">
       <div className="relative overflow-hidden bg-card rounded-[3.5rem] min-h-[85vh] flex items-center p-8 md:p-16 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-card-border">
@@ -48,9 +64,9 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Link href="/planes">
+              <Link href={ctaUrl}>
                 <button className="bg-navy dark:bg-accent text-white dark:text-navy px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-2xl shadow-accent/20">
-                  Quiero unirme ahora <ArrowRight size={20} />
+                  {ctaText} <ArrowRight size={20} />
                 </button>
               </Link>
               <a href="#para-ti">
@@ -88,11 +104,20 @@ export default function Hero() {
                 Precio de membresía mensual
               </p>
               <p className="text-4xl font-black text-accent tracking-tighter">
-                $XX{" "}
-                <span className="text-base font-bold text-muted tracking-normal">
-                  / mes
-                </span>
+                {price !== null ? (
+                  <>
+                    ${price}
+                    <span className="text-base font-bold text-muted tracking-normal"> / mes</span>
+                  </>
+                ) : (
+                  <span className="text-2xl text-muted font-bold">Cargando...</span>
+                )}
               </p>
+              <Link href="/checkout/subscription">
+                <button className="mt-4 w-full bg-accent text-white py-4 rounded-2xl font-bold hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+                  Suscribirme ahora <ArrowRight size={18} />
+                </button>
+              </Link>
             </div>
           </m.div>
         </div>

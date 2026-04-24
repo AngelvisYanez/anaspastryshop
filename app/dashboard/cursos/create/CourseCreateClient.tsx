@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Video, ArrowLeft, Loader2, AlignLeft, ChevronDown, Upload } from "lucide-react";
+import { Plus, Trash2, Video, ArrowLeft, Loader2, AlignLeft, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { createCourse } from "@/lib/actions/cursos";
+import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
 
 interface TaskForm {
   title: string;
@@ -214,11 +215,12 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                 <span>Video de Introducción / Venta (Opcional)</span>
                 <span className="text-[9px] text-[#C9A84C] uppercase tracking-widest bg-amber-50 px-2 py-1 rounded-md">⚡ Cloudflare Stream / YouTube</span>
               </label>
-              <div className="flex flex-col md:flex-row gap-3">
-                <button type="button" disabled className="flex items-center justify-center gap-2 bg-gray-100 text-gray-400 font-bold py-3 px-6 rounded-xl border border-gray-200 cursor-not-allowed shrink-0">
-                  <Upload size={18} /> Subir Archivo (.mp4)
-                </button>
-                <input value={introVideo} onChange={e => setIntroVideo(e.target.value)} type="url" className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="O pega el link directo..." />
+              <div className="space-y-3">
+                <CloudflareVideoUploader
+                  currentUrl={introVideo || undefined}
+                  onUpload={(url) => setIntroVideo(url)}
+                />
+                <input value={introVideo} onChange={e => setIntroVideo(e.target.value)} type="url" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] transition-all text-[#0B1F3A] placeholder:text-gray-500/80" placeholder="O pega el link directo (YouTube, Vimeo...)..." />
               </div>
               <p className="text-xs text-gray-500 mt-2 font-medium">Este video se reproducirá como portada del curso para usuarios que aún no hayan pagado.</p>
             </div>
@@ -351,26 +353,28 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                         />
                       </div>
 
-                      {/* Video del módulo (Oculto si es Streaming en Vivo) */}
+                      {/* Video del módulo */}
                       {!isLive && (
-                        <div className="bg-amber-50/50 border border-amber-200 rounded-2xl p-5">
-                          <label className="flex items-center justify-between text-xs font-bold text-[#C9A84C] uppercase tracking-wider mb-2">
+                        <div className="bg-accent-subtle/30 border border-accent/20 rounded-2xl p-5">
+                          <label className="flex items-center justify-between text-xs font-bold text-accent uppercase tracking-wider mb-3">
                             <span className="flex items-center gap-2"><Video size={14} /> Video de este Módulo (Opcional)</span>
-                            <span className="text-[9px] bg-white px-2 py-1 rounded shadow-sm text-amber-400">⚡ Cloudflare Ready</span>
+                            <span className="text-[9px] bg-white dark:bg-card px-2 py-1 rounded shadow-sm text-accent">⚡ Cloudflare Stream</span>
                           </label>
-                          <div className="flex flex-col sm:flex-row gap-3">
-                            <button type="button" disabled className="flex xl:w-auto w-full items-center justify-center gap-2 bg-white/50 text-indigo-300 font-bold py-3 px-4 rounded-xl border border-amber-200 cursor-not-allowed shrink-0 text-sm">
-                              <Upload size={16} /> Subir Video
-                            </button>
+                          <CloudflareVideoUploader
+                            currentUrl={m.videoUrl || undefined}
+                            onUpload={(url) => handleModuleChange(mIndex, "videoUrl", url)}
+                          />
+                          <div className="mt-3">
+                            <label className="text-[10px] text-muted font-bold uppercase tracking-widest mb-1 block">O pega una URL externa</label>
                             <input
                               value={m.videoUrl}
                               onChange={(e) => handleModuleChange(mIndex, "videoUrl", e.target.value)}
                               type="url"
-                              placeholder="O pega el link aquí..."
-                              className="flex-1 bg-white border border-indigo-200 rounded-xl px-4 py-3 outline-none focus:border-[#C9A84C] text-[#C9A84C] placeholder:text-gray-400 transition-all text-sm"
+                              placeholder="https://... (YouTube, Vimeo, etc)"
+                              className="w-full bg-card border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent text-foreground placeholder:text-muted transition-all text-sm"
                             />
                           </div>
-                          <p className="text-[10px] text-amber-400 mt-2 font-medium">Cada módulo tiene su propio video. Los alumnos lo verán al acceder a este módulo.</p>
+                          <p className="text-[10px] text-muted mt-2 font-medium">Cada módulo tiene su propio video. Los alumnos lo verán al acceder a este módulo.</p>
                         </div>
                       )}
 
