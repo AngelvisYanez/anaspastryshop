@@ -3,7 +3,12 @@ import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function CtaBanner() {
+interface Props {
+  price: number | null;
+  planName: string | null;
+}
+
+export default function CtaBanner({ price, planName }: Props) {
   return (
     <section className="py-24 px-4 md:px-10 max-w-5xl mx-auto">
       <m.div
@@ -29,17 +34,23 @@ export default function CtaBanner() {
 
           <div className="mb-10">
             <p className="text-xs text-gray-500 font-bold mb-1">
-              Membresía mensual
+              {planName ?? "Membresía mensual"}
             </p>
-            <p className="text-5xl font-black text-accent tracking-tighter">
-              $XX{" "}
-              <span className="text-base font-bold text-gray-500 tracking-normal">
-                / mes
-              </span>
-            </p>
+            {price !== null ? (
+              <p className="text-5xl font-black text-accent tracking-tighter">
+                ${price}{" "}
+                <span className="text-base font-bold text-gray-500 tracking-normal">
+                  / mes
+                </span>
+              </p>
+            ) : (
+              <p className="text-2xl font-black text-accent tracking-tighter">
+                Próximamente
+              </p>
+            )}
           </div>
 
-          <Link href="/planes">
+          <Link href="/membresia">
             <button className="bg-accent text-navy px-12 py-5 rounded-full font-bold text-base flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-105 transition-all shadow-xl shadow-accent/20">
               Unirme a la Academia <ArrowRight size={20} />
             </button>

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/logo_II.webp";
+import logoLight from "@/public/logo-acu.png";
+import logoDark from "@/public/logo-acu-white.png";
 import { prisma } from "@/lib/prisma";
 
 async function getSiteConfig() {
@@ -23,9 +24,14 @@ export default async function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="flex items-center gap-3">
           <Image
-            src={logo}
+            src={logoLight}
             alt="Academia Credito USA"
-            className="h-9 w-auto object-contain brightness-0 dark:brightness-0 dark:invert"
+            className="h-9 w-auto object-contain block dark:hidden"
+          />
+          <Image
+            src={logoDark}
+            alt="Academia Credito USA"
+            className="h-9 w-auto object-contain hidden dark:block"
           />
         </div>
 

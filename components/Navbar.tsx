@@ -9,9 +9,12 @@ import { useTheme } from "next-themes";
 import { getUserImage } from "@/lib/actions/user";
 import { getSections } from "@/lib/actions/platformSections";
 import Image from "next/image";
-import logo from "@/public/logo_II.webp";
+import logoLight from "@/public/logo-acu.png";
+import logoDark from "@/public/logo-acu-white.png";
 
 type NavLink = { name: string; href: string };
+
+const AUTH_ONLY_SLUGS = ["/mis-cursos"];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +22,7 @@ export default function Navbar() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [ctaText, setCtaText] = useState("Únete ahora");
-  const [ctaUrl, setCtaUrl] = useState("/planes");
+  const [ctaUrl, setCtaUrl] = useState("/membresia");
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const loading = status === "loading";
@@ -76,14 +79,19 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto bg-card/70 backdrop-blur-xl border border-card-border rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative">
         <Link href="/" className="flex items-center gap-2 group z-50">
           <Image
-            src={logo}
+            src={logoLight}
             alt="Academia Credito USA"
-            className="h-8 w-auto object-contain brightness-0 dark:brightness-0 dark:invert transition-all group-hover:scale-110"
+            className="h-8 w-auto object-contain transition-all group-hover:scale-110 block dark:hidden"
+          />
+          <Image
+            src={logoDark}
+            alt="Academia Credito USA"
+            className="h-8 w-auto object-contain transition-all group-hover:scale-110 hidden dark:block"
           />
         </Link>
 
         <div className="hidden md:flex gap-8 items-center">
-          {navLinks.map((link) => (
+          {navLinks.filter((l) => session || !AUTH_ONLY_SLUGS.includes(l.href)).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -159,7 +167,7 @@ export default function Navbar() {
               className="absolute top-[calc(100%+12px)] left-0 right-0 bg-card rounded-[2.5rem] p-8 shadow-2xl border border-card-border md:hidden flex flex-col gap-4 overflow-hidden"
             >
               <div className="flex flex-col gap-2">
-                {navLinks.map((link) => (
+                {navLinks.filter((l) => session || !AUTH_ONLY_SLUGS.includes(l.href)).map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}

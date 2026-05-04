@@ -16,7 +16,7 @@ const FEATURES = [
 export default function Hero() {
   const [price, setPrice] = useState<number | null>(null);
   const [ctaText, setCtaText] = useState("Quiero unirme ahora");
-  const [ctaUrl, setCtaUrl] = useState("/planes");
+  const [ctaUrl, setCtaUrl] = useState("/membresia");
 
   useEffect(() => {
     fetch("/api/settings/site-config")
@@ -113,9 +113,9 @@ export default function Hero() {
                   <span className="text-2xl text-muted font-bold">Cargando...</span>
                 )}
               </p>
-              <Link href="/checkout/subscription">
+              <Link href="/membresia">
                 <button className="mt-4 w-full bg-accent text-white py-4 rounded-2xl font-bold hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
-                  Suscribirme ahora <ArrowRight size={18} />
+                  Ver membresía <ArrowRight size={18} />
                 </button>
               </Link>
             </div>
