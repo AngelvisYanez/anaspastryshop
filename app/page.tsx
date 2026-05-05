@@ -5,7 +5,6 @@ import VideoIntro from "@/components/VideoIntro";
 import WhatYouGet from "@/components/WhatYouGet";
 import AboutRami from "@/components/AboutRami";
 import Testimonials from "@/components/Testimonials";
-import CtaBanner from "@/components/CtaBanner";
 import CoursesCarousel from "@/components/CoursesCarousel";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
@@ -19,7 +18,7 @@ async function getData() {
   cacheTag("home-data", "cursos", "planes");
   const [courses, plan] = await Promise.all([
     prisma.curso.findMany({
-      select: { id: true, title: true, category: true, price: true, level: true, image: true, totalHours: true },
+      select: { id: true, title: true, category: true, image: true, totalHours: true },
       orderBy: { createdAt: "desc" },
       take: 12,
     }),
@@ -74,8 +73,6 @@ export default async function Home() {
 
       <Testimonials />
 
-      <CtaBanner price={plan?.price ?? null} planName={plan?.name ?? null} />
-
       <section className="py-24 px-4 md:px-10 max-w-5xl mx-auto">
         <div className="bg-section-alt rounded-2xl p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-10 border border-card-border">
           <div className="max-w-lg">
@@ -96,7 +93,7 @@ export default async function Home() {
               </button>
             </Link>
             <Link href="/cursos" className="text-sm text-muted hover:text-foreground transition-colors font-medium">
-              Explorar cursos gratis →
+              Explorar cursos →
             </Link>
           </div>
         </div>

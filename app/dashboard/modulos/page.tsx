@@ -14,7 +14,7 @@ export default async function ModulosPage() {
   });
 
   return (
-    <div className="p-8">
+    <div>
       <PlatformModuleManager initialSections={sections} />
     </div>
   );

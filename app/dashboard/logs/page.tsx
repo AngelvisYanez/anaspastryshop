@@ -74,7 +74,7 @@ export default async function LogsPage() {
   });
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8 flex items-center gap-4">
         <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-500 rounded-lg">
           <ShieldAlert size={26} />
@@ -85,7 +85,7 @@ export default async function LogsPage() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl p-8 border border-card-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl p-4 sm:p-8 border border-card-border shadow-sm overflow-hidden">
         {logs.length === 0 ? (
           <p className="text-muted italic text-center py-6">No hay registros de actividad aún.</p>
         ) : (

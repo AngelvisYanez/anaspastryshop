@@ -1,40 +1,21 @@
 "use client";
 import { m } from "framer-motion";
-import { Globe, ArrowRight, Linkedin, Instagram } from "lucide-react";
+import { Globe, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
-const TEAM = [
-  {
-    name: "Rami Noureddine",
-    role: "Fundador & Educador Financiero",
-    agency: "Academia Credito USA",
-    initials: "RN",
-    image: "/rami.jpeg",
-  },
-  {
-    name: "Rodrigo Timaure",
-    role: "Director Creativo",
-    agency: "Academia Credito USA",
-    initials: "RT",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
-  },
-  {
-    name: "Michelle Guerra",
-    role: "Co-Fundadora & Productora",
-    agency: "Academia Credito USA",
-    initials: "MG",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
-  },
-  {
-    name: "Newman Acosta",
-    role: "Ingeniero de Sistemas",
-    agency: "Academia Credito USA",
-    initials: "NA",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400",
-  },
+const STATS = [
+  { num: "7+", label: "Años construyendo crédito en USA" },
+  { num: "8", label: "Módulos completos" },
+  { num: "∞", label: "Actualizaciones incluidas" },
+];
+
+const IMPACT = [
+  { num: "+500", label: "Alumnos Formados" },
+  { num: "7+", label: "Años de Experiencia" },
+  { num: "8", label: "Módulos de Formación" },
 ];
 
 export default function NosotrosPage() {
@@ -73,82 +54,126 @@ export default function NosotrosPage() {
           <div className="relative h-[500px] w-full rounded-2xl overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2000"
-              alt="Academia Credito USA Team"
+              alt="Academia Credito USA"
               fill
               sizes="100vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/80 to-transparent flex items-end p-12">
               <div className="flex flex-wrap gap-12">
-                <div className="text-white">
-                  <p className="font-display text-4xl font-black italic text-accent">+500</p>
-                  <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-                    Alumnos Formados
-                  </p>
-                </div>
-                <div className="text-white">
-                  <p className="font-display text-4xl font-black italic text-accent">7+</p>
-                  <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-                    Años de Experiencia
-                  </p>
-                </div>
-                <div className="text-white">
-                  <p className="font-display text-4xl font-black italic text-accent">8</p>
-                  <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-                    Módulos de Formación
-                  </p>
-                </div>
+                {IMPACT.map((item) => (
+                  <div key={item.label} className="text-white">
+                    <p className="font-display text-4xl font-black italic text-accent">{item.num}</p>
+                    <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
         <section className="mb-32">
-          <div className="text-center mb-16">
-            <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
-              El equipo
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-16 block">
+              Quién soy
             </span>
-            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight">
-              Quiénes están detrás
-            </h2>
-          </div>
+          </m.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM.map((member) => (
-              <m.div
-                key={member.name}
-                whileHover={{ y: -8 }}
-                transition={{ duration: 0.2 }}
-                className="bg-card rounded-xl p-6 text-center border border-card-border group overflow-hidden"
-              >
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-6 bg-section-alt">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  />
-                </div>
-                <h4 className="font-display text-lg font-black text-foreground tracking-tight">
-                  {member.name}
-                </h4>
-                <p className="text-xs font-bold text-accent uppercase tracking-widest mt-1 mb-5">
-                  {member.role}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-20 items-start">
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-[3/4] bg-card rounded-xl border border-card-border overflow-hidden relative">
+                <Image
+                  src="/rami.jpeg"
+                  alt="Rami Noureddine"
+                  fill
+                  className="object-cover object-top"
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-card to-transparent" />
+              </div>
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                {STATS.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="text-center p-4 bg-card rounded-xl border border-card-border"
+                  >
+                    <span className="font-display block text-2xl font-black text-accent tracking-tight mb-1">
+                      {stat.num}
+                    </span>
+                    <span className="text-[10px] font-bold text-muted leading-tight block">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </m.div>
+
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-2">
+                Rami Noureddine
+              </h2>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-10">
+                Fundador · Academia Crédito USA
+              </p>
+
+              <p className="text-sm text-muted leading-relaxed mb-6">
+                Soy venezolano, residente en Estados Unidos. Mi primer contacto con
+                el crédito americano fue a los 18 años — sin número de seguro
+                social, sin historial, y con una tarjeta de $5,000 que terminó
+                financiando mis estudios en el Líbano durante una crisis bancaria.
+                Desde ese momento me obsesioné con entender cómo funciona este
+                sistema desde adentro.
+              </p>
+              <p className="text-sm text-muted leading-relaxed mb-6">
+                Trabajé como banquero comercial, donde ayudé a decenas de clientes a
+                mejorar su perfil crediticio y acceder a financiamiento real. Ese
+                tiempo adentro del banco me cambió la perspectiva completamente — vi
+                exactamente cómo piensan las instituciones, qué buscan, y qué
+                decisiones toman.
+              </p>
+              <p className="text-sm text-muted leading-relaxed mb-10">
+                Hoy comparto todo eso en esta academia. No teoría, no pasos ciegos —
+                sino el criterio real que necesitas para tomar decisiones financieras
+                inteligentes en este país. Lo que yo ojalá hubiera sabido desde el
+                primer día.
+              </p>
+
+              <div className="relative bg-card rounded-xl px-8 py-7 border border-card-border overflow-hidden">
+                <span className="font-display absolute top-2 left-5 text-[7rem] leading-none text-accent/10 font-black select-none pointer-events-none">
+                  &ldquo;
+                </span>
+                <p className="relative z-10 text-base text-foreground leading-relaxed font-medium">
+                  El objetivo no es darte una lista de pasos a seguir ciegamente.
+                  Es que desarrolles tu propio sentido lógico para tomar decisiones
+                  financieras.
                 </p>
-
-                <div className="flex justify-center gap-4">
-                  <Linkedin
-                    size={15}
-                    className="text-muted/40 hover:text-accent cursor-pointer transition-colors"
-                  />
-                  <Instagram
-                    size={15}
-                    className="text-muted/40 hover:text-accent cursor-pointer transition-colors"
-                  />
+                <div className="mt-5 pt-5 border-t border-card-border flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
+                    <span className="text-accent text-xs font-bold">RN</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Rami Noureddine</p>
+                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Fundador</p>
+                  </div>
                 </div>
-              </m.div>
-            ))}
+              </div>
+            </m.div>
           </div>
         </section>
 

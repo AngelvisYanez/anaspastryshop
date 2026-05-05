@@ -4,7 +4,7 @@ import { m } from "framer-motion";
 import {
   Check, ArrowRight, Shield, Zap, Star,
   Video, CreditCard, DollarSign, Bitcoin,
-  Smartphone, Wallet,
+  Smartphone, Wallet, Building2,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Link from "next/link";
@@ -22,13 +22,19 @@ type Plan = {
 
 type Section = { id: string; name: string; icon: string };
 
-const PAYMENT_LABELS: Record<string, { label: string; Icon: React.ElementType }> = {
-  STRIPE:     { label: "Tarjeta de crédito/débito", Icon: CreditCard },
-  PAYPAL:     { label: "PayPal",                    Icon: DollarSign },
-  BINANCE:    { label: "Binance Pay",               Icon: Bitcoin },
-  ZELLE:      { label: "Zelle",                     Icon: Zap },
-  PAGO_MOVIL: { label: "Pago Móvil",                Icon: Smartphone },
-  USDT:       { label: "USDT / Cripto",             Icon: Wallet },
+const PAYMENT_META: Record<string, {
+  label: string;
+  Icon: React.ElementType;
+  type: "automatic" | "manual";
+  description: string;
+}> = {
+  STRIPE:        { label: "Tarjeta de crédito/débito", Icon: CreditCard, type: "automatic", description: "Visa, Mastercard, American Express" },
+  PAYPAL:        { label: "PayPal",                    Icon: DollarSign, type: "automatic", description: "Pago instantáneo con tu cuenta PayPal" },
+  BINANCE:       { label: "Binance Pay",               Icon: Bitcoin,    type: "automatic", description: "Criptomonedas vía Binance Pay" },
+  ZELLE:         { label: "Zelle",                     Icon: Zap,        type: "manual",    description: "Transferencia directa desde tu banco" },
+  PAGO_MOVIL:    { label: "Pago Móvil",                Icon: Smartphone, type: "manual",    description: "Transferencia desde tu banco móvil" },
+  USDT:          { label: "USDT / Cripto",             Icon: Wallet,     type: "manual",    description: "Stablecoins y criptomonedas" },
+  BANK_TRANSFER: { label: "Transferencia Bancaria",    Icon: Building2,  type: "manual",    description: "ACH / Wire Transfer bancaria" },
 };
 
 const BENEFITS = [
@@ -49,9 +55,11 @@ function DynamicIcon({ name }: { name: string }) {
 export default function MembresiaClient({
   plan,
   sections,
+  enabledProviders,
 }: {
   plan: Plan | null;
   sections: Section[];
+  enabledProviders: string[];
 }) {
   const sectionMap = Object.fromEntries(sections.map((s) => [s.id, s]));
   const price = plan?.price ?? null;
@@ -159,24 +167,75 @@ export default function MembresiaClient({
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col gap-6"
           >
-            <div className="bg-card rounded-xl p-8 border border-card-border">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-6">
-                Métodos de pago aceptados
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {(plan?.paymentMethods ?? Object.keys(PAYMENT_LABELS)).map((key) => {
-                  const meta = PAYMENT_LABELS[key];
-                  if (!meta) return null;
-                  const { Icon, label } = meta;
-                  return (
-                    <div key={key} className="flex items-center gap-3 bg-section-alt rounded-2xl px-4 py-3 border border-card-border">
-                      <Icon size={16} className="text-accent shrink-0" />
-                      <span className="text-sm font-medium text-foreground">{label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            {(() => {
+              const activeMethods = (plan?.paymentMethods ?? []).filter((m) =>
+                enabledProviders.includes(m)
+              );
+              if (activeMethods.length === 0) return null;
+              const automatic = activeMethods.filter((m) => PAYMENT_META[m]?.type === "automatic");
+              const manual = activeMethods.filter((m) => PAYMENT_META[m]?.type === "manual");
+              return (
+                <div className="bg-card rounded-xl p-8 border border-card-border">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-6">
+                    Métodos de pago aceptados
+                  </h3>
+                  <div className="flex flex-col gap-3">
+                    {automatic.length > 0 && (
+                      <>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted/60 mb-1">
+                          Automático
+                        </p>
+                        {automatic.map((key) => {
+                          const meta = PAYMENT_META[key];
+                          if (!meta) return null;
+                          const { Icon, label, description } = meta;
+                          return (
+                            <div key={key} className="flex items-center gap-3 bg-section-alt rounded-xl px-4 py-3 border border-card-border">
+                              <div className="w-9 h-9 bg-accent/10 rounded-lg flex items-center justify-center shrink-0">
+                                <Icon size={17} className="text-accent" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-foreground leading-none mb-0.5">{label}</p>
+                                <p className="text-xs text-muted truncate">{description}</p>
+                              </div>
+                              <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded-full shrink-0">
+                                Instantáneo
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                    {manual.length > 0 && (
+                      <>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted/60 mb-1 mt-2">
+                          Manual
+                        </p>
+                        {manual.map((key) => {
+                          const meta = PAYMENT_META[key];
+                          if (!meta) return null;
+                          const { Icon, label, description } = meta;
+                          return (
+                            <div key={key} className="flex items-center gap-3 bg-section-alt rounded-xl px-4 py-3 border border-card-border">
+                              <div className="w-9 h-9 bg-foreground/5 rounded-lg flex items-center justify-center shrink-0">
+                                <Icon size={17} className="text-muted" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-foreground leading-none mb-0.5">{label}</p>
+                                <p className="text-xs text-muted truncate">{description}</p>
+                              </div>
+                              <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-muted bg-foreground/5 px-2 py-0.5 rounded-full shrink-0">
+                                Manual
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="bg-card rounded-xl p-8 border border-card-border">
               <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-6">

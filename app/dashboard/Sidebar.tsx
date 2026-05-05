@@ -9,7 +9,7 @@ import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Activity, X,
   Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
-  Sun, Moon, ChevronLeft, ChevronRight,
+  Sun, Moon, ChevronLeft, ChevronRight, Mail,
 } from "lucide-react";
 
 const SYSTEM_ITEMS = [
@@ -23,6 +23,7 @@ const SYSTEM_ITEMS = [
   { name: "Módulos",           href: "/dashboard/modulos",       icon: LayoutGrid,      roles: ["ADMIN"] },
   { name: "Config. APIs",      href: "/dashboard/api-config",    icon: KeyRound,        roles: ["ADMIN"] },
   { name: "Usuarios",          href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN", "MENTOR"] },
+  { name: "Newsletter",         href: "/dashboard/newsletter",    icon: Mail,            roles: ["ADMIN"] },
   { name: "Auditoría",         href: "/dashboard/logs",          icon: Activity,        roles: ["ADMIN"] },
   { name: "Configuración",     href: "/dashboard/settings",      icon: Settings,        roles: ["ADMIN", "MENTOR", "USER"] },
 ];

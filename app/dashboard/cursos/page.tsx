@@ -28,7 +28,7 @@ export default async function CursosDashboardPage() {
   ]);
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-black text-foreground tracking-tighter">

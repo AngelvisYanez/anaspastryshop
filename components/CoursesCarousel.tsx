@@ -8,8 +8,6 @@ interface Course {
   id: string;
   title: string;
   category: string;
-  price: number;
-  level: string;
   image: string | null;
   totalHours: number;
 }
@@ -65,19 +63,18 @@ export default function CoursesCarousel({ courses }: { courses: Course[] }) {
                   )}
                 </div>
                 <div className="px-2 pb-3">
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent">
                       {course.category}
-                    </span>
-                    <span className="text-[9px] font-black uppercase text-muted border border-card-border px-2 py-0.5 rounded-md bg-card">
-                      {course.level}
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-foreground mb-4 leading-snug line-clamp-2 min-h-[2.8rem]">
                     {course.title}
                   </h3>
                   <div className="flex justify-between items-center pt-3 border-t border-card-border">
-                    <span className="text-xl font-black text-foreground">${course.price}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Incluido en membresía
+                    </span>
                     <div className="bg-card-hover p-2.5 rounded-lg group-hover:bg-navy group-hover:text-white transition-all">
                       <ArrowUpRight size={18} />
                     </div>

@@ -137,7 +137,7 @@ export default function CourseEditClient({ course, hasEnrolledStudents, mentors,
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto pb-24 bg-card md:bg-transparent -mt-8 pt-12">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto pb-24 bg-card md:bg-transparent">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/dashboard/cursos" className="p-2 hover:bg-card rounded-xl transition-colors border border-transparent hover:border-card-border">
           <ArrowLeft size={24} className="text-foreground" />

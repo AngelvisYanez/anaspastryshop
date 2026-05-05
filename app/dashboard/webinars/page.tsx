@@ -26,7 +26,7 @@ export default async function WebinarsDashboardPage() {
   const programados = webinars.filter((w) => w.status === "SCHEDULED").length;
 
   return (
-    <div className="p-8">
+    <div>
       <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-black text-foreground">Webinars & Meetings</h1>
@@ -40,7 +40,7 @@ export default async function WebinarsDashboardPage() {
       </div>
 
       {webinars.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
             <p className="text-3xl font-black text-foreground">{webinars.length}</p>

@@ -6,7 +6,6 @@ import { PlayCircle, Clock, Globe, ChevronDown, ArrowRight, Zap, ChevronRight, H
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
-import CheckoutModal from "@/components/CheckoutModal";
 import type { ReactNode } from "react";
 
 function getEmbedUrl(url: string | null | undefined): string | null {
@@ -18,13 +17,12 @@ function getEmbedUrl(url: string | null | undefined): string | null {
 }
 
 const FAQS = [
-  { q: "¿Es obligatorio registrarse?", a: "Sí. Para garantizar la seguridad de tus pagos y el acceso permanente a tus clases, debes crear una cuenta gratuita antes de realizar cualquier inscripción." },
-  { q: "¿Cómo recibo el acceso?", a: "Una vez verificado tu pago (Zelle, USDT o BCV), el curso se desbloqueará automáticamente en tu panel de alumno." },
-  { q: "¿Puedo pagar en Bolívares?", a: "Sí. Al completar tu registro e iniciar el proceso de inscripción, selecciona Pago Móvil. El sistema calculará el monto a tasa BCV." },
+  { q: "¿Es obligatorio registrarse?", a: "Sí. Para garantizar el acceso permanente a tus clases, debes crear una cuenta gratuita antes de activar tu membresía." },
+  { q: "¿Cómo recibo el acceso?", a: "Una vez activa tu membresía mensual, todos los cursos se desbloquean automáticamente en tu panel de alumno." },
+  { q: "¿Qué incluye la membresía?", a: "La membresía mensual da acceso completo a todo el catálogo de cursos disponibles en Academia Crédito USA." },
 ];
 
 export default function CourseDetailClient({ course, hasPaid, children }: { course: any, hasPaid: boolean, children?: ReactNode }) {
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
   
   const embedUrl = getEmbedUrl(course.introVideo);
@@ -60,7 +58,7 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
                 {course.description}
               </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+              <div className="grid grid-cols-3 gap-4 mb-16">
                 <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <Clock className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.totalHours} horas</span>
@@ -72,10 +70,6 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
                 <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <Globe className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.language}</span>
-                </div>
-                <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
-                  <Zap className="mx-auto mb-2 text-gray-300" size={20} />
-                  <span className="block text-sm font-bold text-[#0B1F3A]">{course.level}</span>
                 </div>
               </div>
 
@@ -221,9 +215,10 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
                     </p>
                   </div>
 
-                  <div className="flex items-end gap-2 mb-8">
-                    <span className="text-6xl font-black text-[#0B1F3A] tracking-tighter">${course.price}</span>
-                    <span className="text-gray-400 font-bold mb-3 uppercase text-[10px] tracking-widest">Pago único</span>
+                  <div className="mb-8">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A84C] bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+                      Incluido en membresía mensual
+                    </span>
                   </div>
 
                   {hasPaid ? (
@@ -233,41 +228,18 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
                       </div>
                       <div>
                         <p className="text-sm font-black uppercase tracking-tight">Acceso Concedido</p>
-                        <p className="text-xs font-medium opacity-80 mt-0.5">Disfrutas de este curso por compra individual o membresía activa.</p>
+                        <p className="text-xs font-medium opacity-80 mt-0.5">Disfrutas de este curso con tu membresía activa.</p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <button
-                        onClick={() => setIsCheckoutOpen(true)}
+                      <Link
+                        href="/membresia"
                         className="w-full bg-[#0B1F3A] text-white py-6 rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-[#C9A84C] transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-xs"
                       >
-                        Comprar Curso Individual <ArrowRight size={18} />
-                      </button>
-
-                      <div className="relative py-2 flex items-center justify-center">
-                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-100"></span></div>
-                        <span className="relative px-4 bg-white text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">O MEJOR AÚN</span>
-                      </div>
-
-                      <Link
-                        href="/checkout/membresia"
-                        className="w-full bg-white text-[#C9A84C] py-5 rounded-lg font-bold flex items-center justify-center gap-2 border-2 border-amber-100 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
-                      >
-                        <Zap size={14} className="fill-current" /> Activar Membresía Completa
+                        <Zap size={14} className="fill-current" /> Activar Membresía <ArrowRight size={18} />
                       </Link>
                     </div>
-                  )}
-
-                  {!hasPaid && (
-                     <div className="space-y-5 pt-8 border-t border-gray-50">
-                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] text-center">Métodos de Pago Soportados</p>
-                        <div className="flex justify-center gap-3">
-                           {["Zelle", "USDT", "BCV"].map(m => (
-                              <span key={m} className="text-[10px] font-bold border border-gray-100 px-4 py-2 rounded-xl text-gray-400 bg-gray-50">{m}</span>
-                           ))}
-                        </div>
-                     </div>
                   )}
                 </div>
               </div>
@@ -290,13 +262,6 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
         </div>
       </div>
 
-      <CheckoutModal 
-        isOpen={isCheckoutOpen} 
-        onClose={() => setIsCheckoutOpen(false)} 
-        price={course.price} 
-        title={course.title}
-        cursoId={course.id}
-      />
       {children}
     </main>
   );

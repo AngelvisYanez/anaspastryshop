@@ -4,7 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
-import { sendSubscriptionConfirmedEmail } from "@/lib/email";
+import {
+  sendSubscriptionConfirmedEmail,
+  sendCoursePurchaseEmail,
+  sendPaymentRejectedEmail,
+} from "@/lib/email";
 
 export async function getPendingPayments() {
   const session = await auth();
@@ -73,6 +77,17 @@ export async function approvePayment(inscriptionId: string) {
         plan?.name ?? "Membresía Academia",
         inscription.amountPaid
       ).catch(() => {});
+    } else {
+      const curso = await prisma.curso.findUnique({
+        where: { id: inscription.cursoId },
+        select: { title: true },
+      });
+
+      sendCoursePurchaseEmail(
+        inscription.user.email,
+        inscription.user.name,
+        curso?.title ?? "Curso"
+      ).catch(() => {});
 
       revalidatePath("/dashboard/mis-cursos");
     }
@@ -94,7 +109,7 @@ export async function approvePayment(inscriptionId: string) {
   }
 }
 
-export async function rejectPayment(inscriptionId: string) {
+export async function rejectPayment(inscriptionId: string, reason?: string) {
   const session = await auth();
 
   // @ts-ignore
@@ -103,10 +118,23 @@ export async function rejectPayment(inscriptionId: string) {
   }
 
   try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id: inscriptionId },
+      include: { user: { select: { email: true, name: true } } },
+    });
+
+    if (!inscription) return { error: "Inscripción no encontrada" };
+
     await prisma.inscription.update({
       where: { id: inscriptionId },
       data: { status: "REJECTED" },
     });
+
+    sendPaymentRejectedEmail(
+      inscription.user.email,
+      inscription.user.name,
+      reason
+    ).catch(() => {});
 
     await logActivity({
       userId: session.user.id as string,

@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 async function getMembresiaData() {
   "use cache";
   cacheLife("hours");
-  cacheTag("planes", "plataforma-secciones");
-  const [plan, sections] = await Promise.all([
+  cacheTag("planes", "plataforma-secciones", "gateways");
+  const [plan, sections, gateways] = await Promise.all([
     prisma.subscriptionPlan.findFirst({
       where: { isActive: true },
       orderBy: { price: "asc" },
@@ -28,17 +28,22 @@ async function getMembresiaData() {
       where: { isActive: true },
       select: { id: true, name: true, icon: true },
     }),
+    prisma.paymentGatewayConfig.findMany({
+      where: { isEnabled: true },
+      select: { provider: true },
+    }),
   ]);
-  return { plan, sections };
+  const enabledProviders = gateways.map((g) => g.provider);
+  return { plan, sections, enabledProviders };
 }
 
 export default async function MembresiaPage() {
-  const { plan, sections } = await getMembresiaData();
+  const { plan, sections, enabledProviders } = await getMembresiaData();
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-20">
       <Navbar />
-      <MembresiaClient plan={plan as any} sections={sections} />
+      <MembresiaClient plan={plan as any} sections={sections} enabledProviders={enabledProviders} />
       <Footer />
     </main>
   );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   Plus, Trash2, Loader2, CheckCircle, Pencil, X,
   Video, Star, Package, CreditCard, DollarSign,
-  Bitcoin, Zap, Smartphone, Wallet,
+  Bitcoin, Zap, Wallet, Building2,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { createPlan, updatePlan, deletePlan, type PlanData } from "@/lib/actions/subscriptionPlans";
@@ -24,12 +24,12 @@ type Plan = {
 };
 
 const PAYMENT_METHODS = [
-  { key: "STRIPE",     label: "Stripe",       Icon: CreditCard,  color: "bg-amber-50 text-amber-700 border-indigo-200" },
-  { key: "PAYPAL",     label: "PayPal",        Icon: DollarSign,  color: "bg-blue-50 text-blue-600 border-blue-200" },
-  { key: "BINANCE",    label: "Binance Pay",   Icon: Bitcoin,     color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
-  { key: "ZELLE",      label: "Zelle",         Icon: Zap,         color: "bg-amber-50 text-amber-700 border-purple-200" },
-  { key: "PAGO_MOVIL", label: "Pago Móvil",    Icon: Smartphone,  color: "bg-green-50 text-green-600 border-green-200" },
-  { key: "USDT",       label: "USDT / Crypto", Icon: Wallet,      color: "bg-orange-50 text-orange-600 border-orange-200" },
+  { key: "STRIPE",        label: "Stripe",                  Icon: CreditCard, color: "bg-amber-50 text-amber-700 border-indigo-200" },
+  { key: "PAYPAL",        label: "PayPal",                  Icon: DollarSign, color: "bg-blue-50 text-blue-600 border-blue-200" },
+  { key: "BINANCE",       label: "Binance Pay",             Icon: Bitcoin,    color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
+  { key: "ZELLE",         label: "Zelle",                   Icon: Zap,        color: "bg-amber-50 text-amber-700 border-purple-200" },
+  { key: "USDT",          label: "USDT / Crypto",           Icon: Wallet,     color: "bg-orange-50 text-orange-600 border-orange-200" },
+  { key: "BANK_TRANSFER", label: "Transferencia Bancaria",  Icon: Building2,  color: "bg-slate-50 text-slate-600 border-slate-200" },
 ];
 
 const METHOD_LABEL: Record<string, { label: string; Icon: React.ElementType; color: string }> =

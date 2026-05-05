@@ -100,8 +100,25 @@ export async function adminDeleteUser(id: string) {
 
   if (!user) return { error: "Usuario no encontrado." };
 
-  // Eliminar inscripciones primero (FK constraint)
+  const instructedCourses = await prisma.curso.findMany({
+    where: { instructorId: id },
+    select: { id: true },
+  });
+  const courseIds = instructedCourses.map((c) => c.id);
+
+  if (courseIds.length > 0) {
+    await prisma.inscription.deleteMany({ where: { cursoId: { in: courseIds } } });
+    await prisma.coursePurchase.deleteMany({ where: { cursoId: { in: courseIds } } });
+    await prisma.curso.deleteMany({ where: { id: { in: courseIds } } });
+  }
+
+  await prisma.liveStream.deleteMany({ where: { instructorId: id } });
+  await prisma.webinar.deleteMany({ where: { instructorId: id } });
+
+  await prisma.subscription.deleteMany({ where: { userId: id } });
+  await prisma.coursePurchase.deleteMany({ where: { userId: id } });
   await prisma.inscription.deleteMany({ where: { userId: id } });
+  await prisma.activityLog.deleteMany({ where: { userId: id } });
   await prisma.user.delete({ where: { id } });
 
   await logActivity({

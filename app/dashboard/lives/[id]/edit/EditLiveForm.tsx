@@ -84,7 +84,7 @@ export default function EditLiveForm({ live }: { live: Live }) {
   const cfg = STATUS_LABELS[currentStatus] ?? STATUS_LABELS.SCHEDULED;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/dashboard/lives"

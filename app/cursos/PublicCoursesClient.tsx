@@ -8,15 +8,11 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import type { ReactNode } from "react";
 
-const LEVELS = ["Todos", "Principiante", "Intermedio", "Avanzado"];
-
 type CourseProps = {
   id: string;
   title: string;
   instructor: string;
-  price: number;
   type: string;
-  level: string;
   category: string;
   image: string;
   hasAccess?: boolean;
@@ -24,14 +20,11 @@ type CourseProps = {
 
 export default function PublicCoursesClient({
   courses,
-  userSubscription,
   children,
 }: {
   courses: CourseProps[];
-  userSubscription?: { plan: string; status: string } | null;
   children?: ReactNode;
 }) {
-  const [activeLevel, setActiveLevel] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -39,10 +32,9 @@ export default function PublicCoursesClient({
   const categories = ["Todas", ...Array.from(new Set(courses.map((c) => c.category)))];
 
   const filteredCourses = courses.filter((course) => {
-    const matchesLevel = activeLevel === "Todos" || course.level === activeLevel;
     const matchesCategory = activeCategory === "Todas" || course.category === activeCategory;
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesLevel && matchesCategory && matchesSearch;
+    return matchesCategory && matchesSearch;
   });
 
   return (
@@ -97,22 +89,6 @@ export default function PublicCoursesClient({
               >
                 <Filter size={18} />
               </button>
-
-              <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                {LEVELS.map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setActiveLevel(level)}
-                    className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${
-                      activeLevel === level
-                        ? "bg-foreground text-background border-foreground"
-                        : "bg-card text-muted border-card-border hover:border-accent hover:text-accent"
-                    }`}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -179,16 +155,13 @@ export default function PublicCoursesClient({
                 </div>
 
                 <div className="p-7 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-accent text-[10px] font-bold uppercase tracking-[0.2em]">
-                      {curso.level}
-                    </span>
-                    {curso.hasAccess && (
-                      <span className="bg-accent-subtle text-accent text-[9px] font-bold uppercase px-2 py-1 rounded-lg border border-accent/20 flex items-center gap-1">
+                  {curso.hasAccess && (
+                    <div className="mb-3">
+                      <span className="bg-accent-subtle text-accent text-[9px] font-bold uppercase px-2 py-1 rounded-lg border border-accent/20 flex items-center gap-1 w-fit">
                         <Zap size={10} className="fill-current" /> Desbloqueado
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <h3 className="font-display text-xl font-black text-foreground mb-2 leading-tight">
                     {curso.title}
                   </h3>
@@ -196,20 +169,12 @@ export default function PublicCoursesClient({
                     <p className="text-muted text-sm">
                       {curso.instructor}
                     </p>
-                    {!curso.hasAccess && userSubscription?.status === "ACTIVE" && (
-                      <span className="text-[9px] font-bold text-accent bg-accent-subtle px-2 py-0.5 rounded-md border border-accent/20">
-                        Requiere Upgrade
-                      </span>
-                    )}
                   </div>
 
                   <div className="mt-auto pt-5 border-t border-card-border flex items-center justify-between">
-                    <div>
-                      <span className="font-display text-3xl font-black text-foreground italic">${curso.price}</span>
-                      <p className="text-[9px] text-muted font-bold uppercase tracking-tighter mt-0.5">
-                        Zelle · USDT · Bolívares
-                      </p>
-                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Incluido en membresía
+                    </span>
 
                     <Link href={`/cursos/${curso.id}`}>
                       <button className="bg-foreground text-background p-4 rounded-2xl hover:bg-accent hover:text-[#0B1F3A] hover:scale-110 transition-all shadow-sm">

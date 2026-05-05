@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   ChevronDown, Eye, EyeOff, Save, Loader2, CheckCircle,
-  CreditCard, Smartphone, Bitcoin, Zap, DollarSign, Wallet, Building2,
+  CreditCard, Bitcoin, Zap, DollarSign, Wallet, Building2,
 } from "lucide-react";
 import { saveGatewayConfig } from "@/lib/actions/gateway";
 
@@ -83,19 +83,6 @@ const GATEWAYS: GatewayDef[] = [
     ],
   },
   {
-    provider: "PAGO_MOVIL",
-    label: "Pago Móvil",
-    description: "Pago móvil bancario (Venezuela). Los datos se muestran al usuario al pagar.",
-    type: "manual",
-    Icon: Smartphone,
-    color: "green",
-    fields: [
-      { key: "bank", label: "Banco", placeholder: "Banesco (0134)", extra: true },
-      { key: "phone", label: "Teléfono", placeholder: "0412-1234567", extra: true },
-      { key: "rif", label: "RIF / Cédula", placeholder: "J-123456789", extra: true },
-    ],
-  },
-  {
     provider: "USDT",
     label: "USDT / Crypto",
     description: "Pagos manuales en cripto. Los datos se muestran al usuario al pagar.",
@@ -131,7 +118,6 @@ const COLOR_MAP: Record<string, string> = {
   blue: "bg-blue-50 text-blue-600 border-blue-100",
   yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
   purple: "bg-amber-50 text-amber-700 border-purple-100",
-  green: "bg-green-50 text-green-600 border-green-100",
   orange: "bg-orange-50 text-orange-600 border-orange-100",
   slate: "bg-slate-50 text-slate-700 border-slate-200",
 };
@@ -216,7 +202,7 @@ function GatewayCard({
       <div
         role="button"
         tabIndex={0}
-        className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-card-hover transition-colors"
+        className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 cursor-pointer hover:bg-card-hover transition-colors"
         onClick={() => setOpen(!open)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!open); } }}
       >
@@ -264,7 +250,7 @@ function GatewayCard({
       </div>
 
       {open && (
-        <div className="px-8 pb-8 border-t border-card-border pt-6 bg-section-alt/30 space-y-4">
+        <div className="px-4 sm:px-8 pb-6 sm:pb-8 border-t border-card-border pt-6 bg-section-alt/30 space-y-4">
           {error && (
             <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold">{error}</div>
           )}

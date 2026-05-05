@@ -22,7 +22,7 @@ export default async function SuscripcionesPage() {
   ]);
 
   return (
-    <div className="p-8">
+    <div>
       <SuscripcionesClient
         suscripciones={suscripciones as any}
         initialPlans={plans as any}

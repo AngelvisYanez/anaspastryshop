@@ -86,7 +86,7 @@ function RoleToggleGroup({
 
 function IconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="grid grid-cols-8 gap-1.5">
+    <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5">
       {ICON_OPTIONS.map((name) => (
         <button
           key={name}
@@ -215,9 +215,9 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
   return (
     <div className="max-w-5xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-foreground mb-1">Módulos de Plataforma</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-1">Módulos de Plataforma</h1>
           <p className="text-muted font-medium text-sm">
             Gestiona las secciones de navegación con icono, orden y visibilidad por rol.
           </p>
@@ -243,7 +243,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
 
       {/* CREATE FORM */}
       {creating && (
-        <div className="bg-card rounded-xl p-8 border border-accent/20 shadow-lg shadow-amber-50 mb-8">
+        <div className="bg-card rounded-xl p-4 sm:p-8 border border-accent/20 shadow-lg shadow-amber-50 mb-8">
           <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-6 flex items-center gap-2">
             <LayoutGrid size={14} /> Nuevo Módulo
           </p>
@@ -324,7 +324,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
 
       {/* LIST */}
       <div className="bg-card rounded-xl border border-card-border shadow-sm overflow-hidden">
-        <div className="px-8 py-5 border-b border-card-border flex items-center justify-between">
+        <div className="px-4 sm:px-8 py-4 sm:py-5 border-b border-card-border flex items-center justify-between">
           <h2 className="font-bold text-foreground">
             Módulos Configurados
             <span className="ml-2 text-xs text-muted font-normal">({sections.length})</span>
@@ -352,7 +352,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
               return (
                 <div key={section.id}>
                   {/* — ROW DISPLAY — */}
-                  <div className={`flex items-center gap-4 px-8 py-5 transition-colors ${isEditing ? "bg-amber-50/40" : "hover:bg-card-hover"}`}>
+                  <div className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-4 sm:py-5 transition-colors ${isEditing ? "bg-amber-50/40" : "hover:bg-card-hover"}`}>
                     {/* Icon + info */}
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${section.isActive ? "bg-amber-50 text-accent" : "bg-section-alt text-muted"}`}>
                       <DynamicIcon name={section.icon} size={18} />
@@ -415,7 +415,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
 
                   {/* — INLINE EDIT FORM — */}
                   {isEditing && editForm && (
-                    <div className="px-8 pb-8 pt-4 bg-amber-50/30 border-t border-amber-200/60">
+                    <div className="px-4 sm:px-8 pb-6 sm:pb-8 pt-4 bg-amber-50/30 border-t border-amber-200/60">
                       {editError && (
                         <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold mb-4">{editError}</div>
                       )}

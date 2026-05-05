@@ -12,7 +12,7 @@ export default async function MetodosPagoPage() {
   const configs = await getAllGatewayConfigs();
 
   return (
-    <div className="p-8">
+    <div>
       <GatewayManager configs={configs as any} />
     </div>
   );

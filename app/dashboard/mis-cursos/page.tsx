@@ -31,7 +31,7 @@ export default async function MisCursosPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
             {hasActiveSub ? "Membresía activa" : "Sin membresía"}

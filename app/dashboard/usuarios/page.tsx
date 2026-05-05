@@ -41,7 +41,7 @@ export default async function UsuariosPage() {
     : [];
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-black text-foreground">Usuarios</h1>
         <p className="text-muted font-medium">

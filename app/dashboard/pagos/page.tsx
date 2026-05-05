@@ -13,7 +13,7 @@ export default async function PagosPage() {
   const inscriptions = result.inscriptions || [];
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-10">
         <Link
           href="/dashboard"

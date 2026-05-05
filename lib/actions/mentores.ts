@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { sendAccountApprovedEmail } from "@/lib/email";
 
 async function assertAdmin() {
   const session = await auth();
@@ -16,10 +17,13 @@ async function assertAdmin() {
 export async function aprobarMentor(id: string) {
   const session = await assertAdmin();
 
-  await prisma.user.update({
+  const mentor = await prisma.user.update({
     where: { id },
     data: { isApproved: true },
+    select: { email: true, name: true },
   });
+
+  sendAccountApprovedEmail(mentor.email, mentor.name).catch(() => {});
 
   await logActivity({
     userId: session.user.id as string,

@@ -28,46 +28,54 @@ export async function POST(req: Request) {
 
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: curso.title,
-            description: curso.description.substring(0, 200),
-            images: curso.image ? [curso.image] : [],
+  try {
+    const checkoutSession = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: curso.title,
+              description: curso.description.substring(0, 200),
+              images: curso.image ? [curso.image] : [],
+            },
+            unit_amount: Math.round(curso.price * 100),
           },
-          unit_amount: Math.round(curso.price * 100),
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      metadata: {
+        type: "course",
+        cursoId,
+        userId: session.user.id,
       },
-    ],
-    metadata: {
-      type: "course",
-      cursoId,
-      userId: session.user.id,
-    },
-    success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=course`,
-    cancel_url: `${baseUrl}/cursos/${cursoId}`,
-  });
+      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=course`,
+      cancel_url: `${baseUrl}/cursos/${cursoId}`,
+    });
 
-  await prisma.coursePurchase.upsert({
-    where: { userId_cursoId: { userId: session.user.id, cursoId } },
-    create: {
-      userId: session.user.id,
-      cursoId,
-      amount: curso.price,
-      status: "PENDING",
-      stripePaymentIntentId: checkoutSession.payment_intent as string,
-    },
-    update: {
-      status: "PENDING",
-      stripePaymentIntentId: checkoutSession.payment_intent as string,
-    },
-  });
+    await prisma.coursePurchase.upsert({
+      where: { userId_cursoId: { userId: session.user.id, cursoId } },
+      create: {
+        userId: session.user.id,
+        cursoId,
+        amount: curso.price,
+        status: "PENDING",
+        stripePaymentIntentId: checkoutSession.payment_intent as string,
+      },
+      update: {
+        status: "PENDING",
+        stripePaymentIntentId: checkoutSession.payment_intent as string,
+      },
+    });
 
-  return NextResponse.json({ url: checkoutSession.url });
+    return NextResponse.json({ url: checkoutSession.url });
+  } catch (err) {
+    console.error("Stripe checkout error:", err);
+    return NextResponse.json(
+      { error: "Error al procesar el pago. Intenta de nuevo." },
+      { status: 500 }
+    );
+  }
 }

@@ -158,7 +158,7 @@ export default function DashboardHeader({
             </button>
 
             {notifOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-card-border rounded-xl shadow-[var(--shadow-card)] overflow-hidden z-50">
+              <div className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] bg-card border border-card-border rounded-xl shadow-[var(--shadow-card)] overflow-hidden z-50">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-card-border">
                   <h3 className="text-sm font-black text-foreground">Notificaciones</h3>
                   <div className="flex items-center gap-2">

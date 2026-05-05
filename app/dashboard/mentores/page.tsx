@@ -19,7 +19,7 @@ export default async function MentoresPage() {
   });
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-10">
         <h1 className="text-3xl font-black text-foreground">Mentores</h1>
         <p className="text-muted font-medium">

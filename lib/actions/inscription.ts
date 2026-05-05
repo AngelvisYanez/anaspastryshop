@@ -95,11 +95,15 @@ export async function createInscription(data: CreateInscriptionParams) {
       where: {
         userId: session.user.id,
         cursoId: data.cursoId,
+        status: { in: ["PENDING", "APPROVED"] },
       },
     });
 
     if (existing) {
-      return { error: "Ya existe una inscripción para este curso" };
+      if (existing.status === "APPROVED") {
+        return { error: "Ya tienes acceso a este curso" };
+      }
+      return { error: "Ya tienes un pago pendiente de revisión para este curso" };
     }
 
     // @ts-ignore

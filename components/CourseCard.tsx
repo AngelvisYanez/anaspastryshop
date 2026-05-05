@@ -5,12 +5,10 @@ import { ArrowUpRight } from 'lucide-react';
 interface CourseProps {
   title: string;
   category: string;
-  price: number;
   icon: string;
-  level?: string;
 }
 
-export default function CourseCard({ title, category, price, icon, level }: CourseProps) {
+export default function CourseCard({ title, category, icon }: CourseProps) {
   return (
     <m.div 
       whileHover={{ y: -10 }}
@@ -20,23 +18,18 @@ export default function CourseCard({ title, category, price, icon, level }: Cour
         {icon}
       </div>
       <div className="px-4 pb-6">
-        <div className="flex justify-between items-start mb-2">
+        <div className="mb-2">
           <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent">
             {category}
           </span>
-          {level && (
-            <span className="text-[9px] font-black uppercase text-muted border border-card-border px-2 py-0.5 rounded-md bg-card">
-              {level}
-            </span>
-          )}
         </div>
         <h3 className="text-xl font-bold text-foreground mb-6 leading-snug h-14 overflow-hidden">
           {title}
         </h3>
         <div className="flex justify-between items-center pt-4 border-t border-card-border">
-          <div>
-            <span className="text-2xl font-black text-foreground">${price}</span>
-          </div>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-accent">
+            Incluido en membresía
+          </span>
           <button className="bg-card-hover p-3.5 rounded-2xl group-hover:bg-navy group-hover:text-white transition-all">
             <ArrowUpRight size={22} />
           </button>

@@ -60,9 +60,7 @@ async function CursosContent() {
       id: c.id,
       title: c.title,
       instructor: c.instructor.name || "Tutor",
-      price: c.price,
       type: c.isLive ? "Híbrido" : "Online",
-      level: c.level,
       category: c.category || "General",
       image: c.image || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=800",
       hasAccess,
@@ -70,14 +68,7 @@ async function CursosContent() {
   });
 
   return (
-    <PublicCoursesClient
-      courses={formattedCourses}
-      userSubscription={
-        userSubscription
-          ? { plan: userSubscription.plan, status: userSubscription.status }
-          : null
-      }
-    >
+    <PublicCoursesClient courses={formattedCourses}>
       <Footer />
     </PublicCoursesClient>
   );

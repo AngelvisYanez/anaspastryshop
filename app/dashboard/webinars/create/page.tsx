@@ -7,7 +7,7 @@ export default async function CreateWebinarPage() {
   if (!session?.user) redirect("/auth/login");
   if ((session.user as any).role !== "ADMIN") redirect("/dashboard");
   return (
-    <div className="p-8">
+    <div>
       <CreateWebinarForm />
     </div>
   );

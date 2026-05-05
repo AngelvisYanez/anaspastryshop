@@ -222,6 +222,16 @@ model CoursePurchase {
   @@unique([userId, cursoId])
 }
 
+model NewsletterSubscriber {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  isActive      Boolean  @default(true)
+  token         String   @unique @default(cuid())
+  subscribedAt  DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model SiteConfig {
   id                String   @id @default(cuid())
   siteName          String   @default("Academia Credito USA")

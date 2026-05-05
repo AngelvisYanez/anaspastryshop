@@ -13,7 +13,7 @@ async function EditContent({ id }: { id: string }) {
   if (!webinar) redirect("/dashboard/webinars");
 
   return (
-    <div className="p-8">
+    <div>
       <EditWebinarForm webinar={webinar} />
     </div>
   );

@@ -43,9 +43,9 @@ export default function SuscripcionesClient({
 
   return (
     <>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-foreground">Suscripciones</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">Suscripciones</h1>
           <p className="text-muted font-medium">Gestiona planes y suscriptores.</p>
         </div>
         <div className="flex bg-section-alt rounded-lg p-1 gap-1 border border-card-border">

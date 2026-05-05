@@ -1,11 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import logoDark from "@/public/logo-acu-white.png";
+import NewsletterForm from "@/components/NewsletterForm";
 
 export default function Footer() {
   return (
     <footer className="bg-foreground dark:bg-card mt-16">
       <div className="max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-12">
+
+        <div className="mb-16 pb-16 border-b border-white/10">
+          <div className="max-w-xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 mb-3">Newsletter</p>
+            <h3 className="text-xl font-black text-white mb-2">Recibe nuestras novedades</h3>
+            <p className="text-sm text-white/45 mb-5">
+              Tips de crédito, nuevos cursos y contenido exclusivo directo a tu correo.
+            </p>
+            <NewsletterForm />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-[1.8fr_1fr_1fr] gap-14 pb-16 border-b border-white/10">
           <div>
             <Image

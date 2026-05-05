@@ -62,7 +62,14 @@ export async function POST(req: Request) {
     };
   }
 
-  const checkoutSession = await stripe.checkout.sessions.create(checkoutParams);
-
-  return NextResponse.json({ url: checkoutSession.url });
+  try {
+    const checkoutSession = await stripe.checkout.sessions.create(checkoutParams);
+    return NextResponse.json({ url: checkoutSession.url });
+  } catch (err) {
+    console.error("Stripe subscription checkout error:", err);
+    return NextResponse.json(
+      { error: "Error al procesar el pago. Intenta de nuevo." },
+      { status: 500 }
+    );
+  }
 }

@@ -141,7 +141,7 @@ export default function AllUsersView({
           { icon: BookOpen, color: "green", count: alumnos.length, label: "Alumnos Registrados" },
           { icon: ShieldCheck, color: "indigo", count: admins.length, label: "Administradores" },
         ].map(({ icon: Icon, color, count, label }) => (
-          <div key={label} className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
+          <div key={label} className="bg-card p-5 sm:p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-4 sm:gap-6">
             <div className={`p-4 bg-${color}-50 text-${color === "green" ? "green-500" : "accent"} rounded-lg`}><Icon size={28} /></div>
             <div><p className="text-4xl font-black text-foreground">{count}</p><p className="text-sm text-muted font-bold mt-1">{label}</p></div>
           </div>
@@ -168,7 +168,7 @@ export default function AllUsersView({
       </div>
 
       {/* Tabla */}
-      <div className="bg-card rounded-lg p-10 border border-card-border shadow-sm">
+      <div className="bg-card rounded-lg p-4 sm:p-10 border border-card-border shadow-sm">
         {filtered.length === 0 ? (
           <p className="text-center text-muted italic py-10">No se encontraron usuarios.</p>
         ) : (

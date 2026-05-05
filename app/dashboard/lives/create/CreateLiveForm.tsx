@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -49,7 +49,7 @@ export default function CreateLiveForm() {
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/dashboard/lives"

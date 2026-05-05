@@ -571,6 +571,219 @@ export async function sendSubscriptionPendingEmail(email: string, name: string |
   }
 }
 
+export async function sendAccountApprovedEmail(email: string, name: string | null) {
+  const firstName = name?.split(" ")[0] ?? "allí";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background:linear-gradient(135deg,${NAVY} 0%,${NAVY_LIGHT} 100%);padding:40px;text-align:center;">
+          <div style="width:64px;height:64px;background:rgba(201,168,76,0.2);border:2px solid ${GOLD};border-radius:50%;margin:0 auto 20px;text-align:center;line-height:60px;font-size:28px;">✓</div>
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">¡Cuenta Aprobada!</h1>
+          <p style="margin:0;font-size:13px;color:${GOLD};font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Acceso Habilitado</p>
+        </td>
+      </tr>
+      <tr><td style="height:3px;background:${GOLD};"></td></tr>
+
+      <tr>
+        <td style="padding:36px 0 0;">
+          <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
+            Hola ${firstName}, tu cuenta en <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong> ha sido
+            revisada y aprobada por nuestro equipo. Ya puedes iniciar sesión y acceder a la plataforma.
+          </p>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;background:${CREAM};border-radius:16px;overflow:hidden;">
+            <tr><td style="padding:20px 20px 0;">${label("Lo que puedes hacer ahora")}</td></tr>
+            <tr><td style="padding:0 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                ${featureRow("📚", "Explorar todos los cursos disponibles")}
+                ${featureRow("🎙️", "Acceder a sesiones en vivo con Rami Noureddine")}
+                ${featureRow("📈", "Ver el contenido exclusivo de miembros")}
+                ${featureRow("👥", "Participar en la comunidad activa")}
+              </table>
+            </td></tr>
+            <tr><td style="height:16px;"></td></tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:16px;">
+            <tr>
+              <td align="center">
+                ${ctaButtonGold(`${BASE_URL}/dashboard`, "Ir a mi Panel")}
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td align="center">
+                <a href="${BASE_URL}/cursos" style="font-size:12px;font-weight:700;color:${MUTED};text-decoration:underline;letter-spacing:0.05em;">
+                  Ver catálogo de cursos →
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject: `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
+      html: buildEmail(`${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`, body),
+    });
+  } catch (err) {
+    console.error("[Resend] sendAccountApprovedEmail error:", err);
+  }
+}
+
+export async function sendPaymentRejectedEmail(
+  email: string,
+  name: string | null,
+  reason?: string
+) {
+  const firstName = name?.split(" ")[0] ?? "allí";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background:linear-gradient(135deg,#1a1a2e 0%,${NAVY} 100%);padding:40px;text-align:center;">
+          <p style="margin:0 0 16px;font-size:40px;">⚠️</p>
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">Pago No Aprobado</h1>
+          <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.55);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Revisión Pendiente</p>
+        </td>
+      </tr>
+      <tr><td style="height:3px;background:${GOLD};"></td></tr>
+
+      <tr>
+        <td style="padding:36px 0 0;">
+          <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
+            Hola ${firstName}, lamentablemente no pudimos verificar tu pago en
+            <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong>.
+            A continuación encontrarás más información.
+          </p>
+
+          ${reason ? `
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;border-left:4px solid ${GOLD};background:${CREAM};border-radius:0 12px 12px 0;">
+            <tr>
+              <td style="padding:20px 24px;">
+                <p style="margin:0 0 6px;font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${GOLD};">Motivo</p>
+                <p style="margin:0;font-size:14px;color:#374151;line-height:1.6;font-weight:500;">${reason}</p>
+              </td>
+            </tr>
+          </table>` : ""}
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;background:${CREAM};border-radius:16px;overflow:hidden;">
+            <tr><td style="padding:20px 20px 0;">${label("¿Qué puedes hacer?")}</td></tr>
+            <tr><td style="padding:0 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                ${featureRow("💳", "Intenta realizar el pago nuevamente con los datos correctos")}
+                ${featureRow("📸", "Asegúrate de adjuntar el comprobante de pago completo")}
+                ${featureRow("📩", "Contáctanos si crees que hay un error")}
+              </table>
+            </td></tr>
+            <tr><td style="height:16px;"></td></tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:16px;">
+            <tr>
+              <td align="center">
+                ${ctaButtonGold(`${BASE_URL}/membresia`, "Intentar de Nuevo")}
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td align="center">
+                <p style="margin:0;font-size:12px;color:${MUTED};font-weight:500;">
+                  ¿Necesitas ayuda?{" "}
+                  <a href="mailto:soporte@academiacreditousa.com" style="color:${GOLD};font-weight:700;text-decoration:underline;">Escríbenos →</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject: `Pago no aprobado — Academia Crédito USA`,
+      html: buildEmail(`${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`, body),
+    });
+  } catch (err) {
+    console.error("[Resend] sendPaymentRejectedEmail error:", err);
+  }
+}
+
+export async function sendNewsletterEmail(
+  email: string,
+  name: string | null,
+  subject: string,
+  title: string,
+  preheaderText: string,
+  htmlContent: string,
+  unsubscribeToken: string
+) {
+  const firstName = name?.split(" ")[0] ?? "Hola";
+  const unsubscribeUrl = `${BASE_URL}/unsubscribe?token=${unsubscribeToken}`;
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background:linear-gradient(135deg,${NAVY} 0%,${NAVY_LIGHT} 100%);padding:36px 40px;text-align:center;">
+          <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${GOLD};">Academia Crédito USA · Newsletter</p>
+          <h1 style="margin:8px 0 0;font-size:24px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;line-height:1.2;">${title}</h1>
+        </td>
+      </tr>
+      <tr><td style="height:3px;background:${GOLD};"></td></tr>
+
+      <tr>
+        <td style="padding:36px 0 0;">
+          <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.4;font-weight:500;">Hola ${firstName},</p>
+          <div style="font-size:15px;color:#374151;line-height:1.8;">
+            ${htmlContent}
+          </div>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:36px;">
+            <tr>
+              <td style="height:1px;background:linear-gradient(90deg,transparent,${GOLD}60,transparent);"></td>
+            </tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:24px;">
+            <tr>
+              <td align="center">
+                <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.6;">
+                  Estás recibiendo este newsletter porque te suscribiste a Academia Crédito USA.<br>
+                  <a href="${unsubscribeUrl}" style="color:${MUTED};text-decoration:underline;font-weight:600;">Cancelar suscripción</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject,
+      html: buildEmail(preheaderText, body),
+    });
+  } catch (err) {
+    console.error("[Resend] sendNewsletterEmail error:", err);
+  }
+}
+
 export async function sendCoursePurchaseEmail(email: string, name: string | null, courseTitle: string) {
   const firstName = name?.split(" ")[0] ?? "allí";
 

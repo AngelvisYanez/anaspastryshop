@@ -24,7 +24,7 @@ export default async function SettingsPage() {
   const isAdmin = dbUser.role === "ADMIN";
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-10">
+    <div className="max-w-5xl mx-auto space-y-10">
       <div>
         <h1 className="text-3xl font-black text-foreground tracking-tighter">Configuración</h1>
         <p className="text-muted font-medium mt-1">Administra tu perfil y la configuración del sitio.</p>

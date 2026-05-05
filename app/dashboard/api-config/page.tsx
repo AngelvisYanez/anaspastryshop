@@ -10,7 +10,7 @@ export default async function ApiConfigPage() {
   const configs = await getAllApiConfigs();
 
   return (
-    <div className="p-8">
+    <div>
       <ApiConfigManager configs={configs as any} />
     </div>
   );
