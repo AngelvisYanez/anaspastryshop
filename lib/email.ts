@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 const FROM = process.env.RESEND_FROM_EMAIL ?? "Academia Credito USA <noreply@academiacreditousa.com>";
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiacreditousa.com";
 
@@ -249,7 +253,7 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to: email,
       subject: `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
@@ -373,7 +377,7 @@ export async function sendSubscriptionConfirmedEmail(
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to: email,
       subject: `¡Tu membresía está activa! — Academia Crédito USA`,
@@ -455,7 +459,7 @@ export async function sendSubscriptionCanceledEmail(email: string, name: string 
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to: email,
       subject: `Tu membresía ha sido cancelada — Academia Crédito USA`,
@@ -556,7 +560,7 @@ export async function sendSubscriptionPendingEmail(email: string, name: string |
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to: email,
       subject: `Pago recibido, en revisión — Academia Crédito USA`,
@@ -657,7 +661,7 @@ export async function sendCoursePurchaseEmail(email: string, name: string | null
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to: email,
       subject: `Acceso activado: ${courseTitle} — Academia Crédito USA`,
