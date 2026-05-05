@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { sendSubscriptionConfirmedEmail } from "@/lib/email";
 
 export async function getPendingPayments() {
   const session = await auth();
@@ -42,17 +43,46 @@ export async function approvePayment(inscriptionId: string) {
   }
 
   try {
+    const inscription = await prisma.inscription.findUnique({
+      where: { id: inscriptionId },
+      include: { user: { select: { id: true, email: true, name: true } } },
+    });
+
+    if (!inscription) return { error: "Inscripción no encontrada" };
+
     await prisma.inscription.update({
       where: { id: inscriptionId },
       data: { status: "APPROVED" },
     });
+
+    if (!inscription.cursoId) {
+      const plan = await prisma.subscriptionPlan.findFirst({ where: { isActive: true } });
+      await prisma.subscription.upsert({
+        where: { userId: inscription.userId },
+        create: {
+          userId: inscription.userId,
+          plan: plan?.slug ?? "membresia",
+          status: "ACTIVE",
+        },
+        update: { status: "ACTIVE" },
+      });
+
+      sendSubscriptionConfirmedEmail(
+        inscription.user.email,
+        inscription.user.name,
+        plan?.name ?? "Membresía Academia",
+        inscription.amountPaid
+      ).catch(() => {});
+
+      revalidatePath("/dashboard/mis-cursos");
+    }
 
     await logActivity({
       userId: session.user.id as string,
       action: "APPROVE_PAYMENT",
       entityType: "INSCRIPTION",
       entityId: inscriptionId,
-      details: { status: "APPROVED" },
+      details: { status: "APPROVED", isSubscription: !inscription.cursoId },
     });
 
     revalidatePath("/dashboard/pagos");

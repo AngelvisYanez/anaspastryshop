@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { logActivity } from "@/lib/logger";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
@@ -42,6 +43,8 @@ export async function registerUser(formData: FormData) {
       entityId: newUser.id,
       details: { email: newUser.email, role: newUser.role },
     });
+
+    sendWelcomeEmail(newUser.email, newUser.name).catch(() => {});
 
     return { success: true };
   } catch (error) {

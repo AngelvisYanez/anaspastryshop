@@ -8,7 +8,6 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-// Definimos niveles en lugar de categorías para el filtrado, ya que Prisma schema de cursos tiene 'level' pero no una Category model propia relacional en esta iteración.
 const LEVELS = ["Todos", "Principiante", "Intermedio", "Avanzado"];
 
 type CourseProps = {
@@ -23,20 +22,19 @@ type CourseProps = {
   hasAccess?: boolean;
 };
 
-export default function PublicCoursesClient({ 
-  courses, 
-  userSubscription 
-}: { 
-  courses: CourseProps[], 
-  userSubscription?: { plan: string, status: string } | null 
+export default function PublicCoursesClient({
+  courses,
+  userSubscription,
+}: {
+  courses: CourseProps[];
+  userSubscription?: { plan: string; status: string } | null;
 }) {
   const [activeLevel, setActiveLevel] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Extraer categorías dinámicas
-  const categories = ["Todas", ...Array.from(new Set(courses.map(c => c.category)))];
+  const categories = ["Todas", ...Array.from(new Set(courses.map((c) => c.category)))];
 
   const filteredCourses = courses.filter((course) => {
     const matchesLevel = activeLevel === "Todos" || course.level === activeLevel;
@@ -46,65 +44,62 @@ export default function PublicCoursesClient({
   });
 
   return (
-    <main className="min-h-screen bg-[#F8F4EE] pt-32 pb-20">
+    <main className="min-h-screen bg-background pt-32 pb-20">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6">
-        {/* --- HEADER DEL MÓDULO --- */}
         <div className="mb-16">
           <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 text-[#C9A84C] font-bold text-sm uppercase tracking-widest mb-4"
+            className="flex items-center gap-2 text-accent font-bold text-xs uppercase tracking-widest mb-4"
           >
-            <Sparkles size={16} /> Catálogo de Formación
+            <Sparkles size={14} /> Catálogo de Formación
           </m.div>
-          <h1 className="text-5xl md:text-7xl font-bold text-[#0B1F3A] tracking-tighter mb-6">
-            Lleva tu talento al <br /> <span className="text-gray-400">siguiente nivel.</span>
+          <h1 className="font-display text-5xl md:text-7xl font-black text-foreground tracking-tight mb-6 leading-[0.9]">
+            Lleva tu conocimiento al{" "}
+            <span className="text-accent italic">siguiente nivel.</span>
           </h1>
-          <p className="text-xl text-gray-500 max-w-2xl leading-relaxed">
+          <p className="text-lg text-muted max-w-2xl leading-relaxed">
             Formación de alto nivel en crédito y finanzas respaldada por Academia Credito USA.
           </p>
         </div>
 
-        {/* --- CONTROLES: BÚSQUEDA Y FILTROS --- */}
         <div className="flex flex-col gap-6 mb-12">
-          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-            {/* Buscador */}
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="relative w-full md:w-96">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por nombre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-gray-100 rounded-[1.5rem] py-5 pl-14 pr-4 shadow-sm focus:ring-2 focus:ring-[#C9A84C] outline-none transition-all font-bold text-gray-600"
+                className="w-full bg-card border border-card-border rounded-full py-4 pl-13 pr-5 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium"
               />
             </div>
 
-            {/* Icono Filtro + Niveles */}
-            <div className="flex gap-4 items-center w-full md:w-auto">
-              <button 
+            <div className="flex gap-3 items-center w-full md:w-auto">
+              <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`p-5 rounded-[1.5rem] border transition-all shadow-sm ${
-                  showFilters 
-                    ? "bg-[#C9A84C] text-white border-[#C9A84C] scale-105" 
-                    : "bg-white text-gray-400 border-gray-100 hover:text-[#C9A84C]"
+                className={`p-4 rounded-full border transition-all ${
+                  showFilters
+                    ? "bg-accent text-[#0B1F3A] border-accent"
+                    : "bg-card text-muted border-card-border hover:text-accent hover:border-accent"
                 }`}
                 title="Mostrar categorías"
               >
-                <Filter size={20} />
+                <Filter size={18} />
               </button>
 
-              <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+              <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {LEVELS.map((level) => (
                   <button
                     key={level}
                     onClick={() => setActiveLevel(level)}
-                    className={`px-8 py-5 rounded-[1.2rem] text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${
+                    className={`px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${
                       activeLevel === level
-                        ? "bg-[#0B1F3A] text-white shadow-xl shadow-amber-100"
-                        : "bg-white text-gray-400 hover:bg-gray-50 border border-gray-100"
+                        ? "bg-foreground text-background border-foreground"
+                        : "bg-card text-muted border-card-border hover:border-accent hover:text-accent"
                     }`}
                   >
                     {level}
@@ -114,10 +109,9 @@ export default function PublicCoursesClient({
             </div>
           </div>
 
-          {/* Barra de Categorías (Expandible) */}
           <AnimatePresence>
             {showFilters && (
-              <m.div 
+              <m.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -128,10 +122,10 @@ export default function PublicCoursesClient({
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                      className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${
                         activeCategory === cat
-                          ? "bg-amber-50 text-[#C9A84C] border border-indigo-200"
-                          : "bg-white text-gray-400 border border-gray-100 hover:text-[#C9A84C]"
+                          ? "bg-accent-subtle text-accent border-accent/30"
+                          : "bg-card text-muted border-card-border hover:text-accent"
                       }`}
                     >
                       {cat}
@@ -143,20 +137,19 @@ export default function PublicCoursesClient({
           </AnimatePresence>
         </div>
 
-        {/* --- GRID DE CURSOS --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
             {filteredCourses.map((curso) => (
               <m.div
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 key={curso.id}
-                whileHover={{ y: -10 }}
-                className="bg-white rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-gray-100 flex flex-col h-full group"
+                whileHover={{ y: -8 }}
+                className="bg-card rounded-[2.5rem] overflow-hidden border border-card-border flex flex-col h-full group"
               >
-                <div className="relative h-64 w-full bg-gray-100 overflow-hidden">
+                <div className="relative h-60 w-full bg-section-alt overflow-hidden">
                   <Image
                     src={curso.image}
                     alt={curso.title}
@@ -164,56 +157,56 @@ export default function PublicCoursesClient({
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute top-5 left-5">
+                  <div className="absolute top-4 left-4">
                     <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-sm flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5 ${
                         curso.type === "Online"
-                          ? "bg-blue-500/20 text-blue-700"
-                          : "bg-orange-500/20 text-orange-700"
+                          ? "bg-foreground/80 text-background"
+                          : "bg-accent/90 text-[#0B1F3A]"
                       }`}
                     >
-                      {curso.type === "Online" ? <Monitor size={12} /> : <MapPin size={12} />}
+                      {curso.type === "Online" ? <Monitor size={11} /> : <MapPin size={11} />}
                       {curso.type}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-8 flex flex-col flex-1">
+                <div className="p-7 flex flex-col flex-1">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[#C9A84C] text-[10px] font-black uppercase tracking-[0.2em]">
+                    <span className="text-accent text-[10px] font-bold uppercase tracking-[0.2em]">
                       {curso.level}
                     </span>
                     {curso.hasAccess && (
-                      <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase px-2 py-1 rounded-lg border border-emerald-100 flex items-center gap-1">
+                      <span className="bg-accent-subtle text-accent text-[9px] font-bold uppercase px-2 py-1 rounded-lg border border-accent/20 flex items-center gap-1">
                         <Zap size={10} className="fill-current" /> Desbloqueado
                       </span>
                     )}
                   </div>
-                  <h3 className="text-2xl font-bold text-[#0B1F3A] mb-2 leading-tight">
+                  <h3 className="font-display text-xl font-black text-foreground mb-2 leading-tight">
                     {curso.title}
                   </h3>
-                  <div className="flex items-center gap-2 mb-8">
-                    <p className="text-gray-400 text-sm font-medium">
-                      Tutor Guía: {curso.instructor}
+                  <div className="flex items-center gap-2 mb-6">
+                    <p className="text-muted text-sm">
+                      {curso.instructor}
                     </p>
                     {!curso.hasAccess && userSubscription?.status === "ACTIVE" && (
-                      <span className="text-[9px] font-bold text-orange-400 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">
+                      <span className="text-[9px] font-bold text-accent bg-accent-subtle px-2 py-0.5 rounded-md border border-accent/20">
                         Requiere Upgrade
                       </span>
                     )}
                   </div>
 
-                  <div className="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between">
+                  <div className="mt-auto pt-5 border-t border-card-border flex items-center justify-between">
                     <div>
-                      <span className="text-3xl font-black text-[#0B1F3A]">${curso.price}</span>
-                      <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 italic">
-                        Zelle • USDT • Bolívares
+                      <span className="font-display text-3xl font-black text-foreground italic">${curso.price}</span>
+                      <p className="text-[9px] text-muted font-bold uppercase tracking-tighter mt-0.5">
+                        Zelle · USDT · Bolívares
                       </p>
                     </div>
 
                     <Link href={`/cursos/${curso.id}`}>
-                      <button className="bg-[#0B1F3A] text-white p-4 rounded-2xl hover:bg-[#C9A84C] hover:scale-110 transition-all shadow-lg shadow-amber-50">
-                        <ArrowRight size={22} />
+                      <button className="bg-foreground text-background p-4 rounded-2xl hover:bg-accent hover:text-[#0B1F3A] hover:scale-110 transition-all shadow-sm">
+                        <ArrowRight size={20} />
                       </button>
                     </Link>
                   </div>
@@ -223,10 +216,9 @@ export default function PublicCoursesClient({
           </AnimatePresence>
         </div>
 
-        {/* Empty State */}
         {filteredCourses.length === 0 && (
-          <div className="text-center py-24 bg-white rounded-[3rem] border border-dashed border-gray-200">
-            <p className="text-gray-400 font-bold text-xl">
+          <div className="text-center py-24 bg-card rounded-[3rem] border border-dashed border-card-border">
+            <p className="font-display text-xl font-black text-muted italic">
               Catálogo actualizándose próximamente.
             </p>
           </div>

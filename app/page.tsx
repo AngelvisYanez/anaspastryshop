@@ -3,7 +3,6 @@ import Hero from "@/components/Hero";
 import ForYou from "@/components/ForYou";
 import VideoIntro from "@/components/VideoIntro";
 import WhatYouGet from "@/components/WhatYouGet";
-import TrustedBy from "@/components/TrustedBy";
 import AboutRami from "@/components/AboutRami";
 import Testimonials from "@/components/Testimonials";
 import CtaBanner from "@/components/CtaBanner";
@@ -67,8 +66,6 @@ export default async function Home() {
         <CoursesCarousel courses={courses} />
       </section>
 
-      <TrustedBy />
-
       <AboutRami />
 
       <Testimonials />
@@ -90,7 +87,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col items-center gap-4 shrink-0">
             <Link href="/membresia">
-              <button className="bg-navy text-white px-10 py-5 rounded-full font-bold text-base flex items-center gap-3 hover:opacity-90 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
+              <button className="bg-foreground text-background px-10 py-5 rounded-full font-bold text-base flex items-center gap-3 hover:opacity-90 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
                 Ver membresía <ArrowRight size={20} />
               </button>
             </Link>

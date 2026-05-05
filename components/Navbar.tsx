@@ -9,7 +9,6 @@ import { useTheme } from "next-themes";
 import { getUserImage } from "@/lib/actions/user";
 import { getSections } from "@/lib/actions/platformSections";
 import Image from "next/image";
-import logoLight from "@/public/logo-acu.png";
 import logoDark from "@/public/logo-acu-white.png";
 
 type NavLink = { name: string; href: string };
@@ -76,17 +75,12 @@ export default function Navbar() {
       transition={{ duration: 0.5 }}
       className="fixed top-0 w-full z-[100] px-4 md:px-6 py-4"
     >
-      <div className="max-w-7xl mx-auto bg-card/70 backdrop-blur-xl border border-card-border rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative">
+      <div className="max-w-7xl mx-auto bg-[#0B1F3A]/90 dark:bg-card/80 backdrop-blur-xl border border-white/[0.07] dark:border-card-border rounded-full px-6 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(0,0,0,0.18)] relative">
         <Link href="/" className="flex items-center gap-2 group z-50">
-          <Image
-            src={logoLight}
-            alt="Academia Credito USA"
-            className="h-8 w-auto object-contain transition-all group-hover:scale-110 block dark:hidden"
-          />
           <Image
             src={logoDark}
             alt="Academia Credito USA"
-            className="h-8 w-auto object-contain transition-all group-hover:scale-110 hidden dark:block"
+            className="h-8 w-auto object-contain transition-all group-hover:scale-110"
           />
         </Link>
 
@@ -95,14 +89,14 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-bold text-muted hover:text-accent transition-colors relative group"
+              className="text-sm font-bold text-white/65 hover:text-white transition-colors relative group"
             >
               {link.name}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
           {session && (
-            <Link href="/webinars" className="text-sm font-bold text-muted hover:text-accent transition-colors relative group">
+            <Link href="/webinars" className="text-sm font-bold text-white/65 hover:text-white transition-colors relative group">
               Webinars
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
@@ -114,9 +108,9 @@ export default function Navbar() {
             <>
               {session ? (
                 <div className="hidden sm:flex items-center gap-4">
-                  <button className="relative p-2 text-muted hover:text-accent hover:bg-amber-50 rounded-full transition-colors" title="Notificaciones">
+                  <button className="relative p-2 text-white/65 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors" title="Notificaciones">
                     <Bell size={20} />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white/20" />
                   </button>
                   <Link href="/dashboard" className="w-10 h-10 rounded-[14px] overflow-hidden border-2 border-transparent hover:border-accent transition-all relative shadow-sm">
                     {profileImage ? (
@@ -130,7 +124,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <>
-                  <Link href={ctaUrl} className="hidden sm:flex items-center gap-2 bg-accent text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-accent/80 hover:scale-105 transition-all shadow-lg shadow-accent/30">
+                  <Link href={ctaUrl} className="hidden sm:flex items-center gap-2 bg-accent text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-accent-hover hover:scale-105 transition-all shadow-lg shadow-accent/30">
                     <User size={14} /> {ctaText}
                   </Link>
                 </>
@@ -141,7 +135,7 @@ export default function Navbar() {
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-colors"
+              className="p-2.5 text-white/65 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
               aria-label="Cambiar tema"
             >
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
@@ -150,7 +144,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2.5 text-muted hover:bg-card-hover rounded-full transition-colors"
+            className="md:hidden p-2.5 text-white/65 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
             aria-label="Menu"
           >
             {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -175,40 +169,40 @@ export default function Navbar() {
                     className="flex items-center justify-between p-4 rounded-2xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors"
                   >
                     {link.name}
-                    <ChevronRight size={20} className="text-gray-300 group-hover:text-accent transition-colors" />
+                    <ChevronRight size={20} className="text-muted group-hover:text-accent transition-colors" />
                   </Link>
                 ))}
                 {session && (
                   <Link href="/webinars" onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between p-4 rounded-2xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors">
                     Webinars
-                    <ChevronRight size={20} className="text-gray-300 group-hover:text-accent transition-colors" />
+                    <ChevronRight size={20} className="text-muted group-hover:text-accent transition-colors" />
                   </Link>
                 )}
               </div>
 
-              <div className="h-px bg-gray-100 my-2" />
+              <div className="h-px bg-card-border my-2" />
 
               {!session ? (
                 <>
-                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="w-full bg-navy text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
+                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="w-full bg-foreground text-background py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
                     <User size={18} /> Empezar Registro
                   </Link>
                   <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-center py-2">
-                    <span className="text-sm font-bold text-gray-400">¿Ya tienes cuenta? </span>
+                    <span className="text-sm font-bold text-muted">¿Ya tienes cuenta? </span>
                     <span className="text-sm font-bold text-accent">Inicia Sesión</span>
                   </Link>
                 </>
               ) : (
                 <>
                   <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                    <button className="w-full bg-navy text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
+                    <button className="w-full bg-foreground text-background py-5 rounded-2xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
                       <LayoutDashboard size={18} /> Ir al Panel
                     </button>
                   </Link>
                   <button
                     onClick={() => { signOut(); setIsOpen(false); }}
-                    className="w-full bg-red-50 text-red-500 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-sm"
+                    className="w-full bg-red-50 dark:bg-red-950/30 text-red-500 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-sm"
                   >
                     <LogOut size={18} /> Cerrar Sesión
                   </button>

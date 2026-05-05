@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   ChevronDown, Eye, EyeOff, Save, Loader2, CheckCircle,
-  CreditCard, Smartphone, Bitcoin, Zap, DollarSign, Wallet,
+  CreditCard, Smartphone, Bitcoin, Zap, DollarSign, Wallet, Building2,
 } from "lucide-react";
 import { saveGatewayConfig } from "@/lib/actions/gateway";
 
@@ -108,6 +108,22 @@ const GATEWAYS: GatewayDef[] = [
       { key: "address", label: "Dirección de Wallet", placeholder: "0x...", extra: true },
     ],
   },
+  {
+    provider: "BANK_TRANSFER",
+    label: "Transferencia Bancaria (ACH/Wire)",
+    description: "Transferencia bancaria americana. Los datos se muestran al usuario al pagar.",
+    type: "manual",
+    Icon: Building2,
+    color: "slate",
+    fields: [
+      { key: "bankName",      label: "Nombre del Banco",        placeholder: "Bank of America",         extra: true },
+      { key: "accountName",   label: "Titular de la Cuenta",    placeholder: "Academia Credito USA LLC", extra: true },
+      { key: "accountNumber", label: "Número de Cuenta",        placeholder: "123456789",                extra: true },
+      { key: "routingNumber", label: "Routing Number (ABA)",    placeholder: "021000021",                extra: true },
+      { key: "accountType",   label: "Tipo de Cuenta",          placeholder: "Checking",                 extra: true },
+      { key: "instructions",  label: "Instrucciones adicionales", placeholder: "Incluir nombre completo en el memo", extra: true },
+    ],
+  },
 ];
 
 const COLOR_MAP: Record<string, string> = {
@@ -117,6 +133,7 @@ const COLOR_MAP: Record<string, string> = {
   purple: "bg-amber-50 text-amber-700 border-purple-100",
   green: "bg-green-50 text-green-600 border-green-100",
   orange: "bg-orange-50 text-orange-600 border-orange-100",
+  slate: "bg-slate-50 text-slate-700 border-slate-200",
 };
 
 type FormState = {

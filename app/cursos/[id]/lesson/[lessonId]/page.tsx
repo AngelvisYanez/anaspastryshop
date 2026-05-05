@@ -36,12 +36,15 @@ export default async function LessonPage({ params }: { params: { id: string, les
   // Check paywall securely
   let hasPaid = false;
   if (session.user.role === "ADMIN" || curso.instructorId === session.user.id) {
-     hasPaid = true;
+    hasPaid = true;
   } else {
-     const inscription = await prisma.inscription.findFirst({
-       where: { userId: session.user.id, cursoId: curso.id, status: "APPROVED" }
-     });
-     if (inscription) hasPaid = true;
+    const [inscription, activeSubscription] = await Promise.all([
+      prisma.inscription.findFirst({
+        where: { userId: session.user.id, cursoId: curso.id, status: "APPROVED" },
+      }),
+      prisma.subscription.findUnique({ where: { userId: session.user.id } }),
+    ]);
+    if (inscription || activeSubscription?.status === "ACTIVE") hasPaid = true;
   }
 
   if (!hasPaid) {

@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Academia Credito USA | Domina el Crédito en Estados Unidos",
@@ -17,7 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${jakarta.className} antialiased text-foreground bg-background`} suppressHydrationWarning>
+      <body
+        className={`${fraunces.variable} ${dmSans.variable} antialiased text-foreground bg-background`}
+        suppressHydrationWarning
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

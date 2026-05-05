@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         hostname: 'customer-*.cloudflarestream.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'iframe.videodelivery.net',
+        pathname: '**',
+      },
     ],
   },
   transpilePackages: [

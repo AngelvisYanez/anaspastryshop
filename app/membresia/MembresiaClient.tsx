@@ -73,7 +73,7 @@ export default function MembresiaClient({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-block bg-accent-subtle text-accent px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6"
+          className="inline-block bg-accent-subtle text-accent px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
         >
           Membresía única
         </m.div>
@@ -81,9 +81,10 @@ export default function MembresiaClient({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-black text-foreground tracking-tighter mb-6 leading-[0.9]"
+          className="font-display text-5xl md:text-7xl font-black text-foreground tracking-tight mb-6 leading-[0.9]"
         >
-          Todo lo que necesitas,<br />
+          Todo lo que necesitas,
+          <br />
           <span className="text-accent italic">en un solo plan.</span>
         </m.h1>
         <m.p
@@ -102,26 +103,27 @@ export default function MembresiaClient({
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-navy text-white rounded-[3rem] p-10 md:p-14 relative overflow-hidden"
+          className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card text-white rounded-[3rem] p-10 md:p-14"
         >
-          <div className="absolute top-[-15%] right-[-10%] w-72 h-72 bg-accent/20 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute inset-0 rounded-[3rem] opacity-[0.03] noise-bg pointer-events-none" />
+          <div className="absolute top-[-15%] right-[-10%] w-72 h-72 bg-accent/15 blur-[100px] rounded-full pointer-events-none" />
           <div className="relative z-10">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-accent/80 mb-6 block">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent/80 mb-6 block">
               {plan?.name ?? "Membresía Academia"}
             </span>
 
             <div className="flex items-end gap-2 mb-2">
               {price !== null ? (
                 <>
-                  <span className="text-7xl font-black tracking-tighter text-white">${price}</span>
-                  <span className="text-gray-400 font-bold mb-3 text-sm">/mes</span>
+                  <span className="font-display text-7xl font-black tracking-tight text-white italic">${price}</span>
+                  <span className="text-white/40 font-bold mb-3 text-sm">/mes</span>
                 </>
               ) : (
-                <span className="text-5xl font-black tracking-tighter text-white">Próximamente</span>
+                <span className="font-display text-5xl font-black tracking-tight text-white italic">Próximamente</span>
               )}
             </div>
             {price !== null && (
-              <p className="text-gray-500 text-sm mb-10">
+              <p className="text-white/40 text-sm mb-10">
                 Facturación mensual · Cancela cuando quieras
               </p>
             )}
@@ -132,13 +134,13 @@ export default function MembresiaClient({
                   <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-accent">
                     {f.icon ?? <Check size={14} />}
                   </div>
-                  <p className="text-sm text-gray-300 leading-snug">{f.text}</p>
+                  <p className="text-sm text-white/65 leading-snug">{f.text}</p>
                 </div>
               ))}
             </div>
 
-            <Link href="/auth/signup">
-              <button className="w-full bg-accent text-navy py-5 rounded-[2rem] font-bold flex items-center justify-center gap-3 hover:opacity-90 hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
+            <Link href="/checkout/membresia">
+              <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-[2rem] font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
                 Quiero unirme ahora <ArrowRight size={18} />
               </button>
             </Link>
@@ -152,7 +154,7 @@ export default function MembresiaClient({
           className="flex flex-col gap-6"
         >
           <div className="bg-card rounded-[2.5rem] p-8 border border-card-border">
-            <h3 className="text-sm font-black uppercase tracking-widest text-muted mb-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-6">
               Métodos de pago aceptados
             </h3>
             <div className="grid grid-cols-2 gap-3">
@@ -163,7 +165,7 @@ export default function MembresiaClient({
                 return (
                   <div key={key} className="flex items-center gap-3 bg-section-alt rounded-2xl px-4 py-3 border border-card-border">
                     <Icon size={16} className="text-accent shrink-0" />
-                    <span className="text-sm font-semibold text-foreground">{label}</span>
+                    <span className="text-sm font-medium text-foreground">{label}</span>
                   </div>
                 );
               })}
@@ -171,7 +173,7 @@ export default function MembresiaClient({
           </div>
 
           <div className="bg-card rounded-[2.5rem] p-8 border border-card-border">
-            <h3 className="text-sm font-black uppercase tracking-widest text-muted mb-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-muted mb-6">
               Por qué elegirnos
             </h3>
             <div className="space-y-5">
@@ -196,14 +198,17 @@ export default function MembresiaClient({
             </div>
           </div>
 
-          <div className="bg-section-alt rounded-[2.5rem] p-8 border border-card-border">
-            <Star className="text-accent mb-4" size={24} />
-            <p className="text-foreground font-medium leading-relaxed mb-6 italic text-sm">
+          <div className="bg-section-alt rounded-[2.5rem] p-8 border border-card-border relative overflow-hidden">
+            <span className="font-display absolute top-2 left-5 text-[5rem] leading-none text-accent/[0.08] font-black italic select-none pointer-events-none">
+              &ldquo;
+            </span>
+            <Star className="text-accent mb-4 relative z-10" size={22} />
+            <p className="text-foreground leading-relaxed mb-6 italic text-sm relative z-10">
               "Me uní hace 3 meses y ya entiendo el sistema crediticio americano mejor que muchos asesores. El acceso a los lives marca la diferencia."
             </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-navy rounded-full flex items-center justify-center text-white font-bold text-sm">
-                AM
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-10 h-10 bg-foreground rounded-full flex items-center justify-center">
+                <span className="font-display text-xs font-black text-background italic">AM</span>
               </div>
               <div>
                 <p className="font-bold text-foreground text-sm">Ana María Silva</p>
@@ -219,19 +224,21 @@ export default function MembresiaClient({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="bg-navy rounded-[3rem] p-12 md:p-16 text-center text-white relative overflow-hidden mb-4"
+        className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card rounded-[3rem] p-12 md:p-16 text-center text-white mb-4"
       >
-        <div className="absolute top-[-15%] right-[-10%] w-80 h-80 bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 rounded-[3rem] opacity-[0.03] noise-bg pointer-events-none" />
+        <div className="absolute top-[-15%] right-[-10%] w-80 h-80 bg-accent/15 blur-[120px] rounded-full pointer-events-none" />
         <div className="relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 leading-tight">
-            ¿Listo para transformar <br />
+          <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+            ¿Listo para transformar
+            <br />
             <span className="text-accent italic">tu historial crediticio?</span>
           </h2>
-          <p className="text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
+          <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
             Únete a nuestra comunidad y empieza a construir el perfil crediticio que siempre quisiste.
           </p>
-          <Link href="/auth/signup">
-            <button className="bg-accent text-navy px-12 py-5 rounded-full font-bold text-sm flex items-center gap-3 mx-auto hover:opacity-90 hover:scale-105 transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
+          <Link href="/checkout/membresia">
+            <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-full font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
               Quiero unirme ahora <ArrowRight size={18} />
             </button>
           </Link>

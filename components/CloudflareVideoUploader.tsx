@@ -59,7 +59,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
         xhr.send(formData);
       });
 
-      const cfVideoUrl = `https://customer-${uid}.cloudflarestream.com/${uid}/iframe`;
+      const cfVideoUrl = `https://iframe.videodelivery.net/${uid}`;
       setUploadedUrl(cfVideoUrl);
       onUpload(cfVideoUrl);
       setProgress(100);

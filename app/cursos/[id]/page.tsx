@@ -49,22 +49,8 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
       const activeSubscription = await prisma.subscription.findUnique({
         where: { userId: session.user.id },
       });
-
-      if (activeSubscription && activeSubscription.status === "ACTIVE") {
-        const plan = activeSubscription.plan;
-        const level = course.level;
-
-        if (plan === "PREMIUM") {
-          hasPaid = true;
-        } else if (plan === "STANDARD") {
-          if (level === "Principiante" || level === "Intermedio") {
-            hasPaid = true;
-          }
-        } else if (plan === "BASIC") {
-          if (level === "Principiante") {
-            hasPaid = true;
-          }
-        }
+      if (activeSubscription?.status === "ACTIVE") {
+        hasPaid = true;
       }
     }
   }

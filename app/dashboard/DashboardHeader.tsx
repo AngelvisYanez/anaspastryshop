@@ -54,7 +54,7 @@ export default function DashboardHeader({
           <Menu size={24} />
         </button>
         <div>
-          <h2 className="text-xl font-bold text-foreground tracking-tight transition-all">
+          <h2 className="font-display text-xl font-black text-foreground tracking-tight transition-all">
             {isBlockedMentor ? "Perfil Incompleto" : getPageTitle(pathname)}
           </h2>
           {isBlockedMentor ? (
@@ -62,7 +62,7 @@ export default function DashboardHeader({
               Acceso restringido: Sube tu foto
             </p>
           ) : (
-            <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-0.5 opacity-80 hidden sm:block">
+            <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-0.5 opacity-70 hidden sm:block">
               Academia Credito USA
             </p>
           )}
@@ -71,12 +71,21 @@ export default function DashboardHeader({
 
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2 pr-4 md:pr-6 border-r border-card-border">
-          <button className="hidden sm:block p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-all" title="Buscar">
-            <Search size={20} />
+          <button
+            className="hidden sm:block p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-all"
+            title="Buscar"
+            aria-label="Buscar"
+          >
+            <Search size={19} />
           </button>
-          <button className="relative p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-all" title="Notificaciones">
-            <Bell size={20} />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-card" />
+          <button
+            className="relative p-2.5 text-muted hover:text-accent hover:bg-accent-subtle rounded-full transition-all"
+            title="Notificaciones"
+            aria-label="Notificaciones"
+          >
+            <Bell size={19} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-card" aria-hidden="true" />
+            <span className="sr-only">Tienes notificaciones pendientes</span>
           </button>
         </div>
 
@@ -85,13 +94,13 @@ export default function DashboardHeader({
             {user.image ? (
               <Image src={user.image} alt={user.name || "Perfil"} width={40} height={40} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-navy text-white flex items-center justify-center font-bold text-xs uppercase">
+              <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-xs uppercase">
                 {user.name ? user.name.substring(0, 2) : <UserIcon size={16} />}
               </div>
             )}
           </div>
           <div className="hidden md:flex flex-col">
-            <span className="text-sm font-black text-foreground leading-tight truncate max-w-[120px]">
+            <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[120px]">
               {user.name || "Usuario"}
             </span>
             <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">

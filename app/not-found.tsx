@@ -1,75 +1,66 @@
 "use client";
 import Link from "next/link";
 import { m } from "framer-motion";
-import { Home, Search, ArrowLeft, Sparkles } from "lucide-react";
+import { Home, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-[#F8F4EE] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Navbar para que no se sientan atrapados */}
+    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
       <Navbar />
 
-      {/* Elementos decorativos de fondo (Glows) */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C9A84C]/10 blur-[120px] rounded-full animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-200/20 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/[0.07] blur-[130px] rounded-full" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-foreground/[0.04] blur-[110px] rounded-full" />
 
-      <div className="z-10 text-center max-w-2xl">
-        {/* Animación del número 404 */}
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-[12rem] md:text-[18rem] font-black leading-none tracking-tighter text-[#0B1F3A] opacity-5 select-none absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 -z-10">
-            404
-          </h1>
+      <m.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="z-10 text-center max-w-xl"
+      >
+        <p className="font-display text-[10rem] md:text-[14rem] font-black leading-none tracking-tight text-foreground/[0.04] select-none absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 -z-10 pointer-events-none">
+          404
+        </p>
 
-          <div className="inline-flex p-4 bg-white rounded-3xl shadow-xl shadow-amber-100 mb-8 border border-white">
-            <Search size={48} className="text-[#C9A84C]" />
-          </div>
+        <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-6 block">
+          Página no encontrada
+        </span>
 
-          <h2 className="text-4xl md:text-6xl font-black text-[#0B1F3A] mb-6 tracking-tight">
-            Oops... Te perdiste en el{" "}
-            <span className="text-gray-300 italic">metaverso.</span>
-          </h2>
+        <h2 className="font-display text-4xl md:text-6xl font-black text-foreground mb-6 tracking-tight leading-[0.9]">
+          Esta ruta no{" "}
+          <span className="text-accent italic">existe.</span>
+        </h2>
 
-          <p className="text-lg text-gray-500 mb-12 leading-relaxed">
-            Parece que el link que buscas se fue de pasantías a **Articademy**
-            en Miami o simplemente no existe. No te preocupes, el camino a la
-            formación sigue abierto.
-          </p>
+        <p className="text-lg text-muted mb-12 leading-relaxed max-w-md mx-auto">
+          El enlace que buscas no está disponible. Vuelve al inicio o explora
+          nuestro catálogo de cursos.
+        </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/">
-              <button className="bg-[#0B1F3A] text-white px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:bg-gray-950 transition-all shadow-2xl shadow-amber-200/50 group">
-                <Home size={18} /> Volver al Inicio
-              </button>
-            </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link href="/">
+            <button className="bg-foreground text-background px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg">
+              <Home size={18} /> Volver al Inicio
+            </button>
+          </Link>
 
-            <Link href="/cursos">
-              <button className="bg-white text-[#0B1F3A] px-10 py-5 rounded-full font-bold border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2">
-                <Sparkles size={18} className="text-[#C9A84C]" /> Ver Cursos
-              </button>
-            </Link>
-          </div>
-        </m.div>
+          <Link href="/cursos">
+            <button className="bg-card text-foreground px-10 py-5 rounded-full font-bold border border-card-border hover:bg-card-hover transition-all flex items-center gap-2">
+              Ver Cursos <ArrowRight size={18} className="text-accent" />
+            </button>
+          </Link>
+        </div>
+      </m.div>
 
-        {/* Mensaje Witty final */}
-        <m.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-20 flex items-center justify-center gap-2 text-gray-400 text-xs font-bold uppercase tracking-[0.2em]"
-        >
-          <div className="w-8 h-px bg-gray-200" />
-          Error 404 | Articademy
-          <div className="w-8 h-px bg-gray-200" />
-        </m.div>
-      </div>
-
-      {/* Footer solo si quieres que se vea abajo, opcional en 404 */}
+      <m.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="mt-24 flex items-center justify-center gap-3 text-muted text-xs font-bold uppercase tracking-[0.25em] z-10"
+      >
+        <div className="w-8 h-px bg-card-border" />
+        Error 404 · Academia Credito USA
+        <div className="w-8 h-px bg-card-border" />
+      </m.div>
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { m } from "framer-motion";
-import { ArrowLeft, Mail, Lock, User, Sparkles, Chrome, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/actions/auth";
@@ -28,115 +28,103 @@ export default function SignUpPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F4EE] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Glows de fondo */}
-      <div className="absolute top-[-10%] right-[-10%] w-[45%] h-[45%] bg-indigo-200/50 blur-[120px] rounded-full" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[35%] h-[35%] bg-purple-100/50 blur-[100px] rounded-full" />
+    <main className="min-h-screen bg-background flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute top-[-10%] right-[-10%] w-[45%] h-[45%] bg-accent/[0.06] blur-[130px] rounded-full" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[35%] h-[35%] bg-foreground/[0.04] blur-[100px] rounded-full" />
 
       <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-lg bg-white rounded-[3rem] p-10 md:p-14 shadow-2xl shadow-amber-100/30 z-10 border border-white relative"
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-lg bg-card rounded-[3rem] p-10 md:p-14 shadow-[var(--shadow-card)] z-10 border border-card-border relative"
       >
         <div className="text-center mb-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-[#C9A84C] transition-colors mb-8 text-xs font-black uppercase tracking-[0.2em]"
+            className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-8 text-[10px] font-bold uppercase tracking-[0.2em]"
           >
-            <ArrowLeft size={14} /> Volver a Articademy
+            <ArrowLeft size={13} /> Volver al inicio
           </Link>
-          <div className="inline-flex p-3 bg-amber-50 rounded-2xl text-[#C9A84C] mb-4">
-            <Sparkles size={24} />
+
+          <div className="inline-flex p-3 bg-accent-subtle rounded-2xl text-accent mb-4">
+            <User size={22} />
           </div>
-          <h1 className="text-4xl font-black text-[#0B1F3A] mb-3">
+
+          <h1 className="font-display text-4xl font-black text-foreground mb-3 tracking-tight">
             Crea tu cuenta
           </h1>
-          <p className="text-gray-400 font-medium">
-            Únete a la nueva generación de creadores en Falcón y el mundo.
+          <p className="text-muted text-sm">
+            Únete a la comunidad de Academia Credito USA.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {error && (
-            <div className="md:col-span-2 bg-red-50 text-red-500 p-3 rounded-xl text-sm font-bold text-center">
+            <div className="md:col-span-2 bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center border border-red-100 dark:border-red-800">
               {error}
             </div>
           )}
-          {/* Nombre Completo */}
+
           <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
               Nombre Completo
             </label>
             <div className="relative">
-              <User
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-                size={18}
-              />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
               <input
                 type="text"
                 name="name"
                 required
-                placeholder="Ej. Newman Acosta"
-                className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none font-medium"
+                placeholder="Ej. Ana García"
+                className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
               />
             </div>
           </div>
 
-          {/* Email */}
           <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
               Correo Electrónico
             </label>
             <div className="relative">
-              <Mail
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-                size={18}
-              />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
               <input
                 type="email"
                 name="email"
                 required
                 placeholder="tu@email.com"
-                className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none font-medium"
+                className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
               />
             </div>
           </div>
 
-          {/* Password */}
           <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
               Contraseña
             </label>
             <div className="relative">
-              <Lock
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-                size={18}
-              />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
               <input
                 type="password"
                 name="password"
                 required
-                placeholder="••••••••"
-                className="w-full bg-gray-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#C9A84C] transition-all outline-none font-medium"
+                placeholder="Mínimo 8 caracteres"
+                className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
               />
             </div>
           </div>
 
           <button
             disabled={loading}
-            className="md:col-span-2 w-full bg-[#0B1F3A] text-white py-5 rounded-[1.5rem] font-bold hover:bg-gray-950 transition-all shadow-xl shadow-amber-100 mt-4 text-sm uppercase tracking-widest flex justify-center items-center"
+            className="md:col-span-2 w-full bg-foreground text-background py-5 rounded-[1.5rem] font-bold hover:opacity-90 transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-50"
           >
-            {loading ? <Loader2 className="animate-spin" /> : "Empezar ahora"}
+            {loading ? <Loader2 size={18} className="animate-spin" /> : "Empezar ahora"}
           </button>
         </form>
 
-        <div className="mt-10 pt-8 border-t border-gray-50 text-center">
-          <p className="text-sm text-gray-400 font-medium">
+        <div className="mt-10 pt-8 border-t border-card-border text-center">
+          <p className="text-sm text-muted">
             ¿Ya tienes una cuenta?{" "}
-            <Link
-              href="/auth/login"
-              className="text-[#C9A84C] font-black hover:underline"
-            >
+            <Link href="/auth/login" className="text-accent font-bold hover:underline">
               Inicia Sesión
             </Link>
           </p>

@@ -27,6 +27,7 @@ export default function DashboardShell({
   platformSections?: PlatformSection[];
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">
@@ -34,20 +35,25 @@ export default function DashboardShell({
         <button
           type="button"
           aria-label="Cerrar menú"
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:flex-shrink-0
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        fixed inset-y-0 left-0 z-50 w-64
+        ${isCollapsed ? "lg:w-[72px]" : "lg:w-64"}
+        transition-all duration-300 ease-in-out
+        lg:static lg:flex-shrink-0
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         <Sidebar
           user={user}
           onMenuClick={() => setIsSidebarOpen(false)}
           isBlockedMentor={isBlockedMentor}
           platformSections={platformSections}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed((c) => !c)}
         />
       </div>
 

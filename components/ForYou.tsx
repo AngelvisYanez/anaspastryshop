@@ -1,6 +1,5 @@
 "use client";
 import { m } from "framer-motion";
-import { X } from "lucide-react";
 
 const SITUATIONS = [
   "Has intentado aplicar a un crédito para tu casa, carro o negocio y te lo han negado sin entender por qué.",
@@ -16,42 +15,44 @@ const SITUATIONS = [
 
 export default function ForYou() {
   return (
-    <section id="para-ti" className="py-24 px-4 md:px-10 max-w-7xl mx-auto">
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <span className="text-accent font-black uppercase tracking-[0.3em] text-xs mb-4 block">
-          Esta academia es para ti si…
-        </span>
-        <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter mb-16 leading-[0.9]">
-          ¿Te identificas con{" "}
-          <span className="text-accent italic">
-            alguna de estas situaciones?
+    <section id="para-ti" className="w-full bg-section-alt py-24">
+      <div className="max-w-7xl mx-auto px-4 md:px-10">
+        <m.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
+            Esta academia es para ti si…
           </span>
-        </h2>
-      </m.div>
+          <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight mb-16 leading-[0.9]">
+            ¿Te identificas con{" "}
+            <span className="text-accent italic">
+              alguna de estas situaciones?
+            </span>
+          </h2>
+        </m.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-card-border rounded-[2.5rem] overflow-hidden border border-card-border">
-        {SITUATIONS.map((text, i) => (
-          <m.div
-            key={text}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card p-8 hover:bg-card-hover transition-colors"
-          >
-            <div className="w-9 h-9 rounded-full border border-accent flex items-center justify-center mb-4">
-              <X size={14} className="text-accent" />
-            </div>
-            <p className="text-sm text-muted leading-relaxed font-medium">
-              {text}
-            </p>
-          </m.div>
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-card-border rounded-[2.5rem] overflow-hidden border border-card-border">
+          {SITUATIONS.map((text, i) => (
+            <m.div
+              key={text}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-card p-8 hover:bg-card-hover transition-colors group cursor-default"
+            >
+              <div className="font-display text-4xl font-black text-accent/20 italic leading-none mb-5 group-hover:text-accent/40 transition-colors">
+                {String(i + 1).padStart(2, "0")}
+              </div>
+              <p className="text-sm text-muted leading-relaxed">
+                {text}
+              </p>
+            </m.div>
+          ))}
+        </div>
       </div>
     </section>
   );

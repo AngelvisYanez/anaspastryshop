@@ -16,42 +16,41 @@ export default function CtaBanner({ price, planName }: Props) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="bg-navy rounded-[3.5rem] p-12 md:p-20 text-center relative overflow-hidden"
+        className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card rounded-[3.5rem] p-12 md:p-20 text-center"
       >
-        <div className="absolute top-[-15%] right-[-10%] w-80 h-80 bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 rounded-[3.5rem] opacity-[0.03] noise-bg pointer-events-none" />
+        <div className="absolute top-[-20%] right-[-10%] w-80 h-80 bg-accent/15 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-15%] left-[-5%] w-64 h-64 bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-5 leading-[0.95]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-accent/70 mb-6">
+            {planName ?? "Membresía mensual"}
+          </p>
+
+          <h2 className="font-display text-3xl md:text-5xl font-black text-white tracking-tight mb-5 leading-[0.95]">
             El conocimiento sin acción{" "}
             <span className="text-accent italic">no cambia nada.</span>
           </h2>
 
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+          <p className="text-white/50 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
             Empieza hoy. Aprende a tu ritmo. Accede a sesiones en vivo, módulos
             completos, y una comunidad que se actualiza constantemente con las
             últimas oportunidades y cambios del sistema crediticio americano.
           </p>
 
-          <div className="mb-10">
-            <p className="text-xs text-gray-500 font-bold mb-1">
-              {planName ?? "Membresía mensual"}
+          {price !== null ? (
+            <p className="font-display text-6xl font-black text-accent italic tracking-tight mb-10">
+              ${price}
+              <span className="text-xl font-bold text-white/30 not-italic tracking-normal"> / mes</span>
             </p>
-            {price !== null ? (
-              <p className="text-5xl font-black text-accent tracking-tighter">
-                ${price}{" "}
-                <span className="text-base font-bold text-gray-500 tracking-normal">
-                  / mes
-                </span>
-              </p>
-            ) : (
-              <p className="text-2xl font-black text-accent tracking-tighter">
-                Próximamente
-              </p>
-            )}
-          </div>
+          ) : (
+            <p className="font-display text-3xl font-black text-accent italic tracking-tight mb-10">
+              Próximamente
+            </p>
+          )}
 
           <Link href="/membresia">
-            <button className="bg-accent text-navy px-12 py-5 rounded-full font-bold text-base flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-105 transition-all shadow-xl shadow-accent/20">
+            <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-full font-bold text-base flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20">
               Unirme a la Academia <ArrowRight size={20} />
             </button>
           </Link>

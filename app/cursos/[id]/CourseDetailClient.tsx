@@ -248,16 +248,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                   ) : (
                     <div className="space-y-4">
                       {/* Mensaje Informativo de Plan */}
-                      <div className="bg-amber-50 border border-amber-200 p-5 rounded-2xl mb-2">
-                        <p className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest mb-1">Nivel del Curso: {course.level}</p>
-                        <p className="text-[11px] text-gray-500 font-medium">
-                          Incluído en el <span className="text-[#0B1F3A] font-black">Plan {
-                            course.level === "Principiante" ? "Esencial" : 
-                            course.level === "Intermedio" ? "Profesional" : "Elite"
-                          }</span> o superior.
-                        </p>
-                      </div>
-
                       <button
                         onClick={() => setIsCheckoutOpen(true)}
                         className="w-full bg-[#0B1F3A] text-white py-6 rounded-[1.5rem] font-bold flex items-center justify-center gap-3 hover:bg-[#C9A84C] transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-xs"
@@ -267,14 +257,14 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
 
                       <div className="relative py-2 flex items-center justify-center">
                         <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-100"></span></div>
-                        <span className="relative px-4 bg-white text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">O TAMBIÉN</span>
+                        <span className="relative px-4 bg-white text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">O MEJOR AÚN</span>
                       </div>
 
                       <Link
-                        href="/planes"
-                        className="w-full bg-white text-[#C9A84C] py-5 rounded-[1.5rem] font-bold flex items-center justify-center gap-2 border-2 border-indigo-50 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
+                        href="/checkout/membresia"
+                        className="w-full bg-white text-[#C9A84C] py-5 rounded-[1.5rem] font-bold flex items-center justify-center gap-2 border-2 border-amber-100 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
                       >
-                        <Zap size={14} className="fill-current" /> Suscribirme a un Plan
+                        <Zap size={14} className="fill-current" /> Activar Membresía Completa
                       </Link>
                     </div>
                   )}

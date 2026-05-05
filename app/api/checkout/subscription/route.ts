@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       line_items: [{ price: subscriptionPrice, quantity: 1 }],
       metadata: { type: "subscription", userId: session.user.id },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
-      cancel_url: `${baseUrl}/planes`,
+      cancel_url: `${baseUrl}/checkout/membresia`,
     };
   } else {
     checkoutParams = {
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       ],
       metadata: { type: "subscription", userId: session.user.id },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
-      cancel_url: `${baseUrl}/planes`,
+      cancel_url: `${baseUrl}/checkout/membresia`,
     };
   }
 

@@ -10,7 +10,7 @@ import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Tag, Activity, X,
   Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
-  Sun, Moon,
+  Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 type PlatformSection = {
@@ -31,7 +31,6 @@ function DynamicIcon({ name, size = 20 }: { name: string; size?: number }) {
 
 const SYSTEM_ITEMS = [
   { name: "Inicio",            href: "/dashboard",               icon: LayoutDashboard, roles: ["ADMIN", "MENTOR", "USER"] },
-  { name: "Mis Cursos",        href: "/dashboard/mis-cursos",    icon: BookOpen,        roles: ["USER"] },
   { name: "Gestionar Cursos",  href: "/dashboard/cursos",        icon: BookOpen,        roles: ["ADMIN", "MENTOR"] },
   { name: "Gestionar Lives",   href: "/dashboard/lives",         icon: Radio,           roles: ["ADMIN", "MENTOR"] },
   { name: "Webinars",          href: "/dashboard/webinars",      icon: Video,           roles: ["ADMIN"] },
@@ -52,11 +51,15 @@ export default function Sidebar({
   onMenuClick,
   isBlockedMentor = false,
   platformSections = EMPTY_SECTIONS,
+  isCollapsed = false,
+  onToggleCollapse,
 }: {
   user: any;
   onMenuClick?: () => void;
   isBlockedMentor?: boolean;
   platformSections?: PlatformSection[];
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }) {
   const userRole = user.role as string;
   const pathname = usePathname();
@@ -77,54 +80,88 @@ export default function Sidebar({
     return pathname === href;
   }
 
-  const linkClass = (href: string) =>
-    `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
-      isActive(href)
-        ? "bg-accent text-white shadow-lg shadow-accent/20"
-        : "text-muted hover:bg-card-hover hover:text-foreground"
-    }`;
+  const itemClass = (href: string) =>
+    `flex items-center gap-3 py-2.5 rounded-xl text-sm font-bold transition-all
+     ${isCollapsed ? "lg:justify-center lg:px-0 px-3" : "px-3"}
+     ${isActive(href)
+       ? "bg-accent text-white shadow-md shadow-accent/20"
+       : "text-muted hover:bg-card-hover hover:text-foreground"}`;
+
+  const actionClass =
+    `flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-bold transition-all w-full text-muted hover:bg-card-hover hover:text-foreground
+     ${isCollapsed ? "lg:justify-center lg:px-0" : ""}`;
 
   return (
-    <aside className="w-64 bg-card h-full border-r border-card-border p-6 flex flex-col relative">
-      <div className="mb-10 px-2 flex justify-between items-center">
-        <Link href="/dashboard" className="relative w-36 h-12">
+    <aside className="w-full h-full bg-card border-r border-card-border flex flex-col overflow-hidden">
+      <div className={`flex items-center border-b border-card-border h-16 shrink-0 px-4 ${isCollapsed ? "lg:justify-center" : "justify-between"}`}>
+        <Link
+          href="/dashboard"
+          className={`flex items-center transition-all ${isCollapsed ? "lg:hidden" : ""}`}
+        >
           <Image
             src="/logo_II.webp"
             alt="Academia Credito USA"
-            fill
-            sizes="144px"
-            className="object-contain object-left brightness-0 dark:brightness-0 dark:invert"
+            width={120}
+            height={36}
+            className="h-8 w-auto object-contain brightness-0 dark:brightness-0 dark:invert"
             priority
           />
         </Link>
-        <button
-          onClick={onMenuClick}
-          className="p-2 lg:hidden text-muted hover:bg-card-hover rounded-xl transition-colors"
-        >
-          <X size={20} />
-        </button>
+
+        {isCollapsed && (
+          <Link href="/dashboard" className="hidden lg:flex items-center justify-center">
+            <Image
+              src="/logo_II.webp"
+              alt="ACU"
+              width={28}
+              height={28}
+              className="h-7 w-auto object-contain brightness-0 dark:brightness-0 dark:invert"
+              priority
+            />
+          </Link>
+        )}
+
+        <div className="flex items-center gap-1 ml-auto">
+          <button
+            onClick={onToggleCollapse}
+            className="hidden lg:flex p-1.5 rounded-lg text-muted hover:bg-card-hover hover:text-foreground transition-colors"
+            title={isCollapsed ? "Expandir" : "Colapsar"}
+            aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+          >
+            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-1.5 rounded-lg text-muted hover:bg-card-hover transition-colors"
+            aria-label="Cerrar menú"
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto pr-1 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto custom-scrollbar py-3 px-2 space-y-0.5">
         {systemItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             onClick={onMenuClick}
-            className={linkClass(item.href)}
+            className={itemClass(item.href)}
+            title={isCollapsed ? item.name : undefined}
           >
-            <item.icon size={20} />
-            {item.name}
+            <item.icon size={17} className="shrink-0" />
+            <span className={isCollapsed ? "lg:hidden" : ""}>{item.name}</span>
           </Link>
         ))}
 
         {!isBlockedMentor && dynamicSections.length > 0 && (
           <>
-            <div className="pt-4 pb-2 px-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted/50">
+            <div className={`pt-4 pb-1 px-3 ${isCollapsed ? "lg:hidden" : ""}`}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted/40">
                 Plataforma
               </p>
             </div>
+            {isCollapsed && <div className="my-2 h-px bg-card-border mx-2 hidden lg:block" />}
             {dynamicSections.map((section) => {
               const href = `/${section.slug}`;
               return (
@@ -132,10 +169,11 @@ export default function Sidebar({
                   key={section.id}
                   href={href}
                   onClick={onMenuClick}
-                  className={linkClass(href)}
+                  className={itemClass(href)}
+                  title={isCollapsed ? section.name : undefined}
                 >
-                  <DynamicIcon name={section.icon} size={20} />
-                  {section.name}
+                  <DynamicIcon name={section.icon} size={18} />
+                  <span className={isCollapsed ? "lg:hidden" : ""}>{section.name}</span>
                 </Link>
               );
             })}
@@ -143,21 +181,28 @@ export default function Sidebar({
         )}
       </nav>
 
-      <div className="pt-4 border-t border-card-border space-y-1">
+      <div className="border-t border-card-border py-3 px-2 space-y-0.5 shrink-0">
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex items-center gap-3 px-4 py-3 text-muted font-bold text-sm hover:bg-card-hover rounded-2xl transition-all w-full"
+            className={actionClass}
+            title={isCollapsed ? (theme === "dark" ? "Modo Claro" : "Modo Oscuro") : undefined}
+            aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
           >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+            {theme === "dark" ? <Sun size={18} className="shrink-0" /> : <Moon size={18} className="shrink-0" />}
+            <span className={isCollapsed ? "lg:hidden" : ""}>
+              {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+            </span>
           </button>
         )}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-3 px-4 py-3 text-red-400 font-bold text-sm hover:bg-red-50 dark:hover:bg-red-950/20 rounded-2xl transition-all w-full"
+          className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-bold transition-all w-full text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20
+            ${isCollapsed ? "lg:justify-center lg:px-0" : ""}`}
+          title={isCollapsed ? "Cerrar Sesión" : undefined}
         >
-          <LogOut size={20} /> Cerrar Sesión
+          <LogOut size={18} className="shrink-0" />
+          <span className={isCollapsed ? "lg:hidden" : ""}>Cerrar Sesión</span>
         </button>
       </div>
     </aside>

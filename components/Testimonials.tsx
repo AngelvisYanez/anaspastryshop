@@ -1,12 +1,13 @@
 "use client";
 import { m } from "framer-motion";
-import { Star, User } from "lucide-react";
+import { Star } from "lucide-react";
 
 const TESTIMONIALS = Array.from({ length: 6 }, (_, i) => ({
   id: i,
   text: "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes.",
   name: "Nombre del Miembro",
   location: "Ciudad, Estado",
+  initials: "NM",
 }));
 
 export default function Testimonials() {
@@ -19,10 +20,10 @@ export default function Testimonials() {
         transition={{ duration: 0.6 }}
         className="mb-16"
       >
-        <span className="text-accent font-black uppercase tracking-[0.3em] text-xs mb-4 block">
+        <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
           Lo que dicen los miembros
         </span>
-        <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter leading-[0.9]">
+        <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight leading-[0.9]">
           Resultados <span className="text-accent italic">reales</span>
         </h2>
       </m.div>
@@ -34,22 +35,28 @@ export default function Testimonials() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card rounded-[2.5rem] p-8 border border-card-border shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col gap-5"
+            transition={{ delay: i * 0.06 }}
+            className="bg-card rounded-[2.5rem] p-8 border border-card-border flex flex-col gap-5 relative overflow-hidden"
           >
-            <div className="flex gap-1 text-accent">
+            <span className="font-display absolute top-3 right-7 text-[5rem] leading-none text-accent/[0.07] font-black italic select-none pointer-events-none">
+              &rdquo;
+            </span>
+
+            <div className="flex gap-1 text-accent relative z-10">
               {Array.from({ length: 5 }).map((_, j) => (
                 <Star key={j} size={14} fill="currentColor" />
               ))}
             </div>
 
-            <p className="text-sm text-muted leading-relaxed italic flex-1">
+            <p className="text-sm text-muted leading-relaxed italic flex-1 relative z-10">
               &ldquo;{t.text}&rdquo;
             </p>
 
-            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-card-border">
-              <div className="w-10 h-10 rounded-full bg-accent-subtle border border-card-border flex items-center justify-center">
-                <User size={16} className="text-accent" />
+            <div className="flex items-center gap-3 mt-auto pt-5 border-t border-card-border relative z-10">
+              <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center shrink-0">
+                <span className="font-display text-xs font-black text-background italic">
+                  {t.initials}
+                </span>
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">{t.name}</p>

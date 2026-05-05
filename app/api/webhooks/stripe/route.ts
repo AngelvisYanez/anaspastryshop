@@ -3,6 +3,11 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import type Stripe from "stripe";
+import {
+  sendSubscriptionConfirmedEmail,
+  sendSubscriptionCanceledEmail,
+  sendCoursePurchaseEmail,
+} from "@/lib/email";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -57,6 +62,12 @@ export async function POST(req: Request) {
         },
         update: { status: "APPROVED" },
       });
+
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+      const curso = await prisma.curso.findUnique({ where: { id: cursoId }, select: { title: true } });
+      if (user && curso) {
+        sendCoursePurchaseEmail(user.email, user.name, curso.title).catch(() => {});
+      }
     }
 
     if (type === "subscription" && userId) {
@@ -72,12 +83,24 @@ export async function POST(req: Request) {
           plan: plan?.slug ?? "base",
           status: "ACTIVE",
           stripeCustomerId: session.customer as string,
+          stripeSubscriptionId: session.subscription as string,
         },
         update: {
           status: "ACTIVE",
           stripeCustomerId: session.customer as string,
+          stripeSubscriptionId: session.subscription as string,
         },
       });
+
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+      if (user) {
+        sendSubscriptionConfirmedEmail(
+          user.email,
+          user.name,
+          plan?.name ?? "Membresía Academia",
+          (session.amount_total ?? 0) / 100
+        ).catch(() => {});
+      }
     }
   }
 
@@ -88,6 +111,10 @@ export async function POST(req: Request) {
       where: { stripeCustomerId: customerId },
       data: { status: "CANCELED" },
     });
+    const dbSub = await prisma.subscription.findFirst({ where: { stripeCustomerId: customerId }, include: { user: { select: { email: true, name: true } } } });
+    if (dbSub?.user) {
+      sendSubscriptionCanceledEmail(dbSub.user.email, dbSub.user.name).catch(() => {});
+    }
   }
 
   if (event.type === "customer.subscription.updated") {
