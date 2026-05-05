@@ -1,11 +1,12 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import CourseDetailClient from "./CourseDetailClient";
+import Footer from "@/components/Footer";
 
-export default async function CoursePage({ params }: { params: Promise<{ id: string }> }) {
+async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
   const session = await auth();
 
   const course = await prisma.curso.findUnique({
@@ -55,5 +56,17 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
     }
   }
 
-  return <CourseDetailClient course={course} hasPaid={hasPaid} />;
+  return (
+    <CourseDetailClient course={course} hasPaid={hasPaid}>
+      <Footer />
+    </CourseDetailClient>
+  );
+}
+
+export default function CoursePage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <CourseContent params={params} />
+    </Suspense>
+  );
 }

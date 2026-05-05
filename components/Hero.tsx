@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const FEATURES = [
-  "Módulos completos de crédito personal y empresarial",
-  "Sesiones en vivo con Rami Noureddine, mes a mes",
-  "Comunidad activa con actualizaciones en tiempo real",
-  "Estrategias probadas para construir y reparar crédito",
+  "Módulos de crédito personal y empresarial",
+  "Sesiones en vivo con Rami Noureddine",
+  "Comunidad activa y actualizaciones en tiempo real",
   "Acceso a grabaciones y material exclusivo",
-  "Orientación directa para tu situación específica",
 ];
 
 const TRUST_STATS = [
@@ -36,19 +34,19 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="px-4 md:px-10 pt-24">
-      <div className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card rounded-[3.5rem] min-h-[88vh] flex items-center p-8 md:p-16">
-        <div className="absolute inset-0 rounded-[3.5rem] opacity-[0.025] noise-bg pointer-events-none" />
+    <section className="relative">
+      <div className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card min-h-screen flex items-center px-8 md:px-20 pt-32 pb-24 rounded-b-3xl">
+        <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
         <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-5%] right-[0%] w-[30%] h-[30%] bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-14 lg:gap-20 items-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-12 lg:gap-20 items-center">
           <m.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] px-4 py-2 rounded-full mb-10">
+            <div className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] px-4 py-2 rounded-full mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
@@ -58,40 +56,36 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.88] tracking-tight mb-8">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-6">
               Domina el sistema
               <br />
               de crédito en{" "}
-              <span className="text-accent italic">
-                Estados Unidos
-              </span>
+              <span className="text-accent">Estados Unidos</span>
             </h1>
 
-            <p className="text-white/55 text-lg max-w-xl mb-10 leading-relaxed">
-              Lo que los bancos no te explican. Aprende a dominar el crédito en
-              Estados Unidos para mejorar tu vida financiera, calificar para las
-              mejores condiciones del mercado, y emprender negocios con capital
-              del banco.
+            <p className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed">
+              Lo que los bancos no te explican. Aprende a dominar el crédito,
+              calificar para las mejores condiciones y emprender con capital del banco.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 mb-12">
               <Link href={ctaUrl}>
-                <button className="bg-accent text-[#0B1F3A] px-10 py-5 rounded-full font-bold flex items-center gap-2 hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/25">
-                  {ctaText} <ArrowRight size={20} />
+                <button className="bg-accent text-[#0B1F3A] px-9 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/25">
+                  {ctaText} <ArrowRight size={18} />
                 </button>
               </Link>
               <a href="#para-ti">
-                <button className="bg-white/[0.08] border border-white/[0.15] text-white px-10 py-5 rounded-full font-bold hover:bg-white/[0.13] transition-all flex items-center gap-2">
-                  <ChevronDown size={18} /> ¿Es para mí?
+                <button className="bg-white/[0.08] border border-white/[0.15] text-white px-9 py-4 rounded-xl font-bold hover:bg-white/[0.13] transition-all flex items-center gap-2">
+                  <ChevronDown size={16} /> ¿Es para mí?
                 </button>
               </a>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-white/[0.1] flex items-center gap-8 flex-wrap">
+            <div className="pt-8 border-t border-white/[0.1] flex items-center gap-8 flex-wrap">
               {TRUST_STATS.map((stat, i) => (
                 <div key={stat.label} className="flex items-center gap-8">
                   <div>
-                    <p className="font-display text-3xl font-black text-accent italic leading-none">
+                    <p className="font-display text-3xl font-black text-accent leading-none">
                       {stat.value}
                     </p>
                     <p className="text-[10px] text-white/35 font-bold uppercase tracking-widest mt-1">
@@ -110,44 +104,39 @@ export default function Hero() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.2, ease: "easeOut" }}
-            className="flex flex-col gap-4"
           >
-            <div className="bg-white/[0.06] backdrop-blur border border-white/[0.1] rounded-[2.5rem] p-8">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent/80 mb-4">
-                Precio de membresía mensual
-              </p>
-              {price !== null ? (
-                <p className="font-display text-6xl font-black text-accent italic tracking-tight leading-none">
-                  ${price}
-                  <span className="text-xl font-bold text-white/30 not-italic tracking-normal"> /mes</span>
+            <div className="relative bg-white/[0.06] backdrop-blur border border-white/[0.12] rounded-2xl overflow-hidden">
+              <div className="h-1 w-full bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
+              <div className="p-8">
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent/80 mb-2">
+                  Membresía mensual
                 </p>
-              ) : (
-                <p className="font-display text-3xl font-black text-white/25 italic">
-                  Cargando...
-                </p>
-              )}
-              <Link href="/membresia">
-                <button className="mt-6 w-full bg-accent text-[#0B1F3A] py-4 rounded-2xl font-bold hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20 text-sm">
-                  Ver membresía <ArrowRight size={16} />
-                </button>
-              </Link>
-            </div>
+                {price !== null ? (
+                  <p className="font-display text-5xl font-black text-accent tracking-tight leading-none mb-1">
+                    ${price}
+                    <span className="text-lg font-bold text-white/30 tracking-normal"> /mes</span>
+                  </p>
+                ) : (
+                  <div className="h-12 mb-1" />
+                )}
 
-            <div className="bg-white/[0.05] border border-white/[0.1] rounded-[2.5rem] px-8 py-6">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent/80 mb-4">
-                Acceso instantáneo a
-              </p>
-              <ul className="space-y-0">
-                {FEATURES.map((feat) => (
-                  <li
-                    key={feat}
-                    className="flex items-start gap-3 py-3 border-b border-white/[0.07] last:border-b-0 text-sm text-white/50 leading-snug"
-                  >
-                    <span className="text-accent mt-0.5 shrink-0 text-xs">→</span>
-                    {feat}
-                  </li>
-                ))}
-              </ul>
+                <p className="text-[11px] text-white/30 mb-7">Cancela cuando quieras</p>
+
+                <ul className="space-y-3.5 mb-8">
+                  {FEATURES.map((feat) => (
+                    <li key={feat} className="flex items-start gap-3 text-sm text-white/60 leading-snug">
+                      <span className="text-accent shrink-0 text-xs mt-0.5">✦</span>
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href="/membresia">
+                  <button className="w-full bg-accent text-[#0B1F3A] py-4 rounded-xl font-bold hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20 text-sm">
+                    Ver membresía <ArrowRight size={16} />
+                  </button>
+                </Link>
+              </div>
             </div>
           </m.div>
         </div>

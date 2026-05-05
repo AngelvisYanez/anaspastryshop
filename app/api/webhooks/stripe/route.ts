@@ -71,10 +71,10 @@ export async function POST(req: Request) {
     }
 
     if (type === "subscription" && userId) {
-      const plan = await prisma.subscriptionPlan.findFirst({
-        where: { isActive: true },
-        orderBy: { createdAt: "asc" },
-      });
+      const planSlug = session.metadata?.planSlug;
+      const plan = planSlug
+        ? await prisma.subscriptionPlan.findFirst({ where: { slug: planSlug, isActive: true } })
+        : await prisma.subscriptionPlan.findFirst({ where: { isActive: true }, orderBy: { price: "asc" } });
 
       await prisma.subscription.upsert({
         where: { userId },
@@ -86,6 +86,7 @@ export async function POST(req: Request) {
           stripeSubscriptionId: session.subscription as string,
         },
         update: {
+          plan: plan?.slug ?? "base",
           status: "ACTIVE",
           stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,

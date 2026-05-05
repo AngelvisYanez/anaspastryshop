@@ -80,7 +80,7 @@ export default function SubscriptionCheckoutPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          <div className="bg-section-alt rounded-[2.5rem] p-8 border border-card-border">
+          <div className="bg-section-alt rounded-xl p-8 border border-card-border">
             <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-6">
               Lo que incluye tu membresía
             </p>
@@ -94,7 +94,7 @@ export default function SubscriptionCheckoutPage() {
             </ul>
           </div>
 
-          <div className="bg-card border border-card-border rounded-[2.5rem] p-8 shadow-xl">
+          <div className="bg-card border border-card-border rounded-xl p-8 shadow-xl">
             <div className="mb-6">
               <p className="text-xs text-muted font-bold uppercase tracking-widest mb-1">Precio mensual</p>
               <p className="text-5xl font-black text-accent tracking-tighter">

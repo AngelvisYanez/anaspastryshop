@@ -72,15 +72,15 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
   return (
     <div className="max-w-2xl mx-auto py-10">
-      <div className="bg-card rounded-[3rem] p-10 md:p-14 shadow-xl border border-card-border relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-accent-subtle rounded-bl-[100px] -z-1" />
+      <div className="bg-card rounded-xl p-8 md:p-12 shadow-md border border-card-border relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-28 h-28 bg-accent-subtle rounded-bl-[80px] -z-1" />
 
-        <div className="mb-10 text-center">
+        <div className="mb-8 text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
             <div className="relative inline-block group">
-              <div className="w-28 h-28 bg-accent-subtle rounded-3xl flex items-center justify-center font-black text-accent text-4xl overflow-hidden border-4 border-card-border shadow-xl relative group">
+              <div className="w-24 h-24 bg-accent-subtle rounded-lg flex items-center justify-center font-black text-accent text-3xl overflow-hidden border-2 border-card-border shadow-md relative group">
                 {previewImage ? (
-                  <Image src={previewImage} alt="Avatar" width={112} height={112} className="w-full h-full object-cover" />
+                  <Image src={previewImage} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
                 ) : (
                   initialUser.name?.substring(0, 2).toUpperCase() || "??"
                 )}
@@ -91,7 +91,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                     className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                     aria-label="Subir foto de perfil"
                   >
-                    <Camera size={28} className="text-white" />
+                    <Camera size={24} className="text-white" />
                   </button>
                 )}
               </div>
@@ -100,22 +100,22 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 bg-navy text-white p-3 rounded-2xl shadow-lg hover:scale-110 transition-transform"
+                  className="absolute -bottom-2 -right-2 bg-navy text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
                   aria-label="Subir foto de perfil"
                 >
-                  <Camera size={16} />
+                  <Camera size={14} />
                 </button>
               )}
             </div>
 
             {previewImage && (
-              <div className="flex items-center gap-2 bg-section-alt p-1.5 rounded-2xl border border-card-border shadow-sm">
+              <div className="flex items-center gap-2 bg-section-alt p-1.5 rounded-lg border border-card-border shadow-sm">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-card-hover transition-all border border-card-border"
+                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition-all border border-card-border"
                 >
-                  <RefreshCcw size={14} /> Reemplazar
+                  <RefreshCcw size={13} /> Reemplazar
                 </button>
                 <button
                   type="button"
@@ -123,9 +123,9 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                     setPreviewImage(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-100 transition-all border border-red-100"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition-all border border-red-200 dark:border-red-800"
                 >
-                  <Trash2 size={14} /> Eliminar
+                  <Trash2 size={13} /> Eliminar
                 </button>
               </div>
             )}
@@ -139,51 +139,51 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
               aria-label="Seleccionar imagen de perfil"
             />
           </div>
-          <h1 className="text-3xl font-black text-foreground">Ajustes de Perfil</h1>
+          <h1 className="text-2xl font-black text-foreground">Ajustes de Perfil</h1>
           <p className="text-muted font-medium">Actualiza tu información personal en Academia Credito USA</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold flex items-center gap-2 animate-shake">
-              <AlertCircle size={18} /> {error}
+            <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-4 rounded-lg text-sm font-bold flex items-center gap-2">
+              <AlertCircle size={16} /> {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-50 text-green-600 p-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 animate-pulse">
-              <CheckCircle size={18} /> ¡Perfil actualizado con éxito!
+            <div className="bg-green-50 dark:bg-green-950/20 text-green-600 p-4 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+              <CheckCircle size={16} /> ¡Perfil actualizado con éxito!
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-5">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
                 Nombre Completo
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
                   type="text"
                   name="name"
                   defaultValue={initialUser.name || ""}
                   required
-                  className="w-full bg-section-alt border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
                 />
               </div>
             </div>
 
             <div className="space-y-2 opacity-60">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
                 Email de Cuenta (No modificable)
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
                   type="email"
                   value={initialUser.email || ""}
                   readOnly
-                  className="w-full bg-section-alt border-none rounded-2xl py-4 pl-12 pr-4 outline-none font-bold text-muted"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 outline-none font-bold text-muted"
                 />
               </div>
             </div>
@@ -191,27 +191,27 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             <input type="hidden" name="image" value={previewImage || ""} />
 
             <div className="space-y-2 pt-4 border-t border-card-border">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
                 Cambiar Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
                   type="password"
                   name="newPassword"
                   placeholder="Nueva contraseña (dejar vacío para no cambiar)"
-                  className="w-full bg-section-alt border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
                 />
               </div>
-              <p className="text-[10px] text-muted font-medium px-2">Solo llena este campo si deseas actualizar tu clave actual.</p>
+              <p className="text-[10px] text-muted font-medium px-1">Solo llena este campo si deseas actualizar tu clave actual.</p>
             </div>
           </div>
 
           <button
             disabled={loading}
-            className="w-full bg-navy text-white py-5 rounded-[2rem] font-black flex items-center justify-center gap-3 hover:bg-accent transition-all shadow-xl uppercase tracking-widest text-sm"
+            className="w-full bg-navy text-white py-3 rounded-lg font-black flex items-center justify-center gap-3 hover:bg-accent transition-all shadow-md uppercase tracking-widest text-sm"
           >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             Guardar Cambios
           </button>
         </form>

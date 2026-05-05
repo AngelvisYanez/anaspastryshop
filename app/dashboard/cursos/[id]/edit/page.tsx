@@ -1,18 +1,17 @@
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import CourseEditClient from "./CourseEditClient";
 
-export default async function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
+async function EditContent({ id }: { id: string }) {
   const session = await auth();
   if (!session?.user || (session.user.role !== "ADMIN" && session.user.role !== "MENTOR")) {
     redirect("/dashboard");
   }
 
-  const { id } = await params;
-
   const course = await prisma.curso.findUnique({
-    where: { id: id },
+    where: { id },
     include: {
       courseModules: {
         include: { lessons: true },
@@ -24,9 +23,9 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
     }
   });
 
-  let mentors: Array<{ id: string, name: string | null, email: string }> = [];
   const isAdmin = session.user.role === "ADMIN";
-  
+  let mentors: Array<{ id: string, name: string | null, email: string }> = [];
+
   if (isAdmin) {
     mentors = await prisma.user.findMany({
       where: { role: "MENTOR", isApproved: true },
@@ -35,11 +34,8 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
     });
   }
 
-  if (!course) {
-    redirect("/dashboard/cursos");
-  }
+  if (!course) redirect("/dashboard/cursos");
 
-  // Security Auth
   if (session.user.role !== "ADMIN" && course.instructorId !== session.user.id) {
     redirect("/dashboard/cursos");
   }
@@ -48,5 +44,14 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
     <div className="p-8 max-w-5xl mx-auto">
       <CourseEditClient course={course} hasEnrolledStudents={course._count.inscritos > 0} mentors={mentors} isAdmin={isAdmin} />
     </div>
+  );
+}
+
+export default async function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return (
+    <Suspense fallback={<div className="p-8 text-muted">Cargando...</div>}>
+      <EditContent id={id} />
+    </Suspense>
   );
 }

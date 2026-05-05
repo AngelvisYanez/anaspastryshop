@@ -1,23 +1,21 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, PlayCircle, LockIcon, AlertCircle } from "lucide-react";
 
-export default async function ClaseViewerPage({ params }: { params: Promise<{ courseTitle: string, moduleTitle: string }> }) {
+async function ClaseContent({ params }: { params: Promise<{ courseTitle: string; moduleTitle: string }> }) {
   const { courseTitle, moduleTitle } = await params;
-
-  // 1. Decodificar explícitamente los parámetros (aunque NextJS los decodifica, aseguramos)
   const decodedCourseTitle = decodeURIComponent(courseTitle);
   const decodedModuleTitle = decodeURIComponent(moduleTitle);
 
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/login"); // Debe estar logueado
+    redirect("/auth/login");
   }
 
-  // 2. Buscamos el curso y requerimos traer también solo el módulo que coincida
   const course = await prisma.curso.findFirst({
     where: { title: decodedCourseTitle },
     include: {
@@ -36,12 +34,10 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
 
   const modulo = course.courseModules[0];
 
-  // 3. Validar Seguridad: ¿Tiene permiso de estar acá?
   let hasAccess = false;
   if (session.user.role === "ADMIN" || course.instructorId === session.user.id) {
     hasAccess = true;
   } else {
-    // Es alumno, verificar su compra exacta
     const inscription = await prisma.inscription.findFirst({
       where: {
         userId: session.user.id,
@@ -55,7 +51,7 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
   if (!hasAccess) {
     return (
       <div className="min-h-screen bg-[#0A0A15] flex items-center justify-center p-8 text-center text-white">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-[2rem]">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-xl">
           <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <LockIcon size={32} />
           </div>
@@ -71,11 +67,9 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
     );
   }
 
-  // Render Clases / Aula Virtual
   return (
     <div className="min-h-screen bg-[#0A0A15] text-white">
       
-      {/* Navbar Superior del Aula */}
       <nav className="h-16 bg-black/50 border-b border-white/5 flex items-center px-6 gap-4 sticky top-0 z-50 backdrop-blur-xl">
         <Link href={`/cursos/${course.id}`} className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
           <ArrowLeft size={20} />
@@ -89,7 +83,6 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
 
       <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] overflow-hidden">
         
-        {/* Zona Principal: Reproductor */}
         <main className="flex-1 bg-gray-950 flex flex-col items-center justify-center relative overflow-hidden h-[40vh] lg:h-full">
           {modulo.videoUrl ? (
             <div className="w-full h-full relative aspect-video lg:aspect-auto">
@@ -115,7 +108,6 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
           )}
         </main>
 
-        {/* Panel Lateral: Lista de Tareas Info */}
         <aside className="w-full lg:w-[400px] xl:w-[450px] bg-[#0F0F1A] border-l border-white/5 overflow-y-auto">
           <div className="p-8 pb-32">
             <h2 className="text-2xl font-black mb-1">{modulo.title}</h2>
@@ -155,5 +147,13 @@ export default async function ClaseViewerPage({ params }: { params: Promise<{ co
 
       </div>
     </div>
+  );
+}
+
+export default function ClaseViewerPage({ params }: { params: Promise<{ courseTitle: string; moduleTitle: string }> }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A15]" />}>
+      <ClaseContent params={params} />
+    </Suspense>
   );
 }

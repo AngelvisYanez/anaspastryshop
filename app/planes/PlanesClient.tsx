@@ -92,7 +92,7 @@ export default function PlanesClient({
         <m.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-block bg-amber-50 text-[#C9A84C] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6"
+          className="inline-block bg-amber-50 text-[#C9A84C] px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest mb-6"
         >
           Membresías
         </m.div>
@@ -125,7 +125,7 @@ export default function PlanesClient({
       </div>
 
       {plans.length === 0 ? (
-        <div className="bg-white rounded-[3rem] p-20 text-center border border-dashed border-gray-200 mb-20">
+        <div className="bg-white rounded-2xl p-20 text-center border border-dashed border-gray-200 mb-20">
           <Star className="mx-auto text-gray-200 mb-4" size={48} />
           <p className="text-gray-400 font-bold">No hay planes disponibles en este momento.</p>
         </div>
@@ -155,10 +155,10 @@ export default function PlanesClient({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className={`relative bg-white rounded-[3.5rem] p-10 border shadow-sm transition-all hover:shadow-2xl hover:shadow-amber-100 group ${styles.card}`}
+                className={`relative bg-white rounded-2xl p-10 border shadow-sm transition-all hover:shadow-2xl hover:shadow-amber-100 group ${styles.card}`}
               >
                 {suggested && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C9A84C] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C9A84C] text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">
                     Recomendado
                   </div>
                 )}
@@ -225,7 +225,7 @@ export default function PlanesClient({
 
                 <Link href="/auth/signup">
                   <button
-                    className={`w-full py-5 rounded-[2rem] font-bold flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-xs ${styles.btn}`}
+                    className={`w-full py-5 rounded-xl font-bold flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-xs ${styles.btn}`}
                   >
                     Seleccionar Plan <ArrowRight size={18} />
                   </button>
@@ -236,7 +236,7 @@ export default function PlanesClient({
         </div>
       )}
 
-      <div className="bg-[#0B1F3A] rounded-[4rem] p-12 md:p-20 text-white relative overflow-hidden">
+      <div className="bg-[#0B1F3A] rounded-2xl p-12 md:p-20 text-white relative overflow-hidden">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-5xl font-bold mb-8 tracking-tighter">
@@ -265,7 +265,7 @@ export default function PlanesClient({
             </div>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-[3rem] p-10 border border-white/10">
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-10 border border-white/10">
             <Star className="text-yellow-400 mb-6" size={32} />
             <p className="text-xl font-medium leading-relaxed mb-8 italic">
               "La suscripción me permitió acceder a cursos y lives en vivo. Aprendí más en un mes que en un año solo."

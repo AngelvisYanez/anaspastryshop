@@ -59,7 +59,7 @@ export default function WebinarHostPanel({ client }: { client: any }) {
       </button>
 
       {open && (
-        <div className="bg-[#0B1F3A]/95 backdrop-blur-sm rounded-[1.5rem] flex flex-col h-full overflow-hidden border border-white/10">
+        <div className="bg-[#0B1F3A]/95 backdrop-blur-sm rounded-lg flex flex-col h-full overflow-hidden border border-white/10">
           {/* Header */}
           <div className="px-5 py-4 border-b border-white/10 flex items-center gap-3">
             <Users size={16} className="text-[#C9A84C]" />

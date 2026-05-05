@@ -42,7 +42,7 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
           <>
             <button
               onClick={() => router.push(`/webinars/${id}`)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-[#C9A84C] hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-accent hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
             >
               <ExternalLink size={15} /> Entrar
             </button>
@@ -59,21 +59,21 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
           <button
             onClick={() => handleStatus("SCHEDULED")}
             disabled={updating}
-            className="flex-1 py-3 rounded-xl font-bold text-sm bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 py-3 rounded-xl font-bold text-sm bg-section-alt text-muted hover:bg-section-alt transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Clock size={15} /> Reactivar
           </button>
         )}
         <button
           onClick={() => router.push(`/dashboard/webinars/${id}/edit`)}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#0B1F3A] hover:bg-gray-100 transition-colors"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-foreground hover:bg-section-alt transition-colors"
         >
           <Edit size={15} />
         </button>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-red-400 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-red-400 hover:bg-red-50 transition-colors disabled:opacity-50"
         >
           <Trash2 size={15} />
         </button>

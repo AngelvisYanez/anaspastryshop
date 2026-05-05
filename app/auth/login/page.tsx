@@ -131,10 +131,10 @@ export default function LoginPage() {
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-red-100/20 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="w-full max-w-lg bg-card rounded-[3rem] p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
+        <div className="w-full max-w-lg bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
           <div className="relative w-20 h-20 mx-auto mb-8">
-            <div className="absolute inset-0 bg-red-100 dark:bg-red-950/30 rounded-3xl animate-pulse" />
-            <div className="relative w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-3xl flex items-center justify-center">
+            <div className="absolute inset-0 bg-red-100 dark:bg-red-950/30 rounded-xl animate-pulse" />
+            <div className="relative w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-xl flex items-center justify-center">
               <Lock className="text-red-500" size={36} />
             </div>
           </div>
@@ -171,10 +171,10 @@ export default function LoginPage() {
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-accent/10 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-foreground/[0.04] blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="w-full max-w-lg bg-card rounded-[3rem] p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
+        <div className="w-full max-w-lg bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
           <div className="relative w-20 h-20 mx-auto mb-8">
-            <div className="absolute inset-0 bg-accent-subtle rounded-3xl animate-pulse" />
-            <div className="relative w-20 h-20 bg-accent-subtle rounded-3xl flex items-center justify-center">
+            <div className="absolute inset-0 bg-accent-subtle rounded-xl animate-pulse" />
+            <div className="relative w-20 h-20 bg-accent-subtle rounded-xl flex items-center justify-center">
               <Clock className="text-accent" size={36} />
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-card rounded-[2.5rem] p-10 shadow-[var(--shadow-card)] z-10 border border-card-border"
+        className="w-full max-w-md bg-card rounded-xl p-10 shadow-[var(--shadow-card)] z-10 border border-card-border"
       >
         <div className="text-center mb-10">
           <Link

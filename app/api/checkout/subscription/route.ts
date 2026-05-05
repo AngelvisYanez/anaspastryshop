@@ -16,11 +16,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Ya tienes una suscripción activa" }, { status: 400 });
   }
 
-  const siteConfig = await prisma.siteConfig.findFirst();
+  const [siteConfig, activePlan] = await Promise.all([
+    prisma.siteConfig.findFirst(),
+    prisma.subscriptionPlan.findFirst({
+      where: { isActive: true },
+      orderBy: { price: "asc" },
+      select: { slug: true, name: true },
+    }),
+  ]);
+
   const subscriptionPrice = siteConfig?.subscriptionPriceId;
   const amount = siteConfig?.subscriptionPrice ?? 97;
-
+  const planSlug = activePlan?.slug ?? "base";
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const sharedMetadata = { type: "subscription", userId: session.user.id, planSlug };
 
   let checkoutParams: Parameters<typeof stripe.checkout.sessions.create>[0];
 
@@ -29,7 +38,7 @@ export async function POST(req: Request) {
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [{ price: subscriptionPrice, quantity: 1 }],
-      metadata: { type: "subscription", userId: session.user.id },
+      metadata: sharedMetadata,
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
       cancel_url: `${baseUrl}/checkout/membresia`,
     };
@@ -41,13 +50,13 @@ export async function POST(req: Request) {
         {
           price_data: {
             currency: "usd",
-            product_data: { name: "Membresía Academia Credito USA" },
+            product_data: { name: activePlan?.name ?? "Membresía Academia Credito USA" },
             unit_amount: Math.round(amount * 100),
           },
           quantity: 1,
         },
       ],
-      metadata: { type: "subscription", userId: session.user.id },
+      metadata: sharedMetadata,
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
       cancel_url: `${baseUrl}/checkout/membresia`,
     };

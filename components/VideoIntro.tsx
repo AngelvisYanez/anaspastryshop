@@ -15,8 +15,8 @@ export default function VideoIntro() {
           Antes de empezar
         </p>
 
-        <div className="aspect-video bg-card rounded-[2.5rem] border border-card-border shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-4 overflow-hidden">
-          <div className="w-16 h-16 rounded-full bg-accent-subtle flex items-center justify-center">
+        <div className="aspect-video bg-card rounded-2xl border border-card-border shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center gap-4 overflow-hidden">
+          <div className="w-16 h-16 rounded-xl bg-accent-subtle flex items-center justify-center">
             <Play size={28} className="text-accent ml-1" />
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest text-muted">

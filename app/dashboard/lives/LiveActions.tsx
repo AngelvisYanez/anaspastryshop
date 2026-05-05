@@ -57,21 +57,21 @@ export default function LiveActions({
           <button
             onClick={() => handleStatus("SCHEDULED")}
             disabled={updating}
-            className="flex-1 py-3 rounded-xl font-bold text-sm bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 py-3 rounded-xl font-bold text-sm bg-section-alt text-muted hover:bg-section-alt transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Clock size={15} /> Reactivar
           </button>
         )}
         <button
           onClick={() => router.push(`/dashboard/lives/${id}/edit`)}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-[#0B1F3A] hover:bg-gray-100 transition-colors flex items-center gap-2"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-foreground hover:bg-section-alt transition-colors flex items-center gap-2"
         >
           <Edit size={15} />
         </button>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-gray-50 text-red-400 hover:bg-red-50 transition-colors flex items-center gap-2 disabled:opacity-50"
+          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-red-400 hover:bg-red-50 transition-colors flex items-center gap-2 disabled:opacity-50"
         >
           <Trash2 size={15} />
         </button>

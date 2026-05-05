@@ -154,9 +154,9 @@ export default async function DashboardPage() {
       {role === "USER" && (
         <div className="space-y-8">
           {isSubActive ? (
-            <div className="bg-card border border-card-border rounded-[2rem] p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="bg-card border border-card-border rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-2xl flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-lg flex items-center justify-center shrink-0">
                   <Star size={22} className="text-green-500" />
                 </div>
                 <div>
@@ -168,13 +168,13 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <Link href="/cursos">
-                <button className="bg-foreground text-background px-7 py-3.5 rounded-full font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center gap-2 shrink-0">
+                <button className="bg-foreground text-background px-7 py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center gap-2 shrink-0">
                   Explorar Cursos <ArrowRight size={16} />
                 </button>
               </Link>
             </div>
           ) : (
-            <div className="bg-foreground rounded-[2rem] p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
+            <div className="bg-foreground rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
               <div className="absolute top-[-20%] right-[-5%] w-64 h-64 bg-accent/20 blur-[80px] rounded-full pointer-events-none" />
               <div className="relative z-10">
                 <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-2">
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
                 </p>
               </div>
               <Link href="/checkout/membresia" className="relative z-10 shrink-0">
-                <button className="bg-accent text-[#0B1F3A] px-7 py-3.5 rounded-full font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center gap-2">
+                <button className="bg-accent text-foreground px-7 py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center gap-2">
                   Activar Membresía <ArrowRight size={16} />
                 </button>
               </Link>
@@ -212,7 +212,7 @@ export default async function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                   {userCourses.map((curso) => (
                     <Link key={curso.id} href={`/cursos/${curso.id}`}>
-                      <div className="bg-card border border-card-border rounded-[1.5rem] overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group">
+                      <div className="bg-card border border-card-border rounded-lg overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group">
                         {curso.image ? (
                           <div className="relative h-36 bg-section-alt overflow-hidden">
                             <Image src={curso.image} alt={curso.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -238,7 +238,7 @@ export default async function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-card border border-card-border rounded-[1.5rem] p-12 text-center">
+                <div className="bg-card border border-card-border rounded-lg p-12 text-center">
                   <BookOpen size={36} className="mx-auto text-muted/40 mb-3" />
                   <p className="text-muted font-medium">Aún no hay cursos publicados.</p>
                 </div>
@@ -247,7 +247,7 @@ export default async function DashboardPage() {
           )}
 
           {userSubscription?.status === "PENDING" && (
-            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-700 rounded-[1.5rem] p-5 flex items-start gap-4">
+            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-700 rounded-lg p-5 flex items-start gap-4">
               <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-amber-800 dark:text-amber-300 mb-1">Pago en revisión</p>
@@ -263,7 +263,7 @@ export default async function DashboardPage() {
       {role === "ADMIN" && adminStats && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-card p-6 rounded-[1.5rem] border border-card-border shadow-sm">
+            <div className="bg-card p-6 rounded-lg border border-card-border shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-accent-subtle text-accent rounded-xl"><Wallet size={18} /></div>
                 <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${adminStats.revenueGrowth >= 0 ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"}`}>
@@ -276,7 +276,7 @@ export default async function DashboardPage() {
               <p className="text-[10px] text-muted font-bold mt-2">v.s. mes anterior</p>
             </div>
 
-            <div className="bg-card p-6 rounded-[1.5rem] border border-card-border shadow-sm">
+            <div className="bg-card p-6 rounded-lg border border-card-border shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-blue-50 dark:bg-blue-950/30 text-blue-500 rounded-xl"><Users size={18} /></div>
                 <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${adminStats.userGrowth >= 0 ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"}`}>
@@ -289,7 +289,7 @@ export default async function DashboardPage() {
               <p className="text-[10px] text-muted font-bold mt-2">v.s. mes anterior</p>
             </div>
 
-            <Link href="/dashboard/pagos" className="bg-card p-6 rounded-[1.5rem] border border-card-border shadow-sm hover:shadow-md hover:border-accent/30 transition-all sm:col-span-2 lg:col-span-1">
+            <Link href="/dashboard/pagos" className="bg-card p-6 rounded-lg border border-card-border shadow-sm hover:shadow-md hover:border-accent/30 transition-all sm:col-span-2 lg:col-span-1">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-xl"><Clock size={18} /></div>
                 <span className="text-[10px] font-black uppercase text-muted/60 tracking-widest">Pendientes</span>
@@ -301,7 +301,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card p-6 md:p-8 rounded-[2rem] border border-card-border shadow-sm">
+            <div className="bg-card p-6 md:p-8 rounded-xl border border-card-border shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-base font-black text-foreground">Resumen de Ingresos</h3>
@@ -314,7 +314,7 @@ export default async function DashboardPage() {
               <AdminRevenueChart data={adminStats.revenueByDay} />
             </div>
 
-            <div className="bg-card p-6 md:p-8 rounded-[2rem] border border-card-border shadow-sm">
+            <div className="bg-card p-6 md:p-8 rounded-xl border border-card-border shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-base font-black text-foreground">Crecimiento de Alumnos</h3>
@@ -324,13 +324,13 @@ export default async function DashboardPage() {
               <AdminGrowthChart data={adminStats.registrationsByDay} />
             </div>
 
-            <div className="bg-card p-6 md:p-8 rounded-[2rem] border border-card-border shadow-sm">
+            <div className="bg-card p-6 md:p-8 rounded-xl border border-card-border shadow-sm">
               <h3 className="text-base font-black text-foreground mb-1">Fuentes de Ingresos</h3>
               <p className="text-xs text-muted font-bold mb-6">Desglose por método de pago</p>
               <AdminPaymentMethodsChart data={adminStats.paymentMethodsData} />
             </div>
 
-            <div className="bg-card rounded-[2rem] p-6 md:p-8 border border-card-border shadow-sm overflow-hidden">
+            <div className="bg-card rounded-xl p-6 md:p-8 border border-card-border shadow-sm overflow-hidden">
               <h3 className="text-base font-black text-foreground mb-6 flex items-center gap-2">
                 <AlertCircle size={18} className="text-accent" />
                 Inscripciones Recientes

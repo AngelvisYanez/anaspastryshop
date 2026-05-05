@@ -4,10 +4,10 @@ import { useState } from "react";
 import { m } from "framer-motion";
 import { PlayCircle, Clock, Globe, ChevronDown, ArrowRight, Zap, ChevronRight, HelpCircle, LockIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import CheckoutModal from "@/components/CheckoutModal";
+import type { ReactNode } from "react";
 
 function getEmbedUrl(url: string | null | undefined): string | null {
   if (!url) return null;
@@ -23,7 +23,7 @@ const FAQS = [
   { q: "¿Puedo pagar en Bolívares?", a: "Sí. Al completar tu registro e iniciar el proceso de inscripción, selecciona Pago Móvil. El sistema calculará el monto a tasa BCV." },
 ];
 
-export default function CourseDetailClient({ course, hasPaid }: { course: any, hasPaid: boolean }) {
+export default function CourseDetailClient({ course, hasPaid, children }: { course: any, hasPaid: boolean, children?: ReactNode }) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
   
@@ -34,7 +34,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6">
-        {/* --- BREADCRUMBS --- */}
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8">
           <Link href="/cursos" className="hover:text-[#C9A84C] transition-colors">Cursos</Link>
           <ChevronRight size={12} />
@@ -42,7 +41,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* --- COLUMNA IZQUIERDA (CONTENIDO) --- */}
           <div className="lg:col-span-8">
             <m.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               
@@ -62,34 +60,32 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                 {course.description}
               </p>
 
-              {/* Stats Rápidas */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <Clock className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.totalHours} horas</span>
                 </div>
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <PlayCircle className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.totalClasses} tareas</span>
                 </div>
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <Globe className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.language}</span>
                 </div>
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 text-center shadow-sm">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 text-center shadow-sm">
                   <Zap className="mx-auto mb-2 text-gray-300" size={20} />
                   <span className="block text-sm font-bold text-[#0B1F3A]">{course.level}</span>
                 </div>
               </div>
 
-              {/* Temario (Curriculum) */}
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 tracking-tight">
                 Contenido del curso
               </h2>
 
               <div className="space-y-4 mb-20">
                 {course.courseModules.map((module: any, idx: number) => (
-                  <div key={module.id} className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden group shadow-sm transition-all">
+                  <div key={module.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden group shadow-sm transition-all">
                     <button
                       onClick={() => setOpenAccordion(openAccordion === idx ? null : idx)}
                       className="w-full p-8 flex justify-between items-center hover:bg-gray-50 transition-colors text-left"
@@ -101,7 +97,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                         <span className="text-xl font-bold text-[#0B1F3A] group-hover:text-[#C9A84C] transition-colors">
                           {module.title}
                         </span>
-                        {/* Vista previa de tareas cuando está cerrado */}
                         {openAccordion !== idx && module.lessons.length > 0 && (
                           <div className="mt-4 space-y-3">
                             {module.lessons.map((lesson: any) => (
@@ -123,7 +118,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
 
                     {openAccordion === idx && (
                       <div className="border-t border-gray-50">
-                        {/* Acceso al Módulo (Si tiene video) */}
                         {hasPaid && module.videoUrl ? (
                           <div className="px-8 pt-6">
                             <Link 
@@ -149,7 +143,6 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                           </div>
                         ) : null}
 
-                        {/* Tareas del módulo */}
                         <div className="px-8 pb-8 pt-6 space-y-3">
                           {module.lessons.map((lesson: any) => (
                             <div key={lesson.id} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
@@ -177,19 +170,18 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                 ))}
 
                 {course.courseModules.length === 0 && (
-                   <div className="text-center p-12 bg-white rounded-[2rem] border border-gray-100 text-gray-400">
+                   <div className="text-center p-12 bg-white rounded-xl border border-gray-100 text-gray-400">
                      No hay contenido publicado en este curso todavía.
                    </div>
                 )}
               </div>
 
-              {/* --- FAQ SECTION --- */}
-              <div className="bg-amber-50/50 rounded-[3rem] p-10 md:p-14 border border-amber-200/50 mb-10 pb-10">
+              <div className="bg-amber-50/50 rounded-2xl p-10 md:p-14 border border-amber-200/50 mb-10 pb-10">
                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
                   <HelpCircle className="text-[#C9A84C]" /> Preguntas Frecuentes
                 </h3>
                 <div className="space-y-8">
-                  {FAQS.map((faq, index) => (
+                  {FAQS.map((faq) => (
                     <div key={faq.q} className="space-y-2">
                       <h4 className="font-bold text-[#0B1F3A]">{faq.q}</h4>
                       <p className="text-gray-500 text-sm leading-relaxed">{faq.a}</p>
@@ -200,12 +192,11 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
             </m.div>
           </div>
 
-          {/* --- COLUMNA DERECHA (STICKY CTA) --- */}
           <div className="lg:col-span-4">
             <div className="sticky top-32 space-y-6">
-              <div className="bg-white rounded-[3rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white relative overflow-hidden">
+              <div className="bg-white rounded-2xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white relative overflow-hidden">
                 <div className="relative z-10">
-                  <div className="mb-4 rounded-[2rem] overflow-hidden relative h-56 bg-[#0B1F3A] shadow-[inset_0_-10px_30px_rgba(0,0,0,0.5)] group flex items-center justify-center border border-gray-100">
+                  <div className="mb-4 rounded-xl overflow-hidden relative h-56 bg-[#0B1F3A] shadow-[inset_0_-10px_30px_rgba(0,0,0,0.5)] group flex items-center justify-center border border-gray-100">
                      {embedUrl && embedUrl.includes('http') ? (
                         <iframe 
                            src={embedUrl}
@@ -236,7 +227,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                   </div>
 
                   {hasPaid ? (
-                    <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 p-6 rounded-3xl mb-8 flex items-center gap-4">
+                    <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 p-6 rounded-xl mb-8 flex items-center gap-4">
                       <div className="bg-emerald-100 flex items-center justify-center w-12 h-12 rounded-full shrink-0 shadow-sm">
                         <PlayCircle size={24} />
                       </div>
@@ -247,10 +238,9 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {/* Mensaje Informativo de Plan */}
                       <button
                         onClick={() => setIsCheckoutOpen(true)}
-                        className="w-full bg-[#0B1F3A] text-white py-6 rounded-[1.5rem] font-bold flex items-center justify-center gap-3 hover:bg-[#C9A84C] transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-xs"
+                        className="w-full bg-[#0B1F3A] text-white py-6 rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-[#C9A84C] transition-all shadow-xl shadow-amber-100 uppercase tracking-widest text-xs"
                       >
                         Comprar Curso Individual <ArrowRight size={18} />
                       </button>
@@ -262,7 +252,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
 
                       <Link
                         href="/checkout/membresia"
-                        className="w-full bg-white text-[#C9A84C] py-5 rounded-[1.5rem] font-bold flex items-center justify-center gap-2 border-2 border-amber-100 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
+                        className="w-full bg-white text-[#C9A84C] py-5 rounded-lg font-bold flex items-center justify-center gap-2 border-2 border-amber-100 hover:border-[#C9A84C]/20 hover:bg-amber-50/30 transition-all uppercase tracking-widest text-[10px]"
                       >
                         <Zap size={14} className="fill-current" /> Activar Membresía Completa
                       </Link>
@@ -282,8 +272,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
                 </div>
               </div>
 
-              {/* Card de Instructor */}
-              <div className="bg-[#0B1F3A] rounded-[2.5rem] p-8 text-white flex items-center gap-5 border border-white/5 shadow-2xl">
+              <div className="bg-[#0B1F3A] rounded-xl p-8 text-white flex items-center gap-5 border border-white/5 shadow-2xl">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex-shrink-0 flex items-center justify-center font-bold text-2xl shadow-[0_10px_20px_rgba(90,79,207,0.3)] overflow-hidden">
                   {course.instructor.image ? (
                     <Image src={course.instructor.image} alt={course.instructor.name} width={64} height={64} className="w-full h-full object-cover" />
@@ -308,7 +297,7 @@ export default function CourseDetailClient({ course, hasPaid }: { course: any, h
         title={course.title}
         cursoId={course.id}
       />
-      <Footer />
+      {children}
     </main>
   );
 }

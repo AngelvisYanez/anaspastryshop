@@ -1,32 +1,51 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { cacheTag, cacheLife } from "next/cache";
 import PublicCoursesClient from "./PublicCoursesClient";
+import Footer from "@/components/Footer";
+import type { Metadata } from "next";
 
-export default async function CursosPage() {
+export const metadata: Metadata = {
+  title: "Catálogo de Cursos",
+  description:
+    "Explora nuestro catálogo de cursos sobre crédito, finanzas personales e inversión en Estados Unidos. Formación práctica en español para la comunidad hispana.",
+  openGraph: {
+    title: "Catálogo de Cursos | Academia Credito USA",
+    description: "Cursos de crédito y finanzas personales en español para hispanos en USA.",
+  },
+};
+
+async function getPublicCourses() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("cursos");
+  return prisma.curso.findMany({
+    include: { instructor: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+async function CursosContent() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  // Ejecutamos consultas en paralelo para optimizar carga
   const [coursesDB, userInscriptions, userSubscription] = await Promise.all([
-    prisma.curso.findMany({
-      include: {
-        instructor: true,
-      },
-      orderBy: { createdAt: "desc" }
-    }),
-    userId ? prisma.inscription.findMany({
-      where: { userId, status: "APPROVED" },
-      select: { cursoId: true }
-    }) : Promise.resolve([]),
-    userId ? prisma.subscription.findUnique({
-      where: { userId }
-    }) : Promise.resolve(null)
+    getPublicCourses(),
+    userId
+      ? prisma.inscription.findMany({
+          where: { userId, status: "APPROVED" },
+          select: { cursoId: true },
+        })
+      : Promise.resolve([]),
+    userId
+      ? prisma.subscription.findUnique({ where: { userId } })
+      : Promise.resolve(null),
   ]);
 
-  const paidCourseIds = new Set(userInscriptions.map(ins => ins.cursoId));
+  const paidCourseIds = new Set(userInscriptions.map((ins) => ins.cursoId));
 
   const formattedCourses = coursesDB.map((c) => {
-    // Verificar si tiene acceso por suscripción o compra individual
     let hasAccess = paidCourseIds.has(c.id) || session?.user?.role === "ADMIN";
 
     if (!hasAccess && userSubscription?.status === "ACTIVE") {
@@ -51,9 +70,23 @@ export default async function CursosPage() {
   });
 
   return (
-    <PublicCoursesClient 
-      courses={formattedCourses} 
-      userSubscription={userSubscription ? { plan: userSubscription.plan, status: userSubscription.status } : null} 
-    />
+    <PublicCoursesClient
+      courses={formattedCourses}
+      userSubscription={
+        userSubscription
+          ? { plan: userSubscription.plan, status: userSubscription.status }
+          : null
+      }
+    >
+      <Footer />
+    </PublicCoursesClient>
+  );
+}
+
+export default function CursosPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <CursosContent />
+    </Suspense>
   );
 }

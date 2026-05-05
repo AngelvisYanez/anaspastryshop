@@ -209,14 +209,14 @@ function GatewayCard({
 
   return (
     <div
-      className={`bg-white rounded-[2rem] border shadow-sm overflow-hidden transition-all ${
-        form.isEnabled ? "border-gray-200" : "border-gray-100"
+      className={`bg-card rounded-xl border shadow-sm overflow-hidden transition-all ${
+        form.isEnabled ? "border-card-border" : "border-card-border"
       }`}
     >
       <div
         role="button"
         tabIndex={0}
-        className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-gray-50/50 transition-colors"
+        className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-card-hover transition-colors"
         onClick={() => setOpen(!open)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!open); } }}
       >
@@ -226,18 +226,18 @@ function GatewayCard({
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <p className="font-bold text-[#0B1F3A]">{def.label}</p>
+              <p className="font-bold text-foreground">{def.label}</p>
               <span
                 className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
                   def.type === "automatic"
-                    ? "bg-amber-50 text-[#C9A84C]"
-                    : "bg-gray-100 text-gray-500"
+                    ? "bg-amber-50 text-accent"
+                    : "bg-section-alt text-muted"
                 }`}
               >
                 {def.type === "automatic" ? "Automático" : "Manual"}
               </span>
             </div>
-            <p className="text-xs text-gray-400 font-medium mt-0.5">{def.description}</p>
+            <p className="text-xs text-muted font-medium mt-0.5">{def.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -247,24 +247,24 @@ function GatewayCard({
               setForm((f) => ({ ...f, isEnabled: !f.isEnabled }));
             }}
             className={`w-12 h-6 rounded-full relative transition-colors ${
-              form.isEnabled ? "bg-[#C9A84C]" : "bg-gray-200"
+              form.isEnabled ? "bg-accent" : "bg-muted/20"
             }`}
           >
             <div
-              className={`w-5 h-5 bg-white rounded-full shadow absolute top-0.5 transition-transform ${
+              className={`w-5 h-5 bg-card rounded-full shadow absolute top-0.5 transition-transform ${
                 form.isEnabled ? "translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
           <ChevronDown
             size={18}
-            className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`text-muted transition-transform ${open ? "rotate-180" : ""}`}
           />
         </div>
       </div>
 
       {open && (
-        <div className="px-8 pb-8 border-t border-gray-50 pt-6 bg-gray-50/30 space-y-4">
+        <div className="px-8 pb-8 border-t border-card-border pt-6 bg-section-alt/30 space-y-4">
           {error && (
             <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold">{error}</div>
           )}
@@ -277,20 +277,20 @@ function GatewayCard({
 
             return (
               <div key={field.key}>
-                <label className="block text-xs font-bold text-[#0B1F3A] mb-1.5">{field.label}</label>
+                <label className="block text-xs font-bold text-foreground mb-1.5">{field.label}</label>
                 <div className="flex gap-2">
                   <input
                     type={isSecret && !visible ? "password" : "text"}
                     value={value}
                     onChange={(e) => setField(field.key, e.target.value, isExtra)}
                     placeholder={field.placeholder}
-                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#C9A84C] transition-all font-mono text-[#0B1F3A] placeholder:font-sans placeholder:text-gray-400"
+                    className="flex-1 bg-card border border-card-border rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all font-mono text-foreground placeholder:font-sans placeholder:text-muted"
                   />
                   {isSecret && (
                     <button
                       type="button"
                       onClick={() => toggleSecret(field.key)}
-                      className="px-4 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#C9A84C] transition-colors"
+                      className="px-4 bg-card border border-card-border rounded-xl text-muted hover:text-accent transition-colors"
                     >
                       {visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -310,7 +310,7 @@ function GatewayCard({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-[#0B1F3A] text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-[#C9A84C] transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-[#0B1F3A] text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent transition-all disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {saving ? "Guardando..." : "Guardar"}
@@ -331,15 +331,15 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
   return (
     <div className="max-w-3xl">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#0B1F3A] mb-2">Métodos de Pago</h1>
-        <p className="text-gray-400 font-medium">
+        <h1 className="text-3xl font-black text-foreground mb-2">Métodos de Pago</h1>
+        <p className="text-muted font-medium">
           Configura las pasarelas activas y los datos de las cuentas de pago manual.
         </p>
       </div>
 
       <div className="space-y-10">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-1">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4 ml-1">
             Pasarelas Automáticas
           </p>
           <div className="space-y-4">
@@ -350,7 +350,7 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
         </div>
 
         <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-1">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4 ml-1">
             Métodos Manuales
           </p>
           <div className="space-y-4">

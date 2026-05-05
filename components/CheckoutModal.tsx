@@ -110,7 +110,7 @@ export default function CheckoutModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-card border border-card-border w-full max-w-xl rounded-[3rem] p-8 md:p-12 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
+            className="bg-card border border-card-border w-full max-w-xl rounded-2xl p-8 md:p-12 shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
           >
             <button onClick={onClose} className="absolute top-8 right-8 text-muted hover:text-foreground">
               <X />
@@ -189,7 +189,7 @@ export default function CheckoutModal({
                       <m.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6"
+                        className="bg-card-hover border border-card-border p-6 rounded-xl mb-6"
                       >
                         <p className="text-xs font-black text-muted uppercase tracking-widest mb-2">Enviar a:</p>
                         <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-card-border mb-4">
@@ -209,7 +209,7 @@ export default function CheckoutModal({
                       <m.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6 space-y-4"
+                        className="bg-card-hover border border-card-border p-6 rounded-xl mb-6 space-y-4"
                       >
                         <div className="flex justify-between items-end">
                           <p className="text-xs font-black text-muted uppercase tracking-widest">Monto (BCV):</p>
@@ -237,7 +237,7 @@ export default function CheckoutModal({
                       <m.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-card-hover border border-card-border p-6 rounded-[2rem] mb-6"
+                        className="bg-card-hover border border-card-border p-6 rounded-xl mb-6"
                       >
                         <p className="text-xs font-black text-muted uppercase tracking-widest mb-2">Binance Pay ID:</p>
                         <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-card-border mb-4">

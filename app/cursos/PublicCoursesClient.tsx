@@ -6,7 +6,7 @@ import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles, Zap } from "luci
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import type { ReactNode } from "react";
 
 const LEVELS = ["Todos", "Principiante", "Intermedio", "Avanzado"];
 
@@ -25,9 +25,11 @@ type CourseProps = {
 export default function PublicCoursesClient({
   courses,
   userSubscription,
+  children,
 }: {
   courses: CourseProps[];
   userSubscription?: { plan: string; status: string } | null;
+  children?: ReactNode;
 }) {
   const [activeLevel, setActiveLevel] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todas");
@@ -44,11 +46,14 @@ export default function PublicCoursesClient({
   });
 
   return (
-    <main className="min-h-screen bg-background pt-32 pb-20">
+    <main id="main-content" className="min-h-screen bg-background pb-20">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16">
+      <div className="relative overflow-hidden bg-[#0B1F3A] pt-32 pb-20 px-8 md:px-20 rounded-b-3xl mb-16">
+        <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-5%] right-[0%] w-[30%] h-[30%] bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto">
           <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -56,15 +61,17 @@ export default function PublicCoursesClient({
           >
             <Sparkles size={14} /> Catálogo de Formación
           </m.div>
-          <h1 className="font-display text-5xl md:text-7xl font-black text-foreground tracking-tight mb-6 leading-[0.9]">
+          <h1 className="font-display text-5xl md:text-7xl font-black text-white tracking-tight mb-6 leading-[0.9]">
             Lleva tu conocimiento al{" "}
             <span className="text-accent italic">siguiente nivel.</span>
           </h1>
-          <p className="text-lg text-muted max-w-2xl leading-relaxed">
+          <p className="text-lg text-white/55 max-w-2xl leading-relaxed">
             Formación de alto nivel en crédito y finanzas respaldada por Academia Credito USA.
           </p>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col gap-6 mb-12">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="relative w-full md:w-96">
@@ -74,7 +81,7 @@ export default function PublicCoursesClient({
                 placeholder="Buscar por nombre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-card border border-card-border rounded-full py-4 pl-13 pr-5 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium"
+                className="w-full bg-card border border-card-border rounded-xl py-4 pl-13 pr-5 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium"
               />
             </div>
 
@@ -96,7 +103,7 @@ export default function PublicCoursesClient({
                   <button
                     key={level}
                     onClick={() => setActiveLevel(level)}
-                    className={`px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${
+                    className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${
                       activeLevel === level
                         ? "bg-foreground text-background border-foreground"
                         : "bg-card text-muted border-card-border hover:border-accent hover:text-accent"
@@ -122,7 +129,7 @@ export default function PublicCoursesClient({
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                      className={`px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
                         activeCategory === cat
                           ? "bg-accent-subtle text-accent border-accent/30"
                           : "bg-card text-muted border-card-border hover:text-accent"
@@ -147,7 +154,7 @@ export default function PublicCoursesClient({
                 exit={{ opacity: 0, scale: 0.95 }}
                 key={curso.id}
                 whileHover={{ y: -8 }}
-                className="bg-card rounded-[2.5rem] overflow-hidden border border-card-border flex flex-col h-full group"
+                className="bg-card rounded-xl overflow-hidden border border-card-border flex flex-col h-full group"
               >
                 <div className="relative h-60 w-full bg-section-alt overflow-hidden">
                   <Image
@@ -159,7 +166,7 @@ export default function PublicCoursesClient({
                   />
                   <div className="absolute top-4 left-4">
                     <span
-                      className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5 ${
                         curso.type === "Online"
                           ? "bg-foreground/80 text-background"
                           : "bg-accent/90 text-[#0B1F3A]"
@@ -217,7 +224,7 @@ export default function PublicCoursesClient({
         </div>
 
         {filteredCourses.length === 0 && (
-          <div className="text-center py-24 bg-card rounded-[3rem] border border-dashed border-card-border">
+          <div className="text-center py-24 bg-card rounded-2xl border border-dashed border-card-border">
             <p className="font-display text-xl font-black text-muted italic">
               Catálogo actualizándose próximamente.
             </p>
@@ -225,7 +232,7 @@ export default function PublicCoursesClient({
         )}
       </div>
 
-      <Footer />
+      {children}
     </main>
   );
 }

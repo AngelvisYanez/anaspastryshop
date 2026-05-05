@@ -42,9 +42,9 @@ export default async function UsuariosPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#0B1F3A]">Usuarios</h1>
-        <p className="text-gray-400 font-medium">
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-foreground">Usuarios</h1>
+        <p className="text-muted font-medium">
           {role === "ADMIN"
             ? "Directorio completo de todos los usuarios registrados en la plataforma."
             : "Revisa los alumnos matriculados en tus cursos."}

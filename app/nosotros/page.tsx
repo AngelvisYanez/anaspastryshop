@@ -39,11 +39,14 @@ const TEAM = [
 
 export default function NosotrosPage() {
   return (
-    <main className="min-h-screen bg-background pt-32 pb-20">
+    <main className="min-h-screen bg-background pb-20">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <section className="mb-32">
+      <div className="relative overflow-hidden bg-[#0B1F3A] pt-32 pb-20 px-8 md:px-20 rounded-b-3xl mb-16">
+        <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-5%] right-[0%] w-[30%] h-[30%] bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -52,18 +55,22 @@ export default function NosotrosPage() {
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-6 block">
               Nuestra Historia
             </span>
-            <h1 className="font-display text-5xl md:text-8xl font-black text-foreground tracking-tight mb-8 leading-[0.9]">
+            <h1 className="font-display text-5xl md:text-8xl font-black text-white tracking-tight mb-8 leading-[0.9]">
               Educación financiera
               <br />
               <span className="text-accent italic">sin fronteras.</span>
             </h1>
-            <p className="text-xl text-muted leading-relaxed mb-12 max-w-2xl">
+            <p className="text-xl text-white/55 leading-relaxed max-w-2xl">
               Academia Credito USA nace con un objetivo claro: que cualquier hispanohablante
               en Estados Unidos pueda entender y dominar el sistema crediticio americano.
             </p>
           </m.div>
+        </div>
+      </div>
 
-          <div className="relative h-[500px] w-full rounded-[4rem] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-32">
+          <div className="relative h-[500px] w-full rounded-2xl overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2000"
               alt="Academia Credito USA Team"
@@ -94,7 +101,7 @@ export default function NosotrosPage() {
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <section className="mb-32">
           <div className="text-center mb-16">
@@ -112,9 +119,9 @@ export default function NosotrosPage() {
                 key={member.name}
                 whileHover={{ y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="bg-card rounded-[2.5rem] p-6 text-center border border-card-border group overflow-hidden"
+                className="bg-card rounded-xl p-6 text-center border border-card-border group overflow-hidden"
               >
-                <div className="relative w-full aspect-square rounded-[1.8rem] overflow-hidden mb-6 bg-section-alt">
+                <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-6 bg-section-alt">
                   <Image
                     src={member.image}
                     alt={member.name}
@@ -145,7 +152,7 @@ export default function NosotrosPage() {
           </div>
         </section>
 
-        <section className="bg-card rounded-[4rem] p-12 md:p-20 border border-card-border flex flex-col md:flex-row items-center gap-12">
+        <section className="bg-card rounded-2xl p-12 md:p-20 border border-card-border flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1">
             <Globe size={32} className="text-accent mb-6" />
             <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight mb-4">
@@ -156,7 +163,7 @@ export default function NosotrosPage() {
               todos aprendiendo a dominar el sistema crediticio americano.
             </p>
             <Link href="/membresia">
-              <button className="bg-foreground text-background px-8 py-4 rounded-full font-bold flex items-center gap-2 hover:opacity-90 transition-all">
+              <button className="bg-foreground text-background px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all">
                 Únete a la comunidad <ArrowRight size={18} />
               </button>
             </Link>

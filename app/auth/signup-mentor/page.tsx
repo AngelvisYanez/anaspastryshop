@@ -37,7 +37,7 @@ export default function MentorSignUpPage() {
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-lg bg-card rounded-[3rem] p-10 md:p-14 shadow-[var(--shadow-card)] z-10 border border-card-border relative"
+        className="w-full max-w-lg bg-card rounded-2xl p-10 md:p-14 shadow-[var(--shadow-card)] z-10 border border-card-border relative"
       >
         <div className="text-center mb-10">
           <Link
@@ -115,7 +115,7 @@ export default function MentorSignUpPage() {
 
           <button
             disabled={loading}
-            className="md:col-span-2 w-full bg-accent text-[#0B1F3A] py-5 rounded-[1.5rem] font-bold hover:bg-accent-hover transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-60"
+            className="md:col-span-2 w-full bg-accent text-[#0B1F3A] py-5 rounded-lg font-bold hover:bg-accent-hover transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-60"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : "Postularme como Mentor"}
           </button>

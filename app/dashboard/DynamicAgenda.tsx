@@ -20,28 +20,28 @@ export default function DynamicAgenda({
 
   return (
     <div className="space-y-4">
-      <label className="text-xs font-black uppercase text-gray-400 tracking-widest block ml-2">Cronograma del Curso</label>
+      <label className="text-xs font-black uppercase text-muted tracking-widest block ml-2">Cronograma del Curso</label>
       {agenda.map((item, index) => (
         <div key={index} className="flex gap-4 items-center">
           <div className="relative flex-1">
-            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted/40" size={16} />
             <input 
               type="text" 
               placeholder="09:00 AM" 
               value={item.hour}
               onChange={(e) => updateItem(index, "hour", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#C9A84C] text-sm font-medium"
+              className="w-full pl-10 pr-4 py-3 bg-section-alt rounded-xl border-none focus:ring-2 focus:ring-accent text-sm font-medium"
               required
             />
           </div>
           <div className="relative flex-[2]">
-            <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+            <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 text-muted/40" size={16} />
             <input 
               type="text" 
               placeholder="Ej. Introducción y Setup" 
               value={item.task}
               onChange={(e) => updateItem(index, "task", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-[#C9A84C] text-sm font-medium"
+              className="w-full pl-10 pr-4 py-3 bg-section-alt rounded-xl border-none focus:ring-2 focus:ring-accent text-sm font-medium"
               required
             />
           </div>
@@ -56,7 +56,7 @@ export default function DynamicAgenda({
       ))}
       <button 
         type="button" onClick={addItem}
-        className="flex items-center gap-2 text-[#C9A84C] font-bold text-sm hover:underline ml-2"
+        className="flex items-center gap-2 text-accent font-bold text-sm hover:underline ml-2"
       >
         <Plus size={16} /> Añadir actividad
       </button>

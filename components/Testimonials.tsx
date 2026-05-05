@@ -23,8 +23,8 @@ export default function Testimonials() {
         <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
           Lo que dicen los miembros
         </span>
-        <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight leading-[0.9]">
-          Resultados <span className="text-accent italic">reales</span>
+        <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight leading-[0.95]">
+          Resultados <span className="text-accent">reales</span>
         </h2>
       </m.div>
 
@@ -36,9 +36,9 @@ export default function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.06 }}
-            className="bg-card rounded-[2.5rem] p-8 border border-card-border flex flex-col gap-5 relative overflow-hidden"
+            className="bg-card rounded-xl p-8 border border-card-border flex flex-col gap-5 relative overflow-hidden"
           >
-            <span className="font-display absolute top-3 right-7 text-[5rem] leading-none text-accent/[0.07] font-black italic select-none pointer-events-none">
+            <span className="font-display absolute top-3 right-7 text-[5rem] leading-none text-accent/[0.07] font-black select-none pointer-events-none">
               &rdquo;
             </span>
 
@@ -48,13 +48,13 @@ export default function Testimonials() {
               ))}
             </div>
 
-            <p className="text-sm text-muted leading-relaxed italic flex-1 relative z-10">
+            <p className="text-sm text-muted leading-relaxed flex-1 relative z-10">
               &ldquo;{t.text}&rdquo;
             </p>
 
             <div className="flex items-center gap-3 mt-auto pt-5 border-t border-card-border relative z-10">
               <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center shrink-0">
-                <span className="font-display text-xs font-black text-background italic">
+                <span className="font-display text-xs font-black text-background">
                   {t.initials}
                 </span>
               </div>

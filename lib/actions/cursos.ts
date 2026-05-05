@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import type { ActionResult } from "@/lib/types";
 
 async function assertMentorOrAdmin() {
   const session = await auth();
@@ -26,16 +27,16 @@ type CoursePayload = {
   liveUrl?: string;
   modules: {
     title: string;
-    videoUrl?: string; // Video por módulo
+    videoUrl?: string;
     lessons: {
       title: string;
-      summary?: string; // Descripción de la tarea
+      summary?: string;
     }[];
   }[];
   instructorId?: string;
 };
 
-export async function createCourse(data: CoursePayload) {
+export async function createCourse(data: CoursePayload): Promise<ActionResult<{ courseId: string }>> {
   const session = await assertMentorOrAdmin();
 
   try {
@@ -73,31 +74,31 @@ export async function createCourse(data: CoursePayload) {
                 title: l.title,
                 summary: l.summary,
                 order: lIndex,
-              }))
-            }
-          }))
-        }
-      }
+              })),
+            },
+          })),
+        },
+      },
     });
 
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     return { success: true, courseId: curso.id };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating course:", error);
-    return { error: error.message || "Error interno al crear el curso." };
+    return { error: error instanceof Error ? error.message : "Error interno al crear el curso." };
   }
 }
 
-export async function deleteCourse(courseId: string) {
+export async function deleteCourse(courseId: string): Promise<ActionResult> {
   const session = await assertMentorOrAdmin();
 
   try {
-    const course = await prisma.curso.findUnique({ 
+    const course = await prisma.curso.findUnique({
       where: { id: courseId },
-      include: { _count: { select: { inscritos: true } } }
+      include: { _count: { select: { inscritos: true } } },
     });
-    
+
     if (!course) return { error: "Curso no encontrado" };
 
     if (session.user.role !== "ADMIN" && course.instructorId !== session.user.id) {
@@ -112,20 +113,20 @@ export async function deleteCourse(courseId: string) {
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     return { success: true };
-  } catch (error: any) {
+  } catch {
     return { error: "Error al eliminar el curso" };
   }
 }
 
-export async function updateCourse(courseId: string, data: CoursePayload) {
+export async function updateCourse(courseId: string, data: CoursePayload): Promise<ActionResult> {
   const session = await assertMentorOrAdmin();
 
   try {
-    const course = await prisma.curso.findUnique({ 
+    const course = await prisma.curso.findUnique({
       where: { id: courseId },
-      include: { _count: { select: { inscritos: true } } }
+      include: { _count: { select: { inscritos: true } } },
     });
-    
+
     if (!course) return { error: "Curso no encontrado" };
 
     if (session.user.role !== "ADMIN" && course.instructorId !== session.user.id) {
@@ -133,11 +134,10 @@ export async function updateCourse(courseId: string, data: CoursePayload) {
     }
 
     const hasEnrolled = course._count.inscritos > 0;
-    // Forzar el precio original si ya existen inscritos
     const finalPrice = hasEnrolled ? course.price : data.price;
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
-    let updateData: any = {
+    const updateData: Parameters<typeof prisma.curso.update>[0]["data"] & { instructorId?: string } = {
       title: data.title,
       description: data.description,
       price: finalPrice,
@@ -159,10 +159,10 @@ export async function updateCourse(courseId: string, data: CoursePayload) {
               title: l.title,
               summary: l.summary,
               order: lIndex,
-            }))
-          }
-        }))
-      }
+            })),
+          },
+        })),
+      },
     };
 
     if (session.user.role === "ADMIN" && data.instructorId) {
@@ -171,18 +171,15 @@ export async function updateCourse(courseId: string, data: CoursePayload) {
 
     await prisma.$transaction([
       prisma.courseModule.deleteMany({ where: { cursoId: courseId } }),
-      prisma.curso.update({
-        where: { id: courseId },
-        data: updateData
-      })
+      prisma.curso.update({ where: { id: courseId }, data: updateData }),
     ]);
 
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     revalidatePath(`/cursos/${courseId}`);
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating course:", error);
-    return { error: error.message || "Error interno al actualizar el curso." };
+    return { error: error instanceof Error ? error.message : "Error interno al actualizar el curso." };
   }
 }

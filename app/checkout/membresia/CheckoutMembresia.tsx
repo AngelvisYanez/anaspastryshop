@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { registerUser } from "@/lib/actions/auth";
 import { createSubscriptionInscription } from "@/lib/actions/inscription";
+import Navbar from "@/components/Navbar";
 
 type BankConfig = {
   bankName?: string;
@@ -180,10 +181,14 @@ export default function CheckoutMembresia({
   }
 
   return (
-    <main className="min-h-screen bg-background pt-16 pb-16 px-4">
-      <div className="max-w-lg mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-accent-subtle border border-card-border px-4 py-2 rounded-full mb-5">
+    <main className="min-h-screen bg-background pb-16">
+      <Navbar />
+      <div className="relative overflow-hidden bg-[#0B1F3A] pt-32 pb-16 px-8 md:px-20 rounded-b-3xl mb-10 text-center">
+        <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-5%] right-[0%] w-[30%] h-[30%] bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
+        <div className="relative z-10 max-w-lg mx-auto">
+          <div className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] px-4 py-2 rounded-xl mb-5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
@@ -192,13 +197,15 @@ export default function CheckoutMembresia({
               {planName}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tighter">
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
             {step === 1 && "Crea tu cuenta"}
             {step === 2 && "Realiza tu pago"}
             {step === 3 && "¡Pago enviado!"}
           </h1>
         </div>
+      </div>
 
+      <div className="max-w-lg mx-auto px-4">
         <StepIndicator step={step} />
 
         {error && (
@@ -208,7 +215,7 @@ export default function CheckoutMembresia({
         )}
 
         {step === 1 && (
-          <div className="bg-card border border-card-border rounded-[2.5rem] p-8 shadow-xl">
+          <div className="bg-card border border-card-border rounded-xl p-8 shadow-xl">
             <form onSubmit={handleRegister} className="space-y-5">
               <div>
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted block mb-2 ml-1">
@@ -280,7 +287,7 @@ export default function CheckoutMembresia({
 
         {step === 2 && (
           <div className="space-y-5">
-            <div className="bg-card border border-card-border rounded-[2.5rem] p-6">
+            <div className="bg-card border border-card-border rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">
@@ -296,7 +303,7 @@ export default function CheckoutMembresia({
               </div>
             </div>
 
-            <div className="bg-card border border-card-border rounded-[2.5rem] p-8">
+            <div className="bg-card border border-card-border rounded-xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-accent-subtle rounded-2xl flex items-center justify-center">
                   <Building2 size={18} className="text-accent" />
@@ -390,7 +397,7 @@ export default function CheckoutMembresia({
         )}
 
         {step === 3 && (
-          <div className="bg-card border border-card-border rounded-[2.5rem] p-10 text-center shadow-xl">
+          <div className="bg-card border border-card-border rounded-xl p-10 text-center shadow-xl">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-950/30 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="text-green-500" size={40} />
             </div>
@@ -414,7 +421,7 @@ export default function CheckoutMembresia({
 
             <a
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-4 rounded-full font-bold hover:opacity-90 transition-all shadow-lg text-sm"
+              className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transition-all shadow-lg text-sm"
             >
               Ir a mi Panel <ChevronRight size={16} />
             </a>

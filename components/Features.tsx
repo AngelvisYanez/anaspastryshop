@@ -8,7 +8,7 @@ export default function Features() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <m.div
           whileHover={{ y: -5 }}
-          className="md:col-span-8 bg-section-alt rounded-[2.5rem] p-12 flex flex-col justify-between min-h-[450px] relative overflow-hidden group border border-card-border"
+          className="md:col-span-8 bg-section-alt rounded-xl p-12 flex flex-col justify-between min-h-[450px] relative overflow-hidden group border border-card-border"
         >
           <div className="z-10">
             <div className="w-14 h-14 bg-card rounded-2xl flex items-center justify-center mb-6 shadow-sm text-accent">
@@ -29,7 +29,7 @@ export default function Features() {
 
         <m.div
           whileHover={{ y: -5 }}
-          className="md:col-span-4 bg-navy text-white rounded-[2.5rem] p-12 flex flex-col justify-between min-h-[450px] border border-white/5"
+          className="md:col-span-4 bg-navy text-white rounded-xl p-12 flex flex-col justify-between min-h-[450px] border border-white/5"
         >
           <div>
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">

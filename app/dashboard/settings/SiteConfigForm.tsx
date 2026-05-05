@@ -76,13 +76,13 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
   ] as const;
 
   return (
-    <div className="bg-card border border-card-border rounded-[3rem] p-8 md:p-10">
+    <div className="bg-card border border-card-border rounded-lg p-8 md:p-10">
       <div className="flex items-center gap-3 mb-8">
         <Globe size={20} className="text-accent" />
         <h2 className="text-xl font-black text-foreground">Configuración del Sitio</h2>
       </div>
 
-      <div className="flex gap-2 mb-8 bg-background p-1 rounded-2xl w-fit">
+      <div className="flex gap-2 mb-8 bg-background p-1 rounded-lg w-fit">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -183,7 +183,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
             </div>
             <div className="space-y-3">
               {config.navItems.length === 0 && (
-                <p className="text-sm text-muted italic text-center py-6 bg-background rounded-2xl">
+                <p className="text-sm text-muted italic text-center py-6 bg-background rounded-lg">
                   No hay ítems de menú. Los dinámicos se obtienen de Módulos de Plataforma.
                 </p>
               )}
@@ -267,7 +267,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
         <button
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-3 rounded-2xl font-bold hover:opacity-90 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-all disabled:opacity-50"
         >
           {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
           Guardar Cambios

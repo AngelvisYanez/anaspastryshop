@@ -1,18 +1,23 @@
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
-import Navbar from "@/components/Navbar";
 import CheckoutMembresia from "./CheckoutMembresia";
 
-export default async function CheckoutMembresiaPage() {
+async function CheckoutContent() {
   const session = await auth();
   const isLoggedIn = !!session?.user;
 
   return (
-    <>
-      <Navbar />
-      <CheckoutMembresia
-        initialLoggedIn={isLoggedIn}
-        initialName={session?.user?.name}
-      />
-    </>
+    <CheckoutMembresia
+      initialLoggedIn={isLoggedIn}
+      initialName={session?.user?.name}
+    />
+  );
+}
+
+export default function CheckoutMembresiaPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

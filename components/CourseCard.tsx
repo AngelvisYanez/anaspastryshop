@@ -14,9 +14,9 @@ export default function CourseCard({ title, category, price, icon, level }: Cour
   return (
     <m.div 
       whileHover={{ y: -10 }}
-      className="bg-card rounded-[2.5rem] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-card-border group"
+      className="bg-card rounded-xl p-4 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-card-border group"
     >
-      <div className="h-52 bg-section-alt rounded-[2rem] mb-6 overflow-hidden flex items-center justify-center text-5xl group-hover:bg-accent-subtle transition-colors">
+      <div className="h-52 bg-section-alt rounded-xl mb-6 overflow-hidden flex items-center justify-center text-5xl group-hover:bg-accent-subtle transition-colors">
         {icon}
       </div>
       <div className="px-4 pb-6">

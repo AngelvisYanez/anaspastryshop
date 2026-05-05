@@ -93,7 +93,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="bg-red-50 border border-red-100 text-red-600 rounded-2xl px-6 py-4 flex justify-between items-center font-medium text-sm"
+            className="bg-red-50 border border-red-100 text-red-600 rounded-lg px-6 py-4 flex justify-between items-center font-medium text-sm"
           >
             {error}
             <button onClick={() => setError(null)}>
@@ -105,37 +105,37 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6">
-          <div className="p-4 bg-amber-50 text-[#C9A84C] rounded-2xl">
+        <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
+          <div className="p-4 bg-amber-50 text-accent rounded-lg">
             <GraduationCap size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#0B1F3A]">{mentores.length}</p>
-            <p className="text-sm text-gray-400 font-bold mt-1">Total Mentores</p>
+            <p className="text-4xl font-black text-foreground">{mentores.length}</p>
+            <p className="text-sm text-muted font-bold mt-1">Total Mentores</p>
           </div>
         </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6">
-          <div className="p-4 bg-orange-50 text-orange-500 rounded-2xl">
+        <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
+          <div className="p-4 bg-orange-50 text-orange-500 rounded-lg">
             <Clock size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#0B1F3A]">{pendientes.length}</p>
-            <p className="text-sm text-gray-400 font-bold mt-1">Por Validar</p>
+            <p className="text-4xl font-black text-foreground">{pendientes.length}</p>
+            <p className="text-sm text-muted font-bold mt-1">Por Validar</p>
           </div>
         </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6">
-          <div className="p-4 bg-green-50 text-green-500 rounded-2xl">
+        <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
+          <div className="p-4 bg-green-50 text-green-500 rounded-lg">
             <CheckCircle2 size={28} />
           </div>
           <div>
-            <p className="text-4xl font-black text-[#0B1F3A]">{aprobados.length}</p>
-            <p className="text-sm text-gray-400 font-bold mt-1">Aprobados</p>
+            <p className="text-4xl font-black text-foreground">{aprobados.length}</p>
+            <p className="text-sm text-muted font-bold mt-1">Aprobados</p>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-white rounded-2xl p-2 border border-gray-100 shadow-sm w-fit">
+      <div className="flex bg-card rounded-lg p-2 border border-card-border shadow-sm w-fit">
         {(["todos", "pendientes", "aprobados"] as Tab[]).map((t) => (
           <button
             key={t}
@@ -143,7 +143,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
             className={`px-6 py-3 rounded-xl font-bold transition-all text-sm capitalize relative ${
               tab === t
                 ? "bg-[#0B1F3A] text-white shadow-lg"
-                : "text-gray-400 hover:text-[#0B1F3A]"
+                : "text-muted hover:text-foreground"
             }`}
           >
             {t === "pendientes" && pendientes.length > 0 && (
@@ -157,16 +157,16 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
+      <div className="bg-card rounded-lg p-10 border border-card-border shadow-sm">
         {displayed.length === 0 ? (
-          <p className="text-center text-gray-400 italic py-10">
+          <p className="text-center text-muted italic py-10">
             No hay mentores en esta categoría.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <tr className="border-b border-card-border text-[10px] font-black uppercase tracking-widest text-muted">
                   <th className="pb-4 pl-4">Mentor</th>
                   <th className="pb-4">Email</th>
                   <th className="pb-4">Cursos</th>
@@ -179,12 +179,12 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                 {displayed.map((mentor) => (
                   <tr
                     key={mentor.id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                    className="border-b border-card-border hover:bg-card-hover transition-colors"
                   >
                     {/* Avatar + Nombre */}
                     <td className="py-4 pl-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex-shrink-0 flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-sm">
+                        <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-sm">
                           {mentor.image ? (
                             <Image
                               src={mentor.image}
@@ -202,31 +202,31 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                               .toUpperCase()
                           )}
                         </div>
-                        <span className="font-bold text-[#0B1F3A]">
+                        <span className="font-bold text-foreground">
                           {mentor.name || "Sin nombre"}
                         </span>
                       </div>
                     </td>
 
                     {/* Email */}
-                    <td className="py-4 text-sm text-gray-500 font-medium">
+                    <td className="py-4 text-sm text-muted font-medium">
                       <div className="flex items-center gap-2">
-                        <Mail size={13} className="text-gray-300" />
+                        <Mail size={13} className="text-muted/40" />
                         {mentor.email}
                       </div>
                     </td>
 
                     {/* Cursos */}
                     <td className="py-4">
-                      <span className="bg-amber-50 text-[#C9A84C] px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 w-fit">
+                      <span className="bg-amber-50 text-accent px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 w-fit">
                         <Users size={12} /> {mentor._count.cursos}
                       </span>
                     </td>
 
                     {/* Fecha */}
-                    <td className="py-4 text-sm text-gray-500 font-medium">
+                    <td className="py-4 text-sm text-muted font-medium">
                       <div className="flex items-center gap-2">
-                        <Calendar size={13} className="text-gray-300" />
+                        <Calendar size={13} className="text-muted/40" />
                         {new Date(mentor.createdAt).toLocaleDateString("es-ES", {
                           day: "numeric",
                           month: "short",
@@ -276,7 +276,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                         <button
                           onClick={() => setEditingMentor(mentor)}
                           title="Editar mentor"
-                          className="p-2.5 bg-amber-50 text-[#C9A84C] hover:bg-amber-100 rounded-xl transition-all"
+                          className="p-2.5 bg-amber-50 text-accent hover:bg-amber-100 rounded-xl transition-all"
                         >
                           <Pencil size={16} />
                         </button>
@@ -313,16 +313,16 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-[3rem] p-10 w-full max-w-md shadow-2xl"
+              className="bg-card rounded-lg p-10 w-full max-w-md shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black text-[#0B1F3A]">
+                <h2 className="text-2xl font-black text-foreground">
                   Editar Mentor
                 </h2>
                 <button
                   onClick={() => setEditingMentor(null)}
-                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                  className="p-2 hover:bg-section-alt rounded-xl transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -330,7 +330,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
 
               <form onSubmit={handleEditSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
                     Nombre Completo
                   </label>
                   <input
@@ -338,25 +338,25 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
                     defaultValue={editingMentor.name || ""}
                     required
                     placeholder="Ej. María González"
-                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#C9A84C] font-medium transition-all"
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
                     Imagen (URL)
                   </label>
                   <input
                     name="image"
                     defaultValue={editingMentor.image || ""}
                     placeholder="https://..."
-                    className="w-full bg-gray-50 rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#C9A84C] font-medium transition-all"
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full bg-[#0B1F3A] text-white py-4 rounded-2xl font-bold hover:bg-[#C9A84C] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full bg-[#0B1F3A] text-white py-4 rounded-lg font-bold hover:bg-accent transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {isPending ? (
                     <Loader2 className="animate-spin" size={18} />
@@ -384,30 +384,30 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-[3rem] p-10 w-full max-w-sm shadow-2xl text-center"
+              className="bg-card rounded-lg p-10 w-full max-w-sm shadow-2xl text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-6">
                 <Trash2 className="text-red-500" size={28} />
               </div>
-              <h2 className="text-2xl font-black text-[#0B1F3A] mb-3">
+              <h2 className="text-2xl font-black text-foreground mb-3">
                 ¿Eliminar Mentor?
               </h2>
-              <p className="text-gray-500 mb-8 text-sm leading-relaxed">
+              <p className="text-muted mb-8 text-sm leading-relaxed">
                 Esta acción es irreversible. Si el mentor tiene cursos activos,
                 deberás reasignarlos primero.
               </p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setDeletingId(null)}
-                  className="flex-1 py-4 rounded-2xl font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+                  className="flex-1 py-4 rounded-lg font-bold bg-section-alt text-foreground hover:bg-muted/20 transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={() => handleEliminar(deletingId)}
                   disabled={isPending}
-                  className="flex-1 py-4 rounded-2xl font-bold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex-1 py-4 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {isPending ? (
                     <Loader2 className="animate-spin" size={18} />

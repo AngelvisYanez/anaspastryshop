@@ -42,7 +42,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 transition-opacity drop-shadow-md">
         <Link
           href={`/dashboard/cursos/${courseId}/edit`}
-          className="bg-white text-amber-700 hover:bg-amber-50 p-2.5 rounded-xl shadow-lg border border-gray-100 transition-all hover:scale-105"
+          className="bg-card text-amber-700 hover:bg-amber-50 p-2.5 rounded-xl shadow-lg border border-card-border transition-all hover:scale-105"
           title="Editar Curso"
         >
           <Edit2 size={16} />
@@ -53,8 +53,8 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
           disabled={isDeleting || hasEnrolled}
           className={`p-2.5 rounded-xl shadow-lg border transition-all hover:scale-105 ${
             hasEnrolled 
-              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed group/btn relative" 
-              : "bg-white text-red-500 hover:bg-red-50 border-gray-100"
+              ? "bg-section-alt text-muted border-card-border cursor-not-allowed group/btn relative" 
+              : "bg-card text-red-500 hover:bg-red-50 border-card-border"
           }`}
           title={hasEnrolled ? "Curso bloqueado (Inactivable desde perfil)" : "Eliminar Curso"}
         >
@@ -71,19 +71,19 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-200">
+          <div className="bg-card rounded-xl p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-200">
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle size={32} />
             </div>
-            <h3 className="text-xl font-black text-center text-[#0B1F3A] mb-2">¿Eliminar Curso?</h3>
-            <p className="text-sm text-center text-gray-500 mb-6 leading-relaxed">
+            <h3 className="text-xl font-black text-center text-foreground mb-2">¿Eliminar Curso?</h3>
+            <p className="text-sm text-center text-muted mb-6 leading-relaxed">
               Esta acción es permanente y eliminará todos los módulos, lecciones integradas y progreso estructural. No se puede deshacer.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button 
                 onClick={() => setShowModal(false)} 
                 disabled={isDeleting}
-                className="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors disabled:opacity-50"
+                className="flex-1 py-3 px-4 bg-section-alt hover:bg-muted/20 text-gray-700 font-bold rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>

@@ -44,7 +44,7 @@ export default async function MisCursosPage() {
           </p>
         </div>
         {hasActiveSub && (
-          <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-full border border-green-200 dark:border-green-800">
+          <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800">
             <Star size={14} />
             <span className="text-xs font-black uppercase tracking-widest">Membresía Activa</span>
           </div>
@@ -52,7 +52,7 @@ export default async function MisCursosPage() {
       </div>
 
       {!hasActiveSub ? (
-        <div className="bg-card border border-card-border rounded-[3rem] p-16 text-center">
+        <div className="bg-card border border-card-border rounded-lg p-16 text-center">
           <BookOpen className="mx-auto text-muted/30 mb-4" size={48} />
           <p className="text-foreground font-bold text-lg mb-2">
             Activa tu membresía para acceder
@@ -63,13 +63,13 @@ export default async function MisCursosPage() {
           </p>
           <Link
             href="/checkout/membresia"
-            className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white font-bold px-8 py-4 rounded-full hover:opacity-90 transition-all shadow-lg"
+            className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-all shadow-lg"
           >
             Activar Membresía <ArrowRight size={16} />
           </Link>
         </div>
       ) : allCourses.length === 0 ? (
-        <div className="bg-card border border-card-border rounded-[3rem] p-16 text-center">
+        <div className="bg-card border border-card-border rounded-lg p-16 text-center">
           <PlayCircle className="mx-auto text-muted/30 mb-4" size={48} />
           <p className="text-muted font-bold">Aún no hay cursos publicados en la plataforma.</p>
         </div>
@@ -77,7 +77,7 @@ export default async function MisCursosPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {allCourses.map((curso) => (
             <Link key={curso.id} href={`/cursos/${curso.id}`}>
-              <div className="bg-card border border-card-border rounded-[2rem] overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group flex flex-col h-full">
+              <div className="bg-card border border-card-border rounded-xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group flex flex-col h-full">
                 {curso.image ? (
                   <div className="relative w-full h-40 bg-section-alt overflow-hidden">
                     <Image

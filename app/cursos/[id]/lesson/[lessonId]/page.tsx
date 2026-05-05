@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
@@ -12,7 +13,7 @@ function getEmbedUrl(url: string | null | undefined): string | null {
   return url;
 }
 
-export default async function LessonPage({ params }: { params: { id: string, lessonId: string } }) {
+async function LessonContent({ params }: { params: Promise<{ id: string; lessonId: string }> }) {
   const { id: cursoId, lessonId } = await params;
   const session = await auth();
 
@@ -20,7 +21,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
     redirect("/auth/login?callbackUrl=/cursos/" + cursoId);
   }
 
-  // Fetch data
   const curso = await prisma.curso.findUnique({
     where: { id: cursoId },
     include: {
@@ -33,7 +33,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
 
   if (!curso) notFound();
 
-  // Check paywall securely
   let hasPaid = false;
   if (session.user.role === "ADMIN" || curso.instructorId === session.user.id) {
     hasPaid = true;
@@ -48,13 +47,10 @@ export default async function LessonPage({ params }: { params: { id: string, les
   }
 
   if (!hasPaid) {
-     redirect("/cursos/" + cursoId); // Si no ha pagado, lo pateamos a la página de venta
+    redirect("/cursos/" + cursoId);
   }
 
-  // Find the requested lesson
   let currentLesson = null;
-  let currentModuleIndex = 1;
-  let lessonIndexCount = 1;
 
   for (const mod of curso.courseModules) {
     for (const less of mod.lessons) {
@@ -66,7 +62,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
 
   if (!currentLesson) notFound();
 
-  // Use the module's video for playback
   const currentModule = curso.courseModules.find((mod) =>
     mod.lessons.some((l) => l.id === lessonId)
   ) as any;
@@ -75,9 +70,7 @@ export default async function LessonPage({ params }: { params: { id: string, les
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col md:flex-row font-sans">
       
-      {/* 🔴 ÁREA PRINCIPAL (VIDEO) */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
-         {/* Topbar mini */}
          <div className="h-16 border-b border-white/10 flex items-center px-6 shrink-0 justify-between">
             <Link href={`/cursos/${cursoId}`} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold">
                <ChevronLeft size={18} /> Volver al Curso
@@ -87,7 +80,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
             </div>
          </div>
 
-         {/* Reproductor */}
          <div className="w-full bg-gray-950 aspect-video flex items-center justify-center border-b border-white/5 relative">
             {embedUrl ? (
                <iframe 
@@ -105,7 +97,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
             )}
          </div>
 
-         {/* Contenido/Resumen de la lección */}
          <div className="p-8 max-w-4xl max-auto w-full">
             <h1 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter">
                {currentLesson.title}
@@ -119,7 +110,6 @@ export default async function LessonPage({ params }: { params: { id: string, les
          </div>
       </div>
 
-      {/* 🔵 BARRA LATERAL (TEMARIO) */}
       <div className="w-full md:w-96 bg-[#111111] border-l border-white/10 h-screen overflow-y-auto hidden md:block shrink-0">
          <div className="p-6 border-b border-white/10 sticky top-0 bg-[#111111]/90 backdrop-blur z-10">
             <h2 className="text-lg font-black tracking-tight">Contenido</h2>
@@ -162,5 +152,13 @@ export default async function LessonPage({ params }: { params: { id: string, les
          </div>
       </div>
     </div>
+  );
+}
+
+export default function LessonPage({ params }: { params: Promise<{ id: string; lessonId: string }> }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A]" />}>
+      <LessonContent params={params} />
+    </Suspense>
   );
 }

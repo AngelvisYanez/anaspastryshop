@@ -30,7 +30,7 @@ export default function AboutRami() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="aspect-[3/4] bg-card rounded-[2.5rem] border border-card-border overflow-hidden relative">
+            <div className="aspect-[3/4] bg-card rounded-xl border border-card-border overflow-hidden relative">
               <Image
                 src="/rami.jpeg"
                 alt="Rami Noureddine"
@@ -43,9 +43,9 @@ export default function AboutRami() {
               {STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="text-center p-4 bg-card rounded-2xl border border-card-border"
+                  className="text-center p-4 bg-card rounded-xl border border-card-border"
                 >
-                  <span className="font-display block text-2xl font-black text-accent italic tracking-tight mb-1">
+                  <span className="font-display block text-2xl font-black text-accent tracking-tight mb-1">
                     {stat.num}
                   </span>
                   <span className="text-[10px] font-bold text-muted leading-tight block">
@@ -86,11 +86,11 @@ export default function AboutRami() {
               ojalá hubiera sabido desde el primer día.
             </p>
 
-            <div className="relative bg-card rounded-[2rem] px-8 py-7 border border-card-border overflow-hidden">
-              <span className="font-display absolute top-2 left-5 text-[7rem] leading-none text-accent/10 font-black italic select-none pointer-events-none">
+            <div className="relative bg-card rounded-xl px-8 py-7 border border-card-border overflow-hidden">
+              <span className="font-display absolute top-2 left-5 text-[7rem] leading-none text-accent/10 font-black select-none pointer-events-none">
                 &ldquo;
               </span>
-              <p className="relative z-10 text-base text-foreground italic leading-relaxed font-medium">
+              <p className="relative z-10 text-base text-foreground leading-relaxed font-medium">
                 El objetivo no es darte una lista de pasos a seguir ciegamente.
                 Es que desarrolles tu propio sentido lógico para tomar decisiones
                 financieras.

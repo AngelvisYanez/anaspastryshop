@@ -120,14 +120,14 @@ export default function AllUsersView({
       <AnimatePresence>
         {error && (
           <m.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="bg-red-50 border border-red-100 text-red-600 rounded-2xl px-6 py-4 flex justify-between items-center font-medium text-sm">
+            className="bg-red-50 border border-red-100 text-red-600 rounded-lg px-6 py-4 flex justify-between items-center font-medium text-sm">
             <div className="flex items-center gap-2"><AlertTriangle size={16} /> {error}</div>
             <button onClick={() => setError(null)} aria-label="Cerrar error"><X size={16} /></button>
           </m.div>
         )}
         {success && (
           <m.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="bg-green-50 border border-green-100 text-green-600 rounded-2xl px-6 py-4 font-medium text-sm">
+            className="bg-green-50 border border-green-100 text-green-600 rounded-lg px-6 py-4 font-medium text-sm">
             ✅ {success}
           </m.div>
         )}
@@ -141,8 +141,8 @@ export default function AllUsersView({
           { icon: BookOpen, color: "green", count: alumnos.length, label: "Alumnos Registrados" },
           { icon: ShieldCheck, color: "indigo", count: admins.length, label: "Administradores" },
         ].map(({ icon: Icon, color, count, label }) => (
-          <div key={label} className="bg-card p-8 rounded-[2.5rem] border border-card-border shadow-sm flex items-center gap-6">
-            <div className={`p-4 bg-${color}-50 text-${color === "green" ? "green-500" : "accent"} rounded-2xl`}><Icon size={28} /></div>
+          <div key={label} className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
+            <div className={`p-4 bg-${color}-50 text-${color === "green" ? "green-500" : "accent"} rounded-lg`}><Icon size={28} /></div>
             <div><p className="text-4xl font-black text-foreground">{count}</p><p className="text-sm text-muted font-bold mt-1">{label}</p></div>
           </div>
         ))}
@@ -150,7 +150,7 @@ export default function AllUsersView({
 
       {/* Tabs + Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex bg-card rounded-2xl p-2 border border-card-border shadow-sm">
+        <div className="flex bg-card rounded-lg p-2 border border-card-border shadow-sm">
           {(["todos", "mentores", "alumnos", "admins"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-5 py-3 rounded-xl font-bold transition-all text-sm relative ${tab === t ? "bg-foreground text-background shadow-lg" : "text-muted hover:text-foreground"}`}>
@@ -164,11 +164,11 @@ export default function AllUsersView({
           ))}
         </div>
         <input type="text" placeholder="Buscar por nombre o email..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="bg-card border border-card-border rounded-2xl py-3 px-5 text-sm font-medium outline-none focus:ring-2 focus:ring-accent text-foreground w-full sm:w-72 shadow-sm" />
+          className="bg-card border border-card-border rounded-lg py-3 px-5 text-sm font-medium outline-none focus:ring-2 focus:ring-accent text-foreground w-full sm:w-72 shadow-sm" />
       </div>
 
       {/* Tabla */}
-      <div className="bg-card rounded-[3rem] p-10 border border-card-border shadow-sm">
+      <div className="bg-card rounded-lg p-10 border border-card-border shadow-sm">
         {filtered.length === 0 ? (
           <p className="text-center text-muted italic py-10">No se encontraron usuarios.</p>
         ) : (
@@ -190,7 +190,7 @@ export default function AllUsersView({
                   <tr key={user.id} className={`border-b border-card-border hover:bg-card-hover transition-colors ${!user.isActive ? "opacity-50" : ""}`}>
                     <td className="py-4 pl-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl flex-shrink-0 flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-sm">
+                        <div className="w-11 h-11 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-sm">
                           {user.image ? <Image src={user.image} alt={user.name || ""} width={44} height={44} className="w-full h-full object-cover" />
                             : (user.name || user.email).split(" ").map((w: string) => w[0]).join("").substring(0, 2).toUpperCase()}
                         </div>
@@ -255,7 +255,7 @@ export default function AllUsersView({
               aria-labelledby="edit-user-modal-title"
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               transition={{ type: "spring", damping: 20 }}
-              className="bg-card rounded-[3rem] p-10 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-card-border"
+              className="bg-card rounded-lg p-10 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-card-border"
               onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-8">
                 <h2 id="edit-user-modal-title" className="text-2xl font-black text-foreground">Editar Usuario</h2>
@@ -266,19 +266,19 @@ export default function AllUsersView({
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Nombre Completo</label>
                   <input name="name" defaultValue={editingUser.name || ""} required placeholder="Ej. María González"
-                    className="w-full bg-section-alt rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground" />
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Imagen (URL)</label>
                   <input name="image" defaultValue={editingUser.image || ""} placeholder="https://..."
-                    className="w-full bg-section-alt rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground" />
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Rol</label>
                   <select name="role" defaultValue={editingUser.role}
-                    className="w-full bg-section-alt rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground">
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground">
                     <option value="USER">Alumno (USER)</option>
                     <option value="MENTOR">Mentor (MENTOR)</option>
                     <option value="ADMIN">Administrador (ADMIN)</option>
@@ -290,12 +290,12 @@ export default function AllUsersView({
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Plan de Suscripción</label>
                     <div className="space-y-2">
                       <button type="button" onClick={() => setEditPlan("")}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border-2 transition-all text-sm font-bold ${!editPlan ? "border-red-200 bg-red-50 text-red-400" : "border-card-border text-muted hover:border-card-border"}`}>
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all text-sm font-bold ${!editPlan ? "border-red-200 bg-red-50 text-red-400" : "border-card-border text-muted hover:border-card-border"}`}>
                         <X size={14} /> Sin plan
                       </button>
                       {plans.map((plan) => (
                         <button key={plan.slug} type="button" onClick={() => setEditPlan(plan.slug)}
-                          className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 transition-all ${editPlan === plan.slug ? "border-accent bg-accent-subtle text-accent" : "border-card-border text-foreground hover:border-card-border"}`}>
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all ${editPlan === plan.slug ? "border-accent bg-accent-subtle text-accent" : "border-card-border text-foreground hover:border-card-border"}`}>
                           <div className="flex items-center gap-2">
                             <Star size={14} className={editPlan === plan.slug ? "text-accent" : "text-muted/40"} />
                             <span className="font-bold text-sm">{plan.name}</span>
@@ -310,7 +310,7 @@ export default function AllUsersView({
                 {error && <p className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-xl">{error}</p>}
 
                 <button type="submit" disabled={isPending}
-                  className="w-full bg-navy text-white py-4 rounded-2xl font-bold hover:bg-accent transition-all flex items-center justify-center gap-2 disabled:opacity-60 mt-2">
+                  className="w-full bg-navy text-white py-4 rounded-lg font-bold hover:bg-accent transition-all flex items-center justify-center gap-2 disabled:opacity-60 mt-2">
                   {isPending ? <Loader2 className="animate-spin" size={18} /> : "Guardar Cambios"}
                 </button>
               </form>
@@ -331,18 +331,18 @@ export default function AllUsersView({
               aria-labelledby="delete-user-modal-title"
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               transition={{ type: "spring", damping: 20 }}
-              className="bg-card rounded-[3rem] p-10 w-full max-w-sm shadow-2xl text-center border border-card-border"
+              className="bg-card rounded-lg p-10 w-full max-w-sm shadow-2xl text-center border border-card-border"
               onClick={(e) => e.stopPropagation()}>
-              <div className="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6"><Trash2 className="text-red-500" size={28} /></div>
+              <div className="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-6"><Trash2 className="text-red-500" size={28} /></div>
               <h2 id="delete-user-modal-title" className="text-2xl font-black text-foreground mb-2">¿Eliminar usuario?</h2>
               <p className="text-muted mb-2 text-sm">Estás a punto de eliminar a:</p>
               <p className="font-bold text-foreground mb-1">{deletingUser.name || "Sin nombre"}</p>
               <p className="text-xs text-muted mb-8">{deletingUser.email}</p>
               <p className="text-xs text-red-400 bg-red-50 rounded-xl px-4 py-3 mb-8 font-medium">⚠️ Esta acción es irreversible. Se eliminarán también sus inscripciones.</p>
               <div className="flex gap-3">
-                <button onClick={() => setDeletingUser(null)} className="flex-1 py-4 rounded-2xl font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all">Cancelar</button>
+                <button onClick={() => setDeletingUser(null)} className="flex-1 py-4 rounded-lg font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all">Cancelar</button>
                 <button onClick={handleDelete} disabled={isPending}
-                  className="flex-1 py-4 rounded-2xl font-bold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+                  className="flex-1 py-4 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
                   {isPending ? <Loader2 className="animate-spin" size={18} /> : "Sí, eliminar"}
                 </button>
               </div>
@@ -363,7 +363,7 @@ export default function AllUsersView({
               aria-labelledby="suspend-user-modal-title"
               initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               transition={{ type: "spring", damping: 20 }}
-              className="bg-card rounded-[3rem] p-10 w-full max-w-md shadow-2xl border border-card-border"
+              className="bg-card rounded-lg p-10 w-full max-w-md shadow-2xl border border-card-border"
               onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-6">
                 <h2 id="suspend-user-modal-title" className="text-2xl font-black text-foreground">{suspendingUser.isReactivating ? "Reactivar Alumno" : "Desactivar Alumno"}</h2>
@@ -378,7 +378,7 @@ export default function AllUsersView({
                 <div className="mb-8">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 mb-2 block">Motivo de Suspensión</label>
                   <select value={suspensionReason} onChange={(e) => setSuspensionReason(e.target.value)}
-                    className="w-full bg-section-alt rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground">
+                    className="w-full bg-section-alt rounded-lg py-4 px-5 outline-none focus:ring-2 focus:ring-accent font-medium transition-all text-foreground">
                     <option value="" disabled>Selecciona una razón...</option>
                     <option value="Uso de tarjetas dudosas">Uso de tarjetas dudosas</option>
                     <option value="Inyección de código">Inyección de código</option>
@@ -390,9 +390,9 @@ export default function AllUsersView({
               )}
               <div className="flex gap-3">
                 <button onClick={() => { setSuspendingUser(null); setSuspensionReason(""); }}
-                  className="flex-1 py-4 rounded-2xl font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all">Cancelar</button>
+                  className="flex-1 py-4 rounded-lg font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all">Cancelar</button>
                 <button onClick={handleToggleStatus} disabled={isPending}
-                  className={`flex-1 py-4 rounded-2xl font-bold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 ${suspendingUser.isReactivating ? "bg-green-500 hover:bg-green-600" : "bg-yellow-500 hover:bg-yellow-600"}`}>
+                  className={`flex-1 py-4 rounded-lg font-bold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 ${suspendingUser.isReactivating ? "bg-green-500 hover:bg-green-600" : "bg-yellow-500 hover:bg-yellow-600"}`}>
                   {isPending ? <Loader2 className="animate-spin" size={18} /> : (suspendingUser.isReactivating ? "Reactivar" : "Desactivar")}
                 </button>
               </div>

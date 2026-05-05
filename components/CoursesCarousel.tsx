@@ -35,7 +35,7 @@ export default function CoursesCarousel({ courses }: { courses: Course[] }) {
     <div className="relative">
       <button
         onClick={() => scroll("left")}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-card border border-card-border shadow-md w-11 h-11 rounded-full flex items-center justify-center hover:bg-card-hover transition-colors"
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-card border border-card-border shadow-md w-11 h-11 rounded-xl flex items-center justify-center hover:bg-card-hover transition-colors"
         aria-label="Anterior"
       >
         <ChevronLeft size={20} />
@@ -56,10 +56,10 @@ export default function CoursesCarousel({ courses }: { courses: Course[] }) {
             className="flex-none w-72"
           >
             <Link href={`/cursos/${course.id}`}>
-              <div className="bg-card rounded-[2rem] p-4 border border-card-border group hover:-translate-y-2 transition-transform duration-300 cursor-pointer">
-                <div className="h-44 bg-section-alt rounded-[1.5rem] mb-5 overflow-hidden flex items-center justify-center group-hover:bg-accent-subtle transition-colors">
+              <div className="bg-card rounded-xl p-4 border border-card-border group hover:-translate-y-2 transition-transform duration-300 cursor-pointer">
+                <div className="h-44 bg-section-alt rounded-lg mb-5 overflow-hidden flex items-center justify-center group-hover:bg-accent-subtle transition-colors">
                   {course.image ? (
-                    <img src={course.image} alt={course.title} className="w-full h-full object-cover rounded-[1.5rem]" />
+                    <img src={course.image} alt={course.title} className="w-full h-full object-cover rounded-lg" />
                   ) : (
                     <span className="text-4xl">📚</span>
                   )}
@@ -78,7 +78,7 @@ export default function CoursesCarousel({ courses }: { courses: Course[] }) {
                   </h3>
                   <div className="flex justify-between items-center pt-3 border-t border-card-border">
                     <span className="text-xl font-black text-foreground">${course.price}</span>
-                    <div className="bg-card-hover p-2.5 rounded-xl group-hover:bg-navy group-hover:text-white transition-all">
+                    <div className="bg-card-hover p-2.5 rounded-lg group-hover:bg-navy group-hover:text-white transition-all">
                       <ArrowUpRight size={18} />
                     </div>
                   </div>
@@ -91,7 +91,7 @@ export default function CoursesCarousel({ courses }: { courses: Course[] }) {
 
       <button
         onClick={() => scroll("right")}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-card border border-card-border shadow-md w-11 h-11 rounded-full flex items-center justify-center hover:bg-card-hover transition-colors"
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-card border border-card-border shadow-md w-11 h-11 rounded-xl flex items-center justify-center hover:bg-card-hover transition-colors"
         aria-label="Siguiente"
       >
         <ChevronRight size={20} />

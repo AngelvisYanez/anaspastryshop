@@ -21,8 +21,8 @@ export default async function MentoresPage() {
   return (
     <div className="p-8">
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-[#0B1F3A]">Mentores</h1>
-        <p className="text-gray-400 font-medium">
+        <h1 className="text-3xl font-black text-foreground">Mentores</h1>
+        <p className="text-muted font-medium">
           Gestiona, valida y administra los mentores de la plataforma.
         </p>
       </div>

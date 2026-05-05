@@ -1,9 +1,8 @@
-﻿import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Calendar, Tag, ShieldAlert } from "lucide-react";
 
-/** Convierte el JSON de detalles en texto legible */
 function formatDetails(raw: string | null): string {
   if (!raw) return "—";
   try {
@@ -36,11 +35,11 @@ function formatDetails(raw: string | null): string {
 }
 
 const ACTION_STYLES: Record<string, string> = {
-  CREATE:  "bg-green-50 text-green-600",
-  UPDATE:  "bg-amber-50 text-[#C9A84C]",
-  DELETE:  "bg-red-50 text-red-600",
-  APPROVE: "bg-emerald-50 text-emerald-600",
-  REVOKE:  "bg-orange-50 text-orange-500",
+  CREATE:  "bg-green-50 dark:bg-green-950/20 text-green-600",
+  UPDATE:  "bg-amber-50 dark:bg-amber-950/20 text-accent",
+  DELETE:  "bg-red-50 dark:bg-red-950/20 text-red-600",
+  APPROVE: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600",
+  REVOKE:  "bg-orange-50 dark:bg-orange-950/20 text-orange-500",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -76,38 +75,37 @@ export default async function LogsPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-10 flex items-center gap-4">
-        <div className="p-4 bg-red-50 text-red-500 rounded-2xl">
-          <ShieldAlert size={32} />
+      <div className="mb-8 flex items-center gap-4">
+        <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-500 rounded-lg">
+          <ShieldAlert size={26} />
         </div>
         <div>
-          <h1 className="text-3xl font-black text-[#0B1F3A]">Registro de Actividad</h1>
-          <p className="text-gray-400 font-medium">Panel de auditoría del sistema (Solo Administradores).</p>
+          <h1 className="text-3xl font-black text-foreground">Registro de Actividad</h1>
+          <p className="text-muted font-medium">Panel de auditoría del sistema (Solo Administradores).</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl p-8 border border-card-border shadow-sm overflow-hidden">
         {logs.length === 0 ? (
-          <p className="text-gray-400 italic text-center py-6">No hay registros de actividad aún.</p>
+          <p className="text-muted italic text-center py-6">No hay registros de actividad aún.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-100 text-xs font-black uppercase tracking-widest text-gray-400">
-                  <th className="pb-4 pl-4">Fecha</th>
-                  <th className="pb-4">Usuario</th>
-                  <th className="pb-4">Acción</th>
-                  <th className="pb-4">Entidad</th>
-                  <th className="pb-4">Detalles</th>
+                <tr className="border-b border-card-border text-[10px] font-black uppercase tracking-widest text-muted bg-section-alt">
+                  <th className="pb-3 pl-4 pt-3">Fecha</th>
+                  <th className="pb-3 pt-3">Usuario</th>
+                  <th className="pb-3 pt-3">Acción</th>
+                  <th className="pb-3 pt-3">Entidad</th>
+                  <th className="pb-3 pt-3">Detalles</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    {/* Fecha */}
-                    <td className="py-4 pl-4 text-sm font-medium text-gray-500 whitespace-nowrap">
+                  <tr key={log.id} className="border-b border-card-border hover:bg-card-hover transition-colors">
+                    <td className="py-3.5 pl-4 text-sm font-medium text-muted whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Calendar size={14} className="text-gray-300" />
+                        <Calendar size={13} className="text-muted/40" />
                         {new Date(log.createdAt).toLocaleString("es-ES", {
                           day: "numeric",
                           month: "short",
@@ -118,36 +116,32 @@ export default async function LogsPage() {
                       </div>
                     </td>
 
-                    {/* Usuario */}
-                    <td className="py-4 text-sm font-bold text-[#0B1F3A]">
+                    <td className="py-3.5 text-sm font-bold text-foreground">
                       <div className="flex flex-col">
                         <span>{log.user.name || "Sin nombre"}</span>
-                        <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
+                        <span className="text-[10px] text-muted uppercase tracking-wider font-medium">
                           {log.user.email}
                         </span>
                       </div>
                     </td>
 
-                    {/* Acción */}
-                    <td className="py-4">
-                      <span className={`px-3 py-1.5 rounded-lg text-xs font-black tracking-widest inline-block ${
-                        ACTION_STYLES[log.action] ?? "bg-gray-100 text-gray-500"
+                    <td className="py-3.5">
+                      <span className={`px-3 py-1 rounded-md text-xs font-black tracking-widest inline-block ${
+                        ACTION_STYLES[log.action] ?? "bg-section-alt text-muted"
                       }`}>
                         {ACTION_LABELS[log.action] ?? log.action}
                       </span>
                     </td>
 
-                    {/* Entidad */}
-                    <td className="py-4">
-                      <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600">
-                        <Tag size={13} className="text-[#C9A84C]" />
+                    <td className="py-3.5">
+                      <div className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+                        <Tag size={12} className="text-accent" />
                         {ENTITY_LABELS[log.entityType] ?? log.entityType}
                       </div>
                     </td>
 
-                    {/* Detalles — legible */}
-                    <td className="py-4 pr-4">
-                      <span className="text-sm text-gray-500 font-medium">
+                    <td className="py-3.5 pr-4">
+                      <span className="text-sm text-muted font-medium">
                         {formatDetails(log.details)}
                       </span>
                     </td>
