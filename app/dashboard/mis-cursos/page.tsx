@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, Clock, BarChart2, ArrowRight, Star, PlayCircle } from "lucide-react";
+import { Clock, BarChart2, Star, PlayCircle } from "lucide-react";
 
 export default async function MisCursosPage() {
   const session = await auth();
@@ -11,64 +11,44 @@ export default async function MisCursosPage() {
   if (!session?.user) redirect("/auth/login");
   if (session.user.role !== "USER") redirect("/dashboard");
 
-  const [subscription, allCourses] = await Promise.all([
-    prisma.subscription.findUnique({ where: { userId: session.user.id } }),
-    prisma.curso.findMany({
-      select: {
-        id: true,
-        title: true,
-        image: true,
-        level: true,
-        totalHours: true,
-        _count: { select: { courseModules: true } },
-        instructor: { select: { name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
+  const subscription = await prisma.subscription.findUnique({
+    where: { userId: session.user.id },
+  });
 
-  const hasActiveSub = subscription?.status === "ACTIVE";
+  if (subscription?.status !== "ACTIVE") redirect("/");
+
+  const allCourses = await prisma.curso.findMany({
+    select: {
+      id: true,
+      title: true,
+      image: true,
+      level: true,
+      totalHours: true,
+      _count: { select: { courseModules: true } },
+      instructor: { select: { name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
-            {hasActiveSub ? "Membresía activa" : "Sin membresía"}
+            Membresía activa
           </p>
           <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Cursos</h1>
           <p className="text-muted font-medium mt-1">
-            {hasActiveSub
-              ? "Acceso completo a todos los cursos de la plataforma."
-              : "Activa tu membresía para desbloquear todos los cursos."}
+            Acceso completo a todos los cursos de la plataforma.
           </p>
         </div>
-        {hasActiveSub && (
-          <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800">
-            <Star size={14} />
-            <span className="text-xs font-black uppercase tracking-widest">Membresía Activa</span>
-          </div>
-        )}
+        <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800">
+          <Star size={14} />
+          <span className="text-xs font-black uppercase tracking-widest">Membresía Activa</span>
+        </div>
       </div>
 
-      {!hasActiveSub ? (
-        <div className="bg-card border border-card-border rounded-lg p-16 text-center">
-          <BookOpen className="mx-auto text-muted/30 mb-4" size={48} />
-          <p className="text-foreground font-bold text-lg mb-2">
-            Activa tu membresía para acceder
-          </p>
-          <p className="text-muted font-medium mb-8 max-w-md mx-auto leading-relaxed">
-            Con la membresía mensual obtienes acceso ilimitado a todos los cursos,
-            sesiones en vivo y material exclusivo de la academia.
-          </p>
-          <Link
-            href="/checkout/membresia"
-            className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-all shadow-lg"
-          >
-            Activar Membresía <ArrowRight size={16} />
-          </Link>
-        </div>
-      ) : allCourses.length === 0 ? (
+      {allCourses.length === 0 ? (
         <div className="bg-card border border-card-border rounded-lg p-16 text-center">
           <PlayCircle className="mx-auto text-muted/30 mb-4" size={48} />
           <p className="text-muted font-bold">Aún no hay cursos publicados en la plataforma.</p>
