@@ -24,7 +24,7 @@ const FAQS = [
 
 export default function CourseDetailClient({ course, hasPaid, children }: { course: any, hasPaid: boolean, children?: ReactNode }) {
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
-  
+
   const embedUrl = getEmbedUrl(course.introVideo);
 
   return (

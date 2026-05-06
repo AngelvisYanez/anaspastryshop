@@ -2,9 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
-import { PlusCircle, Video, Users, Tag } from "lucide-react";
+import { PlusCircle, Video, Users } from "lucide-react";
 import CourseActions from "./CourseActions";
-import CategoryManager from "../categorias/CategoryManager";
 
 export default async function CursosDashboardPage() {
   const session = await auth();
@@ -13,19 +12,14 @@ export default async function CursosDashboardPage() {
   const isAdmin = session.user.role === "ADMIN";
   const filter = isAdmin ? {} : { instructorId: session.user.id };
 
-  const [cursos, categories] = await Promise.all([
-    prisma.curso.findMany({
-      where: filter,
-      include: {
-        instructor: true,
-        _count: { select: { inscritos: true, courseModules: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-    isAdmin
-      ? prisma.category.findMany({ orderBy: { name: "asc" } })
-      : Promise.resolve([]),
-  ]);
+  const cursos = await prisma.curso.findMany({
+    where: filter,
+    include: {
+      instructor: true,
+      _count: { select: { inscritos: true, courseModules: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -110,17 +104,6 @@ export default async function CursosDashboardPage() {
         </div>
       )}
 
-      {isAdmin && (
-        <div className="border-t border-card-border pt-10">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 bg-accent-subtle rounded-md flex items-center justify-center">
-              <Tag size={15} className="text-accent" />
-            </div>
-            <h2 className="text-xl font-black text-foreground">Categorías de Cursos</h2>
-          </div>
-          <CategoryManager initialCategories={categories} />
-        </div>
-      )}
     </div>
   );
 }

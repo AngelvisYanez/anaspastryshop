@@ -9,7 +9,6 @@ const SECTIONS = [
   { name: "Nosotros",    slug: "nosotros",    icon: "Users",       order: 5, roles: ["USER"] },
   { name: "Pasantías",   slug: "pasantias",   icon: "Briefcase",   order: 6, roles: ["USER"] },
   { name: "Mis Cursos",  slug: "mis-cursos",  icon: "GraduationCap", order: 7, roles: ["USER"] },
-  { name: "Categorías",  slug: "categorias",  icon: "Tag",         order: 8, roles: ["ADMIN"] },
   { name: "Usuarios",    slug: "usuarios",    icon: "Users",       order: 9, roles: ["ADMIN", "MENTOR"] },
 ]
 
