@@ -29,9 +29,9 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
   // Campos Básicos
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [hasPrice, setHasPrice] = useState(false);
   const [price, setPrice] = useState("0");
   const [language, setLanguage] = useState("Español");
-  const [level, setLevel] = useState("Intermedio");
   
   // Media y Streaming
   const [introVideo, setIntroVideo] = useState("");
@@ -99,11 +99,11 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
     const res = await createCourse({
       title,
       description,
-      price: parseFloat(price),
+      price: hasPrice ? parseFloat(price) : 0,
       totalHours,
       totalClasses,
       language,
-      level,
+      level: "General",
       image: coverImage || undefined,
       introVideo: introVideo || undefined,
       isLive,
@@ -188,17 +188,42 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
               <label className="block text-sm font-bold text-foreground mb-2">Descripción del Curso</label>
               <textarea required value={description} onChange={e => setDescription(e.target.value)} className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all min-h-[100px] text-foreground placeholder:text-muted/80" placeholder="Domina las herramientas esenciales..." />
             </div>
-            <div>
-              <label className="block text-sm font-bold text-foreground mb-2">Precio (USD)</label>
-              <input required value={price} onChange={e => setPrice(e.target.value)} type="number" step="0.01" min="0" className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/80" placeholder="45.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-foreground mb-2">Nivel</label>
-              <select value={level} onChange={e => setLevel(e.target.value)} className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground">
-                <option value="Principiante">Principiante</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
-              </select>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-bold text-foreground mb-3">¿El curso tiene precio?</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setHasPrice(false)}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold text-sm transition-all ${!hasPrice ? "border-accent bg-amber-50 text-accent" : "border-card-border bg-section-alt text-muted hover:border-accent/40"}`}
+                >
+                  No — Curso Gratuito
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHasPrice(true)}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold text-sm transition-all ${hasPrice ? "border-accent bg-amber-50 text-accent" : "border-card-border bg-section-alt text-muted hover:border-accent/40"}`}
+                >
+                  Sí — Definir Precio
+                </button>
+              </div>
+              {hasPrice && (
+                <div className="mt-4">
+                  <label className="block text-sm font-bold text-foreground mb-2">Precio (USD)</label>
+                  <input
+                    required
+                    value={price}
+                    onChange={e => setPrice(e.target.value)}
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/80"
+                    placeholder="45.00"
+                  />
+                </div>
+              )}
+              {!hasPrice && (
+                <p className="mt-3 text-xs text-muted font-medium">El curso estará disponible de forma gratuita para todos los usuarios.</p>
+              )}
             </div>
           </div>
         </div>
