@@ -28,13 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const isValid = await bcrypt.compare(credentials.password as string, user.password);
         if (!isValid) return null;
 
-        if (!user.isActive) {
-          throw new Error("UserSuspended");
-        }
+        if (!user.isActive) return null;
 
-        if (user.role === "MENTOR" && !user.isApproved) {
-          throw new Error("MentorPendingApproval");
-        }
+        if (user.role === "MENTOR" && !user.isApproved) return null;
 
         return {
           id: user.id,

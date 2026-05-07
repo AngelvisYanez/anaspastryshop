@@ -69,7 +69,7 @@ export async function checkPreloginStatus(formData: FormData) {
       if (user.role === "MENTOR" && !user.isApproved) {
         return { isPendingMentor: true };
       }
-      if (user.role === "USER" && !user.isActive) {
+      if (!user.isActive) {
         return { isSuspended: true, reason: user.deactivationReason };
       }
     }
