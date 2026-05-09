@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import type Stripe from "stripe";
+import { subscriptionEndDate } from "@/lib/utils/subscription";
 import {
   sendSubscriptionConfirmedEmail,
   sendSubscriptionCanceledEmail,
@@ -76,18 +77,39 @@ export async function POST(req: Request) {
         ? await prisma.subscriptionPlan.findFirst({ where: { slug: planSlug, isActive: true } })
         : await prisma.subscriptionPlan.findFirst({ where: { isActive: true }, orderBy: { price: "asc" } });
 
+      let endDate: Date | null = null;
+
+      if (session.subscription) {
+        try {
+          const stripeSub = await stripe.subscriptions.retrieve(session.subscription as string);
+          endDate = stripeSub.current_period_end
+            ? new Date(stripeSub.current_period_end * 1000)
+            : subscriptionEndDate();
+        } catch {
+          endDate = subscriptionEndDate();
+        }
+      } else {
+        endDate = subscriptionEndDate();
+      }
+
+      const now = new Date();
+
       await prisma.subscription.upsert({
         where: { userId },
         create: {
           userId,
           plan: plan?.slug ?? "base",
           status: "ACTIVE",
+          startDate: now,
+          endDate,
           stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,
         },
         update: {
           plan: plan?.slug ?? "base",
           status: "ACTIVE",
+          startDate: now,
+          endDate,
           stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,
         },
@@ -105,6 +127,29 @@ export async function POST(req: Request) {
     }
   }
 
+  if (event.type === "invoice.payment_succeeded") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const customerId = invoice.customer as string;
+
+    if ((invoice as any).subscription) {
+      try {
+        const stripeSub = await stripe.subscriptions.retrieve((invoice as any).subscription as string);
+        const newEndDate = stripeSub.current_period_end
+          ? new Date(stripeSub.current_period_end * 1000)
+          : subscriptionEndDate();
+
+        await prisma.subscription.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: {
+            status: "ACTIVE",
+            startDate: new Date(stripeSub.current_period_start * 1000),
+            endDate: newEndDate,
+          },
+        });
+      } catch {}
+    }
+  }
+
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object as Stripe.Subscription;
     const customerId = sub.customer as string;
@@ -112,7 +157,10 @@ export async function POST(req: Request) {
       where: { stripeCustomerId: customerId },
       data: { status: "CANCELED" },
     });
-    const dbSub = await prisma.subscription.findFirst({ where: { stripeCustomerId: customerId }, include: { user: { select: { email: true, name: true } } } });
+    const dbSub = await prisma.subscription.findFirst({
+      where: { stripeCustomerId: customerId },
+      include: { user: { select: { email: true, name: true } } },
+    });
     if (dbSub?.user) {
       sendSubscriptionCanceledEmail(dbSub.user.email, dbSub.user.name).catch(() => {});
     }
@@ -122,9 +170,16 @@ export async function POST(req: Request) {
     const sub = event.data.object as Stripe.Subscription;
     const customerId = sub.customer as string;
     const status = sub.status === "active" ? "ACTIVE" : sub.status === "past_due" ? "PAST_DUE" : "CANCELED";
+    const endDate = sub.current_period_end
+      ? new Date(sub.current_period_end * 1000)
+      : undefined;
+
     await prisma.subscription.updateMany({
       where: { stripeCustomerId: customerId },
-      data: { status },
+      data: {
+        status,
+        ...(endDate ? { endDate, startDate: new Date(sub.current_period_start * 1000) } : {}),
+      },
     });
   }
 

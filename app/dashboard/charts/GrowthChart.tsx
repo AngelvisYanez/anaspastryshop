@@ -16,7 +16,7 @@ type DataPoint = {
 
 export default function GrowthChart({ data }: { data: DataPoint[] }) {
   return (
-    <div className="h-[300px] w-full">
+    <div className="h-[300px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { subscriptionEndDate } from "@/lib/utils/subscription";
 import {
   sendSubscriptionConfirmedEmail,
   sendCoursePurchaseEmail,
@@ -13,7 +14,6 @@ import {
 export async function getPendingPayments() {
   const session = await auth();
 
-  // Basic authorization
   // @ts-ignore
   if (!session || !session.user || session.user.role !== "ADMIN") {
     throw new Error("No autorizado");
@@ -21,9 +21,7 @@ export async function getPendingPayments() {
 
   try {
     const inscriptions = await prisma.inscription.findMany({
-      where: {
-        status: "PENDING",
-      },
+      where: { status: "PENDING" },
       include: {
         user: { select: { name: true, email: true } },
         curso: { select: { title: true, price: true } },
@@ -61,14 +59,23 @@ export async function approvePayment(inscriptionId: string) {
 
     if (!inscription.cursoId) {
       const plan = await prisma.subscriptionPlan.findFirst({ where: { isActive: true } });
+      const now = new Date();
+      const endDate = subscriptionEndDate(now);
+
       await prisma.subscription.upsert({
         where: { userId: inscription.userId },
         create: {
           userId: inscription.userId,
           plan: plan?.slug ?? "membresia",
           status: "ACTIVE",
+          startDate: now,
+          endDate,
         },
-        update: { status: "ACTIVE" },
+        update: {
+          status: "ACTIVE",
+          startDate: now,
+          endDate,
+        },
       });
 
       sendSubscriptionConfirmedEmail(

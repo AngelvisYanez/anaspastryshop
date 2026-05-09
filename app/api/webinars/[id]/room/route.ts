@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getRtkConfig } from "@/lib/actions/platformApi";
+import { isSubscriptionValid } from "@/lib/utils/subscription";
 import { NextResponse } from "next/server";
 
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -26,7 +27,7 @@ export async function POST(
     where: { id: userId },
     select: {
       role: true,
-      subscription: { select: { status: true, plan: true } },
+      subscription: { select: { status: true, plan: true, endDate: true } },
     },
   });
 
@@ -34,7 +35,7 @@ export async function POST(
   const isStaff = ["ADMIN", "MENTOR"].includes(role);
 
   if (!isStaff) {
-    if (!user?.subscription || user.subscription.status !== "ACTIVE") {
+    if (!user?.subscription || !isSubscriptionValid(user.subscription)) {
       return NextResponse.json({ error: "Se requiere suscripción activa" }, { status: 403 });
     }
 

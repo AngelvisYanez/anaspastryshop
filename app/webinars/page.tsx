@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Video, Calendar, Users, Lock, ArrowRight } from "lucide-react";
+import { isSubscriptionValid } from "@/lib/utils/subscription";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -107,10 +108,10 @@ async function WebinarsContent() {
   if (!isStaff) {
     const subscription = await prisma.subscription.findUnique({
       where: { userId },
-      select: { status: true, plan: true },
+      select: { status: true, plan: true, endDate: true },
     });
 
-    if (subscription?.status === "ACTIVE") {
+    if (subscription && isSubscriptionValid(subscription)) {
       const plan = await prisma.subscriptionPlan.findFirst({
         where: { slug: subscription.plan, isActive: true },
         select: { hasWebinarAccess: true },

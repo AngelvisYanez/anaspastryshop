@@ -5,6 +5,7 @@ import {
   Check, ArrowRight, Shield, Zap, Star,
   Video, CreditCard, DollarSign, Bitcoin,
   Smartphone, Wallet, Building2,
+  CheckCircle, Clock, BookOpen, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Link from "next/link";
@@ -21,6 +22,12 @@ type Plan = {
 };
 
 type Section = { id: string; name: string; icon: string };
+
+type ActiveSubscription = {
+  daysLeft: number | null;
+  endDate: string | null;
+  planName: string;
+};
 
 const PAYMENT_META: Record<string, {
   label: string;
@@ -56,10 +63,12 @@ export default function MembresiaClient({
   plan,
   sections,
   enabledProviders,
+  activeSubscription = null,
 }: {
   plan: Plan | null;
   sections: Section[];
   enabledProviders: string[];
+  activeSubscription?: ActiveSubscription | null;
 }) {
   const sectionMap = Object.fromEntries(sections.map((s) => [s.id, s]));
   const price = plan?.price ?? null;
@@ -73,6 +82,9 @@ export default function MembresiaClient({
     if (s) features.push({ text: s.name, icon: <DynamicIcon name={s.icon} /> });
   });
   const allFeatures: { text: string; icon?: React.ReactNode }[] = features.length > 0 ? features : BENEFITS.map((text) => ({ text }));
+
+  const isExpiringSoon = activeSubscription?.daysLeft !== null && activeSubscription?.daysLeft !== undefined && activeSubscription.daysLeft <= 7 && activeSubscription.daysLeft > 0;
+  const isExpired = activeSubscription?.daysLeft !== null && activeSubscription?.daysLeft !== undefined && activeSubscription.daysLeft <= 0;
 
   return (
     <>
@@ -113,53 +125,151 @@ export default function MembresiaClient({
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20 items-start">
-          <m.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card text-white rounded-2xl p-10 md:p-14"
-          >
-            <div className="absolute inset-0 rounded-2xl opacity-[0.03] noise-bg pointer-events-none" />
-            <div className="absolute top-[-15%] right-[-10%] w-72 h-72 bg-accent/15 blur-[100px] rounded-full pointer-events-none" />
-            <div className="relative z-10">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent/80 mb-6 block">
-                {plan?.name ?? "Membresía Academia"}
-              </span>
 
-              <div className="flex items-end gap-2 mb-2">
-                {price !== null ? (
+          {activeSubscription ? (
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="relative overflow-hidden bg-[#0B1F3A] text-white rounded-2xl p-10 md:p-14"
+            >
+              <div className="absolute inset-0 rounded-2xl opacity-[0.03] noise-bg pointer-events-none" />
+              <div className="absolute top-[-15%] right-[-10%] w-72 h-72 bg-accent/15 blur-[100px] rounded-full pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
+                    <CheckCircle size={20} className="text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Membresía Activa</p>
+                    <p className="text-sm text-white/50">{activeSubscription.planName}</p>
+                  </div>
+                </div>
+
+                {activeSubscription.endDate ? (
                   <>
-                    <span className="font-display text-7xl font-black tracking-tight text-white italic">${price}</span>
-                    <span className="text-white/40 font-bold mb-3 text-sm">/mes</span>
+                    <div className="mb-2">
+                      <span className="font-display text-8xl font-black tracking-tight leading-none">
+                        {isExpired ? "0" : (activeSubscription.daysLeft !== null ? Math.max(0, activeSubscription.daysLeft) : "∞")}
+                      </span>
+                    </div>
+                    <p className="text-white/40 text-sm font-bold uppercase tracking-widest mb-2">
+                      {isExpired ? "días — membresía vencida" : "días restantes"}
+                    </p>
+                    <p className="text-white/30 text-xs mb-10">
+                      {isExpired ? "Tu membresía venció el " : "Se renueva el "}{activeSubscription.endDate}
+                    </p>
+
+                    {isExpiringSoon && !isExpired && (
+                      <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
+                        <AlertTriangle size={16} className="text-amber-400 shrink-0" />
+                        <p className="text-xs text-amber-300 font-bold">Tu membresía vence pronto. Renueva para no perder el acceso.</p>
+                      </div>
+                    )}
+
+                    {isExpired ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-2">
+                          <AlertTriangle size={16} className="text-red-400 shrink-0" />
+                          <p className="text-xs text-red-300 font-bold">Tu acceso ha expirado. Renueva para continuar aprendiendo.</p>
+                        </div>
+                        <Link href="/checkout/membresia">
+                          <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
+                            <RefreshCw size={16} /> Renovar Membresía
+                          </button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <Link href="/mis-cursos">
+                          <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
+                            <BookOpen size={16} /> Ver mis cursos
+                          </button>
+                        </Link>
+                        <Link href="/checkout/membresia">
+                          <button className="w-full bg-white/[0.06] border border-white/[0.1] text-white/60 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/[0.1] transition-all text-xs uppercase tracking-widest">
+                            <RefreshCw size={14} /> Renovar anticipadamente
+                          </button>
+                        </Link>
+                      </div>
+                    )}
                   </>
                 ) : (
-                  <span className="font-display text-5xl font-black tracking-tight text-white italic">Próximamente</span>
-                )}
-              </div>
-              {price !== null && (
-                <p className="text-white/40 text-sm mb-10">
-                  Facturación mensual · Cancela cuando quieras
-                </p>
-              )}
-
-              <div className="space-y-4 mb-10">
-                {allFeatures.map((f, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-accent">
-                      {f.icon ?? <Check size={14} />}
+                  <>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Clock size={20} className="text-accent" />
+                      <span className="font-display text-3xl font-black text-accent">Sin vencimiento</span>
                     </div>
-                    <p className="text-sm text-white/65 leading-snug">{f.text}</p>
-                  </div>
-                ))}
-              </div>
+                    <p className="text-white/40 text-sm mb-10">Tu membresía no tiene fecha de expiración configurada.</p>
+                    <Link href="/mis-cursos">
+                      <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
+                        <BookOpen size={16} /> Ver mis cursos
+                      </button>
+                    </Link>
+                  </>
+                )}
 
-              <Link href="/checkout/membresia">
-                <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
-                  Quiero unirme ahora <ArrowRight size={18} />
-                </button>
-              </Link>
-            </div>
-          </m.div>
+                <div className="mt-8 pt-8 border-t border-white/[0.08] space-y-3">
+                  {allFeatures.slice(0, 4).map((f, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-accent/20 rounded-full flex items-center justify-center shrink-0 text-accent">
+                        {f.icon ?? <Check size={12} />}
+                      </div>
+                      <p className="text-xs text-white/40 leading-snug">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </m.div>
+          ) : (
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card text-white rounded-2xl p-10 md:p-14"
+            >
+              <div className="absolute inset-0 rounded-2xl opacity-[0.03] noise-bg pointer-events-none" />
+              <div className="absolute top-[-15%] right-[-10%] w-72 h-72 bg-accent/15 blur-[100px] rounded-full pointer-events-none" />
+              <div className="relative z-10">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent/80 mb-6 block">
+                  {plan?.name ?? "Membresía Academia"}
+                </span>
+
+                <div className="flex items-end gap-2 mb-2">
+                  {price !== null ? (
+                    <>
+                      <span className="font-display text-7xl font-black tracking-tight text-white italic">${price}</span>
+                      <span className="text-white/40 font-bold mb-3 text-sm">/mes</span>
+                    </>
+                  ) : (
+                    <span className="font-display text-5xl font-black tracking-tight text-white italic">Próximamente</span>
+                  )}
+                </div>
+                {price !== null && (
+                  <p className="text-white/40 text-sm mb-10">
+                    Facturación mensual · Cancela cuando quieras
+                  </p>
+                )}
+
+                <div className="space-y-4 mb-10">
+                  {allFeatures.map((f, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-accent">
+                        {f.icon ?? <Check size={14} />}
+                      </div>
+                      <p className="text-sm text-white/65 leading-snug">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link href="/checkout/membresia">
+                  <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
+                    Quiero unirme ahora <ArrowRight size={18} />
+                  </button>
+                </Link>
+              </div>
+            </m.div>
+          )}
 
           <m.div
             initial={{ opacity: 0, x: 20 }}
@@ -294,19 +404,39 @@ export default function MembresiaClient({
           <div className="absolute inset-0 rounded-2xl opacity-[0.03] noise-bg pointer-events-none" />
           <div className="absolute top-[-15%] right-[-10%] w-80 h-80 bg-accent/15 blur-[120px] rounded-full pointer-events-none" />
           <div className="relative z-10">
-            <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
-              ¿Listo para transformar
-              <br />
-              <span className="text-accent italic">tu historial crediticio?</span>
-            </h2>
-            <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
-              Únete a nuestra comunidad y empieza a construir el perfil crediticio que siempre quisiste.
-            </p>
-            <Link href="/checkout/membresia">
-              <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
-                Quiero unirme ahora <ArrowRight size={18} />
-              </button>
-            </Link>
+            {activeSubscription && !isExpired ? (
+              <>
+                <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+                  ¡Bienvenido de vuelta,
+                  <br />
+                  <span className="text-accent italic">sigue aprendiendo!</span>
+                </h2>
+                <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
+                  Tienes acceso completo a todos los cursos y recursos de la plataforma.
+                </p>
+                <Link href="/mis-cursos">
+                  <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
+                    <BookOpen size={18} /> Ir a mis cursos
+                  </button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
+                  ¿Listo para transformar
+                  <br />
+                  <span className="text-accent italic">tu historial crediticio?</span>
+                </h2>
+                <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
+                  Únete a nuestra comunidad y empieza a construir el perfil crediticio que siempre quisiste.
+                </p>
+                <Link href="/checkout/membresia">
+                  <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
+                    {activeSubscription ? <><RefreshCw size={18} /> Renovar membresía</> : <>Quiero unirme ahora <ArrowRight size={18} /></>}
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </m.div>
       </div>

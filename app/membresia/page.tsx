@@ -2,6 +2,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MembresiaClient from "./MembresiaClient";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { isSubscriptionValid, subscriptionDaysLeft } from "@/lib/utils/subscription";
 import { cacheTag, cacheLife } from "next/cache";
 import type { Metadata } from "next";
 
@@ -38,12 +40,40 @@ async function getMembresiaData() {
 }
 
 export default async function MembresiaPage() {
-  const { plan, sections, enabledProviders } = await getMembresiaData();
+  const [{ plan, sections, enabledProviders }, session] = await Promise.all([
+    getMembresiaData(),
+    auth(),
+  ]);
+
+  let activeSubscription: { daysLeft: number | null; endDate: string | null; planName: string } | null = null;
+
+  if (session?.user) {
+    const sub = await prisma.subscription.findUnique({
+      where: { userId: session.user.id },
+      select: { status: true, endDate: true, plan: true },
+    });
+    if (sub && isSubscriptionValid(sub)) {
+      const endDate = sub.endDate ?? null;
+      const daysLeft = endDate ? subscriptionDaysLeft(endDate) : null;
+      activeSubscription = {
+        daysLeft,
+        endDate: endDate
+          ? new Date(endDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+          : null,
+        planName: sub.plan,
+      };
+    }
+  }
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-20">
       <Navbar />
-      <MembresiaClient plan={plan as any} sections={sections} enabledProviders={enabledProviders} />
+      <MembresiaClient
+        plan={plan as any}
+        sections={sections}
+        enabledProviders={enabledProviders}
+        activeSubscription={activeSubscription}
+      />
       <Footer />
     </main>
   );

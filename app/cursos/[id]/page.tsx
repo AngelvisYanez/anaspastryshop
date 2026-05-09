@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import CourseDetailClient from "./CourseDetailClient";
 import Footer from "@/components/Footer";
+import { isSubscriptionValid } from "@/lib/utils/subscription";
 
 async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -16,17 +17,13 @@ async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
       courseModules: {
         orderBy: { order: "asc" },
         include: {
-          lessons: {
-            orderBy: { order: "asc" }
-          }
+          lessons: { orderBy: { order: "asc" } }
         }
       }
     }
   });
 
-  if (!course) {
-    notFound();
-  }
+  if (!course) notFound();
 
   let hasPaid = false;
 
@@ -35,24 +32,24 @@ async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
       hasPaid = true;
     } else {
       const inscription = await prisma.inscription.findFirst({
-        where: {
-          userId: session.user.id,
-          cursoId: course.id,
-          status: "APPROVED"
-        }
+        where: { userId: session.user.id, cursoId: course.id, status: "APPROVED" }
       });
-      if (inscription) {
-        hasPaid = true;
+      if (inscription) hasPaid = true;
+
+      if (!hasPaid) {
+        const purchase = await prisma.coursePurchase.findFirst({
+          where: { userId: session.user.id, cursoId: course.id, status: "COMPLETED" }
+        });
+        if (purchase) hasPaid = true;
       }
     }
 
     if (!hasPaid) {
-      const activeSubscription = await prisma.subscription.findUnique({
+      const sub = await prisma.subscription.findUnique({
         where: { userId: session.user.id },
+        select: { status: true, endDate: true },
       });
-      if (activeSubscription?.status === "ACTIVE") {
-        hasPaid = true;
-      }
+      if (sub && isSubscriptionValid(sub)) hasPaid = true;
     }
   }
 

@@ -3,61 +3,78 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, BarChart2, Star, PlayCircle } from "lucide-react";
-import { isSubscriptionValid } from "@/lib/utils/subscription";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Clock, BarChart2, PlayCircle, ShoppingBag } from "lucide-react";
 
 export default async function MisCursosPage() {
   const session = await auth();
-
   if (!session?.user) redirect("/auth/login");
-  if (session.user.role !== "USER") redirect("/dashboard");
 
-  const subscription = await prisma.subscription.findUnique({
-    where: { userId: session.user.id },
-    select: { status: true, endDate: true },
-  });
+  const [purchases, inscriptions] = await Promise.all([
+    prisma.coursePurchase.findMany({
+      where: { userId: session.user.id, status: "COMPLETED" },
+      include: {
+        curso: {
+          include: {
+            instructor: { select: { name: true } },
+            _count: { select: { courseModules: true } },
+          },
+        },
+      },
+    }),
+    prisma.inscription.findMany({
+      where: {
+        userId: session.user.id,
+        status: "APPROVED",
+        NOT: { cursoId: null },
+      },
+      include: {
+        curso: {
+          include: {
+            instructor: { select: { name: true } },
+            _count: { select: { courseModules: true } },
+          },
+        },
+      },
+    }),
+  ]);
 
-  if (!subscription || !isSubscriptionValid(subscription)) redirect("/");
+  const courseMap = new Map<string, any>();
+  for (const p of purchases) {
+    if (p.curso) courseMap.set(p.cursoId, p.curso);
+  }
+  for (const i of inscriptions) {
+    if (i.curso && i.cursoId) courseMap.set(i.cursoId, i.curso);
+  }
+  const courses = Array.from(courseMap.values());
 
-  const allCourses = await prisma.curso.findMany({
-    select: {
-      id: true,
-      title: true,
-      image: true,
-      level: true,
-      totalHours: true,
-      _count: { select: { courseModules: true } },
-      instructor: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  if (courses.length === 0) redirect("/cursos");
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
-            Membresía activa
-          </p>
-          <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Cursos</h1>
-          <p className="text-muted font-medium mt-1">
-            Acceso completo a todos los cursos de la plataforma.
-          </p>
+    <main className="min-h-screen bg-background pt-28 pb-20">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
+              Cursos adquiridos
+            </p>
+            <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Cursos</h1>
+            <p className="text-muted font-medium mt-1">
+              Acceso completo a los cursos que has comprado.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 bg-accent-subtle text-accent px-4 py-2 rounded-xl border border-accent/20">
+            <ShoppingBag size={14} />
+            <span className="text-xs font-black uppercase tracking-widest">
+              {courses.length} {courses.length === 1 ? "Curso" : "Cursos"}
+            </span>
+          </div>
         </div>
-        <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800">
-          <Star size={14} />
-          <span className="text-xs font-black uppercase tracking-widest">Membresía Activa</span>
-        </div>
-      </div>
 
-      {allCourses.length === 0 ? (
-        <div className="bg-card border border-card-border rounded-lg p-16 text-center">
-          <PlayCircle className="mx-auto text-muted/30 mb-4" size={48} />
-          <p className="text-muted font-bold">Aún no hay cursos publicados en la plataforma.</p>
-        </div>
-      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {allCourses.map((curso) => (
+          {courses.map((curso: any) => (
             <Link key={curso.id} href={`/cursos/${curso.id}`}>
               <div className="bg-card border border-card-border rounded-xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group flex flex-col h-full">
                 {curso.image ? (
@@ -101,7 +118,8 @@ export default async function MisCursosPage() {
             </Link>
           ))}
         </div>
-      )}
-    </div>
+      </div>
+      <Footer />
+    </main>
   );
 }

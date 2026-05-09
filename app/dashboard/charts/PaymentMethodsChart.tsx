@@ -17,7 +17,7 @@ const COLORS = ["#C9A84C", "#8B5CF6", "#D8B4FE", "#EDE9FE", "#C7D2FE"];
 
 export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
   return (
-    <div className="h-[300px] w-full">
+    <div className="h-[300px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

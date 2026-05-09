@@ -1,5 +1,8 @@
 "use client";
-import { Bell, Search, User as UserIcon, Menu, X, CheckCircle2, AlertCircle, Info, Clock } from "lucide-react";
+import { Bell, Search, User as UserIcon, Menu, X, CheckCircle2, AlertCircle, Info, Clock, Sun, Moon, Settings, LogOut } from "lucide-react";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
@@ -52,7 +55,11 @@ export default function DashboardHeader({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const { theme, setTheme } = useTheme();
 
   const getPageTitle = (path: string) => {
     if (PAGE_TITLES[path]) return PAGE_TITLES[path];
@@ -96,6 +103,18 @@ export default function DashboardHeader({
       .catch(() => {});
   }, []);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    if (profileOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileOpen]);
+
   function markAllRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
@@ -132,8 +151,8 @@ export default function DashboardHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1 pr-4 md:pr-5 border-r border-card-border">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 pr-3 md:pr-4 border-r border-card-border">
           <button
             className="hidden sm:block p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
             title="Buscar"
@@ -217,24 +236,61 @@ export default function DashboardHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-card-hover px-2 py-1.5 md:pr-4 rounded-lg border border-card-border hover:bg-section-alt transition-colors cursor-pointer">
-          <div className="w-8 h-8 rounded-md overflow-hidden border border-card-border shadow-sm relative shrink-0">
-            {user.image ? (
-              <Image src={user.image} alt={user.name || "Perfil"} width={32} height={32} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-xs uppercase">
-                {user.name ? user.name.substring(0, 2) : <UserIcon size={14} />}
-              </div>
-            )}
-          </div>
-          <div className="hidden md:flex flex-col">
-            <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[120px]">
-              {user.name || "Usuario"}
-            </span>
-            <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">
-              {roleLabel}
-            </span>
-          </div>
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
+            title={theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+            aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        )}
+
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen((v) => !v)}
+            className="flex items-center gap-3 bg-card-hover px-2 py-1.5 md:pr-4 rounded-lg border border-card-border hover:bg-section-alt transition-colors"
+          >
+            <div className="w-8 h-8 rounded-md overflow-hidden border border-card-border shadow-sm relative shrink-0">
+              {user.image ? (
+                <Image src={user.image} alt={user.name || "Perfil"} width={32} height={32} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-xs uppercase">
+                  {user.name ? user.name.substring(0, 2) : <UserIcon size={14} />}
+                </div>
+              )}
+            </div>
+            <div className="hidden md:flex flex-col text-left">
+              <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[120px]">
+                {user.name || "Usuario"}
+              </span>
+              <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">
+                {roleLabel}
+              </span>
+            </div>
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-card-border rounded-xl shadow-[var(--shadow-card)] overflow-hidden z-50">
+              <Link
+                href="/dashboard/settings"
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-card-hover transition-colors"
+              >
+                <Settings size={14} className="text-muted shrink-0" />
+                Editar Perfil
+              </Link>
+              <div className="h-px bg-card-border mx-2" />
+              <button
+                onClick={() => { signOut({ callbackUrl: "/" }); setProfileOpen(false); }}
+                className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors w-full"
+              >
+                <LogOut size={14} className="shrink-0" />
+                Cerrar Sesión
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

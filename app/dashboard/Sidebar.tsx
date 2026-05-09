@@ -3,13 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
 import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Activity, X,
   Radio, Star, LayoutGrid, Wallet, Video, KeyRound,
-  Sun, Moon, ChevronLeft, ChevronRight, Mail,
+  Home, ChevronLeft, ChevronRight, Mail,
 } from "lucide-react";
 
 const SYSTEM_ITEMS = [
@@ -44,10 +42,6 @@ export default function Sidebar({
 }) {
   const userRole = user.role as string;
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
 
   const systemItems = isBlockedMentor
     ? SYSTEM_ITEMS.filter((i) => i.name === "Configuración")
@@ -133,19 +127,14 @@ export default function Sidebar({
       </nav>
 
       <div className="border-t border-card-border py-3 px-2 space-y-0.5 shrink-0">
-        {mounted && (
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className={actionClass}
-            title={isCollapsed ? (theme === "dark" ? "Modo Claro" : "Modo Oscuro") : undefined}
-            aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-          >
-            {theme === "dark" ? <Sun size={16} className="shrink-0" /> : <Moon size={16} className="shrink-0" />}
-            <span className={isCollapsed ? "lg:hidden" : ""}>
-              {theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
-            </span>
-          </button>
-        )}
+        <Link
+          href="/"
+          className={actionClass}
+          title={isCollapsed ? "Ver Homepage" : undefined}
+        >
+          <Home size={16} className="shrink-0" />
+          <span className={isCollapsed ? "lg:hidden" : ""}>Ver Homepage</span>
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className={`flex items-center gap-3 py-2 px-3 rounded-md text-sm font-bold transition-all w-full text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20

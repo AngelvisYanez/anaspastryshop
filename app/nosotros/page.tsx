@@ -1,21 +1,43 @@
 "use client";
 import { m } from "framer-motion";
-import { Globe, ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Zap, Shield, TrendingUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
-const STATS = [
-  { num: "7+", label: "Años construyendo crédito en USA" },
-  { num: "8", label: "Módulos completos" },
-  { num: "∞", label: "Actualizaciones incluidas" },
-];
-
 const IMPACT = [
   { num: "+500", label: "Alumnos Formados" },
   { num: "7+", label: "Años de Experiencia" },
   { num: "8", label: "Módulos de Formación" },
+];
+
+const BENEFITS = [
+  {
+    icon: BookOpen,
+    title: "Cursos en tu idioma",
+    desc: "Todo el contenido en español, diseñado para hispanohablantes que quieren dominar el sistema crediticio americano sin barreras.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Estrategias reales",
+    desc: "No teoría vacía. Aprende exactamente lo que los bancos buscan y cómo usar esa información a tu favor desde el primer día.",
+  },
+  {
+    icon: Users,
+    title: "Comunidad activa",
+    desc: "Rodéate de cientos de alumnos que comparten tu misma historia y aprenden juntos a construir su perfil crediticio.",
+  },
+  {
+    icon: Zap,
+    title: "Lives y webinars",
+    desc: "Sesiones en vivo donde puedes traer tus preguntas y recibir orientación directa para tu situación específica.",
+  },
+  {
+    icon: Shield,
+    title: "Contenido siempre actualizado",
+    desc: "El sistema crediticio cambia. Tu acceso incluye todas las actualizaciones para que siempre estés un paso adelante.",
+  },
 ];
 
 export default function NosotrosPage() {
@@ -50,7 +72,7 @@ export default function NosotrosPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-32">
+        <div className="mb-24">
           <div className="relative h-[500px] w-full rounded-2xl overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2000"
@@ -74,124 +96,86 @@ export default function NosotrosPage() {
           </div>
         </div>
 
-        <section className="mb-32">
+        <section className="mb-24">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            className="mb-12"
           >
-            <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-16 block">
-              Quién soy
+            <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
+              Por qué elegirnos
             </span>
+            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
+              Todo lo que necesitas para
+              <br />
+              <span className="text-accent italic">dominar tu crédito.</span>
+            </h2>
           </m.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-20 items-start">
-            <m.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="aspect-[3/4] bg-card rounded-xl border border-card-border overflow-hidden relative">
-                <Image
-                  src="/rami.jpeg"
-                  alt="Rami Noureddine"
-                  fill
-                  className="object-cover object-top"
-                />
-                <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-card to-transparent" />
-              </div>
-              <div className="grid grid-cols-3 gap-3 mt-4">
-                {STATS.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="text-center p-4 bg-card rounded-xl border border-card-border"
-                  >
-                    <span className="font-display block text-2xl font-black text-accent tracking-tight mb-1">
-                      {stat.num}
-                    </span>
-                    <span className="text-[10px] font-bold text-muted leading-tight block">
-                      {stat.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </m.div>
-
-            <m.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-2">
-                Rami Noureddine
-              </h2>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-10">
-                Fundador · Academia Crédito USA
-              </p>
-
-              <p className="text-sm text-muted leading-relaxed mb-6">
-                Soy venezolano, residente en Estados Unidos. Mi primer contacto con
-                el crédito americano fue a los 18 años — sin número de seguro
-                social, sin historial, y con una tarjeta de $5,000 que terminó
-                financiando mis estudios en el Líbano durante una crisis bancaria.
-                Desde ese momento me obsesioné con entender cómo funciona este
-                sistema desde adentro.
-              </p>
-              <p className="text-sm text-muted leading-relaxed mb-6">
-                Trabajé como banquero comercial, donde ayudé a decenas de clientes a
-                mejorar su perfil crediticio y acceder a financiamiento real. Ese
-                tiempo adentro del banco me cambió la perspectiva completamente — vi
-                exactamente cómo piensan las instituciones, qué buscan, y qué
-                decisiones toman.
-              </p>
-              <p className="text-sm text-muted leading-relaxed mb-10">
-                Hoy comparto todo eso en esta academia. No teoría, no pasos ciegos —
-                sino el criterio real que necesitas para tomar decisiones financieras
-                inteligentes en este país. Lo que yo ojalá hubiera sabido desde el
-                primer día.
-              </p>
-
-              <div className="relative bg-card rounded-xl px-8 py-7 border border-card-border overflow-hidden">
-                <span className="font-display absolute top-2 left-5 text-[7rem] leading-none text-accent/10 font-black select-none pointer-events-none">
-                  &ldquo;
-                </span>
-                <p className="relative z-10 text-base text-foreground leading-relaxed font-medium">
-                  El objetivo no es darte una lista de pasos a seguir ciegamente.
-                  Es que desarrolles tu propio sentido lógico para tomar decisiones
-                  financieras.
-                </p>
-                <div className="mt-5 pt-5 border-t border-card-border flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
-                    <span className="text-accent text-xs font-bold">RN</span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Rami Noureddine</p>
-                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Fundador</p>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {BENEFITS.map((b, i) => (
+              <m.div
+                key={b.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card border border-card-border rounded-2xl p-8 hover:border-accent/30 transition-colors"
+              >
+                <div className="w-11 h-11 bg-accent/10 rounded-xl flex items-center justify-center mb-5">
+                  <b.icon size={20} className="text-accent" />
                 </div>
-              </div>
-            </m.div>
+                <h3 className="font-bold text-foreground text-base mb-2">{b.title}</h3>
+                <p className="text-muted text-sm leading-relaxed">{b.desc}</p>
+              </m.div>
+            ))}
           </div>
         </section>
 
-        <section className="bg-card rounded-2xl p-12 md:p-20 border border-card-border flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <Globe size={32} className="text-accent mb-6" />
-            <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight mb-4">
-              Estamos en toda Latinoamérica.
-            </h2>
-            <p className="text-muted text-sm leading-relaxed mb-8 max-w-md">
-              Nuestra comunidad abarca estudiantes en más de 15 países de habla hispana,
-              todos aprendiendo a dominar el sistema crediticio americano.
-            </p>
-            <Link href="/membresia">
-              <button className="bg-foreground text-background px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all">
-                Únete a la comunidad <ArrowRight size={18} />
-              </button>
-            </Link>
+        <section className="relative overflow-hidden bg-[#0B1F3A] rounded-2xl p-12 md:p-20 border border-white/5">
+          <div className="absolute top-[-10%] right-[-5%] w-[35%] h-[35%] bg-accent/15 blur-[100px] rounded-full pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+            <div className="flex-1">
+              <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
+                Empieza hoy
+              </span>
+              <h2 className="font-display text-3xl md:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
+                Tu historial crediticio
+                <br />
+                <span className="text-accent italic">empieza con una decisión.</span>
+              </h2>
+              <p className="text-white/50 text-sm leading-relaxed mb-8 max-w-lg">
+                Accede a cursos, sesiones en vivo, webinars y una comunidad activa
+                de hispanohablantes que aprenden juntos a usar el crédito americano
+                como una herramienta real de crecimiento.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link href="/membresia">
+                  <button className="bg-accent text-[#0B1F3A] px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-accent-hover transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-wider">
+                    Ver membresía <ArrowRight size={18} />
+                  </button>
+                </Link>
+                <Link href="/cursos">
+                  <button className="bg-white/[0.06] border border-white/[0.12] text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-white/[0.1] transition-all text-sm uppercase tracking-wider">
+                    Explorar cursos
+                  </button>
+                </Link>
+              </div>
+            </div>
+            <div className="hidden md:grid grid-cols-2 gap-4 shrink-0">
+              {[
+                { num: "$97", label: "al mes" },
+                { num: "8", label: "módulos" },
+                { num: "+500", label: "alumnos" },
+                { num: "∞", label: "actualizaciones" },
+              ].map((s) => (
+                <div key={s.label} className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-5 text-center">
+                  <p className="font-display text-3xl font-black text-accent italic mb-1">{s.num}</p>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </div>

@@ -16,7 +16,7 @@ type DataPoint = {
 
 export default function RevenueChart({ data }: { data: DataPoint[] }) {
   return (
-    <div className="h-[300px] w-full">
+    <div className="h-[300px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>

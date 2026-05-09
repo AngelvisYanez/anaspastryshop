@@ -6,7 +6,7 @@ import { LazyMotion, domAnimation } from "framer-motion";
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-      <SessionProvider refetchInterval={5}>
+      <SessionProvider>
         <LazyMotion features={domAnimation} strict>
           {children}
         </LazyMotion>
