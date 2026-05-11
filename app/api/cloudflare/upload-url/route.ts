@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { getStreamConfig } from "@/lib/actions/platformApi";
 
 export async function POST() {
   const session = await auth();
@@ -7,8 +8,7 @@ export async function POST() {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID!;
-  const apiToken = process.env.CLOUDFLARE_API_TOKEN!;
+  const { accountId, apiToken } = await getStreamConfig();
 
   const response = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/direct_upload`,

@@ -82,8 +82,9 @@ export async function POST(req: Request) {
       if (session.subscription) {
         try {
           const stripeSub = await stripe.subscriptions.retrieve(session.subscription as string);
-          endDate = stripeSub.current_period_end
-            ? new Date(stripeSub.current_period_end * 1000)
+          const periodEnd = (stripeSub as any).current_period_end;
+          endDate = periodEnd
+            ? new Date(periodEnd * 1000)
             : subscriptionEndDate();
         } catch {
           endDate = subscriptionEndDate();
@@ -134,15 +135,16 @@ export async function POST(req: Request) {
     if ((invoice as any).subscription) {
       try {
         const stripeSub = await stripe.subscriptions.retrieve((invoice as any).subscription as string);
-        const newEndDate = stripeSub.current_period_end
-          ? new Date(stripeSub.current_period_end * 1000)
+        const sub = stripeSub as any;
+        const newEndDate = sub.current_period_end
+          ? new Date(sub.current_period_end * 1000)
           : subscriptionEndDate();
 
         await prisma.subscription.updateMany({
           where: { stripeCustomerId: customerId },
           data: {
             status: "ACTIVE",
-            startDate: new Date(stripeSub.current_period_start * 1000),
+            startDate: new Date(sub.current_period_start * 1000),
             endDate: newEndDate,
           },
         });
@@ -168,17 +170,18 @@ export async function POST(req: Request) {
 
   if (event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
+    const subAny = sub as any;
     const customerId = sub.customer as string;
     const status = sub.status === "active" ? "ACTIVE" : sub.status === "past_due" ? "PAST_DUE" : "CANCELED";
-    const endDate = sub.current_period_end
-      ? new Date(sub.current_period_end * 1000)
+    const endDate = subAny.current_period_end
+      ? new Date(subAny.current_period_end * 1000)
       : undefined;
 
     await prisma.subscription.updateMany({
       where: { stripeCustomerId: customerId },
       data: {
         status,
-        ...(endDate ? { endDate, startDate: new Date(sub.current_period_start * 1000) } : {}),
+        ...(endDate ? { endDate, startDate: new Date(subAny.current_period_start * 1000) } : {}),
       },
     });
   }

@@ -47,3 +47,16 @@ export async function getRtkConfig() {
     apiToken: config?.apiToken || process.env.CLOUDFLARE_API_TOKEN || "",
   };
 }
+
+export async function getStreamConfig() {
+  const dbConfig = await prisma.platformApiConfig.findUnique({
+    where: { provider: "CLOUDFLARE_STREAM" },
+  });
+
+  const config = dbConfig?.config as Record<string, string> | null;
+
+  return {
+    accountId: config?.accountId || process.env.CLOUDFLARE_ACCOUNT_ID || "",
+    apiToken: config?.apiToken || process.env.CLOUDFLARE_API_TOKEN || "",
+  };
+}
