@@ -215,7 +215,11 @@ export default async function DashboardPage() {
                       <div className="bg-card border border-card-border rounded-lg overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group">
                         {curso.image ? (
                           <div className="relative h-36 bg-section-alt overflow-hidden">
-                            <Image src={curso.image} alt={curso.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                            {curso.image.startsWith("data:") ? (
+                              <img src={curso.image} alt={curso.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            ) : (
+                              <Image src={curso.image} alt={curso.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                            )}
                           </div>
                         ) : (
                           <div className="h-36 bg-section-alt flex items-center justify-center">

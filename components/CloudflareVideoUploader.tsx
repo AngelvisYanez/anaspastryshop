@@ -1,7 +1,7 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Upload, Loader2, CheckCircle, X, Video, Film } from "lucide-react";
-import * as tus from "tus-js-client";
+import { getDirectUploadUrl } from "@/lib/actions/cloudflare";
 
 interface Props {
   onUpload: (videoUrl: string) => void;
@@ -15,7 +15,11 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(currentUrl || null);
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const uploadRef = useRef<tus.Upload | null>(null);
+  const xhrRef = useRef<XMLHttpRequest | null>(null);
+
+  useEffect(() => {
+    if (currentUrl) setUploadedUrl(currentUrl);
+  }, [currentUrl]);
 
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("video/")) {
@@ -27,41 +31,48 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
     setProgress(0);
 
     try {
-      const res = await fetch("/api/cloudflare/upload-url", { method: "POST" });
-      if (!res.ok) throw new Error("No se pudo obtener la URL de subida");
-      const { uploadUrl, uid } = await res.json();
-      if (!uploadUrl || !uid) throw new Error("Respuesta inválida del servidor");
+      const res = await getDirectUploadUrl();
+
+      if (res.error || !res.uploadURL || !res.uid) {
+        throw new Error(res.error || "Respuesta inválida del servidor");
+      }
 
       await new Promise<void>((resolve, reject) => {
-        const upload = new tus.Upload(file, {
-          uploadUrl,
-          retryDelays: [0, 3000, 5000, 10000, 20000],
-          metadata: {
-            name: file.name,
-            filetype: file.type,
-          },
-          chunkSize: 50 * 1024 * 1024,
-          onProgress(bytesUploaded, bytesTotal) {
-            setProgress(Math.round((bytesUploaded / bytesTotal) * 100));
-          },
-          onSuccess() {
-            const cfVideoUrl = `https://iframe.videodelivery.net/${uid}`;
+        const xhr = new XMLHttpRequest();
+        xhrRef.current = xhr;
+
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            setProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          if (xhr.status === 200 || xhr.status === 201) {
+            const cfVideoUrl = `https://iframe.videodelivery.net/${res.uid}`;
             setUploadedUrl(cfVideoUrl);
             onUpload(cfVideoUrl);
             resolve();
-          },
-          onError(err) {
-            reject(err);
-          },
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status} - ${xhr.responseText.substring(0, 200)}`));
+          }
         });
-        uploadRef.current = upload;
-        upload.start();
+
+        xhr.addEventListener("error", () => reject(new Error("Error de red al subir el video")));
+        xhr.addEventListener("abort", () => reject(new Error("Upload cancelado")));
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        xhr.open("POST", res.uploadURL!);
+        xhr.send(formData);
       });
-    } catch {
-      setError("Error al subir el video. Intenta de nuevo.");
+    } catch (err: any) {
+      console.error("[CloudflareUpload] error:", err);
+      setError(err.message || "Error al subir el video. Intenta de nuevo.");
     } finally {
       setUploading(false);
-      uploadRef.current = null;
+      xhrRef.current = null;
     }
   }, [onUpload]);
 
@@ -80,27 +91,36 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
   const handleDragLeave = () => setDragging(false);
 
   const cancelUpload = () => {
-    uploadRef.current?.abort();
-    uploadRef.current = null;
+    xhrRef.current?.abort();
+    xhrRef.current = null;
     setUploading(false);
     setProgress(0);
   };
 
   if (uploadedUrl && !uploading) {
     return (
-      <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-3 rounded-xl">
-        <CheckCircle size={16} className="text-green-500 shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-green-700 dark:text-green-400">Video subido a Cloudflare Stream</p>
-          <p className="text-[10px] text-green-600/70 dark:text-green-500/70 truncate mt-0.5">{uploadedUrl}</p>
+      <div className="space-y-2">
+        <div className="relative w-full rounded-xl overflow-hidden bg-black aspect-video border border-card-border">
+          <iframe
+            src={uploadedUrl}
+            className="absolute inset-0 w-full h-full"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
         </div>
-        <button
-          type="button"
-          onClick={() => { setUploadedUrl(null); onUpload(""); }}
-          className="text-green-500 hover:text-red-500 transition-colors shrink-0"
-        >
-          <X size={14} />
-        </button>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <CheckCircle size={13} className="text-green-500 shrink-0" />
+            <p className="text-[10px] text-green-600 dark:text-green-400 font-bold truncate">{uploadedUrl}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setUploadedUrl(null); onUpload(""); }}
+            className="flex items-center gap-1 text-[10px] text-muted hover:text-red-500 font-bold transition-colors shrink-0"
+          >
+            <X size={11} /> Quitar
+          </button>
+        </div>
       </div>
     );
   }
@@ -169,6 +189,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
           ref={fileRef}
           accept="video/*"
           className="hidden"
+          disabled={uploading}
           onChange={(e) => {
             const f = e.target.files?.[0];
             if (f) handleFile(f);

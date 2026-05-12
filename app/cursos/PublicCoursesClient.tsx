@@ -133,13 +133,17 @@ export default function PublicCoursesClient({
                 className="bg-card rounded-xl overflow-hidden border border-card-border flex flex-col h-full group"
               >
                 <div className="relative h-60 w-full bg-section-alt overflow-hidden">
-                  <Image
-                    src={curso.image}
-                    alt={curso.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  {curso.image.startsWith("data:") ? (
+                    <img src={curso.image} alt={curso.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  ) : (
+                    <Image
+                      src={curso.image}
+                      alt={curso.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  )}
                   <div className="absolute top-4 left-4">
                     <span
                       className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5 ${

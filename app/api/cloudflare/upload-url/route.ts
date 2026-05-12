@@ -28,8 +28,9 @@ export async function POST() {
   const data = await response.json();
 
   if (!data.success) {
+    console.error("[upload-url] Cloudflare error:", JSON.stringify(data.errors));
     return NextResponse.json(
-      { error: "Error al obtener URL de subida de Cloudflare" },
+      { error: "Error al obtener URL de subida de Cloudflare", details: data.errors },
       { status: 500 }
     );
   }

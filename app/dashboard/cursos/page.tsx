@@ -62,7 +62,11 @@ export default async function CursosDashboardPage() {
               <CourseActions courseId={c.id} hasEnrolled={c._count.inscritos > 0} />
               {c.image ? (
                 <div className="relative w-full h-36 bg-card-hover rounded-lg mb-4 overflow-hidden">
-                  <Image src={c.image} alt={c.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
+                  {c.image.startsWith("data:") ? (
+                    <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Image src={c.image} alt={c.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
+                  )}
                 </div>
               ) : (
                 <div className="w-full h-36 bg-accent-subtle rounded-lg mb-4 flex items-center justify-center">

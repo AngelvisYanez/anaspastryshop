@@ -6,6 +6,7 @@ import { Plus, Trash2, Video, ArrowLeft, Loader2, AlignLeft, ChevronDown } from 
 import Link from "next/link";
 import { createCourse } from "@/lib/actions/cursos";
 import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
+import ImageUploader from "@/components/ImageUploader";
 
 interface TaskForm {
   title: string;
@@ -250,8 +251,8 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
               <p className="text-xs text-muted mt-2 font-medium">Este video se reproducirá como portada del curso para usuarios que aún no hayan pagado.</p>
             </div>
             <div>
-              <label className="block text-sm font-bold text-foreground mb-2">Imagen de Portada Opcional (URL)</label>
-              <input value={coverImage} onChange={e => setCoverImage(e.target.value)} type="url" className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/80" placeholder="https://..." />
+              <label className="block text-sm font-bold text-foreground mb-2">Imagen de Portada (Opcional)</label>
+              <ImageUploader value={coverImage} onChange={setCoverImage} />
             </div>
             <div className="p-5 bg-orange-50 border border-orange-100 rounded-lg">
               <div className="flex items-center gap-3 mb-4">
