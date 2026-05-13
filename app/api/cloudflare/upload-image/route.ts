@@ -2,16 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getStreamConfig } from "@/lib/actions/platformApi";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const { accountId, apiToken } = await getStreamConfig();
-
-  if (!accountId || !apiToken) {
-    return NextResponse.json({ error: "Credenciales de Cloudflare no configuradas" }, { status: 500 });
   }
 
   try {
@@ -20,6 +16,19 @@ export async function POST(req: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "El archivo no puede superar 5MB" }, { status: 400 });
+    }
+
+    const { accountId, apiToken } = await getStreamConfig();
+
+    if (!accountId || !apiToken) {
+      const buffer = await file.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const dataUrl = `data:${file.type};base64,${base64}`;
+      return NextResponse.json({ url: dataUrl });
     }
 
     const cfFormData = new FormData();
@@ -40,10 +49,10 @@ export async function POST(req: NextRequest) {
 
     if (!data.success) {
       console.error("[upload-image] Cloudflare Images error:", data.errors);
-      return NextResponse.json(
-        { error: data.errors?.[0]?.message || "Error al subir la imagen" },
-        { status: 500 }
-      );
+      const buffer = await file.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const dataUrl = `data:${file.type};base64,${base64}`;
+      return NextResponse.json({ url: dataUrl });
     }
 
     return NextResponse.json({ url: data.result.variants[0] });

@@ -8,7 +8,7 @@ import { joinLiveRoom } from "@/lib/actions/lives";
 async function LiveContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
 
   const live = await prisma.liveStream.findUnique({
     where: { id },

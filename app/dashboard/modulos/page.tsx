@@ -6,7 +6,7 @@ import PlatformModuleManager from "./PlatformModuleManager";
 export default async function ModulosPage() {
   const session = await auth();
 
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   if ((session.user as any).role !== "ADMIN") redirect("/dashboard");
 
   const sections = await prisma.platformSection.findMany({

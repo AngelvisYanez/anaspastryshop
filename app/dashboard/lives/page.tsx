@@ -26,7 +26,7 @@ const STATUS_CONFIG = {
 export default async function LivesDashboardPage() {
   const session = await auth();
 
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   const role = (session.user as any).role as string;
 
   const isUser = role === "USER";
@@ -79,7 +79,7 @@ export default async function LivesDashboardPage() {
                   )}
 
                   {live.scheduledAt && (
-                    <div className="flex items-center gap-2 text-sm text-muted font-medium">
+                    <div suppressHydrationWarning className="flex items-center gap-2 text-sm text-muted font-medium">
                       <Calendar size={13} className="text-accent" />
                       {new Date(live.scheduledAt).toLocaleString("es-ES", {
                         dateStyle: "medium",
@@ -168,7 +168,7 @@ export default async function LivesDashboardPage() {
                 )}
 
                 {live.scheduledAt && (
-                  <div className="flex items-center gap-2 text-sm text-muted font-medium mb-5">
+                  <div suppressHydrationWarning className="flex items-center gap-2 text-sm text-muted font-medium mb-5">
                     <Calendar size={13} className="text-accent" />
                     {new Date(live.scheduledAt).toLocaleString("es-ES", {
                       dateStyle: "medium",

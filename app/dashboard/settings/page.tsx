@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   const session = await auth();
 
   if (!session?.user || !session.user.id) {
-    redirect("/auth/login");
+    redirect("/iniciar-sesion");
   }
 
   const [dbUser, siteConfig, apiConfigs, sections] = await Promise.all([

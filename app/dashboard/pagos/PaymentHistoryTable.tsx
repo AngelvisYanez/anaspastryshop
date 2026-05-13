@@ -122,7 +122,7 @@ export default function PaymentHistoryTable({
                     </span>
                   </td>
                   <td className="py-3.5 px-5">
-                    <span className="text-sm text-muted font-medium whitespace-nowrap">
+                    <span suppressHydrationWarning className="text-sm text-muted font-medium whitespace-nowrap">
                       {new Date(ins.updatedAt).toLocaleDateString("es-US", {
                         day: "2-digit",
                         month: "short",

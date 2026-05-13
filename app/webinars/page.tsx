@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -60,7 +59,7 @@ function WebinarCard({
           )}
           <div className="flex items-center gap-3 text-xs text-muted font-medium">
             {webinar.scheduledAt && (
-              <span className="flex items-center gap-1">
+              <span suppressHydrationWarning className="flex items-center gap-1">
                 <Calendar size={11} />
                 {new Date(webinar.scheduledAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}
               </span>
@@ -97,26 +96,29 @@ function WebinarCard({
 
 async function WebinarsContent() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
 
-  const userId = session.user.id as string;
-  const role = (session.user as any).role as string;
-  const isStaff = ["ADMIN", "MENTOR"].includes(role);
+  let hasAccess = false;
 
-  let hasAccess = isStaff;
+  if (session?.user) {
+    const userId = session.user.id as string;
+    const role = (session.user as any).role as string;
+    const isStaff = ["ADMIN", "MENTOR"].includes(role);
 
-  if (!isStaff) {
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId },
-      select: { status: true, plan: true, endDate: true },
-    });
-
-    if (subscription && isSubscriptionValid(subscription)) {
-      const plan = await prisma.subscriptionPlan.findFirst({
-        where: { slug: subscription.plan, isActive: true },
-        select: { hasWebinarAccess: true },
+    if (isStaff) {
+      hasAccess = true;
+    } else {
+      const subscription = await prisma.subscription.findUnique({
+        where: { userId },
+        select: { status: true, plan: true, endDate: true },
       });
-      hasAccess = plan?.hasWebinarAccess ?? false;
+
+      if (subscription && isSubscriptionValid(subscription)) {
+        const plan = await prisma.subscriptionPlan.findFirst({
+          where: { slug: subscription.plan, isActive: true },
+          select: { hasWebinarAccess: true },
+        });
+        hasAccess = plan?.hasWebinarAccess ?? false;
+      }
     }
   }
 
@@ -153,16 +155,29 @@ async function WebinarsContent() {
 
       <div className="max-w-6xl mx-auto px-6">
         {!hasAccess && (
-          <div className="bg-gradient-to-r from-[#C9A84C] to-[#B89640] rounded-xl p-8 mb-10 text-white flex items-center justify-between">
+          <div className="bg-gradient-to-r from-[#C9A84C] to-[#B89640] rounded-xl p-8 mb-10 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <p className="font-black text-xl mb-1">Acceso Premium requerido</p>
-              <p className="text-white/70 font-medium">Tu plan actual no incluye webinars en tiempo real.</p>
+              <p className="font-black text-xl mb-1">Membresía requerida</p>
+              <p className="text-white/70 font-medium">
+                {session?.user
+                  ? "Tu plan actual no incluye webinars en tiempo real."
+                  : "Crea una cuenta o inicia sesión para acceder a los webinars en vivo."}
+              </p>
             </div>
-            <Link href="/membresia">
-              <button className="bg-white text-[#C9A84C] px-6 py-3 rounded-2xl font-bold text-sm hover:bg-amber-50 transition-all flex items-center gap-2 whitespace-nowrap">
-                Ver membresía <ArrowRight size={16} />
-              </button>
-            </Link>
+            <div className="flex items-center gap-3 shrink-0">
+              {!session?.user && (
+                <Link href="/registro">
+                  <button className="bg-white/20 border border-white/30 text-white px-5 py-2.5 rounded-2xl font-bold text-sm hover:bg-white/30 transition-all whitespace-nowrap">
+                    Registrarse
+                  </button>
+                </Link>
+              )}
+              <Link href="/pagar/membresia">
+                <button className="bg-white text-[#C9A84C] px-6 py-3 rounded-2xl font-bold text-sm hover:bg-amber-50 transition-all flex items-center gap-2 whitespace-nowrap">
+                  Ver membresía <ArrowRight size={16} />
+                </button>
+              </Link>
+            </div>
           </div>
         )}
 

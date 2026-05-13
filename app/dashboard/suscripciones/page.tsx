@@ -6,7 +6,7 @@ import SuscripcionesClient from "./SuscripcionesClient";
 export default async function SuscripcionesPage() {
   const session = await auth();
 
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   if ((session.user as any).role !== "ADMIN") redirect("/dashboard");
 
   const [suscripciones, plans, sections] = await Promise.all([

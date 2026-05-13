@@ -197,12 +197,12 @@ export default function LogsClient({
                           {from + i}
                         </span>
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-foreground">
+                          <span suppressHydrationWarning className="text-xs font-bold text-foreground">
                             {new Date(log.createdAt).toLocaleDateString("es-ES", {
                               day: "numeric", month: "short", year: "numeric",
                             })}
                           </span>
-                          <span className="text-[10px] text-muted font-medium">
+                          <span suppressHydrationWarning className="text-[10px] text-muted font-medium">
                             {new Date(log.createdAt).toLocaleTimeString("es-ES", {
                               hour: "2-digit", minute: "2-digit",
                             })}

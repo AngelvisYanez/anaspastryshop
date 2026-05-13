@@ -32,7 +32,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/login");
+    redirect("/iniciar-sesion");
   }
 
   const [dbUser, platformSections, pendingInscription, subscription] = await Promise.all([
@@ -65,6 +65,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
   const deactivationReason = dbUser?.deactivationReason;
   const hasPendingPayment =
     !!pendingInscription && subscription?.status !== "ACTIVE";
+  const hasActiveSubscription = subscription?.status === "ACTIVE";
 
   if (!isActive) {
     return (
@@ -103,7 +104,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
             <form
               action={async () => {
                 "use server";
-                await signOut({ redirectTo: "/auth/login" });
+                await signOut({ redirectTo: "/iniciar-sesion" });
               }}
             >
               <button
@@ -144,6 +145,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
       isBlockedMentor={isBlockedMentor}
       platformSections={platformSections}
       hasPendingPayment={hasPendingPayment}
+      hasActiveSubscription={hasActiveSubscription}
     >
       <RealTimeGuard />
       <Suspense fallback={<DashboardLoading />}>

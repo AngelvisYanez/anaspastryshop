@@ -250,7 +250,7 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:20px;">
             <tr>
               <td align="center">
-                ${ctaButtonGold(`${BASE_URL}/checkout/membresia`, "Activar mi Membresía")}
+                ${ctaButtonGold(`${BASE_URL}/pagar/membresia`, "Activar mi Membresía")}
               </td>
             </tr>
           </table>
@@ -462,7 +462,7 @@ export async function sendSubscriptionCanceledEmail(email: string, name: string 
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:16px;">
             <tr>
               <td align="center">
-                ${ctaButtonGold(`${BASE_URL}/checkout/membresia`, "Reactivar Membresía")}
+                ${ctaButtonGold(`${BASE_URL}/pagar/membresia`, "Reactivar Membresía")}
               </td>
             </tr>
           </table>
@@ -968,7 +968,7 @@ export async function sendCoursePurchaseEmail(email: string, name: string | null
               <td align="center">
                 <p style="margin:0;font-size:12px;color:${MUTED};font-weight:500;">
                   ¿Quieres acceso a todos los cursos?{" "}
-                  <a href="${BASE_URL}/checkout/membresia" style="color:${GOLD};font-weight:700;text-decoration:underline;">Ver membresía completa →</a>
+                  <a href="${BASE_URL}/pagar/membresia" style="color:${GOLD};font-weight:700;text-decoration:underline;">Ver membresía completa →</a>
                 </p>
               </td>
             </tr>

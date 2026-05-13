@@ -30,7 +30,7 @@ export default function SubscriptionCheckoutPage() {
 
   async function handleStripeCheckout() {
     if (!session) {
-      router.push("/auth/login?callbackUrl=/checkout/subscription");
+      router.push("/iniciar-sesion?callbackUrl=/pagar/membresia");
       return;
     }
     setLoading(true);
@@ -127,7 +127,7 @@ export default function SubscriptionCheckoutPage() {
             {!session && (
               <p className="text-center text-xs text-muted mt-4">
                 ¿Ya tienes cuenta?{" "}
-                <Link href="/auth/login?callbackUrl=/checkout/subscription" className="text-accent font-bold hover:underline">
+                <Link href="/iniciar-sesion?callbackUrl=/pagar/membresia" className="text-accent font-bold hover:underline">
                   Inicia sesión
                 </Link>
               </p>

@@ -159,7 +159,7 @@ export default function CheckoutModal({
   async function handleStripeCheckout() {
     if (!cursoId) return;
     if (!session) {
-      router.push(`/auth/login?callbackUrl=/cursos/${cursoId}`);
+      router.push(`/iniciar-sesion?callbackUrl=/cursos/${cursoId}`);
       return;
     }
     setLoading(true);
@@ -187,7 +187,7 @@ export default function CheckoutModal({
     e.preventDefault();
     if (!method || method === "stripe") return;
     if (!session) {
-      router.push(`/auth/login?callbackUrl=/cursos/${cursoId}`);
+      router.push(`/iniciar-sesion?callbackUrl=/cursos/${cursoId}`);
       return;
     }
 

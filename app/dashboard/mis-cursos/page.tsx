@@ -9,7 +9,7 @@ import { isSubscriptionValid } from "@/lib/utils/subscription";
 export default async function MisCursosPage() {
   const session = await auth();
 
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   if (session.user.role !== "USER") redirect("/dashboard");
 
   const subscription = await prisma.subscription.findUnique({

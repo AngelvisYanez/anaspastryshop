@@ -8,11 +8,7 @@ export default auth((req) => {
   const userRole = req.auth?.user?.role;
 
   if (!isLoggedIn && nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl));
-  }
-
-  if (!isLoggedIn && nextUrl.pathname.startsWith("/webinars")) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl));
+    return NextResponse.redirect(new URL("/iniciar-sesion", nextUrl));
   }
 
   if (nextUrl.pathname.startsWith("/dashboard/pagos") && userRole !== "ADMIN") {

@@ -18,7 +18,7 @@ async function LessonContent({ params }: { params: Promise<{ id: string; lessonI
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/login?callbackUrl=/cursos/" + cursoId);
+    redirect("/iniciar-sesion?callbackUrl=/cursos/" + cursoId);
   }
 
   const curso = await prisma.curso.findUnique({

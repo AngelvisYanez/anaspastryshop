@@ -62,11 +62,13 @@ export default function MembresiaClient({
   sections,
   enabledProviders,
   activeSubscription = null,
+  bienvenida = false,
 }: {
   plan: Plan | null;
   sections: Section[];
   enabledProviders: string[];
   activeSubscription?: ActiveSubscription | null;
+  bienvenida?: boolean;
 }) {
   const sectionMap = Object.fromEntries(sections.map((s) => [s.id, s]));
   const price = plan?.price ?? null;
@@ -86,6 +88,24 @@ export default function MembresiaClient({
 
   return (
     <>
+      {bienvenida && (
+        <div className="bg-green-50 border-b border-green-200 px-6 py-4">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                <Check size={16} className="text-green-600" />
+              </div>
+              <div>
+                <p className="font-black text-green-800 text-sm">¡Cuenta creada exitosamente!</p>
+                <p className="text-green-700 text-xs font-medium">Activa tu membresía para acceder a todos los cursos, lives y webinars.</p>
+              </div>
+            </div>
+            <Link href="/iniciar-sesion" className="text-xs font-bold text-green-700 hover:underline shrink-0">
+              ¿Ya tienes membresía? Inicia sesión →
+            </Link>
+          </div>
+        </div>
+      )}
       <div className="relative overflow-hidden bg-[#0B1F3A] pt-32 pb-20 px-8 md:px-20 rounded-b-3xl mb-16 text-center">
         <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
         <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
@@ -171,7 +191,7 @@ export default function MembresiaClient({
                           <AlertTriangle size={16} className="text-red-400 shrink-0" />
                           <p className="text-xs text-red-300 font-bold">Tu acceso ha expirado. Renueva para continuar aprendiendo.</p>
                         </div>
-                        <Link href="/checkout/membresia">
+                        <Link href="/pagar/membresia">
                           <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
                             <RefreshCw size={16} /> Renovar Membresía
                           </button>
@@ -185,7 +205,7 @@ export default function MembresiaClient({
                           </button>
                         </Link>
                         {isExpiringSoon && (
-                          <Link href="/checkout/membresia">
+                          <Link href="/pagar/membresia">
                             <button className="w-full bg-white/[0.06] border border-white/[0.1] text-white/60 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/[0.1] transition-all text-xs uppercase tracking-widest">
                               <RefreshCw size={14} /> Renovar membresía
                             </button>
@@ -197,8 +217,8 @@ export default function MembresiaClient({
                 )}
 
                 <div className="mt-8 pt-8 border-t border-white/[0.08] space-y-3">
-                  {allFeatures.slice(0, 4).map((f, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                  {allFeatures.slice(0, 4).map((f) => (
+                    <div key={f.text} className="flex items-center gap-3">
                       <div className="w-5 h-5 bg-accent/20 rounded-full flex items-center justify-center shrink-0 text-accent">
                         {f.icon ?? <Check size={12} />}
                       </div>
@@ -239,8 +259,8 @@ export default function MembresiaClient({
                 )}
 
                 <div className="space-y-4 mb-10">
-                  {allFeatures.map((f, i) => (
-                    <div key={i} className="flex items-start gap-3">
+                  {allFeatures.map((f) => (
+                    <div key={f.text} className="flex items-start gap-3">
                       <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-accent">
                         {f.icon ?? <Check size={14} />}
                       </div>
@@ -249,7 +269,7 @@ export default function MembresiaClient({
                   ))}
                 </div>
 
-                <Link href="/checkout/membresia">
+                <Link href="/pagar/membresia">
                   <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
                     Quiero unirme ahora <ArrowRight size={18} />
                   </button>
@@ -417,7 +437,7 @@ export default function MembresiaClient({
                 <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
                   Únete a nuestra comunidad y empieza a construir el perfil crediticio que siempre quisiste.
                 </p>
-                <Link href="/checkout/membresia">
+                <Link href="/pagar/membresia">
                   <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
                     {activeSubscription ? <><RefreshCw size={18} /> Renovar membresía</> : <>Quiero unirme ahora <ArrowRight size={18} /></>}
                   </button>

@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
                     Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña en los próximos minutos.
                   </p>
                   <Link
-                    href="/auth/login"
+                    href="/iniciar-sesion"
                     className="inline-flex items-center gap-2 text-sm font-bold text-accent hover:underline"
                   >
                     <ArrowLeft size={14} /> Volver al inicio de sesión
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
                 <>
                   <div className="text-center mb-10">
                     <Link
-                      href="/auth/login"
+                      href="/iniciar-sesion"
                       className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-6 text-xs font-bold uppercase tracking-widest"
                     >
                       <ArrowLeft size={14} /> Volver
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
 
                   <p className="text-center mt-8 text-sm text-muted">
                     ¿Recuerdas tu contraseña?{" "}
-                    <Link href="/auth/login" className="text-accent font-bold hover:underline">
+                    <Link href="/iniciar-sesion" className="text-accent font-bold hover:underline">
                       Inicia sesión
                     </Link>
                   </p>

@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         cursoId,
         userId: session.user.id,
       },
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=course`,
+      success_url: `${baseUrl}/pagar/confirmacion?session_id={CHECKOUT_SESSION_ID}&type=course`,
       cancel_url: `${baseUrl}/cursos/${cursoId}`,
     });
 

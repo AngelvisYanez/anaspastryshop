@@ -10,7 +10,7 @@ import { Clock, BarChart2, PlayCircle, ShoppingBag } from "lucide-react";
 
 async function MisCursosContent() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
 
   const [purchases, inscriptions] = await Promise.all([
     prisma.coursePurchase.findMany({

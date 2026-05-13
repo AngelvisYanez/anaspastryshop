@@ -367,7 +367,7 @@ export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
                     {ctaText}
                   </Link>
                   <Link
-                    href="/auth/login"
+                    href="/iniciar-sesion"
                     className={`p-2.5 rounded-lg transition-colors ${iconColor}`}
                     aria-label="Iniciar sesión"
                   >
@@ -454,7 +454,7 @@ export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
                   <Link href="/membresia" onClick={() => setIsOpen(false)} className="w-full bg-foreground text-background py-5 rounded-xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
                     <User size={18} /> Unirme ahora
                   </Link>
-                  <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-center py-2">
+                  <Link href="/iniciar-sesion" onClick={() => setIsOpen(false)} className="text-center py-2">
                     <span className="text-sm font-bold text-muted">¿Ya tienes cuenta? </span>
                     <span className="text-sm font-bold text-accent">Inicia Sesión</span>
                   </Link>

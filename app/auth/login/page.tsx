@@ -130,7 +130,7 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
         </div>
 
         <div className="flex justify-end">
-          <Link href="/auth/forgot-password" className="text-xs font-bold text-accent hover:underline">
+          <Link href="/olvide-mi-contrasena" className="text-xs font-bold text-accent hover:underline">
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
@@ -281,7 +281,7 @@ export default function LoginPage() {
 
               <p className="text-center mt-8 text-sm text-muted">
                 ¿No tienes cuenta?{" "}
-                <Link href="/membresia" className="text-accent font-bold hover:underline">
+                <Link href="/registro" className="text-accent font-bold hover:underline">
                   Regístrate gratis
                 </Link>
               </p>

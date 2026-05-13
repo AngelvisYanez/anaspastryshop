@@ -225,7 +225,7 @@ export default function MentoresView({ mentores }: { mentores: Mentor[] }) {
 
                     {/* Fecha */}
                     <td className="py-4 text-sm text-muted font-medium">
-                      <div className="flex items-center gap-2">
+                      <div suppressHydrationWarning className="flex items-center gap-2">
                         <Calendar size={13} className="text-muted/40" />
                         {new Date(mentor.createdAt).toLocaleDateString("es-ES", {
                           day: "numeric",

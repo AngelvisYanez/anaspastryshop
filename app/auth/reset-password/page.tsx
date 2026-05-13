@@ -32,7 +32,7 @@ function ResetPasswordForm() {
           Este enlace de restablecimiento no es válido. Solicita uno nuevo.
         </p>
         <Link
-          href="/auth/forgot-password"
+          href="/olvide-mi-contrasena"
           className="inline-flex items-center gap-2 text-sm font-bold text-accent hover:underline"
         >
           Solicitar nuevo enlace
@@ -54,7 +54,7 @@ function ResetPasswordForm() {
           Tu contraseña ha sido restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
         </p>
         <Link
-          href="/auth/login"
+          href="/iniciar-sesion"
           className="inline-flex items-center justify-center gap-2 bg-accent text-white px-8 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all"
         >
           Iniciar sesión
@@ -85,7 +85,7 @@ function ResetPasswordForm() {
     <>
       <div className="text-center mb-10">
         <Link
-          href="/auth/login"
+          href="/iniciar-sesion"
           className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-6 text-xs font-bold uppercase tracking-widest"
         >
           <ArrowLeft size={14} /> Volver

@@ -6,7 +6,7 @@ import EditWebinarForm from "./EditWebinarForm";
 
 async function EditContent({ id }: { id: string }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   if ((session.user as any).role !== "ADMIN") redirect("/dashboard");
 
   const webinar = await prisma.webinar.findUnique({ where: { id } });

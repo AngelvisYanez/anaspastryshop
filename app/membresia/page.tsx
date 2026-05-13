@@ -39,11 +39,18 @@ async function getMembresiaData() {
   return { plan, sections, enabledProviders };
 }
 
-export default async function MembresiaPage() {
-  const [{ plan, sections, enabledProviders }, session] = await Promise.all([
+export default async function MembresiaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bienvenida?: string }>;
+}) {
+  const [{ plan, sections, enabledProviders }, session, params] = await Promise.all([
     getMembresiaData(),
     auth(),
+    searchParams,
   ]);
+
+  const bienvenida = params.bienvenida === "true";
 
   let activeSubscription: { daysLeft: number | null; endDate: string | null; planName: string } | null = null;
 
@@ -71,6 +78,7 @@ export default async function MembresiaPage() {
         sections={sections}
         enabledProviders={enabledProviders}
         activeSubscription={activeSubscription}
+        bienvenida={bienvenida}
       />
       <Footer />
     </main>

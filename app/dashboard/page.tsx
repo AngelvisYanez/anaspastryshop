@@ -185,7 +185,7 @@ export default async function DashboardPage() {
                   Accede a todos los cursos, sesiones en vivo y material exclusivo.
                 </p>
               </div>
-              <Link href="/checkout/membresia" className="relative z-10 shrink-0">
+              <Link href="/pagar/membresia" className="relative z-10 shrink-0">
                 <button className="bg-accent text-foreground px-7 py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center gap-2">
                   Activar Membresía <ArrowRight size={16} />
                 </button>

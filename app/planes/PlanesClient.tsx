@@ -221,7 +221,7 @@ export default function PlanesClient({
                   </div>
                 )}
 
-                <Link href="/auth/signup">
+                <Link href="/registro">
                   <button
                     className={`w-full py-5 rounded-xl font-bold flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-xs ${styles.btn}`}
                   >

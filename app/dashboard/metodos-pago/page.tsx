@@ -6,7 +6,7 @@ import GatewayManager from "./GatewayManager";
 export default async function MetodosPagoPage() {
   const session = await auth();
 
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   if ((session.user as any).role !== "ADMIN") redirect("/dashboard");
 
   const configs = await getAllGatewayConfigs();

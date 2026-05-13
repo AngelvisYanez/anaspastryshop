@@ -265,7 +265,7 @@ export default function AllUsersView({
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-1.5 text-xs text-muted font-medium whitespace-nowrap">
                         <Calendar size={12} className="text-muted/40 shrink-0" />
-                        {new Date(user.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
+                        <span suppressHydrationWarning>{new Date(user.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}</span>
                       </div>
                     </td>
 

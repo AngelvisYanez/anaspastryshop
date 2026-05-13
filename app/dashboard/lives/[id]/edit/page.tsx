@@ -6,7 +6,7 @@ import EditLiveForm from "./EditLiveForm";
 
 async function EditContent({ id }: { id: string }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   const role = (session.user as any).role as string;
   if (!["ADMIN", "MENTOR"].includes(role)) redirect("/dashboard");
 

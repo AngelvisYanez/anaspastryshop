@@ -8,7 +8,7 @@ import { joinWebinarRoom } from "@/lib/actions/webinars";
 async function WebinarContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
 
   const webinar = await prisma.webinar.findUnique({
     where: { id },

@@ -13,7 +13,7 @@ async function ClaseContent({ params }: { params: Promise<{ courseTitle: string;
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/login");
+    redirect("/iniciar-sesion");
   }
 
   const course = await prisma.curso.findFirst({

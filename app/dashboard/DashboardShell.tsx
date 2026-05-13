@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
 import PendingPaymentDialog from "@/components/PendingPaymentDialog";
@@ -23,12 +24,14 @@ export default function DashboardShell({
   isBlockedMentor = false,
   platformSections = EMPTY_SECTIONS,
   hasPendingPayment = false,
+  hasActiveSubscription = false,
 }: {
   user: any;
   children: React.ReactNode;
   isBlockedMentor?: boolean;
   platformSections?: PlatformSection[];
   hasPendingPayment?: boolean;
+  hasActiveSubscription?: boolean;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -77,6 +80,18 @@ export default function DashboardShell({
           onMenuClick={() => setIsSidebarOpen(true)}
           isBlockedMentor={isBlockedMentor}
         />
+        {user.role === "USER" && !hasActiveSubscription && !hasPendingPayment && (
+          <div className="bg-gradient-to-r from-[#0B1F3A] to-[#1A3A5C] text-white px-4 md:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0">
+            <p className="text-sm font-medium text-white/80">
+              <span className="font-black text-accent">Activa tu membresía</span> para desbloquear cursos, lives y webinars.
+            </p>
+            <Link href="/pagar/membresia" className="shrink-0">
+              <button className="bg-accent text-[#0B1F3A] px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap">
+                Pagar ahora <ArrowRight size={12} />
+              </button>
+            </Link>
+          </div>
+        )}
         <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 bg-background">
           {children}
         </main>

@@ -39,8 +39,8 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       line_items: [{ price: subscriptionPrice, quantity: 1 }],
       metadata: sharedMetadata,
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
-      cancel_url: `${baseUrl}/checkout/membresia`,
+      success_url: `${baseUrl}/pagar/confirmacion?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
+      cancel_url: `${baseUrl}/pagar/membresia`,
     };
   } else {
     checkoutParams = {
@@ -57,8 +57,8 @@ export async function POST(req: Request) {
         },
       ],
       metadata: sharedMetadata,
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
-      cancel_url: `${baseUrl}/checkout/membresia`,
+      success_url: `${baseUrl}/pagar/confirmacion?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
+      cancel_url: `${baseUrl}/pagar/membresia`,
     };
   }
 

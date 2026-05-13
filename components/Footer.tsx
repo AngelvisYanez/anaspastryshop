@@ -30,7 +30,7 @@ export default function Footer() {
                 { label: "Cursos", href: "/cursos" },
                 { label: "Membresía", href: "/membresia" },
                 { label: "Nosotros", href: "/nosotros" },
-                { label: "Iniciar sesión", href: "/auth/login" },
+                { label: "Iniciar sesión", href: "/iniciar-sesion" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

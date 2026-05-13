@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
 
 export default async function WebinarsDashboardPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/login");
+  if (!session?.user) redirect("/iniciar-sesion");
   const role = (session.user as any).role as string;
   if (!["ADMIN", "USER"].includes(role)) redirect("/dashboard");
 
@@ -57,7 +57,7 @@ export default async function WebinarsDashboardPage() {
 
                   <div className="flex items-center gap-4">
                     {webinar.scheduledAt && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted font-medium">
+                      <div suppressHydrationWarning className="flex items-center gap-1.5 text-sm text-muted font-medium">
                         <Calendar size={13} className="text-accent" />
                         {new Date(webinar.scheduledAt).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" })}
                       </div>
@@ -136,7 +136,7 @@ export default async function WebinarsDashboardPage() {
 
                 <div className="flex items-center gap-4 mb-5">
                   {webinar.scheduledAt && (
-                    <div className="flex items-center gap-1.5 text-sm text-muted font-medium">
+                    <div suppressHydrationWarning className="flex items-center gap-1.5 text-sm text-muted font-medium">
                       <Calendar size={13} className="text-accent" />
                       {new Date(webinar.scheduledAt).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" })}
                     </div>

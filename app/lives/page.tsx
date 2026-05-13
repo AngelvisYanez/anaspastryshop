@@ -144,7 +144,7 @@ export default async function LivesPage() {
                     Con {live.instructor.name}
                   </p>
                   {live.scheduledAt && (
-                    <div className="flex items-center gap-2 text-xs text-muted font-medium mb-6">
+                    <div suppressHydrationWarning className="flex items-center gap-2 text-xs text-muted font-medium mb-6">
                       <Calendar size={13} className="text-accent" />
                       {new Date(live.scheduledAt).toLocaleString("es-ES", {
                         dateStyle: "long",

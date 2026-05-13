@@ -506,6 +506,7 @@ export default function CourseCreateClient({ mentors, isAdmin }: { mentors: any[
                 type="datetime-local"
                 value={publishedAt}
                 onChange={e => setPublishedAt(e.target.value)}
+                suppressHydrationWarning
                 min={new Date().toISOString().slice(0, 16)}
                 className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground"
               />

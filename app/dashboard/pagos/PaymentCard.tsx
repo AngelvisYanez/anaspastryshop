@@ -74,7 +74,7 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
                 <AlertTriangle size={12} /> Monto incorrecto
               </span>
             )}
-            <span className="text-xs text-muted font-bold">
+            <span suppressHydrationWarning className="text-xs text-muted font-bold">
               {new Date(inscription.createdAt).toLocaleDateString()}
             </span>
           </div>
