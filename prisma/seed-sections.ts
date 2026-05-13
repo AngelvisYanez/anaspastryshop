@@ -7,7 +7,6 @@ const SECTIONS = [
   { name: "Lives",       slug: "lives",       icon: "Radio",       order: 2, roles: ["ADMIN", "MENTOR", "USER"] },
   { name: "Planes",      slug: "planes",      icon: "Star",        order: 4, roles: ["USER"] },
   { name: "Nosotros",    slug: "nosotros",    icon: "Users",       order: 5, roles: ["USER"] },
-  { name: "Pasantías",   slug: "pasantias",   icon: "Briefcase",   order: 6, roles: ["USER"] },
   { name: "Mis Cursos",  slug: "mis-cursos",  icon: "GraduationCap", order: 7, roles: ["USER"] },
   { name: "Usuarios",    slug: "usuarios",    icon: "Users",       order: 9, roles: ["ADMIN", "MENTOR"] },
 ]

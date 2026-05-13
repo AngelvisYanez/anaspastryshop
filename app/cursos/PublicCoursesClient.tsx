@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles, Zap } from "lucide-react";
+import { Search, Filter, Monitor, MapPin, ArrowRight, Sparkles, Zap, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
@@ -14,7 +14,7 @@ type CourseProps = {
   instructor: string;
   type: string;
   category: string;
-  image: string;
+  image: string | null;
   hasAccess?: boolean;
 };
 
@@ -133,16 +133,23 @@ export default function PublicCoursesClient({
                 className="bg-card rounded-xl overflow-hidden border border-card-border flex flex-col h-full group"
               >
                 <div className="relative h-60 w-full bg-section-alt overflow-hidden">
-                  {curso.image.startsWith("data:") ? (
-                    <img src={curso.image} alt={curso.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  {curso.image ? (
+                    curso.image.startsWith("data:") ? (
+                      <img src={curso.image} alt={curso.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    ) : (
+                      <Image
+                        src={curso.image}
+                        alt={curso.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )
                   ) : (
-                    <Image
-                      src={curso.image}
-                      alt={curso.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                    <div className="w-full h-full bg-gradient-to-br from-[#0B1F3A] to-[#1a3a5c] flex flex-col items-center justify-center gap-3">
+                      <BookOpen size={40} className="text-accent/50" />
+                      <span className="text-white/30 text-xs font-bold uppercase tracking-widest px-4 text-center line-clamp-2">{curso.title}</span>
+                    </div>
                   )}
                   <div className="absolute top-4 left-4">
                     <span

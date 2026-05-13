@@ -10,9 +10,9 @@ import { useState, useEffect, useRef } from "react";
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Inicio",
   "/dashboard/cursos": "Cursos",
-  "/dashboard/pagos": "Validar Pagos",
+  "/dashboard/pagos": "Pagos",
   "/dashboard/usuarios": "Usuarios",
-  "/dashboard/logs": "Auditoría",
+  "/dashboard/logs": "Registro de Eventos",
   "/dashboard/settings": "Configuración",
   "/dashboard/suscripciones": "Suscripciones",
   "/dashboard/metodos-pago": "Métodos de Pago",
@@ -127,7 +127,7 @@ export default function DashboardHeader({
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-card/90 backdrop-blur-md border-b border-card-border flex items-center justify-between px-4 md:px-8 py-3.5">
+    <header className="sticky top-0 z-30 w-full bg-card/90 backdrop-blur-md border-b border-card-border flex items-center justify-between px-4 md:px-8 h-16">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}

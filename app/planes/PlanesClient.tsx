@@ -4,8 +4,8 @@ import { useState } from "react";
 import { m } from "framer-motion";
 import {
   Check, Zap, Star, Shield, ArrowRight,
-  Video, CreditCard, DollarSign, Bitcoin,
-  Smartphone, Wallet,
+  Video, CreditCard, DollarSign,
+  Smartphone,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Link from "next/link";
@@ -30,10 +30,8 @@ type CardColor = typeof CARD_COLORS[number];
 const PAYMENT_LABELS: Record<string, { label: string; Icon: React.ElementType }> = {
   STRIPE:     { label: "Tarjeta",      Icon: CreditCard },
   PAYPAL:     { label: "PayPal",       Icon: DollarSign },
-  BINANCE:    { label: "Binance Pay",  Icon: Bitcoin },
   ZELLE:      { label: "Zelle",        Icon: Zap },
   PAGO_MOVIL: { label: "Pago Móvil",   Icon: Smartphone },
-  USDT:       { label: "USDT",         Icon: Wallet },
 };
 
 function DynamicIcon({ name, size = 12 }: { name: string; size?: number }) {

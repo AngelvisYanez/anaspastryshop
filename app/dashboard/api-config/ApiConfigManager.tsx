@@ -155,13 +155,7 @@ export default function ApiConfigManager({ configs }: { configs: ApiConfigRecord
 
   return (
     <div className="max-w-3xl">
-      <div className="mb-10">
-        <h1 className="text-3xl font-black text-foreground">Configuración de APIs</h1>
-        <p className="text-muted font-medium">
-          Gestiona las credenciales de los servicios externos de la plataforma. Los valores guardados aquí tienen prioridad sobre las variables de entorno.
-        </p>
-      </div>
-
+      <p className="text-muted font-medium mb-8">Gestiona las credenciales de los servicios externos de la plataforma. Los valores guardados aquí tienen prioridad sobre las variables de entorno.</p>
       <div className="space-y-4">
         {API_PROVIDERS.map((def) => (
           <ApiCard key={def.provider} def={def} initial={configMap[def.provider]} />

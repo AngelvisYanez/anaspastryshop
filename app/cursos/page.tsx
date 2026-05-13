@@ -21,6 +21,12 @@ async function getPublicCourses() {
   cacheLife("hours");
   cacheTag("cursos");
   return prisma.curso.findMany({
+    where: {
+      OR: [
+        { status: "PUBLISHED" },
+        { status: "SCHEDULED", publishedAt: { lte: new Date() } },
+      ],
+    },
     include: { instructor: true },
     orderBy: { createdAt: "desc" },
   });
@@ -62,7 +68,7 @@ async function CursosContent() {
       instructor: c.instructor.name || "Tutor",
       type: c.isLive ? "Híbrido" : "Online",
       category: c.category || "General",
-      image: c.image || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=800",
+      image: c.image || null,
       hasAccess,
     };
   });

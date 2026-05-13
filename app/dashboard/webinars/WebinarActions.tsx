@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Edit, Radio, Square, Clock, ExternalLink } from "lucide-react";
+import { Trash2, Edit, Radio, Square, Clock, ExternalLink, AlertCircle } from "lucide-react";
 import { deleteWebinar, updateWebinarStatus } from "@/lib/actions/webinars";
 
 type Status = "SCHEDULED" | "LIVE" | "ENDED";
@@ -11,9 +11,10 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  async function handleDelete() {
-    if (!confirm("¿Eliminar este webinar? Esta acción no se puede deshacer.")) return;
+  async function confirmDelete() {
+    setShowDeleteModal(false);
     setDeleting(true);
     await deleteWebinar(id);
     router.refresh();
@@ -27,57 +28,87 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
-        {status === "SCHEDULED" && (
-          <button
-            onClick={() => handleStatus("LIVE")}
-            disabled={updating}
-            className="flex-1 py-3 rounded-xl font-bold text-sm bg-green-50 text-green-600 hover:bg-green-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Radio size={15} /> Iniciar
-          </button>
-        )}
-        {status === "LIVE" && (
-          <>
+    <>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          {status === "SCHEDULED" && (
             <button
-              onClick={() => router.push(`/webinars/${id}`)}
-              className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-accent hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
-            >
-              <ExternalLink size={15} /> Entrar
-            </button>
-            <button
-              onClick={() => handleStatus("ENDED")}
+              onClick={() => handleStatus("LIVE")}
               disabled={updating}
-              className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 py-3 rounded-xl font-bold text-sm bg-green-50 text-green-600 hover:bg-green-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <Square size={15} /> Finalizar
+              <Radio size={15} /> Iniciar
             </button>
-          </>
-        )}
-        {status === "ENDED" && (
+          )}
+          {status === "LIVE" && (
+            <>
+              <button
+                onClick={() => router.push(`/webinars/${id}`)}
+                className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-accent hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <ExternalLink size={15} /> Entrar
+              </button>
+              <button
+                onClick={() => handleStatus("ENDED")}
+                disabled={updating}
+                className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Square size={15} /> Finalizar
+              </button>
+            </>
+          )}
+          {status === "ENDED" && (
+            <button
+              onClick={() => handleStatus("SCHEDULED")}
+              disabled={updating}
+              className="flex-1 py-3 rounded-xl font-bold text-sm bg-section-alt text-muted hover:bg-section-alt transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Clock size={15} /> Reactivar
+            </button>
+          )}
           <button
-            onClick={() => handleStatus("SCHEDULED")}
-            disabled={updating}
-            className="flex-1 py-3 rounded-xl font-bold text-sm bg-section-alt text-muted hover:bg-section-alt transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            onClick={() => router.push(`/dashboard/webinars/${id}/edit`)}
+            className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-foreground hover:bg-section-alt transition-colors"
           >
-            <Clock size={15} /> Reactivar
+            <Edit size={15} />
           </button>
-        )}
-        <button
-          onClick={() => router.push(`/dashboard/webinars/${id}/edit`)}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-foreground hover:bg-section-alt transition-colors"
-        >
-          <Edit size={15} />
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-red-400 hover:bg-red-50 transition-colors disabled:opacity-50"
-        >
-          <Trash2 size={15} />
-        </button>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            disabled={deleting}
+            className="py-3 px-4 rounded-xl font-bold text-sm bg-section-alt text-red-400 hover:bg-red-50 transition-colors disabled:opacity-50"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
       </div>
-    </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-sm w-full">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-center text-foreground mb-2">¿Eliminar Webinar?</h3>
+            <p className="text-sm text-center text-muted mb-6">
+              Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-card-border text-sm font-bold text-muted hover:text-foreground transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors"
+              >
+                <Trash2 size={14} /> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

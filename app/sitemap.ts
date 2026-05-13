@@ -29,7 +29,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/membresia`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/lives`, changeFrequency: "daily", priority: 0.8 },
     { url: `${siteUrl}/nosotros`, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${siteUrl}/pasantias`, changeFrequency: "monthly", priority: 0.6 },
   ];
 
   return [...staticPages, ...courseEntries];

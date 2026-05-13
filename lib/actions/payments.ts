@@ -116,6 +116,70 @@ export async function approvePayment(inscriptionId: string) {
   }
 }
 
+export async function getPaymentHistory(page = 1, limit = 10) {
+  const session = await auth();
+
+  // @ts-ignore
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    throw new Error("No autorizado");
+  }
+
+  const skip = (page - 1) * limit;
+
+  try {
+    const [inscriptions, total] = await Promise.all([
+      prisma.inscription.findMany({
+        where: { status: { in: ["APPROVED", "REJECTED"] } },
+        include: {
+          user: { select: { name: true, email: true } },
+          curso: { select: { title: true, price: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.inscription.count({
+        where: { status: { in: ["APPROVED", "REJECTED"] } },
+      }),
+    ]);
+
+    return { inscriptions, total, pages: Math.ceil(total / limit) };
+  } catch (error) {
+    console.error("Error fetching payment history:", error);
+    return { error: "No se pudo obtener el historial", inscriptions: [], total: 0, pages: 0 };
+  }
+}
+
+export async function getPaymentStats() {
+  const session = await auth();
+
+  // @ts-ignore
+  if (!session || !session.user || session.user.role !== "ADMIN") {
+    throw new Error("No autorizado");
+  }
+
+  try {
+    const [pending, approved, rejected, approvedAmount] = await Promise.all([
+      prisma.inscription.count({ where: { status: "PENDING" } }),
+      prisma.inscription.count({ where: { status: "APPROVED" } }),
+      prisma.inscription.count({ where: { status: "REJECTED" } }),
+      prisma.inscription.aggregate({
+        where: { status: "APPROVED" },
+        _sum: { amountPaid: true },
+      }),
+    ]);
+
+    return {
+      pending,
+      approved,
+      rejected,
+      totalApprovedAmount: approvedAmount._sum.amountPaid ?? 0,
+    };
+  } catch {
+    return { pending: 0, approved: 0, rejected: 0, totalApprovedAmount: 0 };
+  }
+}
+
 export async function rejectPayment(inscriptionId: string, reason?: string) {
   const session = await auth();
 
@@ -148,7 +212,7 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
       action: "REJECT_PAYMENT",
       entityType: "INSCRIPTION",
       entityId: inscriptionId,
-      details: { status: "REJECTED" },
+      details: { status: "REJECTED", reason: reason ?? null },
     });
 
     revalidatePath("/dashboard/pagos");

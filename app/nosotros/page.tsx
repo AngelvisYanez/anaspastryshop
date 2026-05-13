@@ -6,12 +6,6 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
-const IMPACT = [
-  { num: "+500", label: "Alumnos Formados" },
-  { num: "7+", label: "Años de Experiencia" },
-  { num: "8", label: "Módulos de Formación" },
-];
-
 const BENEFITS = [
   {
     icon: BookOpen,
@@ -72,30 +66,6 @@ export default function NosotrosPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-24">
-          <div className="relative h-[500px] w-full rounded-2xl overflow-hidden">
-            <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2000"
-              alt="Academia Credito USA"
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/80 to-transparent flex items-end p-12">
-              <div className="flex flex-wrap gap-12">
-                {IMPACT.map((item) => (
-                  <div key={item.label} className="text-white">
-                    <p className="font-display text-4xl font-black italic text-accent">{item.num}</p>
-                    <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-                      {item.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <section className="mb-24">
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -130,6 +100,47 @@ export default function NosotrosPage() {
                 <p className="text-muted text-sm leading-relaxed">{b.desc}</p>
               </m.div>
             ))}
+          </div>
+        </section>
+
+        <section className="mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative h-[420px] rounded-2xl overflow-hidden"
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2000"
+                alt="Crédito en USA"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#0B1F3A]/60 to-transparent" />
+            </m.div>
+            <m.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex flex-col justify-center"
+            >
+              <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
+                El sistema crediticio
+              </span>
+              <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-5">
+                Entiende cómo funciona
+                <br />
+                <span className="text-accent italic">el crédito americano.</span>
+              </h2>
+              <p className="text-muted text-sm leading-relaxed mb-4">
+                En Estados Unidos, tu puntaje de crédito determina todo: desde la tasa de interés de tu hipoteca hasta si puedes rentar un apartamento. Conocer las reglas del juego es el primer paso para ganarlo.
+              </p>
+              <p className="text-muted text-sm leading-relaxed">
+                Te enseñamos a leer tu reporte de crédito, disputar errores, construir historial desde cero y usar las herramientas que los bancos ponen a tu disposición — en tu idioma.
+              </p>
+            </m.div>
           </div>
         </section>
 

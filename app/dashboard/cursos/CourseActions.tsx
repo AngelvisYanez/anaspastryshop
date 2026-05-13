@@ -14,13 +14,12 @@ interface CourseActionsProps {
 export default function CourseActions({ courseId, hasEnrolled }: CourseActionsProps) {
   const [showModal, setShowModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleDelete = async () => {
-    if (hasEnrolled) {
-      alert("No se puede eliminar un curso que ya tiene alumnos pagos.");
-      return;
-    }
+    if (hasEnrolled) return;
+    setDeleteError(null);
     setShowModal(true);
   };
 
@@ -28,11 +27,10 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
     setIsDeleting(true);
     const res = await deleteCourse(courseId);
     setIsDeleting(false);
-    setShowModal(false);
-    
     if (res.error) {
-      alert(res.error);
+      setDeleteError(res.error);
     } else {
+      setShowModal(false);
       router.refresh();
     }
   };
@@ -79,9 +77,15 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
             <p className="text-sm text-center text-muted mb-6 leading-relaxed">
               Esta acción es permanente y eliminará todos los módulos, lecciones integradas y progreso estructural. No se puede deshacer.
             </p>
+            {deleteError && (
+              <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+                <AlertCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
+                <p className="text-sm text-red-600 dark:text-red-400 font-medium">{deleteError}</p>
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row gap-3">
               <button 
-                onClick={() => setShowModal(false)} 
+                onClick={() => { setShowModal(false); setDeleteError(null); }} 
                 disabled={isDeleting}
                 className="flex-1 py-3 px-4 bg-section-alt hover:bg-muted/20 text-gray-700 font-bold rounded-xl transition-colors disabled:opacity-50"
               >

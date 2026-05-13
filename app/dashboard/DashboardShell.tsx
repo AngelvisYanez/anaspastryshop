@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
+import PendingPaymentDialog from "@/components/PendingPaymentDialog";
 
 type PlatformSection = {
   id: string;
@@ -20,17 +22,20 @@ export default function DashboardShell({
   children,
   isBlockedMentor = false,
   platformSections = EMPTY_SECTIONS,
+  hasPendingPayment = false,
 }: {
   user: any;
   children: React.ReactNode;
   isBlockedMentor?: boolean;
   platformSections?: PlatformSection[];
+  hasPendingPayment?: boolean;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">
+      {hasPendingPayment && <PendingPaymentDialog />}
       {isSidebarOpen && (
         <button
           type="button"
@@ -41,10 +46,11 @@ export default function DashboardShell({
       )}
 
       <div className={`
+        relative
         fixed inset-y-0 left-0 z-50 w-64
         ${isCollapsed ? "lg:w-[72px]" : "lg:w-64"}
         transition-all duration-300 ease-in-out
-        lg:static lg:flex-shrink-0
+        lg:relative lg:flex-shrink-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         <Sidebar
@@ -53,8 +59,16 @@ export default function DashboardShell({
           isBlockedMentor={isBlockedMentor}
           platformSections={platformSections}
           isCollapsed={isCollapsed}
-          onToggleCollapse={() => setIsCollapsed((c) => !c)}
         />
+
+        <button
+          onClick={() => setIsCollapsed((c) => !c)}
+          className="hidden lg:flex absolute right-0 top-8 translate-x-1/2 -translate-y-1/2 z-10 w-5 h-5 items-center justify-center bg-card border border-card-border rounded-full text-muted hover:text-foreground transition-colors shadow-sm"
+          title={isCollapsed ? "Expandir" : "Colapsar"}
+          aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+        >
+          {isCollapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
+        </button>
       </div>
 
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">

@@ -45,7 +45,7 @@ function InstagramIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { data: session, status } = useSession();
@@ -155,7 +155,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [profileOpen]);
 
-  const isTransparent = !scrolled;
+  const isTransparent = forceSolid ? false : !scrolled;
 
   const containerBg = isTransparent
     ? "bg-transparent border-transparent shadow-none"
@@ -332,6 +332,15 @@ export default function Navbar() {
                           className="absolute right-0 top-full mt-2 w-44 bg-white border border-black/[0.08] rounded-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] overflow-hidden z-50"
                         >
                           <Link
+                            href="/dashboard"
+                            onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-black/[0.04] transition-colors"
+                          >
+                            <LayoutDashboard size={14} className="text-foreground/50 shrink-0" />
+                            Panel
+                          </Link>
+                          <div className="h-px bg-black/[0.06] mx-2" />
+                          <Link
                             href="/dashboard/settings"
                             onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-black/[0.04] transition-colors"
@@ -353,9 +362,18 @@ export default function Navbar() {
                   </div>
                 </div>
               ) : (
-                <Link href={ctaUrl} className="hidden sm:flex items-center gap-2 bg-accent text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-accent-hover hover:scale-105 transition-all shadow-lg shadow-accent/25">
-                  <User size={14} /> {ctaText}
-                </Link>
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <Link href={ctaUrl} className="flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-accent-hover hover:scale-105 transition-all shadow-lg shadow-accent/25">
+                    {ctaText}
+                  </Link>
+                  <Link
+                    href="/auth/login"
+                    className={`p-2.5 rounded-lg transition-colors ${iconColor}`}
+                    aria-label="Iniciar sesión"
+                  >
+                    <User size={18} />
+                  </Link>
+                </div>
               )}
             </>
           )}
@@ -433,8 +451,8 @@ export default function Navbar() {
 
               {!session ? (
                 <>
-                  <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="w-full bg-foreground text-background py-5 rounded-xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
-                    <User size={18} /> Empezar Registro
+                  <Link href="/membresia" onClick={() => setIsOpen(false)} className="w-full bg-foreground text-background py-5 rounded-xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
+                    <User size={18} /> Unirme ahora
                   </Link>
                   <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-center py-2">
                     <span className="text-sm font-bold text-muted">¿Ya tienes cuenta? </span>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   ChevronDown, Eye, EyeOff, Save, Loader2, CheckCircle,
-  CreditCard, Bitcoin, Zap, DollarSign, Wallet, Building2,
+  CreditCard, Zap, DollarSign, Building2,
 } from "lucide-react";
 import { saveGatewayConfig } from "@/lib/actions/gateway";
 
@@ -59,18 +59,6 @@ const GATEWAYS: GatewayDef[] = [
     ],
   },
   {
-    provider: "BINANCE",
-    label: "Binance Pay",
-    description: "Pagos automáticos con criptomonedas vía Binance Pay API.",
-    type: "automatic",
-    Icon: Bitcoin,
-    color: "yellow",
-    fields: [
-      { key: "publicKey", label: "API Key", placeholder: "Tu Binance API Key" },
-      { key: "secretKey", label: "API Secret", placeholder: "Tu Binance Secret", secret: true },
-    ],
-  },
-  {
     provider: "ZELLE",
     label: "Zelle",
     description: "Transferencias manuales vía Zelle. Los datos se muestran al usuario al pagar.",
@@ -80,19 +68,6 @@ const GATEWAYS: GatewayDef[] = [
     fields: [
       { key: "email", label: "Email de Zelle", placeholder: "pagos@academia.com", extra: true },
       { key: "holderName", label: "Nombre del Titular", placeholder: "Academia Crédito USA", extra: true },
-    ],
-  },
-  {
-    provider: "USDT",
-    label: "USDT / Crypto",
-    description: "Pagos manuales en cripto. Los datos se muestran al usuario al pagar.",
-    type: "manual",
-    Icon: Wallet,
-    color: "orange",
-    fields: [
-      { key: "binanceId", label: "Binance Pay ID", placeholder: "123456789", extra: true },
-      { key: "network", label: "Red", placeholder: "TRC20, BEP20...", extra: true },
-      { key: "address", label: "Dirección de Wallet", placeholder: "0x...", extra: true },
     ],
   },
   {
@@ -116,9 +91,7 @@ const GATEWAYS: GatewayDef[] = [
 const COLOR_MAP: Record<string, string> = {
   indigo: "bg-amber-50 text-amber-700 border-amber-200",
   blue: "bg-blue-50 text-blue-600 border-blue-100",
-  yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
   purple: "bg-amber-50 text-amber-700 border-purple-100",
-  orange: "bg-orange-50 text-orange-600 border-orange-100",
   slate: "bg-slate-50 text-slate-700 border-slate-200",
 };
 
@@ -316,13 +289,7 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
 
   return (
     <div className="max-w-3xl">
-      <div className="mb-10">
-        <h1 className="text-3xl font-black text-foreground mb-2">Métodos de Pago</h1>
-        <p className="text-muted font-medium">
-          Configura las pasarelas activas y los datos de las cuentas de pago manual.
-        </p>
-      </div>
-
+      <p className="text-muted font-medium mb-8">Configura las pasarelas activas y los datos de las cuentas de pago manual.</p>
       <div className="space-y-10">
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4 ml-1">

@@ -2,7 +2,7 @@
 import { useState, Suspense } from "react";
 import { m } from "framer-motion";
 import {
-  ArrowLeft, User, Lock, Chrome, Loader2, Clock, CheckCircle2,
+  ArrowLeft, User, Lock, Loader2, Clock, CheckCircle2,
   BookOpen, Eye, EyeOff, Shield, TrendingUp, Users, PlayCircle,
 } from "lucide-react";
 import Link from "next/link";
@@ -129,9 +129,15 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
           </div>
         </div>
 
+        <div className="flex justify-end">
+          <Link href="/auth/forgot-password" className="text-xs font-bold text-accent hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
         <button
           disabled={loading}
-          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-4 flex justify-center items-center gap-2 disabled:opacity-50"
+          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-2 flex justify-center items-center gap-2 disabled:opacity-50"
         >
           {loading ? <Loader2 size={18} className="animate-spin" /> : "Entrar a mi cuenta"}
         </button>
@@ -147,7 +153,7 @@ export default function LoginPage() {
   if (suspendedReason) {
     return (
       <>
-        <Navbar />
+        <Navbar forceSolid />
         <main className="min-h-screen bg-background flex items-center justify-center p-6 pt-32 relative overflow-hidden">
           <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
           <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-red-100/20 blur-[100px] rounded-full pointer-events-none" />
@@ -186,7 +192,7 @@ export default function LoginPage() {
   if (isPendingMentor) {
     return (
       <>
-        <Navbar />
+        <Navbar forceSolid />
         <main className="min-h-screen bg-background flex items-center justify-center p-6 pt-32 relative overflow-hidden">
           <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-accent/10 blur-[130px] rounded-full pointer-events-none" />
           <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-foreground/[0.04] blur-[100px] rounded-full pointer-events-none" />
@@ -241,7 +247,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar forceSolid />
       <main id="main-content">
         <section className="bg-background pt-32 pb-16 px-6 relative overflow-hidden">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/[0.06] blur-[130px] rounded-full pointer-events-none" />
@@ -273,20 +279,9 @@ export default function LoginPage() {
                 <LoginForm onPendingMentor={() => setIsPendingMentor(true)} onSuspended={(r) => setSuspendedReason(r)} />
               </Suspense>
 
-              <div className="relative my-8 text-center">
-                <hr className="border-card-border" />
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-4 text-[10px] font-bold text-muted uppercase tracking-widest">
-                  O continúa con
-                </span>
-              </div>
-
-              <button className="w-full bg-background border border-card-border text-foreground py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:border-accent transition-all text-sm">
-                <Chrome size={18} /> Google
-              </button>
-
               <p className="text-center mt-8 text-sm text-muted">
                 ¿No tienes cuenta?{" "}
-                <Link href="/auth/signup" className="text-accent font-bold hover:underline">
+                <Link href="/membresia" className="text-accent font-bold hover:underline">
                   Regístrate gratis
                 </Link>
               </p>

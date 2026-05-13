@@ -1,14 +1,89 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
-  X, CreditCard, Bitcoin, Copy, Check, Loader2, Building2,
+  X, CreditCard, Copy, Check, Loader2, Building2, Upload, ImageIcon,
 } from "lucide-react";
 import { createInscription } from "@/lib/actions/inscription";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 type GatewayConfig = Record<string, string | number | null | undefined>;
+
+type ReceiptUploaderProps = {
+  receiptImage: string | null;
+  setReceiptImage: (v: string | null) => void;
+  uploadingReceipt: boolean;
+  handleReceiptUpload: (file: File) => void;
+  fileInputRef: { current: HTMLInputElement | null };
+};
+
+function ReceiptUploader({
+  receiptImage,
+  setReceiptImage,
+  uploadingReceipt,
+  handleReceiptUpload,
+  fileInputRef,
+}: ReceiptUploaderProps) {
+  return (
+    <div className="space-y-2 mt-4">
+      <label className="text-xs font-black text-muted uppercase tracking-widest ml-2">
+        Comprobante de Pago
+      </label>
+      {receiptImage ? (
+        <div className="flex items-center justify-between bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+            <Check size={16} />
+            <span className="text-sm font-bold">Comprobante subido</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href={receiptImage}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-accent font-bold hover:underline flex items-center gap-1"
+            >
+              <ImageIcon size={12} /> Ver
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                setReceiptImage(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+              className="text-xs text-muted hover:text-red-500 font-bold"
+            >
+              Cambiar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-card-border rounded-xl p-5 cursor-pointer hover:border-accent hover:bg-accent-subtle transition-all">
+          {uploadingReceipt ? (
+            <Loader2 size={22} className="animate-spin text-accent" />
+          ) : (
+            <Upload size={22} className="text-muted" />
+          )}
+          <span className="text-sm font-bold text-muted">
+            {uploadingReceipt ? "Subiendo..." : "Haz clic para subir tu comprobante"}
+          </span>
+          <span className="text-[10px] text-muted font-medium">PNG, JPG, WEBP</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploadingReceipt}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleReceiptUpload(file);
+            }}
+          />
+        </label>
+      )}
+    </div>
+  );
+}
 
 export default function CheckoutModal({
   isOpen,
@@ -25,13 +100,16 @@ export default function CheckoutModal({
 }) {
   const router = useRouter();
   const { data: session } = useSession();
-  const [method, setMethod] = useState<"stripe" | "zelle" | "bank_transfer" | "usdt" | null>(null);
+  const [method, setMethod] = useState<"stripe" | "zelle" | "bank_transfer" | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [gatewayConfig, setGatewayConfig] = useState<GatewayConfig | null>(null);
   const [gatewayLoading, setGatewayLoading] = useState(false);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const copyToClipboard = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -47,17 +125,36 @@ export default function CheckoutModal({
     const providerMap: Record<string, string> = {
       zelle: "ZELLE",
       bank_transfer: "BANK_TRANSFER",
-      usdt: "USDT",
     };
     const provider = providerMap[method];
     setGatewayLoading(true);
     setGatewayConfig(null);
+    setReceiptImage(null);
     fetch(`/api/gateways/${provider}`)
       .then((r) => r.json())
       .then((d) => setGatewayConfig(d.enabled && d.config ? d.config : null))
       .catch(() => setGatewayConfig(null))
       .finally(() => setGatewayLoading(false));
   }, [method]);
+
+  async function handleReceiptUpload(file: File) {
+    setUploadingReceipt(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/cloudflare/upload-image", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.url) {
+        setReceiptImage(data.url);
+      } else {
+        setError("Error al subir el comprobante. Intenta de nuevo.");
+      }
+    } catch {
+      setError("Error al subir el comprobante. Intenta de nuevo.");
+    } finally {
+      setUploadingReceipt(false);
+    }
+  }
 
   async function handleStripeCheckout() {
     if (!cursoId) return;
@@ -101,10 +198,9 @@ export default function CheckoutModal({
     const reference = formData.get("reference")?.toString();
     const phoneNumber = formData.get("phoneNumber")?.toString();
 
-    const dbMethodMap: Record<string, "ZELLE" | "BANK_TRANSFER" | "USDT"> = {
+    const dbMethodMap: Record<string, "ZELLE" | "BANK_TRANSFER"> = {
       zelle: "ZELLE",
       bank_transfer: "BANK_TRANSFER",
-      usdt: "USDT",
     };
 
     const result = await createInscription({
@@ -113,6 +209,7 @@ export default function CheckoutModal({
       reference,
       phoneNumber,
       cursoId,
+      receiptImage: receiptImage || undefined,
     });
 
     if (result.error) {
@@ -179,7 +276,6 @@ export default function CheckoutModal({
                     { id: "stripe" as const, icon: CreditCard, label: "Tarjeta / Stripe", badge: "Recomendado" },
                     { id: "zelle" as const, icon: CreditCard, label: "Zelle" },
                     { id: "bank_transfer" as const, icon: Building2, label: "Transferencia Bancaria" },
-                    { id: "usdt" as const, icon: Bitcoin, label: "USDT / Cripto" },
                   ].map(({ id, icon: Icon, label, badge }) => (
                     <button
                       key={id}
@@ -204,7 +300,7 @@ export default function CheckoutModal({
                   </button>
                 )}
 
-                {(method === "zelle" || method === "bank_transfer" || method === "usdt") && (
+                {(method === "zelle" || method === "bank_transfer" ) && (
                   <form key={method} onSubmit={handleSubmit}>
                     {gatewayLoading ? (
                       <div className="flex items-center justify-center py-10">
@@ -241,6 +337,7 @@ export default function CheckoutModal({
                                 className="w-full p-4 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground"
                               />
                             </div>
+                            <ReceiptUploader receiptImage={receiptImage} setReceiptImage={setReceiptImage} uploadingReceipt={uploadingReceipt} handleReceiptUpload={handleReceiptUpload} fileInputRef={fileInputRef} />
                           </m.div>
                         )}
 
@@ -292,44 +389,13 @@ export default function CheckoutModal({
                                 className="w-full p-4 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground"
                               />
                             </div>
-                          </m.div>
-                        )}
-
-                        {method === "usdt" && (
-                          <m.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-card-hover border border-card-border p-6 rounded-xl mb-6"
-                          >
-                            <p className="text-xs font-black text-muted uppercase tracking-widest mb-2">Binance Pay ID:</p>
-                            {gatewayConfig?.binancePayId ? (
-                              <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-card-border mb-4">
-                                <span className="font-bold text-foreground">{gatewayConfig.binancePayId as string}</span>
-                                <button type="button" onClick={() => copyToClipboard(gatewayConfig.binancePayId as string, "binance-id")}>
-                                  {copied === "binance-id" ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-muted" />}
-                                </button>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-muted bg-card p-4 rounded-xl border border-card-border mb-4">
-                                Contáctanos para recibir los datos de pago por Binance.
-                              </p>
-                            )}
-                            <div className="space-y-2">
-                              <label className="text-xs font-black text-muted uppercase tracking-widest ml-2">ID de Transacción</label>
-                              <input
-                                name="reference"
-                                required
-                                type="text"
-                                placeholder="Ej. TX-123456"
-                                className="w-full p-4 rounded-xl bg-card border border-card-border outline-none focus:ring-2 focus:ring-accent text-sm text-foreground"
-                              />
-                            </div>
+                            <ReceiptUploader receiptImage={receiptImage} setReceiptImage={setReceiptImage} uploadingReceipt={uploadingReceipt} handleReceiptUpload={handleReceiptUpload} fileInputRef={fileInputRef} />
                           </m.div>
                         )}
 
                         <button
                           type="submit"
-                          disabled={loading}
+                          disabled={loading || uploadingReceipt}
                           className="w-full bg-navy dark:bg-accent text-white py-5 rounded-2xl font-bold shadow-xl hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                           {loading ? <Loader2 className="animate-spin" size={20} /> : "Confirmar Pago"}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   Plus, Trash2, Loader2, CheckCircle, Pencil, X,
   Video, Star, Package, CreditCard, DollarSign,
-  Bitcoin, Zap, Wallet, Building2,
+  Zap, Building2, AlertCircle,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { createPlan, updatePlan, deletePlan, type PlanData } from "@/lib/actions/subscriptionPlans";
@@ -26,9 +26,7 @@ type Plan = {
 const PAYMENT_METHODS = [
   { key: "STRIPE",        label: "Stripe",                  Icon: CreditCard, color: "bg-amber-50 text-amber-700 border-indigo-200" },
   { key: "PAYPAL",        label: "PayPal",                  Icon: DollarSign, color: "bg-blue-50 text-blue-600 border-blue-200" },
-  { key: "BINANCE",       label: "Binance Pay",             Icon: Bitcoin,    color: "bg-yellow-50 text-yellow-600 border-yellow-200" },
   { key: "ZELLE",         label: "Zelle",                   Icon: Zap,        color: "bg-amber-50 text-amber-700 border-purple-200" },
-  { key: "USDT",          label: "USDT / Crypto",           Icon: Wallet,     color: "bg-orange-50 text-orange-600 border-orange-200" },
   { key: "BANK_TRANSFER", label: "Transferencia Bancaria",  Icon: Building2,  color: "bg-slate-50 text-slate-600 border-slate-200" },
 ];
 
@@ -65,6 +63,7 @@ export default function PlansManager({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   function resetForm() {
     setForm(EMPTY);
@@ -139,13 +138,15 @@ export default function PlansManager({
     setLoading(false);
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("¿Eliminar este plan? Los suscriptores existentes no serán afectados.")) return;
-    await deletePlan(id);
-    setPlans((prev) => prev.filter((p) => p.id !== id));
+  async function confirmDeletePlan() {
+    if (!deleteConfirmId) return;
+    await deletePlan(deleteConfirmId);
+    setPlans((prev) => prev.filter((p) => p.id !== deleteConfirmId));
+    setDeleteConfirmId(null);
   }
 
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* FORM */}
       <div className="bg-card rounded-lg p-10 border border-card-border shadow-sm h-fit">
@@ -405,7 +406,7 @@ export default function PlansManager({
                       <Pencil size={15} />
                     </button>
                     <button
-                      onClick={() => handleDelete(plan.id)}
+                      onClick={() => setDeleteConfirmId(plan.id)}
                       className="p-2 rounded-xl text-muted hover:text-red-500 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 size={15} />
@@ -471,5 +472,34 @@ export default function PlansManager({
         )}
       </div>
     </div>
+
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-sm w-full">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-center text-foreground mb-2">¿Eliminar Plan?</h3>
+            <p className="text-sm text-center text-muted mb-6">
+              Los suscriptores existentes no serán afectados.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-card-border text-sm font-bold text-muted hover:text-foreground transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDeletePlan}
+                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors"
+              >
+                <Trash2 size={14} /> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

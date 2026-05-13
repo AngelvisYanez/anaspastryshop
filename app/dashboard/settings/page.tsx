@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import ProfileForm from "./ProfileForm";
 import SiteConfigForm from "./SiteConfigForm";
+import { getAllApiConfigs } from "@/lib/actions/platformApi";
+import ApiConfigManager from "../api-config/ApiConfigManager";
+import PlatformModuleManager from "../modulos/PlatformModuleManager";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -11,12 +14,14 @@ export default async function SettingsPage() {
     redirect("/auth/login");
   }
 
-  const [dbUser, siteConfig] = await Promise.all([
+  const [dbUser, siteConfig, apiConfigs, sections] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { name: true, email: true, image: true, role: true },
     }),
     prisma.siteConfig.findFirst().catch(() => null),
+    getAllApiConfigs(),
+    prisma.platformSection.findMany({ orderBy: { order: "asc" } }),
   ]);
 
   if (!dbUser) redirect("/dashboard");
@@ -25,11 +30,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
-      <div>
-        <h1 className="text-3xl font-black text-foreground tracking-tighter">Configuración</h1>
-        <p className="text-muted font-medium mt-1">Administra tu perfil y la configuración del sitio.</p>
-      </div>
-
+      <p className="text-muted font-medium">Administra tu perfil y la configuración del sitio.</p>
       <ProfileForm
         initialUser={{
           name: dbUser.name,
@@ -54,6 +55,10 @@ export default async function SettingsPage() {
           }}
         />
       )}
+
+      {isAdmin && <PlatformModuleManager initialSections={sections} />}
+
+      {isAdmin && <ApiConfigManager configs={apiConfigs as any} />}
     </div>
   );
 }

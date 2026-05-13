@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-const ALL_ROLES = ["ADMIN", "MENTOR", "USER"];
-
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user || (session.user as any).role !== "ADMIN") {
@@ -25,7 +23,7 @@ export async function createSection(formData: FormData) {
   const icon = formData.get("icon") as string;
   const order = parseInt(formData.get("order") as string) || 0;
   const rolesRaw = formData.get("roles") as string;
-  const roles = rolesRaw ? rolesRaw.split(",").filter(Boolean) : ALL_ROLES;
+  const roles = rolesRaw ? rolesRaw.split(",").filter(Boolean) : ["ADMIN", "MENTOR", "USER"];
 
   try {
     const section = await prisma.platformSection.create({

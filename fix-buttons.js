@@ -10,7 +10,6 @@ const files = [
   'app/membresia/MembresiaClient.tsx',
   'app/nosotros/page.tsx',
   'app/not-found.tsx',
-  'app/pasantias/page.tsx',
   'app/cursos/PublicCoursesClient.tsx',
   'app/planes/PlanesClient.tsx',
 ];

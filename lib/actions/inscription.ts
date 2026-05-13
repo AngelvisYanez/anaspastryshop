@@ -18,6 +18,7 @@ type CreateInscriptionParams = {
 export async function createSubscriptionInscription(data: {
   reference: string;
   amountPaid: number;
+  receiptImage?: string;
 }) {
   const session = await auth();
 
@@ -51,6 +52,7 @@ export async function createSubscriptionInscription(data: {
         method: "BANK_TRANSFER",
         reference: data.reference,
         amountPaid: data.amountPaid,
+        receiptImage: data.receiptImage || null,
         cursoId: null,
         userId: session.user.id,
         status: "PENDING",

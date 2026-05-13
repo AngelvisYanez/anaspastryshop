@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import MembresiaClient from "./MembresiaClient";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { isSubscriptionValid, subscriptionDaysLeft } from "@/lib/utils/subscription";
+import { isSubscriptionValid, subscriptionDaysLeft, subscriptionEndDate } from "@/lib/utils/subscription";
 import { cacheTag, cacheLife } from "next/cache";
 import type { Metadata } from "next";
 
@@ -50,16 +50,14 @@ export default async function MembresiaPage() {
   if (session?.user) {
     const sub = await prisma.subscription.findUnique({
       where: { userId: session.user.id },
-      select: { status: true, endDate: true, plan: true },
+      select: { status: true, endDate: true, startDate: true, plan: true },
     });
     if (sub && isSubscriptionValid(sub)) {
-      const endDate = sub.endDate ?? null;
-      const daysLeft = endDate ? subscriptionDaysLeft(endDate) : null;
+      const endDate = sub.endDate ?? subscriptionEndDate(sub.startDate);
+      const daysLeft = subscriptionDaysLeft(endDate);
       activeSubscription = {
         daysLeft,
-        endDate: endDate
-          ? new Date(endDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
-          : null,
+        endDate: new Date(endDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
         planName: sub.plan,
       };
     }

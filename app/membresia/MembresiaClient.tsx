@@ -3,9 +3,9 @@
 import { m } from "framer-motion";
 import {
   Check, ArrowRight, Shield, Zap, Star,
-  Video, CreditCard, DollarSign, Bitcoin,
-  Smartphone, Wallet, Building2,
-  CheckCircle, Clock, BookOpen, RefreshCw, AlertTriangle,
+  Video, CreditCard, DollarSign,
+  Smartphone, Building2,
+  CheckCircle, BookOpen, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Link from "next/link";
@@ -37,10 +37,8 @@ const PAYMENT_META: Record<string, {
 }> = {
   STRIPE:        { label: "Tarjeta de crédito/débito", Icon: CreditCard, type: "automatic", description: "Visa, Mastercard, American Express" },
   PAYPAL:        { label: "PayPal",                    Icon: DollarSign, type: "automatic", description: "Pago instantáneo con tu cuenta PayPal" },
-  BINANCE:       { label: "Binance Pay",               Icon: Bitcoin,    type: "automatic", description: "Criptomonedas vía Binance Pay" },
   ZELLE:         { label: "Zelle",                     Icon: Zap,        type: "manual",    description: "Transferencia directa desde tu banco" },
   PAGO_MOVIL:    { label: "Pago Móvil",                Icon: Smartphone, type: "manual",    description: "Transferencia desde tu banco móvil" },
-  USDT:          { label: "USDT / Cripto",             Icon: Wallet,     type: "manual",    description: "Stablecoins y criptomonedas" },
   BANK_TRANSFER: { label: "Transferencia Bancaria",    Icon: Building2,  type: "manual",    description: "ACH / Wire Transfer bancaria" },
 };
 
@@ -146,7 +144,7 @@ export default function MembresiaClient({
                   </div>
                 </div>
 
-                {activeSubscription.endDate ? (
+                {activeSubscription.endDate && (
                   <>
                     <div className="mb-2">
                       <span className="font-display text-8xl font-black tracking-tight leading-none">
@@ -181,31 +179,20 @@ export default function MembresiaClient({
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <Link href="/mis-cursos">
+                        <Link href="/cursos">
                           <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
                             <BookOpen size={16} /> Ver mis cursos
                           </button>
                         </Link>
-                        <Link href="/checkout/membresia">
-                          <button className="w-full bg-white/[0.06] border border-white/[0.1] text-white/60 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/[0.1] transition-all text-xs uppercase tracking-widest">
-                            <RefreshCw size={14} /> Renovar anticipadamente
-                          </button>
-                        </Link>
+                        {isExpiringSoon && (
+                          <Link href="/checkout/membresia">
+                            <button className="w-full bg-white/[0.06] border border-white/[0.1] text-white/60 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/[0.1] transition-all text-xs uppercase tracking-widest">
+                              <RefreshCw size={14} /> Renovar membresía
+                            </button>
+                          </Link>
+                        )}
                       </div>
                     )}
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Clock size={20} className="text-accent" />
-                      <span className="font-display text-3xl font-black text-accent">Sin vencimiento</span>
-                    </div>
-                    <p className="text-white/40 text-sm mb-10">Tu membresía no tiene fecha de expiración configurada.</p>
-                    <Link href="/mis-cursos">
-                      <button className="w-full bg-accent text-[#0B1F3A] py-5 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-[1.02] transition-all shadow-xl shadow-accent/20 text-sm uppercase tracking-widest">
-                        <BookOpen size={16} /> Ver mis cursos
-                      </button>
-                    </Link>
                   </>
                 )}
 
@@ -414,7 +401,7 @@ export default function MembresiaClient({
                 <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
                   Tienes acceso completo a todos los cursos y recursos de la plataforma.
                 </p>
-                <Link href="/mis-cursos">
+                <Link href="/cursos">
                   <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">
                     <BookOpen size={18} /> Ir a mis cursos
                   </button>

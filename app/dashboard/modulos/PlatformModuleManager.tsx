@@ -4,7 +4,7 @@ import { useState } from "react";
 import * as LucideIcons from "lucide-react";
 import {
   LayoutGrid, Plus, Trash2, Loader2, CheckCircle,
-  Eye, EyeOff, Pencil, X, Save,
+  Eye, EyeOff, Pencil, X, Save, AlertCircle,
 } from "lucide-react";
 import { createSection, deleteSection, updateSection } from "@/lib/actions/platformSections";
 
@@ -112,6 +112,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
   const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -204,24 +205,20 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
     setSections((prev) => prev.map((s) => (s.id === id ? { ...s, isActive: !current } : s)));
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("¿Eliminar este módulo de plataforma?")) return;
-    await deleteSection(id);
-    setSections((prev) => prev.filter((s) => s.id !== id));
+  async function confirmDeleteModule() {
+    if (!deleteConfirmId) return;
+    await deleteSection(deleteConfirmId);
+    setSections((prev) => prev.filter((s) => s.id !== deleteConfirmId));
+    setDeleteConfirmId(null);
   }
 
   const sorted = [...sections].sort((a, b) => a.order - b.order);
 
   return (
+    <>
     <div className="max-w-5xl">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-1">Módulos de Plataforma</h1>
-          <p className="text-muted font-medium text-sm">
-            Gestiona las secciones de navegación con icono, orden y visibilidad por rol.
-          </p>
-        </div>
+      <div className="mb-8">
+        <p className="text-muted font-medium mb-4">Gestiona las secciones de navegación con icono, orden y visibilidad por rol.</p>
         <button
           onClick={() => { setCreating(!creating); setCreateError(null); }}
           className={`flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-sm transition-all ${
@@ -351,9 +348,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
               const isEditing = editingId === section.id;
               return (
                 <div key={section.id}>
-                  {/* — ROW DISPLAY — */}
                   <div className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-4 sm:py-5 transition-colors ${isEditing ? "bg-amber-50/40" : "hover:bg-card-hover"}`}>
-                    {/* Icon + info */}
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${section.isActive ? "bg-amber-50 text-accent" : "bg-section-alt text-muted"}`}>
                       <DynamicIcon name={section.icon} size={18} />
                     </div>
@@ -389,7 +384,6 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => handleToggleActive(section.id, section.isActive)}
@@ -405,7 +399,7 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
                         {isEditing ? <X size={16} /> : <Pencil size={16} />}
                       </button>
                       <button
-                        onClick={() => handleDelete(section.id)}
+                        onClick={() => setDeleteConfirmId(section.id)}
                         className="p-2 rounded-xl text-muted hover:text-red-500 hover:bg-red-50 transition-colors"
                       >
                         <Trash2 size={16} />
@@ -508,5 +502,34 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
         )}
       </div>
     </div>
+
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-sm w-full">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-center text-foreground mb-2">¿Eliminar Módulo?</h3>
+            <p className="text-sm text-center text-muted mb-6">
+              Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-card-border text-sm font-bold text-muted hover:text-foreground transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDeleteModule}
+                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors"
+              >
+                <Trash2 size={14} /> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

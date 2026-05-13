@@ -7,6 +7,27 @@ import RealTimeGuard from "@/components/RealTimeGuard";
 import { prisma } from "@/lib/prisma";
 import DashboardLoading from "./loading";
 
+function AuthLoading() {
+  return (
+    <div className="h-screen bg-background flex overflow-hidden">
+      <div className="w-64 flex-shrink-0 bg-card border-r border-card-border h-screen animate-pulse" />
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <header className="h-16 flex-shrink-0 bg-card border-b border-card-border flex items-center justify-between px-4 md:px-8 animate-pulse">
+          <div className="h-5 w-24 bg-section-alt rounded-lg" />
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-section-alt rounded-full" />
+            <div className="w-8 h-8 bg-section-alt rounded-full" />
+            <div className="h-8 w-32 bg-section-alt rounded-lg" />
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <DashboardLoading />
+        </main>
+      </div>
+    </div>
+  );
+}
+
 async function DashboardContent({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
@@ -14,7 +35,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
     redirect("/auth/login");
   }
 
-  const [dbUser, platformSections] = await Promise.all([
+  const [dbUser, platformSections, pendingInscription, subscription] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: {
@@ -30,10 +51,20 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
       where: { isActive: true },
       orderBy: { order: "asc" },
     }),
+    prisma.inscription.findFirst({
+      where: { userId: session.user.id, cursoId: null, status: "PENDING" },
+      select: { id: true },
+    }),
+    prisma.subscription.findUnique({
+      where: { userId: session.user.id },
+      select: { status: true },
+    }),
   ]);
 
   const isActive = dbUser?.isActive !== false;
   const deactivationReason = dbUser?.deactivationReason;
+  const hasPendingPayment =
+    !!pendingInscription && subscription?.status !== "ACTIVE";
 
   if (!isActive) {
     return (
@@ -112,9 +143,12 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
       }}
       isBlockedMentor={isBlockedMentor}
       platformSections={platformSections}
+      hasPendingPayment={hasPendingPayment}
     >
       <RealTimeGuard />
-      {children}
+      <Suspense fallback={<DashboardLoading />}>
+        {children}
+      </Suspense>
     </DashboardShell>
   );
 }
@@ -125,7 +159,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<DashboardLoading />}>
+    <Suspense fallback={<AuthLoading />}>
       <DashboardContent>{children}</DashboardContent>
     </Suspense>
   );

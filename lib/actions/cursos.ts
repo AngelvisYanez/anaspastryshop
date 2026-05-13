@@ -25,6 +25,8 @@ type CoursePayload = {
   introVideo?: string;
   isLive: boolean;
   liveUrl?: string;
+  status: "DRAFT" | "PUBLISHED" | "SCHEDULED";
+  publishedAt?: string | null;
   modules: {
     title: string;
     videoUrl?: string;
@@ -63,6 +65,8 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
         introVideo: data.introVideo,
         isLive: data.isLive,
         liveUrl: data.liveUrl,
+        status: data.status,
+        publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
         instructorId: finalInstructorId,
         courseModules: {
           create: data.modules.map((m, mIndex) => ({
@@ -149,6 +153,8 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       introVideo: data.introVideo,
       isLive: data.isLive,
       liveUrl: data.liveUrl,
+      status: data.status,
+      publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
       courseModules: {
         create: data.modules.map((m, mIndex) => ({
           title: m.title,

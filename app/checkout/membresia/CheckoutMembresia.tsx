@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   User, Mail, Lock, ArrowRight, Loader2,
   Building2, Copy, Check, Shield, CheckCircle,
-  ChevronRight,
+  Clock, Upload, ImageIcon,
 } from "lucide-react";
 import { registerUser } from "@/lib/actions/auth";
 import { createSubscriptionInscription } from "@/lib/actions/inscription";
@@ -101,6 +101,9 @@ export default function CheckoutMembresia({
   const [bankLoading, setBankLoading] = useState(false);
 
   const [reference, setReference] = useState("");
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/settings/site-config")
@@ -126,6 +129,26 @@ export default function CheckoutMembresia({
         .finally(() => setBankLoading(false));
     }
   }, [step]);
+
+  async function handleReceiptUpload(file: File) {
+    setUploadingReceipt(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/cloudflare/upload-image", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.url) {
+        setReceiptImage(data.url);
+      } else {
+        setError("Error al subir el comprobante. Intenta de nuevo.");
+      }
+    } catch {
+      setError("Error al subir el comprobante. Intenta de nuevo.");
+    } finally {
+      setUploadingReceipt(false);
+    }
+  }
 
   async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -168,6 +191,7 @@ export default function CheckoutMembresia({
     const result = await createSubscriptionInscription({
       reference: reference.trim(),
       amountPaid: price,
+      receiptImage: receiptImage || undefined,
     });
 
     if (result.error) {
@@ -200,7 +224,7 @@ export default function CheckoutMembresia({
           <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
             {step === 1 && "Crea tu cuenta"}
             {step === 2 && "Realiza tu pago"}
-            {step === 3 && "¡Pago enviado!"}
+            {step === 3 && "Comprobante enviado"}
           </h1>
         </div>
       </div>
@@ -378,9 +402,66 @@ export default function CheckoutMembresia({
                   </p>
                 </div>
 
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted block mb-2 ml-1">
+                    Comprobante de Pago
+                  </label>
+                  {receiptImage ? (
+                    <div className="flex items-center justify-between bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                        <Check size={16} />
+                        <span className="text-sm font-bold">Comprobante subido</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <a
+                          href={receiptImage}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-accent font-bold hover:underline flex items-center gap-1"
+                        >
+                          <ImageIcon size={12} /> Ver
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReceiptImage(null);
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                          }}
+                          className="text-xs text-muted hover:text-red-500 font-bold"
+                        >
+                          Cambiar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-card-border rounded-2xl p-6 cursor-pointer hover:border-accent hover:bg-accent-subtle transition-all">
+                      {uploadingReceipt ? (
+                        <Loader2 size={22} className="animate-spin text-accent" />
+                      ) : (
+                        <Upload size={22} className="text-muted" />
+                      )}
+                      <span className="text-sm font-bold text-muted">
+                        {uploadingReceipt ? "Subiendo..." : "Haz clic para subir tu comprobante"}
+                      </span>
+                      <span className="text-[10px] text-muted font-medium">PNG, JPG, WEBP</span>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingReceipt}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleReceiptUpload(file);
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+
                 <button
                   type="submit"
-                  disabled={loading || !reference.trim()}
+                  disabled={loading || uploadingReceipt || !reference.trim()}
                   className="w-full bg-navy dark:bg-accent text-white py-4 rounded-2xl font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
                 >
                   {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
@@ -398,18 +479,20 @@ export default function CheckoutMembresia({
 
         {step === 3 && (
           <div className="bg-card border border-card-border rounded-xl p-10 text-center shadow-xl">
-            <div className="w-20 h-20 bg-green-100 dark:bg-green-950/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="text-green-500" size={40} />
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-amber-100 dark:bg-amber-950/30 rounded-full animate-pulse" />
+              <div className="relative w-20 h-20 bg-amber-50 dark:bg-amber-950/20 rounded-full flex items-center justify-center">
+                <Clock className="text-amber-500" size={36} />
+              </div>
             </div>
             <h2 className="text-2xl font-black text-foreground mb-3 tracking-tighter">
-              ¡Pago enviado!
+              ¡Comprobante recibido!
             </h2>
             <p className="text-muted font-medium leading-relaxed mb-2">
-              Hemos recibido tu comprobante. Nuestro equipo verificará tu transferencia
-              y activará tu acceso en las próximas horas.
+              Por favor espera mientras revisamos y aprobamos tu membresía.
             </p>
             <p className="text-xs text-muted mb-8 font-medium">
-              Recibirás un email de confirmación cuando tu membresía esté activa.
+              Te notificaremos por email cuando tu acceso esté activo.
             </p>
 
             <div className="bg-section-alt rounded-2xl p-4 mb-8 text-left">
@@ -419,12 +502,10 @@ export default function CheckoutMembresia({
               <p className="font-bold text-foreground font-mono text-sm">{reference}</p>
             </div>
 
-            <a
-              href="/dashboard"
-              className="inline-flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transition-all shadow-lg text-sm"
-            >
-              Ir a mi Panel <ChevronRight size={16} />
-            </a>
+            <div className="flex items-center justify-center gap-2 text-xs text-muted">
+              <Loader2 size={13} className="animate-spin" />
+              En espera de aprobación...
+            </div>
           </div>
         )}
       </div>

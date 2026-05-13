@@ -42,15 +42,11 @@ export default async function UsuariosPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-foreground">Usuarios</h1>
-        <p className="text-muted font-medium">
-          {role === "ADMIN"
-            ? "Directorio completo de todos los usuarios registrados en la plataforma."
-            : "Revisa los alumnos matriculados en tus cursos."}
-        </p>
-      </div>
-
+      <p className="text-muted font-medium mb-8">
+        {role === "ADMIN"
+          ? "Directorio completo de todos los usuarios registrados en la plataforma."
+          : "Revisa los alumnos matriculados en tus cursos."}
+      </p>
       {role === "ADMIN" && (
         <AllUsersView
           allUsers={allUsers as any}

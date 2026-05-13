@@ -183,7 +183,24 @@ function featureRow(icon: string, text: string): string {
   </tr>`;
 }
 
+async function getTemplateConfig(type: string) {
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const template = await prisma.emailTemplate.findUnique({ where: { type } });
+    if (!template) return { isEnabled: true };
+    return {
+      subject: template.subject || undefined,
+      preheader: template.preheader || undefined,
+      isEnabled: template.isEnabled,
+    };
+  } catch {
+    return { isEnabled: true };
+  }
+}
+
 export async function sendWelcomeEmail(email: string, name: string | null) {
+  const config = await getTemplateConfig("WELCOME");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -256,8 +273,8 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
-      html: buildEmail(`Bienvenido ${firstName}, tu cuenta está lista. Empieza hoy.`, body),
+      subject: config.subject || `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
+      html: buildEmail(config.preheader || `Bienvenido ${firstName}, tu cuenta está lista. Empieza hoy.`, body),
     });
   } catch (err) {
     console.error("[Resend] sendWelcomeEmail error:", err);
@@ -270,6 +287,8 @@ export async function sendSubscriptionConfirmedEmail(
   planName: string,
   amountPaid: number
 ) {
+  const config = await getTemplateConfig("SUBSCRIPTION_CONFIRMED");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
   const dateStr = new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
 
@@ -380,8 +399,8 @@ export async function sendSubscriptionConfirmedEmail(
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `¡Tu membresía está activa! — Academia Crédito USA`,
-      html: buildEmail(`Hola ${firstName}, tu acceso a ${planName} ha sido activado. ¡Empieza hoy!`, body),
+      subject: config.subject || `¡Tu membresía está activa! — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `Hola ${firstName}, tu acceso a ${planName} ha sido activado. ¡Empieza hoy!`, body),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionConfirmedEmail error:", err);
@@ -389,6 +408,8 @@ export async function sendSubscriptionConfirmedEmail(
 }
 
 export async function sendSubscriptionCanceledEmail(email: string, name: string | null) {
+  const config = await getTemplateConfig("SUBSCRIPTION_CANCELED");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -462,8 +483,8 @@ export async function sendSubscriptionCanceledEmail(email: string, name: string 
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `Tu membresía ha sido cancelada — Academia Crédito USA`,
-      html: buildEmail(`Hola ${firstName}, tu membresía fue cancelada. Puedes reactivarla cuando quieras.`, body),
+      subject: config.subject || `Tu membresía ha sido cancelada — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `Hola ${firstName}, tu membresía fue cancelada. Puedes reactivarla cuando quieras.`, body),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionCanceledEmail error:", err);
@@ -471,6 +492,8 @@ export async function sendSubscriptionCanceledEmail(email: string, name: string 
 }
 
 export async function sendSubscriptionPendingEmail(email: string, name: string | null) {
+  const config = await getTemplateConfig("SUBSCRIPTION_PENDING");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -563,8 +586,8 @@ export async function sendSubscriptionPendingEmail(email: string, name: string |
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `Pago recibido, en revisión — Academia Crédito USA`,
-      html: buildEmail(`${firstName}, recibimos tu pago. Te notificaremos cuando tu membresía esté activa.`, body),
+      subject: config.subject || `Pago recibido, en revisión — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `${firstName}, recibimos tu pago. Te notificaremos cuando tu membresía esté activa.`, body),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionPendingEmail error:", err);
@@ -572,6 +595,8 @@ export async function sendSubscriptionPendingEmail(email: string, name: string |
 }
 
 export async function sendAccountApprovedEmail(email: string, name: string | null) {
+  const config = await getTemplateConfig("ACCOUNT_APPROVED");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -631,8 +656,8 @@ export async function sendAccountApprovedEmail(email: string, name: string | nul
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
-      html: buildEmail(`${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`, body),
+      subject: config.subject || `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`, body),
     });
   } catch (err) {
     console.error("[Resend] sendAccountApprovedEmail error:", err);
@@ -644,6 +669,8 @@ export async function sendPaymentRejectedEmail(
   name: string | null,
   reason?: string
 ) {
+  const config = await getTemplateConfig("PAYMENT_REJECTED");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -714,8 +741,8 @@ export async function sendPaymentRejectedEmail(
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `Pago no aprobado — Academia Crédito USA`,
-      html: buildEmail(`${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`, body),
+      subject: config.subject || `Pago no aprobado — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`, body),
     });
   } catch (err) {
     console.error("[Resend] sendPaymentRejectedEmail error:", err);
@@ -784,7 +811,85 @@ export async function sendNewsletterEmail(
   }
 }
 
+export async function sendPasswordResetEmail(email: string, name: string | null, resetUrl: string) {
+  const firstName = name?.split(" ")[0] ?? "allí";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+
+      <!-- HERO -->
+      <tr>
+        <td style="background:linear-gradient(135deg,${NAVY} 0%,${NAVY_LIGHT} 100%);padding:40px;text-align:center;">
+          <p style="margin:0 0 16px;font-size:40px;">🔑</p>
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">Restablecer Contraseña</h1>
+          <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);font-weight:500;">Tu solicitud de restablecimiento de contraseña</p>
+        </td>
+      </tr>
+      <tr><td style="height:3px;background:${GOLD};"></td></tr>
+
+      <tr>
+        <td style="padding:36px 0 0;">
+          <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
+            Hola ${firstName}, recibimos una solicitud para restablecer la contraseña de tu cuenta en
+            <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong>.
+          </p>
+
+          <p style="margin:0 0 28px;font-size:14px;color:#374151;line-height:1.7;">
+            Haz clic en el botón a continuación para crear una nueva contraseña. Este enlace es válido
+            por <strong>1 hora</strong>.
+          </p>
+
+          <!-- CTA -->
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;">
+            <tr>
+              <td align="center">
+                ${ctaButtonGold(resetUrl, "Restablecer mi Contraseña")}
+              </td>
+            </tr>
+          </table>
+
+          <!-- SECURITY NOTE -->
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;border-left:4px solid ${GOLD};background:${CREAM};border-radius:0 12px 12px 0;">
+            <tr>
+              <td style="padding:20px 24px;">
+                <p style="margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${GOLD};">Nota de seguridad</p>
+                <p style="margin:0;font-size:13px;color:#374151;line-height:1.6;">
+                  Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña no será modificada.
+                </p>
+              </td>
+            </tr>
+          </table>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td align="center">
+                <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.6;">
+                  ¿Tienes problemas con el botón? Copia y pega este enlace en tu navegador:<br>
+                  <a href="${resetUrl}" style="color:${GOLD};font-weight:600;text-decoration:underline;word-break:break-all;">${resetUrl}</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject: "Restablecer contraseña — Academia Crédito USA",
+      html: buildEmail("Restablece tu contraseña de Academia Crédito USA. El enlace expira en 1 hora.", body),
+    });
+  } catch (err) {
+    console.error("[Resend] sendPasswordResetEmail error:", err);
+  }
+}
+
 export async function sendCoursePurchaseEmail(email: string, name: string | null, courseTitle: string) {
+  const config = await getTemplateConfig("COURSE_PURCHASE");
+  if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -877,8 +982,8 @@ export async function sendCoursePurchaseEmail(email: string, name: string | null
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: `Acceso activado: ${courseTitle} — Academia Crédito USA`,
-      html: buildEmail(`${firstName}, tu acceso al curso "${courseTitle}" está listo. ¡Empieza ahora!`, body),
+      subject: config.subject || `Acceso activado: ${courseTitle} — Academia Crédito USA`,
+      html: buildEmail(config.preheader || `${firstName}, tu acceso al curso "${courseTitle}" está listo. ¡Empieza ahora!`, body),
     });
   } catch (err) {
     console.error("[Resend] sendCoursePurchaseEmail error:", err);

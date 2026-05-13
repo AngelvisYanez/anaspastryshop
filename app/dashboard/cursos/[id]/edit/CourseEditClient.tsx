@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Video, ArrowLeft, Loader2, AlignLeft, ChevronDown, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Video, ArrowLeft, Loader2, AlignLeft, ChevronDown, AlertCircle, FileText, Globe, Calendar } from "lucide-react";
 import Link from "next/link";
 import { updateCourse } from "@/lib/actions/cursos";
 import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
@@ -39,6 +39,12 @@ export default function CourseEditClient({ course, hasEnrolledStudents, mentors,
   const [coverImage, setCoverImage] = useState(course.image || "");
   const [isLive, setIsLive] = useState(course.isLive || false);
   const [liveUrl, setLiveUrl] = useState(course.liveUrl || "");
+
+  // Publicación
+  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED" | "SCHEDULED">((course.status as "DRAFT" | "PUBLISHED" | "SCHEDULED") || "PUBLISHED");
+  const [publishedAt, setPublishedAt] = useState(
+    course.publishedAt ? new Date(course.publishedAt).toISOString().slice(0, 16) : ""
+  );
 
   // Módulos con Sus Tareas
   const initialModules = course.courseModules.map((m: any) => ({
@@ -118,6 +124,8 @@ export default function CourseEditClient({ course, hasEnrolledStudents, mentors,
       introVideo: introVideo || undefined,
       isLive,
       liveUrl: isLive ? liveUrl : undefined,
+      status,
+      publishedAt: status === "SCHEDULED" ? publishedAt : undefined,
       instructorId: isAdmin ? instructorId : undefined,
       modules: modules.map((m: any) => ({
         title: m.title,
@@ -456,14 +464,65 @@ export default function CourseEditClient({ course, hasEnrolledStudents, mentors,
           </div>
         </div>
 
+            {/* PARTE 4: Publicación */}
+        <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm">
+          <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+            <span className="bg-accent text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">4</span>
+            Publicación
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <button
+              type="button"
+              onClick={() => setStatus("DRAFT")}
+              className={`flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 font-bold text-sm transition-all ${status === "DRAFT" ? "border-gray-400 bg-gray-50 text-gray-700" : "border-card-border bg-section-alt text-muted hover:border-gray-300"}`}
+            >
+              <FileText size={20} />
+              Borrador
+              <span className="text-[10px] font-normal text-muted">No visible públicamente</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatus("PUBLISHED")}
+              className={`flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 font-bold text-sm transition-all ${status === "PUBLISHED" ? "border-green-500 bg-green-50 text-green-700" : "border-card-border bg-section-alt text-muted hover:border-green-300"}`}
+            >
+              <Globe size={20} />
+              Publicar ahora
+              <span className="text-[10px] font-normal text-muted">Visible inmediatamente</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatus("SCHEDULED")}
+              className={`flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 font-bold text-sm transition-all ${status === "SCHEDULED" ? "border-blue-500 bg-blue-50 text-blue-700" : "border-card-border bg-section-alt text-muted hover:border-blue-300"}`}
+            >
+              <Calendar size={20} />
+              Programar
+              <span className="text-[10px] font-normal text-muted">Publicación automática</span>
+            </button>
+          </div>
+          {status === "SCHEDULED" && (
+            <div className="mt-2">
+              <label className="block text-sm font-bold text-foreground mb-2">Fecha y hora de publicación</label>
+              <input
+                required
+                type="datetime-local"
+                value={publishedAt}
+                onChange={e => setPublishedAt(e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+                className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground"
+              />
+              <p className="text-xs text-muted mt-2 font-medium">El curso se publicará automáticamente en esa fecha y hora.</p>
+            </div>
+          )}
+        </div>
+
         <div className="flex justify-end pt-6">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || (status === "SCHEDULED" && !publishedAt)}
             className="bg-accent text-white px-8 py-4 rounded-lg font-black text-lg shadow-xl shadow-gray-200 hover:bg-indigo-600 hover:-translate-y-1 transition-all disabled:opacity-70 disabled:hover:translate-y-0 flex items-center gap-3"
           >
             {loading ? <Loader2 size={24} className="animate-spin" /> : null}
-            Guardar Cambios
+            {status === "DRAFT" ? "Guardar Borrador" : status === "SCHEDULED" ? "Guardar y Programar" : "Guardar Cambios"}
           </button>
         </div>
       </form>

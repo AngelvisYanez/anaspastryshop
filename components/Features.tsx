@@ -1,6 +1,6 @@
 "use client";
 import { m } from "framer-motion";
-import { Users, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 
 export default function Features() {
   return (
@@ -8,28 +8,7 @@ export default function Features() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <m.div
           whileHover={{ y: -5 }}
-          className="md:col-span-8 bg-section-alt rounded-xl p-12 flex flex-col justify-between min-h-[450px] relative overflow-hidden group border border-card-border"
-        >
-          <div className="z-10">
-            <div className="w-14 h-14 bg-card rounded-2xl flex items-center justify-center mb-6 shadow-sm text-accent">
-              <Users size={28} />
-            </div>
-            <h3 className="text-4xl font-bold text-foreground mb-4 leading-tight">
-              Pasantías de <br /> Alto Impacto
-            </h3>
-            <p className="text-muted text-lg max-w-xs leading-relaxed">
-              Trabaja codo a codo con nuestro equipo en proyectos reales para
-              marcas de Latinoamérica y EEUU.
-            </p>
-          </div>
-          <div className="absolute right-[-20px] bottom-[-20px] text-[180px] md:text-[220px] font-black text-white/50 dark:text-white/10 select-none group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-            Artica
-          </div>
-        </m.div>
-
-        <m.div
-          whileHover={{ y: -5 }}
-          className="md:col-span-4 bg-navy text-white rounded-xl p-12 flex flex-col justify-between min-h-[450px] border border-white/5"
+          className="md:col-span-12 bg-navy text-white rounded-xl p-12 flex flex-col justify-between min-h-[450px] border border-white/5"
         >
           <div>
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">

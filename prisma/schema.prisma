@@ -60,6 +60,8 @@ model Curso {
   content       String?
   isLive        Boolean        @default(false)
   liveUrl       String?
+  status        String         @default("PUBLISHED")
+  publishedAt   DateTime?
   instructorId  String
   createdAt     DateTime       @default(now())
   courseModules CourseModule[]   @relation("CursoToModules")
@@ -232,6 +234,18 @@ model NewsletterSubscriber {
   updatedAt     DateTime @updatedAt
 }
 
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  type      String   @unique
+  label     String
+  recipient String   @default("USER")
+  subject   String   @default("")
+  title     String   @default("")
+  preheader String   @default("")
+  isEnabled Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
 model SiteConfig {
   id                String   @id @default(cuid())
   siteName          String   @default("Academia Credito USA")
@@ -245,4 +259,13 @@ model SiteConfig {
   subscriptionPriceId String?
   navItems          Json     @default("[]")
   updatedAt         DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

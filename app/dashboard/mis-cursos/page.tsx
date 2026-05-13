@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, BarChart2, Star, PlayCircle } from "lucide-react";
+import { Clock, BarChart2, PlayCircle } from "lucide-react";
 import { isSubscriptionValid } from "@/lib/utils/subscription";
 
 export default async function MisCursosPage() {
@@ -34,22 +34,7 @@ export default async function MisCursosPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
-            Membresía activa
-          </p>
-          <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Cursos</h1>
-          <p className="text-muted font-medium mt-1">
-            Acceso completo a todos los cursos de la plataforma.
-          </p>
-        </div>
-        <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800">
-          <Star size={14} />
-          <span className="text-xs font-black uppercase tracking-widest">Membresía Activa</span>
-        </div>
-      </div>
-
+      <p className="text-muted font-medium mb-8">Acceso completo a todos los cursos de la plataforma.</p>
       {allCourses.length === 0 ? (
         <div className="bg-card border border-card-border rounded-lg p-16 text-center">
           <PlayCircle className="mx-auto text-muted/30 mb-4" size={48} />
