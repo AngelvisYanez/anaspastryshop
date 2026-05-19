@@ -14,33 +14,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) return null;
 
-        const identifier = credentials.email as string;
-        const user = identifier.includes("@")
-          ? await prisma.user.findUnique({ where: { email: identifier } })
-          : await prisma.user.findFirst({
-              where: { name: { equals: identifier, mode: "insensitive" } },
-            });
+          const identifier = credentials.email as string;
+          const user = identifier.includes("@")
+            ? await prisma.user.findUnique({ where: { email: identifier } })
+            : await prisma.user.findFirst({
+                where: { name: { equals: identifier, mode: "insensitive" } },
+              });
 
-        if (!user || !user.password) return null;
+          if (!user || !user.password) return null;
 
-        const isValid = await bcrypt.compare(credentials.password as string, user.password);
-        if (!isValid) return null;
+          const isValid = await bcrypt.compare(credentials.password as string, user.password);
+          if (!isValid) return null;
 
-        if (!user.isActive) return null;
+          if (!user.isActive) return null;
 
-        if (user.role === "MENTOR" && !user.isApproved) return null;
+          if (user.role === "MENTOR" && !user.isApproved) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          isApproved: user.isApproved,
-          isActive: user.isActive,
-          image: user.image,
-        };
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            isApproved: user.isApproved,
+            isActive: user.isActive,
+            image: user.image,
+          };
+        } catch {
+          return null;
+        }
       },
     }),
   ],
