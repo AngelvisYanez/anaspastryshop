@@ -1,11 +1,14 @@
 import { Resend } from "resend";
+import { prisma } from "@/lib/prisma";
 
 let _resend: Resend | null = null;
 function getResend(): Resend {
   if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
   return _resend;
 }
-const FROM = process.env.RESEND_FROM_EMAIL ?? "Academia Credito USA <noreply@academiacreditousa.com>";
+const FROM =
+  process.env.RESEND_FROM_EMAIL ??
+  "Academia Credito USA <noreply@academiacreditousa.com>";
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiacreditousa.com";
 
 const LOGO_URL = `${BASE_URL}/logo_II.png`;
@@ -191,6 +194,7 @@ async function getTemplateConfig(type: string) {
     return {
       subject: template.subject || undefined,
       preheader: template.preheader || undefined,
+      title: template.title || undefined,
       isEnabled: template.isEnabled,
     };
   } catch {
@@ -273,8 +277,14 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
-      html: buildEmail(config.preheader || `Bienvenido ${firstName}, tu cuenta está lista. Empieza hoy.`, body),
+      subject:
+        config.subject ||
+        `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
+      html: buildEmail(
+        config.preheader ||
+          `Bienvenido ${firstName}, tu cuenta está lista. Empieza hoy.`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendWelcomeEmail error:", err);
@@ -285,12 +295,16 @@ export async function sendSubscriptionConfirmedEmail(
   email: string,
   name: string | null,
   planName: string,
-  amountPaid: number
+  amountPaid: number,
 ) {
   const config = await getTemplateConfig("SUBSCRIPTION_CONFIRMED");
   if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
-  const dateStr = new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  const dateStr = new Date().toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   const body = `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -399,15 +413,23 @@ export async function sendSubscriptionConfirmedEmail(
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `¡Tu membresía está activa! — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `Hola ${firstName}, tu acceso a ${planName} ha sido activado. ¡Empieza hoy!`, body),
+      subject:
+        config.subject || `¡Tu membresía está activa! — Academia Crédito USA`,
+      html: buildEmail(
+        config.preheader ||
+          `Hola ${firstName}, tu acceso a ${planName} ha sido activado. ¡Empieza hoy!`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionConfirmedEmail error:", err);
   }
 }
 
-export async function sendSubscriptionCanceledEmail(email: string, name: string | null) {
+export async function sendSubscriptionCanceledEmail(
+  email: string,
+  name: string | null,
+) {
   const config = await getTemplateConfig("SUBSCRIPTION_CANCELED");
   if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
@@ -483,15 +505,24 @@ export async function sendSubscriptionCanceledEmail(email: string, name: string 
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Tu membresía ha sido cancelada — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `Hola ${firstName}, tu membresía fue cancelada. Puedes reactivarla cuando quieras.`, body),
+      subject:
+        config.subject ||
+        `Tu membresía ha sido cancelada — Academia Crédito USA`,
+      html: buildEmail(
+        config.preheader ||
+          `Hola ${firstName}, tu membresía fue cancelada. Puedes reactivarla cuando quieras.`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionCanceledEmail error:", err);
   }
 }
 
-export async function sendSubscriptionPendingEmail(email: string, name: string | null) {
+export async function sendSubscriptionPendingEmail(
+  email: string,
+  name: string | null,
+) {
   const config = await getTemplateConfig("SUBSCRIPTION_PENDING");
   if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
@@ -586,15 +617,23 @@ export async function sendSubscriptionPendingEmail(email: string, name: string |
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Pago recibido, en revisión — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `${firstName}, recibimos tu pago. Te notificaremos cuando tu membresía esté activa.`, body),
+      subject:
+        config.subject || `Pago recibido, en revisión — Academia Crédito USA`,
+      html: buildEmail(
+        config.preheader ||
+          `${firstName}, recibimos tu pago. Te notificaremos cuando tu membresía esté activa.`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendSubscriptionPendingEmail error:", err);
   }
 }
 
-export async function sendAccountApprovedEmail(email: string, name: string | null) {
+export async function sendAccountApprovedEmail(
+  email: string,
+  name: string | null,
+) {
   const config = await getTemplateConfig("ACCOUNT_APPROVED");
   if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
@@ -656,8 +695,13 @@ export async function sendAccountApprovedEmail(email: string, name: string | nul
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`, body),
+      subject:
+        config.subject || `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
+      html: buildEmail(
+        config.preheader ||
+          `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendAccountApprovedEmail error:", err);
@@ -667,7 +711,7 @@ export async function sendAccountApprovedEmail(email: string, name: string | nul
 export async function sendPaymentRejectedEmail(
   email: string,
   name: string | null,
-  reason?: string
+  reason?: string,
 ) {
   const config = await getTemplateConfig("PAYMENT_REJECTED");
   if (!config.isEnabled) return;
@@ -692,7 +736,9 @@ export async function sendPaymentRejectedEmail(
             A continuación encontrarás más información.
           </p>
 
-          ${reason ? `
+          ${
+            reason
+              ? `
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;border-left:4px solid ${GOLD};background:${CREAM};border-radius:0 12px 12px 0;">
             <tr>
               <td style="padding:20px 24px;">
@@ -700,7 +746,9 @@ export async function sendPaymentRejectedEmail(
                 <p style="margin:0;font-size:14px;color:#374151;line-height:1.6;font-weight:500;">${reason}</p>
               </td>
             </tr>
-          </table>` : ""}
+          </table>`
+              : ""
+          }
 
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:28px;background:${CREAM};border-radius:16px;overflow:hidden;">
             <tr><td style="padding:20px 20px 0;">${label("¿Qué puedes hacer?")}</td></tr>
@@ -742,7 +790,11 @@ export async function sendPaymentRejectedEmail(
       from: FROM,
       to: email,
       subject: config.subject || `Pago no aprobado — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`, body),
+      html: buildEmail(
+        config.preheader ||
+          `${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendPaymentRejectedEmail error:", err);
@@ -756,7 +808,7 @@ export async function sendNewsletterEmail(
   title: string,
   preheaderText: string,
   htmlContent: string,
-  unsubscribeToken: string
+  unsubscribeToken: string,
 ) {
   const firstName = name?.split(" ")[0] ?? "Hola";
   const unsubscribeUrl = `${BASE_URL}/unsubscribe?token=${unsubscribeToken}`;
@@ -811,7 +863,11 @@ export async function sendNewsletterEmail(
   }
 }
 
-export async function sendPasswordResetEmail(email: string, name: string | null, resetUrl: string) {
+export async function sendPasswordResetEmail(
+  email: string,
+  name: string | null,
+  resetUrl: string,
+) {
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -880,14 +936,21 @@ export async function sendPasswordResetEmail(email: string, name: string | null,
       from: FROM,
       to: email,
       subject: "Restablecer contraseña — Academia Crédito USA",
-      html: buildEmail("Restablece tu contraseña de Academia Crédito USA. El enlace expira en 1 hora.", body),
+      html: buildEmail(
+        "Restablece tu contraseña de Academia Crédito USA. El enlace expira en 1 hora.",
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendPasswordResetEmail error:", err);
   }
 }
 
-export async function sendCoursePurchaseEmail(email: string, name: string | null, courseTitle: string) {
+export async function sendCoursePurchaseEmail(
+  email: string,
+  name: string | null,
+  courseTitle: string,
+) {
   const config = await getTemplateConfig("COURSE_PURCHASE");
   if (!config.isEnabled) return;
   const firstName = name?.split(" ")[0] ?? "allí";
@@ -982,10 +1045,192 @@ export async function sendCoursePurchaseEmail(email: string, name: string | null
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Acceso activado: ${courseTitle} — Academia Crédito USA`,
-      html: buildEmail(config.preheader || `${firstName}, tu acceso al curso "${courseTitle}" está listo. ¡Empieza ahora!`, body),
+      subject:
+        config.subject ||
+        `Acceso activado: ${courseTitle} — Academia Crédito USA`,
+      html: buildEmail(
+        config.preheader ||
+          `${firstName}, tu acceso al curso "${courseTitle}" está listo. ¡Empieza ahora!`,
+        body,
+      ),
     });
   } catch (err) {
     console.error("[Resend] sendCoursePurchaseEmail error:", err);
+  }
+}
+
+export async function sendAdminNewUserEmail(
+  userName: string,
+  userEmail: string,
+  role: string,
+) {
+  const config = await getTemplateConfig("ADMIN_NEW_USER");
+  if (!config.isEnabled) return;
+
+  const admins = await (prisma as any).user.findMany({
+    where: { role: "ADMIN" },
+    select: { email: true },
+  });
+  const adminEmails = admins.map((a: any) => a.email).filter(Boolean);
+  if (adminEmails.length === 0) return;
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding:40px;text-align:center;background-color:${WHITE};">
+          <h1 style="margin:0 0 20px;font-size:24px;color:${NAVY};">${config.title}</h1>
+          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Un nuevo usuario se ha registrado en la plataforma.</p>
+          <div style="background-color:${CREAM};padding:20px;border-radius:12px;text-align:left;margin-bottom:30px;">
+            <p style="margin:0 0 10px;font-size:14px;color:${NAVY};"><strong>Nombre:</strong> ${userName}</p>
+            <p style="margin:0 0 10px;font-size:14px;color:${NAVY};"><strong>Email:</strong> ${userEmail}</p>
+            <p style="margin:0;font-size:14px;color:${NAVY};"><strong>Rol:</strong> ${role}</p>
+          </div>
+          ${ctaButtonGold("Ver Usuarios", `${BASE_URL}/dashboard/usuarios`)}
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: adminEmails,
+      subject:
+        config.subject ||
+        "Notificación: Nuevo Registro en Academia Crédito USA",
+      html: buildEmail(
+        config.preheader || `Nuevo usuario registrado: ${userName}`,
+        body,
+      ),
+    });
+  } catch (err) {
+    console.error("[Resend] sendAdminNewUserEmail error:", err);
+  }
+}
+
+export async function sendAdminNewSubscriptionEmail(
+  userName: string,
+  userEmail: string,
+  planName: string,
+  amount: number,
+) {
+  const config = await getTemplateConfig("ADMIN_NEW_SUBSCRIPTION");
+  if (!config.isEnabled) return;
+
+  const admins = await (prisma as any).user.findMany({
+    where: { role: "ADMIN" },
+    select: { email: true },
+  });
+  const adminEmails = admins.map((a: any) => a.email).filter(Boolean);
+  if (adminEmails.length === 0) return;
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding:40px;text-align:center;background-color:${WHITE};">
+          <h1 style="margin:0 0 20px;font-size:24px;color:${NAVY};">${config.title}</h1>
+          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Se ha activado una nueva suscripción.</p>
+          <div style="background-color:${CREAM};padding:20px;border-radius:12px;text-align:left;margin-bottom:30px;">
+            <p style="margin:0 0 10px;font-size:14px;color:${NAVY};"><strong>Usuario:</strong> ${userName}</p>
+            <p style="margin:0 0 10px;font-size:14px;color:${NAVY};"><strong>Email:</strong> ${userEmail}</p>
+            <p style="margin:0 0 10px;font-size:14px;color:${NAVY};"><strong>Plan:</strong> ${planName}</p>
+            <p style="margin:0;font-size:14px;color:${NAVY};"><strong>Monto:</strong> $${amount}</p>
+          </div>
+          ${ctaButtonGold("Ver Suscripciones", `${BASE_URL}/dashboard/suscripciones`)}
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: adminEmails,
+      subject: config.subject || "Notificación: Nueva Suscripción Activada",
+      html: buildEmail(
+        config.preheader || `Nueva suscripción de: ${userName}`,
+        body,
+      ),
+    });
+  } catch (err) {
+    console.error("[Resend] sendAdminNewSubscriptionEmail error:", err);
+  }
+}
+
+export async function sendSubscriptionExpiringSoonEmail(
+  email: string,
+  name: string | null,
+  daysLeft: number,
+) {
+  const config = await getTemplateConfig("SUBSCRIPTION_EXPIRING_SOON");
+  if (!config.isEnabled) return;
+  const firstName = name?.split(" ")[0] ?? "allí";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding:40px;text-align:center;background-color:${WHITE};">
+          <h1 style="margin:0 0 20px;font-size:24px;color:${NAVY};">${config.title}</h1>
+          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Hola ${firstName}, te informamos que tu membresía en Academia Crédito USA vencerá en <strong>${daysLeft} días</strong>.</p>
+          <div style="background-color:${CREAM};padding:20px;border-radius:12px;text-align:center;margin-bottom:30px;">
+            <p style="margin:0;font-size:14px;color:${NAVY}; font-weight: bold;">Evita perder el acceso a tus cursos y sesiones en vivo.</p>
+          </div>
+          ${ctaButtonGold("Renovar Membresía", `${BASE_URL}/pagar/membresia`)}
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject:
+        config.subject || "Tu membresía vence pronto — Academia Crédito USA",
+      html: buildEmail(
+        config.preheader || `Solo te quedan ${daysLeft} días de acceso.`,
+        body,
+      ),
+    });
+  } catch (err) {
+    console.error("[Resend] sendSubscriptionExpiringSoonEmail error:", err);
+  }
+}
+
+export async function sendSubscriptionExpiredEmail(
+  email: string,
+  name: string | null,
+) {
+  const config = await getTemplateConfig("SUBSCRIPTION_EXPIRED");
+  if (!config.isEnabled) return;
+  const firstName = name?.split(" ")[0] ?? "allí";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding:40px;text-align:center;background-color:${WHITE};">
+          <div style="font-size: 40px; margin-bottom: 20px;">⌛</div>
+          <h1 style="margin:0 0 20px;font-size:24px;color:${NAVY};">${config.title}</h1>
+          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Hola ${firstName}, tu membresía ha expirado y tu acceso a los contenidos ha sido restringido.</p>
+          <p style="margin:0 0 30px;font-size:14px;color:${MUTED};">No te preocupes, tu progreso está guardado. Puedes recuperar el acceso en cualquier momento renovando tu plan.</p>
+          ${ctaButtonGold("Renovar Ahora", `${BASE_URL}/pagar/membresia`)}
+        </td>
+      </tr>
+    </table>
+  `;
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject:
+        config.subject || "Tu membresía ha vencido — Academia Crédito USA",
+      html: buildEmail(
+        config.preheader || "Tu acceso ha expirado. Renueva para continuar.",
+        body,
+      ),
+    });
+  } catch (err) {
+    console.error("[Resend] sendSubscriptionExpiredEmail error:", err);
   }
 }

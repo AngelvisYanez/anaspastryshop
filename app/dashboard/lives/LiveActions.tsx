@@ -47,13 +47,21 @@ export default function LiveActions({
             </button>
           )}
           {status === "LIVE" && (
-            <button
-              onClick={() => handleStatus("ENDED")}
-              disabled={updating}
-              className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <Square size={15} /> Finalizar
-            </button>
+            <>
+              <button
+                onClick={() => router.push(`/lives/${id}`)}
+                className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-accent hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <Radio size={15} /> Entrar
+              </button>
+              <button
+                onClick={() => handleStatus("ENDED")}
+                disabled={updating}
+                className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Square size={15} /> Finalizar
+              </button>
+            </>
           )}
           {status === "ENDED" && (
             <button
@@ -86,7 +94,9 @@ export default function LiveActions({
             <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle size={24} />
             </div>
-            <h3 className="text-lg font-bold text-center text-foreground mb-2">¿Eliminar Live?</h3>
+            <h3 className="text-lg font-bold text-center text-foreground mb-2">
+              ¿Eliminar Live?
+            </h3>
             <p className="text-sm text-center text-muted mb-6">
               Esta acción no se puede deshacer.
             </p>

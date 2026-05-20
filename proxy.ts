@@ -7,7 +7,11 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role;
 
-  if (!isLoggedIn && nextUrl.pathname.startsWith("/dashboard")) {
+  if (
+    !isLoggedIn &&
+    (nextUrl.pathname.startsWith("/dashboard") ||
+      nextUrl.pathname.startsWith("/webinars"))
+  ) {
     return NextResponse.redirect(new URL("/iniciar-sesion", nextUrl));
   }
 
@@ -15,7 +19,10 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
-  if (nextUrl.pathname.startsWith("/dashboard/api-config") && userRole !== "ADMIN") {
+  if (
+    nextUrl.pathname.startsWith("/dashboard/api-config") &&
+    userRole !== "ADMIN"
+  ) {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 });

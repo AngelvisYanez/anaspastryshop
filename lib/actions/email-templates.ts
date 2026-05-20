@@ -3,7 +3,10 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { DEFAULT_TEMPLATES, type EmailTemplateData } from "@/lib/email-template-defaults";
+import {
+  DEFAULT_TEMPLATES,
+  type EmailTemplateData,
+} from "@/lib/email-template-defaults";
 import {
   sendWelcomeEmail,
   sendSubscriptionConfirmedEmail,
@@ -12,6 +15,10 @@ import {
   sendAccountApprovedEmail,
   sendPaymentRejectedEmail,
   sendCoursePurchaseEmail,
+  sendAdminNewUserEmail,
+  sendAdminNewSubscriptionEmail,
+  sendSubscriptionExpiringSoonEmail,
+  sendSubscriptionExpiredEmail,
 } from "@/lib/email";
 
 const TEST_EMAIL = "angelviselyanez@gmail.com";
@@ -28,7 +35,14 @@ async function assertAdmin() {
 export async function getEmailTemplates(): Promise<EmailTemplateData[]> {
   await assertAdmin();
 
-  let stored: { type: string; id: string; subject: string; title: string; preheader: string; isEnabled: boolean }[] = [];
+  let stored: {
+    type: string;
+    id: string;
+    subject: string;
+    title: string;
+    preheader: string;
+    isEnabled: boolean;
+  }[] = [];
   try {
     stored = await (prisma as any).emailTemplate.findMany();
   } catch {
@@ -53,7 +67,12 @@ export async function getEmailTemplates(): Promise<EmailTemplateData[]> {
 
 export async function updateEmailTemplate(
   type: string,
-  data: { subject?: string; title?: string; preheader?: string; isEnabled?: boolean }
+  data: {
+    subject?: string;
+    title?: string;
+    preheader?: string;
+    isEnabled?: boolean;
+  },
 ) {
   await assertAdmin();
 
@@ -80,14 +99,19 @@ export async function updateEmailTemplate(
       },
     });
   } catch {
-    return { error: "El cliente de base de datos no está actualizado. Reinicia el servidor." };
+    return {
+      error:
+        "El cliente de base de datos no está actualizado. Reinicia el servidor.",
+    };
   }
 
   revalidatePath("/dashboard/emails");
   return { success: true };
 }
 
-export async function sendTestEmail(type: string): Promise<{ success?: boolean; error?: string }> {
+export async function sendTestEmail(
+  type: string,
+): Promise<{ success?: boolean; error?: string }> {
   await assertAdmin();
 
   try {
@@ -96,7 +120,12 @@ export async function sendTestEmail(type: string): Promise<{ success?: boolean; 
         await sendWelcomeEmail(TEST_EMAIL, TEST_NAME);
         break;
       case "SUBSCRIPTION_CONFIRMED":
-        await sendSubscriptionConfirmedEmail(TEST_EMAIL, TEST_NAME, "Plan Premium", 97);
+        await sendSubscriptionConfirmedEmail(
+          TEST_EMAIL,
+          TEST_NAME,
+          "Plan Premium",
+          97,
+        );
         break;
       case "SUBSCRIPTION_CANCELED":
         await sendSubscriptionCanceledEmail(TEST_EMAIL, TEST_NAME);
@@ -108,10 +137,39 @@ export async function sendTestEmail(type: string): Promise<{ success?: boolean; 
         await sendAccountApprovedEmail(TEST_EMAIL, TEST_NAME);
         break;
       case "PAYMENT_REJECTED":
-        await sendPaymentRejectedEmail(TEST_EMAIL, TEST_NAME, "El comprobante de pago no coincide con el monto indicado.");
+        await sendPaymentRejectedEmail(
+          TEST_EMAIL,
+          TEST_NAME,
+          "El comprobante de pago no coincide con el monto indicado.",
+        );
         break;
       case "COURSE_PURCHASE":
-        await sendCoursePurchaseEmail(TEST_EMAIL, TEST_NAME, "Fundamentos de Crédito en USA");
+        await sendCoursePurchaseEmail(
+          TEST_EMAIL,
+          TEST_NAME,
+          "Fundamentos de Crédito en USA",
+        );
+        break;
+      case "ADMIN_NEW_USER":
+        await sendAdminNewUserEmail(
+          "Usuario Prueba",
+          "prueba@ejemplo.com",
+          "USER",
+        );
+        break;
+      case "ADMIN_NEW_SUBSCRIPTION":
+        await sendAdminNewSubscriptionEmail(
+          "Usuario Prueba",
+          "prueba@ejemplo.com",
+          "Plan Premium",
+          97,
+        );
+        break;
+      case "SUBSCRIPTION_EXPIRING_SOON":
+        await sendSubscriptionExpiringSoonEmail(TEST_EMAIL, TEST_NAME, 3);
+        break;
+      case "SUBSCRIPTION_EXPIRED":
+        await sendSubscriptionExpiredEmail(TEST_EMAIL, TEST_NAME);
         break;
       default:
         return { error: "Tipo de email no válido." };

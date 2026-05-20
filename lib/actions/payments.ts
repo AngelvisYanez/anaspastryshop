@@ -9,6 +9,7 @@ import {
   sendSubscriptionConfirmedEmail,
   sendCoursePurchaseEmail,
   sendPaymentRejectedEmail,
+  sendAdminNewSubscriptionEmail,
 } from "@/lib/email";
 
 export async function getPendingPayments() {
@@ -58,7 +59,9 @@ export async function approvePayment(inscriptionId: string) {
     });
 
     if (!inscription.cursoId) {
-      const plan = await prisma.subscriptionPlan.findFirst({ where: { isActive: true } });
+      const plan = await prisma.subscriptionPlan.findFirst({
+        where: { isActive: true },
+      });
       const now = new Date();
       const endDate = subscriptionEndDate(now);
 
@@ -82,7 +85,14 @@ export async function approvePayment(inscriptionId: string) {
         inscription.user.email,
         inscription.user.name,
         plan?.name ?? "Membresía Academia",
-        inscription.amountPaid
+        inscription.amountPaid,
+      ).catch(() => {});
+
+      sendAdminNewSubscriptionEmail(
+        inscription.user.name ?? "Sin nombre",
+        inscription.user.email,
+        plan?.name ?? "Membresía Academia",
+        inscription.amountPaid,
       ).catch(() => {});
     } else {
       const curso = await prisma.curso.findUnique({
@@ -93,7 +103,7 @@ export async function approvePayment(inscriptionId: string) {
       sendCoursePurchaseEmail(
         inscription.user.email,
         inscription.user.name,
-        curso?.title ?? "Curso"
+        curso?.title ?? "Curso",
       ).catch(() => {});
 
       revalidatePath("/dashboard/mis-cursos");
@@ -146,7 +156,12 @@ export async function getPaymentHistory(page = 1, limit = 10) {
     return { inscriptions, total, pages: Math.ceil(total / limit) };
   } catch (error) {
     console.error("Error fetching payment history:", error);
-    return { error: "No se pudo obtener el historial", inscriptions: [], total: 0, pages: 0 };
+    return {
+      error: "No se pudo obtener el historial",
+      inscriptions: [],
+      total: 0,
+      pages: 0,
+    };
   }
 }
 
@@ -204,7 +219,7 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
     sendPaymentRejectedEmail(
       inscription.user.email,
       inscription.user.name,
-      reason
+      reason,
     ).catch(() => {});
 
     await logActivity({

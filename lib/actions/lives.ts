@@ -43,7 +43,10 @@ export async function createLive(data: LiveData) {
   }
 }
 
-export async function updateLive(id: string, data: Partial<LiveData & { status: string }>) {
+export async function updateLive(
+  id: string,
+  data: Partial<LiveData & { status: string }>,
+) {
   await requireRole();
   try {
     await prisma.liveStream.update({
@@ -60,7 +63,10 @@ export async function updateLive(id: string, data: Partial<LiveData & { status: 
   }
 }
 
-export async function updateLiveStatus(id: string, status: "SCHEDULED" | "LIVE" | "ENDED") {
+export async function updateLiveStatus(
+  id: string,
+  status: "SCHEDULED" | "LIVE" | "ENDED",
+) {
   await requireRole();
   await prisma.liveStream.update({ where: { id }, data: { status } });
   revalidatePath("/dashboard/lives");
@@ -74,16 +80,38 @@ export async function deleteLive(id: string) {
   return { success: true };
 }
 
-export async function joinLiveRoom(liveId: string): Promise<{ token: string } | { error: string }> {
+export async function joinLiveRoom(
+  liveId: string,
+): Promise<{ token: string } | { error: string }> {
   const session = await auth();
   if (!session?.user) return { error: "No autorizado" };
 
   const live = await prisma.liveStream.findUnique({ where: { id: liveId } });
   if (!live) return { error: "Live no encontrado" };
 
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id as string },
+    select: {
+      role: true,
+      subscription: { select: { status: true, plan: true } },
+    },
+  });
+
+  const role = user?.role ?? "USER";
+  const isStaff = ["ADMIN", "MENTOR"].includes(role);
+
+  if (!isStaff) {
+    if (!user?.subscription || user.subscription.status !== "ACTIVE") {
+      return { error: "Se requiere suscripción activa" };
+    }
+  }
+
   const { accountId, appId, apiToken } = await getRtkConfig();
   const BASE = `https://api.cloudflare.com/client/v4/accounts/${accountId}/realtime/kit/${appId}`;
-  const HEADERS = { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" };
+  const HEADERS = {
+    Authorization: `Bearer ${apiToken}`,
+    "Content-Type": "application/json",
+  };
 
   let meetingId = live.rtkMeetingId;
   if (!meetingId) {
@@ -95,21 +123,26 @@ export async function joinLiveRoom(liveId: string): Promise<{ token: string } | 
     const json = await res.json();
     meetingId = json.data?.id;
     if (!meetingId) return { error: "Error al crear meeting en Cloudflare" };
-    await prisma.liveStream.update({ where: { id: liveId }, data: { rtkMeetingId: meetingId } });
+    await prisma.liveStream.update({
+      where: { id: liveId },
+      data: { rtkMeetingId: meetingId },
+    });
   }
 
-  const role = (session.user as any).role as string;
-  const presetName = ["ADMIN", "MENTOR"].includes(role) ? "group_call_host" : "group_call_participant";
+  const presetName = isStaff ? "group_call_host" : "group_call_participant";
 
-  const participantRes = await fetch(`${BASE}/meetings/${meetingId}/participants`, {
-    method: "POST",
-    headers: HEADERS,
-    body: JSON.stringify({
-      name: session.user.name ?? "Participante",
-      preset_name: presetName,
-      custom_participant_id: session.user.id,
-    }),
-  });
+  const participantRes = await fetch(
+    `${BASE}/meetings/${meetingId}/participants`,
+    {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify({
+        name: session.user.name ?? "Participante",
+        preset_name: presetName,
+        custom_participant_id: session.user.id,
+      }),
+    },
+  );
 
   const participantJson = await participantRes.json();
   const token = participantJson.data?.token;

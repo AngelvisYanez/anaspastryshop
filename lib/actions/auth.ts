@@ -4,7 +4,11 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { logActivity } from "@/lib/logger";
-import { sendWelcomeEmail, sendPasswordResetEmail } from "@/lib/email";
+import {
+  sendWelcomeEmail,
+  sendPasswordResetEmail,
+  sendAdminNewUserEmail,
+} from "@/lib/email";
 
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiacreditousa.com";
 
@@ -12,7 +16,7 @@ export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const roleStr = formData.get("role") as string || "USER";
+  const roleStr = (formData.get("role") as string) || "USER";
 
   if (!name || !email || !password) {
     return { error: "Todos los campos son obligatorios" };
@@ -48,6 +52,11 @@ export async function registerUser(formData: FormData) {
     });
 
     sendWelcomeEmail(newUser.email, newUser.name).catch(() => {});
+    sendAdminNewUserEmail(
+      newUser.name ?? "Sin nombre",
+      newUser.email,
+      newUser.role,
+    ).catch(() => {});
 
     return { success: true };
   } catch (error) {
@@ -78,8 +87,7 @@ export async function checkPreloginStatus(formData: FormData) {
         }
       }
     }
-  } catch {
-  }
+  } catch {}
   return { isPendingMentor: false, isSuspended: false };
 }
 
@@ -132,13 +140,19 @@ export async function resetPassword(formData: FormData) {
   }
 
   try {
-    const record = await prisma.passwordResetToken.findUnique({ where: { token } });
+    const record = await prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
 
     if (!record || record.used || record.expiresAt < new Date()) {
-      return { error: "El enlace no es válido o ha expirado. Solicita uno nuevo." };
+      return {
+        error: "El enlace no es válido o ha expirado. Solicita uno nuevo.",
+      };
     }
 
-    const user = await prisma.user.findUnique({ where: { email: record.email } });
+    const user = await prisma.user.findUnique({
+      where: { email: record.email },
+    });
 
     if (!user) {
       return { error: "Usuario no encontrado" };

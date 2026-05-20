@@ -55,6 +55,38 @@ export const DEFAULT_TEMPLATES = [
     title: "¡Acceso al Curso Activado!",
     preheader: "Ya tienes acceso a tu nuevo curso.",
   },
+  {
+    type: "ADMIN_NEW_USER",
+    label: "Admin: Nuevo usuario registrado",
+    recipient: "ADMIN",
+    subject: "Nuevo registro en la plataforma",
+    title: "Nuevo Usuario Registrado",
+    preheader: "Alguien se ha unido a la academia.",
+  },
+  {
+    type: "ADMIN_NEW_SUBSCRIPTION",
+    label: "Admin: Nueva suscripción activa",
+    recipient: "ADMIN",
+    subject: "Nueva suscripción activada",
+    title: "Nueva Suscripción Activada",
+    preheader: "Un usuario ha activado su membresía.",
+  },
+  {
+    type: "SUBSCRIPTION_EXPIRING_SOON",
+    label: "Membresía por vencer (3 días)",
+    recipient: "USER",
+    subject: "Tu membresía vence pronto — Academia Crédito USA",
+    title: "Tu membresía está por vencer",
+    preheader: "Solo te quedan 3 días de acceso. No pierdas tu progreso.",
+  },
+  {
+    type: "SUBSCRIPTION_EXPIRED",
+    label: "Membresía vencida",
+    recipient: "USER",
+    subject: "Tu membresía ha vencido — Academia Crédito USA",
+    title: "Tu acceso ha expirado",
+    preheader: "Tu membresía ha vencido. Renueva ahora para continuar.",
+  },
 ] as const;
 
 export type EmailTemplateData = {
