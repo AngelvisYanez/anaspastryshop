@@ -42,7 +42,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             isActive: user.isActive,
             image: user.image,
           };
-        } catch {
+        } catch (error) {
+          console.error("[auth] authorize error:", error);
           return null;
         }
       },

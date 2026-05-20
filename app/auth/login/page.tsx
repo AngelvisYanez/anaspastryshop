@@ -54,12 +54,14 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const res = await signIn("credentials", { email, password, redirect: false });
-
-    if (!res?.error) {
-      router.push(callbackUrl);
-      router.refresh();
-      return;
+    try {
+      const res = await signIn("credentials", { email, password, redirect: false });
+      if (!res?.error) {
+        router.push(callbackUrl);
+        router.refresh();
+        return;
+      }
+    } catch {
     }
 
     const statusCheck = await checkPreloginStatus(formData);

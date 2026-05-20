@@ -57,25 +57,28 @@ export async function registerUser(formData: FormData) {
 }
 
 export async function checkPreloginStatus(formData: FormData) {
-  const identifier = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  try {
+    const identifier = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-  const user = identifier.includes("@")
-    ? await prisma.user.findUnique({ where: { email: identifier } })
-    : await prisma.user.findFirst({
-        where: { name: { equals: identifier, mode: "insensitive" } },
-      });
+    const user = identifier.includes("@")
+      ? await prisma.user.findUnique({ where: { email: identifier } })
+      : await prisma.user.findFirst({
+          where: { name: { equals: identifier, mode: "insensitive" } },
+        });
 
-  if (user) {
-    const isValid = await bcrypt.compare(password, user.password!);
-    if (isValid) {
-      if (user.role === "MENTOR" && !user.isApproved) {
-        return { isPendingMentor: true };
-      }
-      if (!user.isActive) {
-        return { isSuspended: true, reason: user.deactivationReason };
+    if (user) {
+      const isValid = await bcrypt.compare(password, user.password!);
+      if (isValid) {
+        if (user.role === "MENTOR" && !user.isApproved) {
+          return { isPendingMentor: true };
+        }
+        if (!user.isActive) {
+          return { isSuspended: true, reason: user.deactivationReason };
+        }
       }
     }
+  } catch {
   }
   return { isPendingMentor: false, isSuspended: false };
 }
