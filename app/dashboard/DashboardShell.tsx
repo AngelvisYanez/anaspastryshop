@@ -82,17 +82,17 @@ export default function DashboardShell({
         />
         {user.role === "USER" && !hasActiveSubscription && !hasPendingPayment && (
           <div className="bg-gradient-to-r from-[#0B1F3A] to-[#1A3A5C] text-white px-4 md:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0">
-            <p className="text-sm font-medium text-white/80">
+            <p className="text-sm font-medium text-white/80 leading-snug">
               <span className="font-black text-accent">Activa tu membresía</span> para desbloquear cursos, lives y webinars.
             </p>
-            <Link href="/pagar/membresia" className="shrink-0">
-              <button className="bg-accent text-[#0B1F3A] px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap">
+            <Link href="/pagar/membresia" className="shrink-0 w-full sm:w-auto">
+              <button className="bg-accent text-[#0B1F3A] w-full sm:w-auto justify-center px-4 py-2.5 sm:py-1.5 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-accent-hover transition-all flex items-center gap-1.5 whitespace-nowrap">
                 Pagar ahora <ArrowRight size={12} />
               </button>
             </Link>
           </div>
         )}
-        <main className="flex-1 overflow-y-auto w-full p-4 md:p-8 bg-background">
+        <main className="flex-1 overflow-y-auto w-full p-3 sm:p-4 md:p-8 bg-background">
           {children}
         </main>
       </div>

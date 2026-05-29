@@ -127,16 +127,16 @@ export default function DashboardHeader({
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-card/90 backdrop-blur-md border-b border-card-border flex items-center justify-between px-4 md:px-8 h-16">
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-30 w-full bg-card/90 backdrop-blur-md border-b border-card-border flex items-center justify-between px-3 sm:px-4 md:px-8 h-14 sm:h-16">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <button
           onClick={onMenuClick}
-          className="p-2 lg:hidden text-muted hover:bg-card-hover rounded-md transition-colors"
+          className="p-1.5 sm:p-2 lg:hidden text-muted hover:bg-card-hover rounded-md transition-colors shrink-0"
         >
-          <Menu size={22} />
+          <Menu size={20} />
         </button>
-        <div>
-          <h2 className="font-display text-lg font-black text-foreground tracking-tight transition-all">
+        <div className="min-w-0">
+          <h2 className="font-display text-base sm:text-lg font-black text-foreground tracking-tight truncate">
             {isBlockedMentor ? "Perfil Incompleto" : getPageTitle(pathname)}
           </h2>
           {isBlockedMentor ? (
@@ -151,8 +151,8 @@ export default function DashboardHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 pr-3 md:pr-4 border-r border-card-border">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-0.5 sm:gap-1 pr-2 sm:pr-3 md:pr-4 border-r border-card-border">
           <button
             className="hidden sm:block p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
             title="Buscar"
@@ -164,12 +164,12 @@ export default function DashboardHeader({
           <div className="relative" ref={panelRef}>
             <button
               onClick={() => setNotifOpen((v) => !v)}
-              className="relative p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
+              className="relative p-1.5 sm:p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
               aria-label="Notificaciones"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border border-card">
+                <span className="absolute top-1 right-1.5 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-red-500 text-[8px] sm:text-[9px] font-bold text-white border border-card">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -239,7 +239,7 @@ export default function DashboardHeader({
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
+            className="p-1.5 sm:p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
             title={theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
             aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
           >
@@ -250,19 +250,19 @@ export default function DashboardHeader({
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen((v) => !v)}
-            className="flex items-center gap-3 bg-card-hover px-2 py-1.5 md:pr-4 rounded-lg border border-card-border hover:bg-section-alt transition-colors"
+            className="flex items-center gap-2 sm:gap-3 bg-card-hover px-1.5 sm:px-2 py-1 md:pr-4 rounded-lg border border-card-border hover:bg-section-alt transition-colors"
           >
-            <div className="w-8 h-8 rounded-md overflow-hidden border border-card-border shadow-sm relative shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-md overflow-hidden border border-card-border shadow-sm relative shrink-0">
               {user.image ? (
                 <Image src={user.image} alt={user.name || "Perfil"} width={32} height={32} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-xs uppercase">
+                <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase">
                   {user.name ? user.name.substring(0, 2) : <UserIcon size={14} />}
                 </div>
               )}
             </div>
             <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[120px]">
+              <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[100px] xl:max-w-[120px]">
                 {user.name || "Usuario"}
               </span>
               <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">
