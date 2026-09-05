@@ -46,12 +46,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  transpilePackages: [
-    "@cloudflare/realtimekit-react",
-    "@cloudflare/realtimekit-react-ui",
-    "@cloudflare/realtimekit-ui",
-    "@cloudflare/realtimekit",
-  ],
 };
 
 export default nextConfig;

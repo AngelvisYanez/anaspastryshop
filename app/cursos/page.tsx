@@ -9,10 +9,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Catálogo de Cursos",
   description:
-    "Explora nuestro catálogo de cursos sobre crédito, finanzas personales e inversión en Estados Unidos. Formación práctica en español para la comunidad hispana.",
+    "Explora nuestro catálogo de cursos sobre herramientas digitales, tecnología y desarrollo profesional. Formación práctica en español para crecer sin fronteras.",
   openGraph: {
-    title: "Catálogo de Cursos | Academia Credito USA",
-    description: "Cursos de crédito y finanzas personales en español para hispanos en USA.",
+    title: "Catálogo de Cursos | Academia Omnia",
+    description: "Cursos de herramientas digitales y desarrollo profesional en español.",
   },
 };
 

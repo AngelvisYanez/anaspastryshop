@@ -15,47 +15,47 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://academiacreditousa.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Academia Credito USA | Educación Financiera en Español",
-    template: "%s | Academia Credito USA",
+    default: "Academia Omnia | Aprende Herramientas Digitales en Español",
+    template: "%s | Academia Omnia",
   },
   description:
-    "La plataforma líder en educación financiera y crédito en Estados Unidos para la comunidad hispana. Aprende a construir crédito, acceder a financiamiento y dominar tus finanzas personales.",
+    "La plataforma líder en educación digital en español. Aprende herramientas digitales, cursos prácticos y sesiones en vivo para dominar el mundo digital con una visión 360°.",
   keywords: [
-    "crédito USA",
-    "educación financiera hispanos",
-    "construir crédito Estados Unidos",
-    "finanzas personales español",
-    "cursos crédito",
-    "academia financiera",
+    "cursos digitales español",
+    "educación digital hispanos",
+    "aprender herramientas digitales",
+    "cursos online español",
+    "formación digital",
+    "academia digital",
   ],
-  authors: [{ name: "Academia Credito USA" }],
-  creator: "Academia Credito USA",
+  authors: [{ name: "Academia Omnia" }],
+  creator: "Academia Omnia",
   openGraph: {
     type: "website",
     locale: "es_US",
     url: siteUrl,
-    siteName: "Academia Credito USA",
-    title: "Academia Credito USA | Educación Financiera en Español",
+    siteName: "Academia Omnia",
+    title: "Academia Omnia | Aprende Herramientas Digitales en Español",
     description:
-      "Aprende a construir crédito, manejar finanzas y acceder a oportunidades financieras en Estados Unidos. Cursos en español.",
+      "Aprende herramientas digitales, cursos prácticos y sesiones en vivo con una visión 360°. Formación en español para crecer sin fronteras.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Academia Credito USA",
+        alt: "Academia Omnia",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Academia Credito USA | Educación Financiera en Español",
-    description: "Aprende a construir crédito y manejar tus finanzas en Estados Unidos.",
+    title: "Academia Omnia | Aprende Herramientas Digitales en Español",
+    description: "Aprende herramientas digitales y cursos prácticos en español con Academia Omnia.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -81,15 +81,15 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  name: "Academia Credito USA",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://academiacreditousa.com",
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://academiacreditousa.com"}/logo-acu.png`,
+  name: "Academia Omnia",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com",
+  logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com"}/logo-acu.png`,
   description:
-    "Plataforma líder en educación financiera y crédito para la comunidad hispana en Estados Unidos.",
-  sameAs: ["https://instagram.com/academiacreditousa"],
+    "Plataforma líder en educación digital en español. Domina las herramientas del mundo digital con una visión 360°.",
+  sameAs: ["https://instagram.com/academiaomnia"],
   contactPoint: {
     "@type": "ContactPoint",
-    email: "contacto@academiacreditousa.com",
+    email: "contacto@academiaomnia.com",
     contactType: "customer service",
     availableLanguage: "Spanish",
   },

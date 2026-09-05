@@ -45,7 +45,7 @@ const PAYMENT_META: Record<string, {
 const BENEFITS = [
   "Acceso ilimitado a todos los cursos de la plataforma",
   "Sesiones en vivo con instructores especializados",
-  "Actualizaciones constantes sobre el sistema crediticio americano",
+  "Actualizaciones constantes con contenido nuevo cada mes",
   "Comunidad activa de miembros",
   "Material descargable y recursos exclusivos",
   "Soporte directo por comunidad",
@@ -136,7 +136,7 @@ export default function MembresiaClient({
             className="text-lg text-white/55 max-w-2xl mx-auto leading-relaxed"
           >
             Una membresía mensual que te da acceso completo a cursos, sesiones en vivo y
-            una comunidad activa enfocada en el sistema crediticio americano.
+            una comunidad activa que aprende junta a dominar el mundo digital.
           </m.p>
         </div>
       </div>
@@ -374,7 +374,7 @@ export default function MembresiaClient({
                   </div>
                   <div>
                     <h4 className="font-bold text-foreground text-sm mb-1">Contenido actualizado</h4>
-                    <p className="text-muted text-sm leading-snug">El sistema crediticio cambia. Nosotros te mantenemos al día siempre.</p>
+                    <p className="text-muted text-sm leading-snug">El mundo digital cambia. Nosotros te mantenemos al día siempre.</p>
                   </div>
                 </div>
               </div>
@@ -386,7 +386,7 @@ export default function MembresiaClient({
               </span>
               <Star className="text-accent mb-4 relative z-10" size={22} />
               <p className="text-foreground leading-relaxed mb-6 italic text-sm relative z-10">
-                "Me uní hace 3 meses y ya entiendo el sistema crediticio americano mejor que muchos asesores. El acceso a los lives marca la diferencia."
+                "Me uní hace 3 meses y ya domino herramientas que me abrieron puertas en mi trabajo. El acceso a los lives marca la diferencia."
               </p>
               <div className="flex items-center gap-3 relative z-10">
                 <div className="w-10 h-10 bg-foreground rounded-full flex items-center justify-center">
@@ -432,10 +432,10 @@ export default function MembresiaClient({
                 <h2 className="font-display text-3xl md:text-5xl font-black tracking-tight mb-4 leading-tight">
                   ¿Listo para transformar
                   <br />
-                  <span className="text-accent italic">tu historial crediticio?</span>
+                  <span className="text-accent italic">tus habilidades digitales?</span>
                 </h2>
                 <p className="text-white/45 max-w-xl mx-auto mb-10 leading-relaxed">
-                  Únete a nuestra comunidad y empieza a construir el perfil crediticio que siempre quisiste.
+                  Únete a nuestra comunidad y empieza a construir el perfil profesional que siempre quisiste.
                 </p>
                 <Link href="/pagar/membresia">
                   <button className="bg-accent text-[#0B1F3A] px-12 py-5 rounded-xl font-bold text-sm flex items-center gap-3 mx-auto hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/20 uppercase tracking-widest">

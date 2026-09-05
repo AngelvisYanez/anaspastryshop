@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import ResetPasswordPage from "@/app/auth/reset-password/page";
+import ResetPasswordForm from "./ResetPasswordForm";
 
 export const metadata: Metadata = {
   title: "Restablecer Contraseña",
-  description: "Establece una nueva contraseña para tu cuenta de Academia Credito USA.",
+  description: "Establece una nueva contraseña para tu cuenta de Academia Omnia.",
   robots: { index: false, follow: false },
 };
 
 export default function RestablecerContrasenaPage() {
-  return <ResetPasswordPage />;
+  return <ResetPasswordForm />;
 }

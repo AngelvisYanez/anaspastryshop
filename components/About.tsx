@@ -3,12 +3,12 @@ import { m } from "framer-motion";
 import Image from "next/image";
 
 const STATS = [
-  { num: "7+", label: "Años construyendo crédito en USA" },
-  { num: "8", label: "Módulos completos" },
-  { num: "∞", label: "Actualizaciones incluidas" },
+  { num: "7+", label: "Años de experiencia" },
+  { num: "360°", label: "Visión integral" },
+  { num: "∞", label: "Actualizaciones" },
 ];
 
-export default function AboutRami() {
+export default function About() {
   return (
     <section className="w-full bg-section-alt py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-10">
@@ -19,7 +19,7 @@ export default function AboutRami() {
           transition={{ duration: 0.6 }}
         >
           <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-16 block">
-            Quién soy
+            Acerca de la academia
           </span>
         </m.div>
 
@@ -32,10 +32,10 @@ export default function AboutRami() {
           >
             <div className="aspect-[3/4] bg-card rounded-xl border border-card-border overflow-hidden relative">
               <Image
-                src="/rami.jpeg"
-                alt="Rami Noureddine"
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
+                alt="Estudiantes aprendiendo en línea"
                 fill
-                className="object-cover object-top"
+                className="object-cover object-center"
               />
               <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-card to-transparent" />
             </div>
@@ -63,27 +63,24 @@ export default function AboutRami() {
             transition={{ delay: 0.1 }}
           >
             <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-2">
-              Rami Noureddine
+              Academia Omnia
             </h2>
             <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-10">
-              Fundador · Academia Crédito USA
+              Educación online · Cursos prácticos y actualizados
             </p>
 
             <p className="text-sm text-muted leading-relaxed mb-6">
-              Soy venezolano, residente en Estados Unidos. Mi primer contacto con
-              el crédito americano fue a los 18 años — sin número de seguro
-              social, sin historial, y con una tarjeta de $5,000 que terminó
-              financiando mis estudios en el Líbano durante una crisis bancaria.
-              Desde ese momento me obsesioné con entender cómo funciona este
-              sistema desde adentro.
+              Academia Omnia nace con un objetivo claro: que cualquier persona
+              pueda dominar las herramientas digitales de manera integral, con
+              una visión 360° que conecta lo técnico con lo práctico. Nuestro
+              nombre viene del latín <span className="font-bold text-foreground">omnia</span> — "todo" — porque creemos
+              que el conocimiento no debería llegar fragmentado.
             </p>
             <p className="text-sm text-muted leading-relaxed mb-10">
-              Trabajé como banquero comercial, donde ayudé a decenas de clientes a
-              mejorar su perfil crediticio y acceder a financiamiento real. Ese
-              tiempo adentro del banco me cambió la perspectiva completamente — vi
-              exactamente cómo piensan las instituciones, qué buscan, y qué
-              decisiones toman. Hoy comparto todo eso en esta academia. Lo que yo
-              ojalá hubiera sabido desde el primer día.
+              Diseñamos cada curso con métodos comprobados, acompañamiento
+              real y contenidos que se actualizan al ritmo del mundo actual.
+              Ya sea que empieces desde cero o quieras llevar tu nivel al
+              siguiente paso, aquí encuentras el camino para lograrlo.
             </p>
 
             <div className="relative bg-card rounded-xl px-8 py-7 border border-card-border overflow-hidden">
@@ -92,16 +89,16 @@ export default function AboutRami() {
               </span>
               <p className="relative z-10 text-base text-foreground leading-relaxed font-medium">
                 El objetivo no es darte una lista de pasos a seguir ciegamente.
-                Es que desarrolles tu propio sentido lógico para tomar decisiones
-                financieras.
+                Es que desarrolles tu propio criterio para tomar decisiones
+                con confianza y aplicar lo aprendido en tu día a día.
               </p>
               <div className="mt-5 pt-5 border-t border-card-border flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
-                  <span className="text-accent text-xs font-bold">RN</span>
+                  <span className="text-accent text-xs font-bold">AO</span>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-foreground">Rami Noureddine</p>
-                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Fundador</p>
+                  <p className="text-xs font-bold text-foreground">Academia Omnia</p>
+                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Nuestra misión</p>
                 </div>
               </div>
             </div>

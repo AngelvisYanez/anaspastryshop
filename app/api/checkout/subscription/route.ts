@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         {
           price_data: {
             currency: "usd",
-            product_data: { name: activePlan?.name ?? "Membresía Academia Credito USA" },
+            product_data: { name: activePlan?.name ?? "Membresía Academia Omnia" },
             unit_amount: Math.round(amount * 100),
           },
           quantity: 1,

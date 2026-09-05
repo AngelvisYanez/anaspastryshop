@@ -67,7 +67,7 @@ const GATEWAYS: GatewayDef[] = [
     color: "purple",
     fields: [
       { key: "email", label: "Email de Zelle", placeholder: "pagos@academia.com", extra: true },
-      { key: "holderName", label: "Nombre del Titular", placeholder: "Academia Crédito USA", extra: true },
+      { key: "holderName", label: "Nombre del Titular", placeholder: "Academia Omnia", extra: true },
     ],
   },
   {
@@ -79,7 +79,7 @@ const GATEWAYS: GatewayDef[] = [
     color: "slate",
     fields: [
       { key: "bankName",      label: "Nombre del Banco",        placeholder: "Bank of America",         extra: true },
-      { key: "accountName",   label: "Titular de la Cuenta",    placeholder: "Academia Credito USA LLC", extra: true },
+      { key: "accountName",   label: "Titular de la Cuenta",    placeholder: "Academia Omnia LLC", extra: true },
       { key: "accountNumber", label: "Número de Cuenta",        placeholder: "123456789",                extra: true },
       { key: "routingNumber", label: "Routing Number (ABA)",    placeholder: "021000021",                extra: true },
       { key: "accountType",   label: "Tipo de Cuenta",          placeholder: "Checking",                 extra: true },

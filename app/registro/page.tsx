@@ -58,7 +58,7 @@ export default function RegistroPage() {
               Crea tu cuenta
             </h1>
             <p className="text-muted text-sm">
-              Únete a la comunidad de Academia Credito USA.
+              Únete a la comunidad de Academia Omnia.
             </p>
           </div>
 

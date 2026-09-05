@@ -70,7 +70,7 @@ export default function Sidebar({
         >
           <Image
             src="/logo-acu.png"
-            alt="Academia Credito USA"
+            alt="Academia Omnia"
             width={160}
             height={44}
             className="h-11 w-auto object-contain"

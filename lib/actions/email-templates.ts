@@ -147,7 +147,7 @@ export async function sendTestEmail(
         await sendCoursePurchaseEmail(
           TEST_EMAIL,
           TEST_NAME,
-          "Fundamentos de Crédito en USA",
+          "Fundamentos Digitales",
         );
         break;
       case "ADMIN_NEW_USER":

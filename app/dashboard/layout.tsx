@@ -95,8 +95,8 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
 
           <p className="text-xs text-muted mb-6">
             No tienes acceso al panel. Contacta a soporte:{" "}
-            <a href="mailto:soporte@academiacreditousa.com" className="text-red-500 font-bold hover:underline">
-              soporte@academiacreditousa.com
+            <a href="mailto:soporte@academiaomnia.com" className="text-red-500 font-bold hover:underline">
+              soporte@academiaomnia.com
             </a>
           </p>
 

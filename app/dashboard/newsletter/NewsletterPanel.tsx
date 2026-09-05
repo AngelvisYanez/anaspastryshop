@@ -20,15 +20,15 @@ const TEMPLATES = [
   {
     id: "bienvenida",
     label: "Bienvenida",
-    subject: "¡Bienvenido a Academia Crédito USA!",
-    title: "Empieza tu camino financiero hoy",
-    preheader: "Tu acceso al sistema crediticio americano comienza aquí.",
-    content: `<p>Nos alegra tenerte en nuestra comunidad. En Academia Crédito USA encontrarás todo lo que necesitas para dominar el sistema crediticio americano.</p>
-<p style="margin-top:16px;">Explora nuestros cursos, únete a las sesiones en vivo con Rami Noureddine y conecta con una comunidad activa de miembros en todo el mundo.</p>
+    subject: "¡Bienvenido a Academia Omnia!",
+    title: "Empieza tu camino digital hoy",
+    preheader: "Tu acceso al mundo digital comienza aquí.",
+    content: `<p>Nos alegra tenerte en nuestra comunidad. En Academia Omnia encontrarás todo lo que necesitas para dominar las herramientas digitales.</p>
+<p style="margin-top:16px;">Explora nuestros cursos, únete a las sesiones en vivo con instructores expertos y conecta con una comunidad activa de miembros en todo el mundo.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
     <td style="border-radius:50px;background-color:#0B1F3A;">
-      <a href="https://academiacreditousa.com/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Cursos &rarr;</a>
+      <a href="https://academiaomnia.com/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Cursos &rarr;</a>
     </td>
   </tr>
 </table>`,
@@ -38,12 +38,12 @@ const TEMPLATES = [
     label: "Nuevo Contenido",
     subject: "Nuevo contenido disponible en la Academia",
     title: "Hay contenido nuevo esperándote",
-    preheader: "Descubre las últimas novedades de Academia Crédito USA.",
-    content: `<p>Hemos publicado nuevo contenido en la plataforma. Entra ahora y descubre las últimas actualizaciones pensadas para ayudarte a construir un historial crediticio sólido.</p>
+    preheader: "Descubre las últimas novedades de Academia Omnia.",
+    content: `<p>Hemos publicado nuevo contenido en la plataforma. Entra ahora y descubre las últimas actualizaciones pensadas para que sigas creciendo profesionalmente.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
     <td style="border-radius:50px;background-color:#C9A84C;">
-      <a href="https://academiacreditousa.com/dashboard" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Ver Novedades &rarr;</a>
+      <a href="https://academiaomnia.com/dashboard" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Ver Novedades &rarr;</a>
     </td>
   </tr>
 </table>`,
@@ -51,10 +51,10 @@ const TEMPLATES = [
   {
     id: "membresia",
     label: "Promover Membresía",
-    subject: "Desbloquea el acceso completo — Academia Crédito USA",
+    subject: "Desbloquea el acceso completo — Academia Omnia",
     title: "Acceso ilimitado a todo el contenido",
-    preheader: "Activa tu membresía y lleva tu crédito al siguiente nivel.",
-    content: `<p>Con la membresía de Academia Crédito USA obtienes acceso ilimitado a todos los cursos, sesiones en vivo con Rami Noureddine y recursos exclusivos actualizados mes a mes.</p>
+    preheader: "Activa tu membresía y lleva tu aprendizaje al siguiente nivel.",
+    content: `<p>Con la membresía de Academia Omnia obtienes acceso ilimitado a todos los cursos, sesiones en vivo con instructores expertos y recursos exclusivos actualizados mes a mes.</p>
 <p style="margin-top:16px;font-weight:700;color:#0B1F3A;">¿Qué incluye tu membresía?</p>
 <ul style="margin-top:8px;padding-left:20px;color:#374151;line-height:2;">
   <li>Acceso completo a todos los cursos</li>
@@ -65,7 +65,7 @@ const TEMPLATES = [
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
     <td style="border-radius:50px;background-color:#C9A84C;">
-      <a href="https://academiacreditousa.com/membresia" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Activar Membresía &rarr;</a>
+      <a href="https://academiaomnia.com/membresia" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Activar Membresía &rarr;</a>
     </td>
   </tr>
 </table>`,
@@ -148,7 +148,7 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ej: Novedades de Mayo — Academia Crédito USA"
+                placeholder="Ej: Novedades de Mayo — Academia Omnia"
                 className="w-full bg-section-alt border border-card-border rounded-lg px-4 py-2.5 text-sm font-medium text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
             </div>

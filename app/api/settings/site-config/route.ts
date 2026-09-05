@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   const config = await prisma.siteConfig.findFirst();
   return NextResponse.json(config ?? {
-    siteName: "Academia Credito USA",
+    siteName: "Academia Omnia",
     ctaText: "Quiero unirme ahora",
     ctaUrl: "/planes",
     subscriptionPrice: 97,

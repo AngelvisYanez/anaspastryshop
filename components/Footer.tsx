@@ -12,12 +12,12 @@ export default function Footer() {
           <div>
             <Image
               src={logoDark}
-              alt="Academia Credito USA"
+              alt="Academia Omnia"
               className="h-9 w-auto object-contain mb-6"
             />
             <p className="text-sm text-white/45 leading-relaxed max-w-xs">
-              La plataforma de educación crediticia en español más completa de
-              Estados Unidos. Aprende a usar el sistema a tu favor.
+              La plataforma de educación digital en español para dominar las
+              herramientas que mueven el mundo actual. Aprende a tu favor.
             </p>
           </div>
 
@@ -63,7 +63,7 @@ export default function Footer() {
             </p>
             <h3 className="text-base font-black text-white mb-2">Recibe nuestras novedades</h3>
             <p className="text-sm text-white/45 mb-5">
-              Tips de crédito, nuevos cursos y contenido exclusivo directo a tu correo.
+              Tips y contenido exclusivo directo a tu correo.
             </p>
             <NewsletterForm />
           </div>
@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-10">
           <p className="text-xs text-white/25 font-medium">
-            © 2026 Academia Credito USA. Todos los derechos reservados.
+            © 2026 Academia Omnia. Todos los derechos reservados.
           </p>
           <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
             Educación Financiera · Estados Unidos

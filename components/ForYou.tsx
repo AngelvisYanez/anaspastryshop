@@ -4,15 +4,15 @@ import { m } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const SITUATIONS = [
-  "Has intentado aplicar a un crédito para tu casa, carro o negocio y te lo han negado sin entender por qué.",
-  "Te acaba de llegar el Social Security Number o tienes menos de 5 años con él y todavía no sabes cómo aprovecharlo.",
-  "Sientes que el sistema financiero americano es una caja negra y no sabes cómo usarlo a tu favor.",
-  "Tienes deudas que no sabes cómo manejar y el mínimo no alcanza para pagarlas.",
-  "No sabes cómo mejorar tu puntaje de crédito ni qué factores lo están bajando.",
-  "Pagas tasas de interés demasiado altas en tus tarjetas o préstamos porque nadie te ha explicado cómo negociar mejores condiciones.",
-  "Te sientes confundido con el lenguaje bancario y firmas documentos sin entender completamente lo que aceptas.",
-  "Quieres comprar una casa o un carro pero tu puntaje no está donde necesita estar para conseguir buenas condiciones.",
-  "Te han negado tarjetas de crédito constantemente y no sabes cuál es el problema ni cómo resolverlo.",
+  "Sientes que te quedas atrás porque no dominas las herramientas que el mercado laboral pide hoy.",
+  "Has intentado aprender por tu cuenta, pero te pierdes entre tanto contenido suelto y sin un plan claro.",
+  "Quieres crecer en tu carrera o dar un giro profesional, pero no sabes por dónde empezar.",
+  "Te frustra invertir tiempo en cursos que prometen mucho y entregan poco.",
+  "Necesitas aplicar lo aprendido en proyectos reales, no solo quedarte en la teoría.",
+  "El lenguaje técnico o las herramientas digitales te intimidan y buscas aprender en tu idioma.",
+  "Quieres construir un portafolio que demuestre lo que realmente sabes hacer.",
+  "Buscas una comunidad que te acompañe en el proceso, no aprender en soledad.",
+  "Quieres mantenerte actualizado porque el mundo digital cambia a toda velocidad.",
 ];
 
 export default function ForYou() {

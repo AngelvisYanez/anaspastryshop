@@ -11,7 +11,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Webinars en Vivo",
   description:
-    "Sesiones interactivas en tiempo real con expertos en crédito y finanzas. Haz preguntas y aprende directamente con instructores certificados.",
+    "Sesiones interactivas en tiempo real con expertos en herramientas digitales. Haz preguntas y aprende directamente con instructores certificados.",
   robots: { index: false, follow: false },
 };
 

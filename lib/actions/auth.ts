@@ -10,7 +10,7 @@ import {
   sendAdminNewUserEmail,
 } from "@/lib/email";
 
-const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiacreditousa.com";
+const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiaomnia.com";
 
 export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
@@ -112,7 +112,7 @@ export async function requestPasswordReset(formData: FormData) {
       data: { token, email, expiresAt },
     });
 
-    const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;
+    const resetUrl = `${BASE_URL}/restablecer-contrasena?token=${token}`;
     sendPasswordResetEmail(user.email, user.name, resetUrl).catch(() => {});
 
     return { success: true };

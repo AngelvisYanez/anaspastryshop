@@ -56,7 +56,7 @@ export default function CreateWebinarForm() {
             id="webinar-title"
             value={form.title}
             onChange={(e) => setField("title", e.target.value)}
-            placeholder="Clase magistral: Crédito en USA"
+            placeholder="Clase magistral: Herramientas digitales"
             className="w-full border border-card-border rounded-lg px-5 py-4 text-sm font-medium text-foreground outline-none focus:border-accent transition-all"
           />
         </div>

@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const FEATURES = [
-  "Módulos completos de crédito personal y empresarial",
-  "Sesiones en vivo con Rami Noureddine, mes a mes",
+  "Cursos completos para dominar herramientas digitales",
+  "Sesiones en vivo con instructores expertos, mes a mes",
   "Comunidad activa con actualizaciones en tiempo real",
-  "Estrategias probadas para construir y reparar crédito",
+  "Método práctico con proyectos y ejercicios reales",
   "Acceso a grabaciones y material exclusivo",
-  "Orientación directa para tu situación específica",
+  "Orientación directa para tu caso específico",
 ];
 
 export default function SubscriptionCheckoutPage() {
@@ -68,14 +68,14 @@ export default function SubscriptionCheckoutPage() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
             </span>
             <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
-              Membresía Academia Credito USA
+              Membresía Academia Omnia
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter mb-4">
             Únete a la Academia
           </h1>
           <p className="text-muted font-medium max-w-xl mx-auto">
-            Todo lo que necesitas para dominar el crédito en Estados Unidos en un solo lugar.
+            Todo lo que necesitas para dominar el mundo digital en un solo lugar.
           </p>
         </div>
 

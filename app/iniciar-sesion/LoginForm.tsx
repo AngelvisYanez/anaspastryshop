@@ -15,23 +15,23 @@ import Footer from "@/components/Footer";
 const benefits = [
   {
     icon: PlayCircle,
-    title: "8 Módulos Completos",
-    description: "Desde los básicos del crédito americano hasta estrategias avanzadas de crédito empresarial.",
+    title: "Cursos Completos",
+    description: "Desde los fundamentos hasta estrategias avanzadas, con una ruta de aprendizaje clara.",
   },
   {
     icon: Users,
     title: "Sesiones en Vivo",
-    description: "Sesiones dinámicas con Rami Noureddine. Haz tus preguntas y recibe orientación directa.",
+    description: "Sesiones dinámicas con instructores expertos. Haz tus preguntas y recibe orientación directa.",
   },
   {
     icon: TrendingUp,
-    title: "Estrategias Reales",
-    description: "Aprende a subir tu puntaje, negociar con bancos y calificar para las mejores condiciones.",
+    title: "Método Práctico",
+    description: "Aprende con proyectos reales y aplica lo que ves desde el primer día.",
   },
   {
     icon: Shield,
     title: "Actualizaciones Incluidas",
-    description: "El sistema crediticio cambia. Tu acceso incluye actualizaciones en tiempo real, siempre al día.",
+    description: "El mundo digital cambia. Tu acceso incluye actualizaciones en tiempo real, siempre al día.",
   },
 ];
 
@@ -177,8 +177,8 @@ export default function LoginPage() {
             </div>
             <p className="text-xs text-muted mb-6">
               Si crees que es un error, contacta a soporte:{" "}
-              <a href="mailto:soporte@academiacreditousa.com" className="text-accent font-bold hover:underline">
-                soporte@academiacreditousa.com
+              <a href="mailto:soporte@academiaomnia.com" className="text-accent font-bold hover:underline">
+                soporte@academiaomnia.com
               </a>
             </p>
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-accent transition-colors">
@@ -210,7 +210,7 @@ export default function LoginPage() {
             </h1>
             <p className="text-muted leading-relaxed mb-8 text-sm">
               Gracias por registrarte como mentor en{" "}
-              <span className="font-bold text-accent">Academia Credito USA</span>.
+              <span className="font-bold text-accent">Academia Omnia</span>.
               Un administrador revisará tu solicitud en las próximas{" "}
               <span className="font-bold text-foreground">24 horas</span>.
             </p>
@@ -273,7 +273,7 @@ export default function LoginPage() {
                   Bienvenido de nuevo
                 </h1>
                 <p className="text-muted text-sm">
-                  Accede a tu cuenta en Academia Credito USA
+                  Accede a tu cuenta en Academia Omnia
                 </p>
               </div>
 

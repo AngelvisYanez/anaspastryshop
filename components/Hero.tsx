@@ -5,15 +5,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const FEATURES = [
-  "Módulos de crédito personal y empresarial",
-  "Sesiones en vivo con Rami Noureddine",
+  "Cursos prácticos para dominar herramientas digitales",
+  "Sesiones en vivo con instructores expertos",
   "Comunidad activa y actualizaciones en tiempo real",
   "Acceso a grabaciones y material exclusivo",
 ];
 
 const TRUST_STATS = [
   { value: "7+", label: "Años de experiencia" },
-  { value: "8", label: "Módulos completos" },
+  { value: "100%", label: "Online" },
   { value: "∞", label: "Actualizaciones" },
 ];
 
@@ -52,20 +52,20 @@ export default function Hero() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
               </span>
               <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
-                La academia de crédito para hispanohablantes
+                La academia online para dominar herramientas digitales
               </span>
             </div>
 
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-6">
-              Domina el sistema
+              Domina las herramientas
               <br />
-              de crédito en{" "}
-              <span className="text-accent">Estados Unidos</span>
+              digitales con una{" "}
+              <span className="text-accent">visión 360°</span>
             </h1>
 
             <p className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed">
-              Lo que los bancos no te explican. Aprende a dominar el crédito,
-              calificar para las mejores condiciones y emprender con capital del banco.
+              Cursos prácticos, actualizados y en tu idioma. Aprende a tu ritmo,
+              aplica lo que ves en proyectos reales y crece profesionalmente sin límites.
             </p>
 
             <div className="flex flex-wrap gap-4 mb-12">

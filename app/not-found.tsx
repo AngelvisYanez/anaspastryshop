@@ -58,7 +58,7 @@ export default function NotFound() {
         className="mt-24 flex items-center justify-center gap-3 text-muted text-xs font-bold uppercase tracking-[0.25em] z-10"
       >
         <div className="w-8 h-px bg-card-border" />
-        Error 404 · Academia Credito USA
+        Error 404 · Academia Omnia
         <div className="w-8 h-px bg-card-border" />
       </m.div>
     </main>

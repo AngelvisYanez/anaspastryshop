@@ -7,7 +7,7 @@ const CARDS = [
     icon: Radio,
     title: "Sesiones en Vivo",
     description:
-      "Sesiones prácticas donde puedes traer tus preguntas específicas y recibir orientación directa para tu situación.",
+      "Sesiones prácticas donde puedes traer tus dudas específicas y recibir orientación directa de instructores expertos.",
     features: [
       "Sesiones dinámicas 100% en vivo",
       "Varios encuentros al mes",
@@ -17,22 +17,21 @@ const CARDS = [
   },
   {
     icon: BookOpen,
-    title: "Módulos Completos",
+    title: "Cursos Completos",
     description:
-      "Contenido estructurado desde los básicos hasta estrategias avanzadas de crédito personal y empresarial.",
+      "Contenido estructurado desde los fundamentos hasta niveles avanzados, con proyectos y ejercicios reales.",
     features: [
-      "Básicos del crédito americano",
-      "Construcción y reparación de crédito",
-      "Manejo estratégico de deudas",
-      "Relación con los bancos",
-      "Crédito empresarial",
+      "Ruta de aprendizaje clara",
+      "Proyectos prácticos paso a paso",
+      "Material descargable exclusivo",
+      "Seguimiento de tu progreso",
     ],
   },
   {
     icon: Users,
     title: "Comunidad & Recursos",
     description:
-      "Una comunidad activa de hispanohablantes que aprenden juntos, con material exclusivo y actualizaciones constantes.",
+      "Una comunidad activa que aprende junta, con material exclusivo y actualizaciones constantes para estar siempre al día.",
     features: [
       "Comunidad activa de miembros",
       "Actualizaciones en tiempo real",
@@ -43,13 +42,13 @@ const CARDS = [
 ];
 
 const RESULTS = [
-  "Entender el sistema crediticio americano y usarlo estratégicamente a tu favor.",
-  "Leer e interpretar tu reporte de crédito e identificar errores que te están costando puntos.",
-  "Aplicar estrategias concretas para subir tu puntaje, incluso si tienes historial dañado.",
-  "Manejar tus deudas de forma inteligente y salir del ciclo de pagos mínimos.",
-  "Construir una relación sólida con los bancos que te dé acceso a mejor financiamiento.",
-  "Calificar para las mejores condiciones en hipotecas, préstamos de auto y tarjetas de crédito.",
-  "Usar tu crédito como herramienta para invertir y generar patrimonio — dentro y fuera de Estados Unidos.",
+  "Dominar las herramientas digitales esenciales para tu campo profesional.",
+  "Aplicar lo aprendido en proyectos reales desde las primeras semanas.",
+  "Entender los fundamentos y las estrategias avanzadas de cada tema.",
+  "Trabajar de forma más eficiente y productiva con los recursos adecuados.",
+  "Construir un portafolio y una base de conocimiento sólida.",
+  "Adaptarte con confianza a un mundo digital que cambia constantemente.",
+  "Seguir aprendiendo y creciendo con contenido siempre actualizado.",
 ];
 
 export default function WhatYouGet() {
@@ -68,7 +67,7 @@ export default function WhatYouGet() {
           </span>
           <h2 className="font-display text-4xl md:text-6xl font-black text-background tracking-tight leading-[0.95]">
             Todo lo que necesitas para{" "}
-            <span className="text-accent">dominar tu crédito</span>
+            <span className="text-accent">dominar tus habilidades</span>
           </h2>
         </m.div>
 

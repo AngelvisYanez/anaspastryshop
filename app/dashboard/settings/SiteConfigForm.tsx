@@ -106,7 +106,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
               className={inputClass}
               value={config.siteName}
               onChange={(e) => setConfig((c) => ({ ...c, siteName: e.target.value }))}
-              placeholder="Academia Credito USA"
+              placeholder="Academia Omnia"
             />
           </div>
           <div>
@@ -165,7 +165,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
                 className={inputClass}
                 value={config.ctaUrl}
                 onChange={(e) => setConfig((c) => ({ ...c, ctaUrl: e.target.value }))}
-                placeholder="/planes o /checkout/subscription"
+                placeholder="/membresia o /checkout/subscription"
               />
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
                 className={`${inputClass} pl-9`}
                 value={config.instagramUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, instagramUrl: e.target.value || null }))}
-                placeholder="https://instagram.com/academiacreditousa"
+                placeholder="https://instagram.com/academiaomnia"
               />
             </div>
           </div>
@@ -237,7 +237,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
                 className={`${inputClass} pl-9`}
                 value={config.linkedinUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, linkedinUrl: e.target.value || null }))}
-                placeholder="https://linkedin.com/company/academiacreditousa"
+                placeholder="https://linkedin.com/company/academiaomnia"
               />
             </div>
           </div>
@@ -249,7 +249,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
                 className={`${inputClass} pl-9`}
                 value={config.tiktokUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, tiktokUrl: e.target.value || null }))}
-                placeholder="https://tiktok.com/@academiacreditousa"
+                placeholder="https://tiktok.com/@academiaomnia"
               />
             </div>
           </div>

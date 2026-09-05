@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
-import type Stripe from "stripe";
+
 import { subscriptionEndDate } from "@/lib/utils/subscription";
 import {
   sendSubscriptionConfirmedEmail,
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No signature" }, { status: 400 });
   }
 
-  let event: Stripe.Event;
+  let event: any;
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object as any;
     const { type, userId, cursoId } = session.metadata ?? {};
 
     if (type === "course" && userId && cursoId) {
@@ -121,7 +121,7 @@ export async function POST(req: Request) {
         sendSubscriptionConfirmedEmail(
           user.email,
           user.name,
-          plan?.name ?? "Membresía Academia",
+          plan?.name ?? "MembresÃƒÂ­a Academia",
           (session.amount_total ?? 0) / 100
         ).catch(() => {});
       }
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "invoice.payment_succeeded") {
-    const invoice = event.data.object as Stripe.Invoice;
+    const invoice = event.data.object as any;
     const customerId = invoice.customer as string;
 
     if ((invoice as any).subscription) {
@@ -153,7 +153,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "customer.subscription.deleted") {
-    const sub = event.data.object as Stripe.Subscription;
+    const sub = event.data.object as any;
     const customerId = sub.customer as string;
     await prisma.subscription.updateMany({
       where: { stripeCustomerId: customerId },
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "customer.subscription.updated") {
-    const sub = event.data.object as Stripe.Subscription;
+    const sub = event.data.object as any;
     const subAny = sub as any;
     const customerId = sub.customer as string;
     const status = sub.status === "active" ? "ACTIVE" : sub.status === "past_due" ? "PAST_DUE" : "CANCELED";

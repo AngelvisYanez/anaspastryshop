@@ -55,7 +55,7 @@ model Curso {
   category      String         @default("General")
   totalHours    Int
   totalClasses  Int
-  language      String         @default("Español")
+  language      String         @default("EspaÃ±ol")
   level         String
   content       String?
   isLive        Boolean        @default(false)
@@ -248,7 +248,7 @@ model EmailTemplate {
 
 model SiteConfig {
   id                String   @id @default(cuid())
-  siteName          String   @default("Academia Credito USA")
+  siteName          String   @default("Academia Omnia")
   logoUrl           String?
   ctaText           String   @default("Quiero unirme ahora")
   ctaUrl            String   @default("/planes")

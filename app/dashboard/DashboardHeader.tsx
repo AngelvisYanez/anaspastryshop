@@ -145,7 +145,7 @@ export default function DashboardHeader({
             </p>
           ) : (
             <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-0.5 hidden sm:block">
-              Academia Credito USA
+              Academia Omnia
             </p>
           )}
         </div>

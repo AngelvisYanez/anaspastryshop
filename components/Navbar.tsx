@@ -182,7 +182,7 @@ export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
         <Link href="/" className="flex items-center gap-2 group z-50">
           <Image
             src={currentLogo}
-            alt="Academia Credito USA"
+            alt="Academia Omnia"
             className="h-11 w-auto object-contain transition-all group-hover:scale-105"
           />
         </Link>
@@ -389,7 +389,7 @@ export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
           </a>
 
           <a
-            href="mailto:contacto@academiacreditousa.com"
+            href="mailto:contacto@academiaomnia.com"
             className={`hidden sm:flex p-2.5 rounded-lg transition-colors ${iconColor}`}
             aria-label="Correo"
           >

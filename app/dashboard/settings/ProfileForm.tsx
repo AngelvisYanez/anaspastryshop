@@ -140,7 +140,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             />
           </div>
           <h1 className="text-2xl font-black text-foreground">Ajustes de Perfil</h1>
-          <p className="text-muted font-medium">Actualiza tu información personal en Academia Credito USA</p>
+          <p className="text-muted font-medium">Actualiza tu información personal en Academia Omnia</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

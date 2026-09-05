@@ -6,13 +6,13 @@ const prisma = new PrismaClient()
 async function main() {
   const hashedPassword = await bcrypt.hash('admin123', 10)
 
-  // 1. Crear Usuario Principal (Newman)
+  // 1. Crear Usuario Principal (Admin)
   await prisma.user.upsert({
-    where: { email: 'newman@artica.group' },
+    where: { email: 'admin@academiaomnia.com' },
     update: {},
     create: {
-      email: 'newman@artica.group',
-      name: 'Newman Acosta',
+      email: 'admin@academiaomnia.com',
+      name: 'Admin Academia Omnia',
       password: hashedPassword,
       role: 'ADMIN',
       isApproved: true,
@@ -21,11 +21,11 @@ async function main() {
 
   // 2. Crear Admin Genérico
   await prisma.user.upsert({
-    where: { email: 'admin@artica.media' },
+    where: { email: 'equipo@academiaomnia.com' },
     update: {},
     create: {
-      email: 'admin@artica.media',
-      name: 'Admin Articademy',
+      email: 'equipo@academiaomnia.com',
+      name: 'Equipo Academia Omnia',
       password: hashedPassword,
       role: 'ADMIN',
       isApproved: true,
@@ -34,11 +34,11 @@ async function main() {
 
   // 3. Crear Mentor
   const mentor = await prisma.user.upsert({
-    where: { email: 'mentor@artica.media' },
+    where: { email: 'mentor@academiaomnia.com' },
     update: {},
     create: {
-      email: 'mentor@artica.media',
-      name: 'Mentor Media Ads',
+      email: 'mentor@academiaomnia.com',
+      name: 'Mentor Academia Omnia',
       password: hashedPassword,
       role: 'MENTOR',
       isApproved: true,
@@ -48,8 +48,8 @@ async function main() {
   // 4. Crear un Curso de ejemplo con la NUEVA estructura
   await prisma.curso.create({
     data: {
-      title: 'Meta Ads Academy 2026',
-      description: 'Aprende a vender lo que sea con publicidad en Facebook e Instagram.',
+      title: 'Publicidad Digital 2026',
+      description: 'Aprende a crear campañas publicitarias efectivas en las plataformas digitales más usadas.',
       price: 45,
       totalHours: 10,
       totalClasses: 3,
@@ -64,13 +64,13 @@ async function main() {
             lessons: {
               create: [
                 {
-                  title: 'El Ecosistema de Meta',
-                  summary: 'Diferencia entre botón "Promocionar" vs. Ads Manager.',
+                  title: 'El Ecosistema Digital',
+                  summary: 'Diferencia entre promocionar contenido y gestionar campañas desde una plataforma publicitaria.',
                   order: 0
                 },
                 {
                   title: 'Estructura de una Campaña',
-                  summary: 'Campaña, Conjunto de anuncios y Anuncio.',
+                  summary: 'Campaña, conjunto de anuncios y anuncio.',
                   order: 1
                 }
               ]
@@ -81,7 +81,7 @@ async function main() {
     }
   })
 
-  console.log('Seed completed successfully with user: newman@artica.group')
+  console.log('Seed completed successfully with user: admin@academiaomnia.com')
 }
 
 main()

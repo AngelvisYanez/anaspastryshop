@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import ForYou from "@/components/ForYou";
 import VideoIntro from "@/components/VideoIntro";
 import WhatYouGet from "@/components/WhatYouGet";
-import AboutRami from "@/components/AboutRami";
+import About from "@/components/About";
 import Testimonials from "@/components/Testimonials";
 import CoursesCarousel from "@/components/CoursesCarousel";
 import Footer from "@/components/Footer";
@@ -56,7 +56,7 @@ export default async function Home() {
               Explorar Cursos
             </h2>
             <p className="text-muted font-medium mt-2">
-              Formación práctica y técnica para potenciar tu perfil crediticio.
+              Formación práctica y técnica para potenciar tu perfil profesional.
             </p>
           </div>
           <Link href="/cursos">
@@ -69,7 +69,7 @@ export default async function Home() {
         <CoursesCarousel courses={courses} />
       </section>
 
-      <AboutRami />
+      <About />
 
       <Testimonials />
 
@@ -80,7 +80,8 @@ export default async function Home() {
               Empieza hoy
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-4">
-              Tu historial crediticio empieza con una decisión.
+              Tu crecimiento profesional
+              empieza con una decisión.
             </h2>
             <p className="text-muted leading-relaxed">
               Accede a todos nuestros cursos, sesiones en vivo y recursos actualizados con una sola membresía.

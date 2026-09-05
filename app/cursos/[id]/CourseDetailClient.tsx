@@ -19,7 +19,7 @@ function getEmbedUrl(url: string | null | undefined): string | null {
 const FAQS = [
   { q: "¿Es obligatorio registrarse?", a: "Sí. Para garantizar el acceso permanente a tus clases, debes crear una cuenta gratuita antes de activar tu membresía." },
   { q: "¿Cómo recibo el acceso?", a: "Una vez activa tu membresía mensual, todos los cursos se desbloquean automáticamente en tu panel de alumno." },
-  { q: "¿Qué incluye la membresía?", a: "La membresía mensual da acceso completo a todo el catálogo de cursos disponibles en Academia Crédito USA." },
+  { q: "¿Qué incluye la membresía?", a: "La membresía mensual da acceso completo a todo el catálogo de cursos disponibles en Academia Omnia." },
 ];
 
 export default function CourseDetailClient({ course, hasPaid, children }: { course: any; hasPaid: boolean; children?: ReactNode }) {

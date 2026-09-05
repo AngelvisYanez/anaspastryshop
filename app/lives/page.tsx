@@ -9,10 +9,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Lives y Clases en Vivo",
   description:
-    "Transmisiones en vivo con instructores expertos en crédito y finanzas. Aprende en tiempo real con Academia Credito USA.",
+    "Transmisiones en vivo con instructores expertos. Aprende en tiempo real con Academia Omnia.",
   openGraph: {
-    title: "Lives y Clases en Vivo | Academia Credito USA",
-    description: "Clases en vivo sobre crédito y finanzas para la comunidad hispana en USA.",
+    title: "Lives y Clases en Vivo | Academia Omnia",
+    description: "Clases en vivo y sesiones interactivas para aprender con expertos.",
   },
 };
 

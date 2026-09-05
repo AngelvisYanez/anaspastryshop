@@ -57,7 +57,7 @@ export default function RegistroMentorPage() {
               Únete como Mentor
             </h1>
             <p className="text-muted text-sm">
-              Comparte tu conocimiento y ayuda a crecer la comunidad de Academia Credito USA.
+              Comparte tu conocimiento y ayuda a crecer la comunidad de Academia Omnia.
             </p>
           </div>
 

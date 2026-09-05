@@ -82,7 +82,7 @@ export default function CreateLiveForm() {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej. Clase magistral: Reparación de crédito paso a paso"
+              placeholder="Ej. Clase magistral: Dominando herramientas digitales"
               className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground"
             />
           </div>

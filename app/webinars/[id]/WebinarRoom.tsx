@@ -1,11 +1,8 @@
 "use client";
 
-import { useRealtimeKitClient, RealtimeKitProvider } from "@cloudflare/realtimekit-react";
-import { RtkMeeting } from "@cloudflare/realtimekit-react-ui";
-import { useEffect, useState } from "react";
+import { Video, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import WebinarHostPanel from "./WebinarHostPanel";
-import WebinarParticipantBar from "./WebinarParticipantBar";
+import { useEffect } from "react";
 import { leaveWebinarRoom } from "@/lib/actions/webinars";
 
 interface Props {
@@ -15,19 +12,9 @@ interface Props {
   tokenError: string | null;
 }
 
-export default function WebinarRoom({ webinarId, isHost, token, tokenError }: Props) {
+export default function WebinarRoom({ webinarId, isHost, tokenError }: Props) {
   const router = useRouter();
-  const [client, initClient] = useRealtimeKitClient();
-  const [runtimeError, setRuntimeError] = useState<string | null>(null);
-  const [connecting, setConnecting] = useState(!!token);
-  const error = tokenError ?? runtimeError;
-
-  useEffect(() => {
-    if (!token) return;
-    initClient({ authToken: token, defaults: { audio: false, video: false } })
-      .catch(() => setRuntimeError("No se pudo conectar a la sala"))
-      .finally(() => setConnecting(false));
-  }, [token, initClient]);
+  const error = tokenError;
 
   useEffect(() => {
     const handleLeave = () => { leaveWebinarRoom(webinarId); };
@@ -38,46 +25,36 @@ export default function WebinarRoom({ webinarId, isHost, token, tokenError }: Pr
     };
   }, [webinarId]);
 
-  if (connecting) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-[#0B1F3A]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white font-bold">Conectando a la sala...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#0B1F3A]">
-        <div className="text-center max-w-sm">
+        <div className="text-center max-w-sm p-6 bg-white/5 rounded-2xl border border-white/10">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
           <p className="text-red-400 font-bold text-lg mb-2">No se puede acceder</p>
           <p className="text-gray-400 text-sm mb-6">{error}</p>
           <button
-            onClick={() => router.push("/planes")}
+            onClick={() => router.push("/membresia")}
             className="bg-[#C9A84C] text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-[#B89640] transition-all"
           >
-            Ver planes de suscripción
+            Ver planes de membresía
           </button>
         </div>
       </div>
     );
   }
 
-  if (!client) return null;
-
   return (
-    <RealtimeKitProvider value={client}>
-      <div className="relative h-screen w-full">
-        <RtkMeeting meeting={client} style={{ height: "100%", width: "100%" }} />
-        {isHost ? (
-          <WebinarHostPanel client={client} />
-        ) : (
-          <WebinarParticipantBar client={client} />
-        )}
+    <div className="flex flex-col items-center justify-center h-screen bg-[#0B1F3A] text-white p-6">
+      <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4">
+        <Video className="w-8 h-8 text-[#C9A84C]" />
       </div>
-    </RealtimeKitProvider>
+      <h2 className="text-2xl font-bold mb-2">Sala de Webinar</h2>
+      <p className="text-gray-400 text-sm max-w-md text-center mb-4">
+        Sesión activa{isHost ? " (Modo Anfitrión)" : ""} para el webinar ID: {webinarId}
+      </p>
+      <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-300">
+        Sala en línea y lista para la transmisión.
+      </div>
+    </div>
   );
 }

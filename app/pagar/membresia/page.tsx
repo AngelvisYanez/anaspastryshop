@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Pagar Membresía",
-  description: "Completa tu pago y accede a todos los cursos, sesiones en vivo y recursos de Academia Credito USA.",
+  description: "Completa tu pago y accede a todos los cursos, sesiones en vivo y recursos de Academia Omnia.",
   robots: { index: false, follow: false },
 };
 

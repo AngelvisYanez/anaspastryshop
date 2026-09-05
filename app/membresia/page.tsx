@@ -10,9 +10,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Membresía",
   description:
-    "Accede a todos los cursos, webinars en vivo y recursos de Academia Credito USA con una sola membresía. Invierte en tu educación financiera hoy.",
+    "Accede a todos los cursos, webinars en vivo y recursos de Academia Omnia con una sola membresía. Invierte en tu educación financiera hoy.",
   openGraph: {
-    title: "Membresía | Academia Credito USA",
+    title: "Membresía | Academia Omnia",
     description: "Planes de membresía para acceder a formación financiera completa en español.",
   },
 };

@@ -58,7 +58,7 @@ export default function PublicCoursesClient({
             <span className="text-accent italic">siguiente nivel.</span>
           </h1>
           <p className="text-lg text-white/55 max-w-2xl leading-relaxed">
-            Formación de alto nivel en crédito y finanzas respaldada por Academia Credito USA.
+            Formación de alto nivel en herramientas digitales respaldada por Academia Omnia.
           </p>
         </div>
       </div>

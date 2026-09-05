@@ -10,27 +10,27 @@ const BENEFITS = [
   {
     icon: BookOpen,
     title: "Cursos en tu idioma",
-    desc: "Todo el contenido en español, diseñado para hispanohablantes que quieren dominar el sistema crediticio americano sin barreras.",
+    desc: "Todo el contenido en español, diseñado para que aprendas sin barreras y a tu propio ritmo.",
   },
   {
     icon: TrendingUp,
-    title: "Estrategias reales",
-    desc: "No teoría vacía. Aprende exactamente lo que los bancos buscan y cómo usar esa información a tu favor desde el primer día.",
+    title: "Método práctico",
+    desc: "No teoría vacía. Aprende con proyectos reales y ejercicios que puedes aplicar desde el primer día.",
   },
   {
     icon: Users,
     title: "Comunidad activa",
-    desc: "Rodéate de cientos de alumnos que comparten tu misma historia y aprenden juntos a construir su perfil crediticio.",
+    desc: "Rodéate de cientos de alumnos que comparten tu misma meta y aprenden juntos a crecer.",
   },
   {
     icon: Zap,
     title: "Lives y webinars",
-    desc: "Sesiones en vivo donde puedes traer tus preguntas y recibir orientación directa para tu situación específica.",
+    desc: "Sesiones en vivo donde puedes traer tus dudas y recibir orientación directa para tu caso específico.",
   },
   {
     icon: Shield,
     title: "Contenido siempre actualizado",
-    desc: "El sistema crediticio cambia. Tu acceso incluye todas las actualizaciones para que siempre estés un paso adelante.",
+    desc: "El mundo digital cambia. Tu acceso incluye todas las actualizaciones para que siempre estés un paso adelante.",
   },
 ];
 
@@ -53,13 +53,14 @@ export default function NosotrosPage() {
               Nuestra Historia
             </span>
             <h1 className="font-display text-5xl md:text-8xl font-black text-white tracking-tight mb-8 leading-[0.9]">
-              Educación financiera
+              Educación digital
               <br />
               <span className="text-accent italic">sin fronteras.</span>
             </h1>
             <p className="text-xl text-white/55 leading-relaxed max-w-2xl">
-              Academia Credito USA nace con un objetivo claro: que cualquier hispanohablante
-              en Estados Unidos pueda entender y dominar el sistema crediticio americano.
+              Academia Omnia nace con un objetivo claro: que cualquier persona
+              pueda dominar las herramientas digitales y crecer profesionalmente,
+              sin importar de dónde venga.
             </p>
           </m.div>
         </div>
@@ -79,7 +80,7 @@ export default function NosotrosPage() {
             <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
               Todo lo que necesitas para
               <br />
-              <span className="text-accent italic">dominar tu crédito.</span>
+              <span className="text-accent italic">dominar tus habilidades.</span>
             </h2>
           </m.div>
 
@@ -112,8 +113,8 @@ export default function NosotrosPage() {
               className="relative h-[420px] rounded-2xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2000"
-                alt="Crédito en USA"
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000"
+                alt="Aprendizaje en línea"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
@@ -127,18 +128,21 @@ export default function NosotrosPage() {
               className="flex flex-col justify-center"
             >
               <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
-                El sistema crediticio
+                Nuestro método
               </span>
               <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-5">
-                Entiende cómo funciona
+                Aprende con una visión
                 <br />
-                <span className="text-accent italic">el crédito americano.</span>
+                <span className="text-accent italic">integral y 360°.</span>
               </h2>
               <p className="text-muted text-sm leading-relaxed mb-4">
-                En Estados Unidos, tu puntaje de crédito determina todo: desde la tasa de interés de tu hipoteca hasta si puedes rentar un apartamento. Conocer las reglas del juego es el primer paso para ganarlo.
+                En el mundo actual, dominar una sola herramienta ya no es
+                suficiente. Nuestro enfoque conecta la técnica con la práctica
+                para que entiendas el porqué detrás de cada decisión.
               </p>
               <p className="text-muted text-sm leading-relaxed">
-                Te enseñamos a leer tu reporte de crédito, disputar errores, construir historial desde cero y usar las herramientas que los bancos ponen a tu disposición — en tu idioma.
+                Te guiamos paso a paso con contenido claro, proyectos reales y
+                acompañamiento cercano — en tu idioma y a tu ritmo.
               </p>
             </m.div>
           </div>
@@ -152,14 +156,13 @@ export default function NosotrosPage() {
                 Empieza hoy
               </span>
               <h2 className="font-display text-3xl md:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
-                Tu historial crediticio
+                Tu crecimiento profesional
                 <br />
                 <span className="text-accent italic">empieza con una decisión.</span>
               </h2>
               <p className="text-white/50 text-sm leading-relaxed mb-8 max-w-lg">
                 Accede a cursos, sesiones en vivo, webinars y una comunidad activa
-                de hispanohablantes que aprenden juntos a usar el crédito americano
-                como una herramienta real de crecimiento.
+                que aprende junta a dominar las herramientas del mundo digital.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/membresia">
@@ -177,7 +180,7 @@ export default function NosotrosPage() {
             <div className="hidden md:grid grid-cols-2 gap-4 shrink-0">
               {[
                 { num: "$97", label: "al mes" },
-                { num: "8", label: "módulos" },
+                { num: "100%", label: "online" },
                 { num: "+500", label: "alumnos" },
                 { num: "∞", label: "actualizaciones" },
               ].map((s) => (

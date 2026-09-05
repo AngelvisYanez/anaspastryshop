@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Pago Confirmado",
-  description: "Tu pago fue procesado exitosamente. Bienvenido a Academia Credito USA.",
+  description: "Tu pago fue procesado exitosamente. Bienvenido a Academia Omnia.",
   robots: { index: false, follow: false },
 };
 
@@ -25,7 +25,7 @@ async function ConfirmacionContent({ searchParams }: { searchParams: Promise<{ t
         </p>
 
         <h1 className="font-display text-3xl font-black text-foreground mb-4 tracking-tight leading-tight">
-          {isSub ? "¡Bienvenido a Academia Credito USA!" : "¡Acceso activado!"}
+          {isSub ? "¡Bienvenido a Academia Omnia!" : "¡Acceso activado!"}
         </h1>
 
         <p className="text-muted text-sm mb-10 leading-relaxed max-w-sm mx-auto">

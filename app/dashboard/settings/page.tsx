@@ -42,7 +42,7 @@ export default async function SettingsPage() {
       {isAdmin && (
         <SiteConfigForm
           initialConfig={{
-            siteName: siteConfig?.siteName ?? "Academia Credito USA",
+            siteName: siteConfig?.siteName ?? "Academia Omnia",
             logoUrl: siteConfig?.logoUrl ?? null,
             ctaText: siteConfig?.ctaText ?? "Quiero unirme ahora",
             ctaUrl: siteConfig?.ctaUrl ?? "/planes",

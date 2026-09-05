@@ -8,8 +8,8 @@ function getResend(): Resend {
 }
 const FROM =
   process.env.RESEND_FROM_EMAIL ??
-  "Academia Credito USA <noreply@academiacreditousa.com>";
-const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiacreditousa.com";
+  "Academia Omnia <noreply@academiaomnia.com>";
+const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiaomnia.com";
 
 const LOGO_URL = `${BASE_URL}/logo_II.png`;
 
@@ -30,7 +30,7 @@ function buildEmail(preheader: string, body: string): string {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
-  <title>Academia Crédito USA</title>
+  <title>Academia Omnia</title>
   <!--[if mso]>
   <noscript>
     <xml><o:OfficeDocumentSettings>
@@ -76,13 +76,13 @@ function buildEmail(preheader: string, body: string): string {
                         <td style="background-color:${GOLD};width:3px;border-radius:2px;">&nbsp;</td>
                         <td style="padding-left:12px;">
                           <p style="margin:0;font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${GOLD};line-height:1.2;">Academia</p>
-                          <p style="margin:0;font-size:18px;font-weight:900;letter-spacing:-0.02em;color:${WHITE};line-height:1.2;">Crédito USA</p>
+                          <p style="margin:0;font-size:18px;font-weight:900;letter-spacing:-0.02em;color:${WHITE};line-height:1.2;">Omnia</p>
                         </td>
                       </tr>
                     </table>
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <span style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.35);">academiacreditousa.com</span>
+                    <span style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.35);">academiaomnia.com</span>
                   </td>
                 </tr>
               </table>
@@ -120,7 +120,7 @@ function buildEmail(preheader: string, body: string): string {
                 <tr>
                   <td align="center">
                     <p style="font-size:11px;color:#9ca3af;line-height:1.6;margin:0;">
-                      © ${new Date().getFullYear()} Academia Crédito USA. Todos los derechos reservados.<br>
+                      © ${new Date().getFullYear()} Academia Omnia. Todos los derechos reservados.<br>
                       Estás recibiendo este correo porque tienes una cuenta en nuestra plataforma.
                     </p>
                   </td>
@@ -216,7 +216,7 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
           <h1 style="margin:0;font-size:28px;font-weight:900;color:${WHITE};letter-spacing:-0.03em;line-height:1.1;">
             Hola, ${firstName}
           </h1>
-          <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.6);font-weight:500;">Bienvenido a la Academia Crédito USA</p>
+          <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.6);font-weight:500;">Bienvenido a la Academia Omnia</p>
         </td>
       </tr>
 
@@ -228,8 +228,8 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
       <tr>
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.7;font-weight:400;">
-            Tu cuenta ha sido creada exitosamente. Ahora formas parte de una comunidad dedicada a dominar el
-            sistema crediticio americano y construir un futuro financiero sólido.
+            Tu cuenta ha sido creada exitosamente. Ahora formas parte de una comunidad dedicada a dominar
+            las herramientas digitales y crecer profesionalmente sin fronteras.
           </p>
 
           <!-- FEATURE LIST -->
@@ -243,7 +243,7 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 ${featureRow("→", "Explorar todos los cursos disponibles en la plataforma")}
                 ${featureRow("→", "Activar tu membresía y desbloquear acceso completo")}
-                ${featureRow("→", "Acceder a sesiones en vivo con Rami Noureddine")}
+                ${featureRow("→", "Acceder a sesiones en vivo con instructores expertos")}
                 ${featureRow("→", "Unirte a la comunidad activa de miembros")}
               </table>
             </td></tr>
@@ -279,7 +279,7 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
       to: email,
       subject:
         config.subject ||
-        `Bienvenido a Academia Crédito USA — Hola, ${firstName}`,
+        `Bienvenido a Academia Omnia — Hola, ${firstName}`,
       html: buildEmail(
         config.preheader ||
           `Bienvenido ${firstName}, tu cuenta está lista. Empieza hoy.`,
@@ -323,7 +323,7 @@ export async function sendSubscriptionConfirmedEmail(
       <tr>
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 28px;font-size:15px;color:#374151;line-height:1.7;">
-            Hola ${firstName}, tu membresía en <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong> está
+            Hola ${firstName}, tu membresía en <strong style="color:${NAVY};font-weight:800;">Academia Omnia</strong> está
             activa. Ya tienes acceso completo a todos los cursos, sesiones en vivo y material exclusivo.
           </p>
 
@@ -388,7 +388,7 @@ export async function sendSubscriptionConfirmedEmail(
             <tr><td style="padding:0 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 ${featureRow("📚", "Acceso a todos los cursos de la plataforma")}
-                ${featureRow("🎙️", "Sesiones en vivo con Rami Noureddine")}
+                ${featureRow("🎙️", "Sesiones en vivo con instructores expertos")}
                 ${featureRow("📈", "Estrategias actualizadas mes a mes")}
                 ${featureRow("👥", "Comunidad activa de miembros")}
               </table>
@@ -414,7 +414,7 @@ export async function sendSubscriptionConfirmedEmail(
       from: FROM,
       to: email,
       subject:
-        config.subject || `¡Tu membresía está activa! — Academia Crédito USA`,
+        config.subject || `¡Tu membresía está activa! — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `Hola ${firstName}, tu acceso a ${planName} ha sido activado. ¡Empieza hoy!`,
@@ -450,7 +450,7 @@ export async function sendSubscriptionCanceledEmail(
       <tr>
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.7;">
-            Tu membresía en <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong> ha sido cancelada.
+            Tu membresía en <strong style="color:${NAVY};font-weight:800;">Academia Omnia</strong> ha sido cancelada.
             Tu acceso permanecerá activo hasta el final del período ya pagado.
           </p>
 
@@ -507,7 +507,7 @@ export async function sendSubscriptionCanceledEmail(
       to: email,
       subject:
         config.subject ||
-        `Tu membresía ha sido cancelada — Academia Crédito USA`,
+        `Tu membresía ha sido cancelada — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `Hola ${firstName}, tu membresía fue cancelada. Puedes reactivarla cuando quieras.`,
@@ -618,7 +618,7 @@ export async function sendSubscriptionPendingEmail(
       from: FROM,
       to: email,
       subject:
-        config.subject || `Pago recibido, en revisión — Academia Crédito USA`,
+        config.subject || `Pago recibido, en revisión — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `${firstName}, recibimos tu pago. Te notificaremos cuando tu membresía esté activa.`,
@@ -652,7 +652,7 @@ export async function sendAccountApprovedEmail(
       <tr>
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
-            Hola ${firstName}, tu cuenta en <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong> ha sido
+            Hola ${firstName}, tu cuenta en <strong style="color:${NAVY};font-weight:800;">Academia Omnia</strong> ha sido
             revisada y aprobada por nuestro equipo. Ya puedes iniciar sesión y acceder a la plataforma.
           </p>
 
@@ -661,7 +661,7 @@ export async function sendAccountApprovedEmail(
             <tr><td style="padding:0 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 ${featureRow("📚", "Explorar todos los cursos disponibles")}
-                ${featureRow("🎙️", "Acceder a sesiones en vivo con Rami Noureddine")}
+                ${featureRow("🎙️", "Acceder a sesiones en vivo con instructores expertos")}
                 ${featureRow("📈", "Ver el contenido exclusivo de miembros")}
                 ${featureRow("👥", "Participar en la comunidad activa")}
               </table>
@@ -696,7 +696,7 @@ export async function sendAccountApprovedEmail(
       from: FROM,
       to: email,
       subject:
-        config.subject || `¡Tu cuenta ha sido aprobada! — Academia Crédito USA`,
+        config.subject || `¡Tu cuenta ha sido aprobada! — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`,
@@ -732,7 +732,7 @@ export async function sendPaymentRejectedEmail(
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
             Hola ${firstName}, lamentablemente no pudimos verificar tu pago en
-            <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong>.
+            <strong style="color:${NAVY};font-weight:800;">Academia Omnia</strong>.
             A continuación encontrarás más información.
           </p>
 
@@ -775,7 +775,7 @@ export async function sendPaymentRejectedEmail(
               <td align="center">
                 <p style="margin:0;font-size:12px;color:${MUTED};font-weight:500;">
                   ¿Necesitas ayuda?{" "}
-                  <a href="mailto:soporte@academiacreditousa.com" style="color:${GOLD};font-weight:700;text-decoration:underline;">Escríbenos →</a>
+                  <a href="mailto:soporte@academiaomnia.com" style="color:${GOLD};font-weight:700;text-decoration:underline;">Escríbenos →</a>
                 </p>
               </td>
             </tr>
@@ -789,7 +789,7 @@ export async function sendPaymentRejectedEmail(
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Pago no aprobado — Academia Crédito USA`,
+      subject: config.subject || `Pago no aprobado — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `${firstName}, no pudimos aprobar tu pago. Tienes opciones para resolverlo.`,
@@ -817,7 +817,7 @@ export async function sendNewsletterEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${NAVY} 0%,${NAVY_LIGHT} 100%);padding:36px 40px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${GOLD};">Academia Crédito USA · Newsletter</p>
+          <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${GOLD};">Academia Omnia · Newsletter</p>
           <h1 style="margin:8px 0 0;font-size:24px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;line-height:1.2;">${title}</h1>
         </td>
       </tr>
@@ -840,7 +840,7 @@ export async function sendNewsletterEmail(
             <tr>
               <td align="center">
                 <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.6;">
-                  Estás recibiendo este newsletter porque te suscribiste a Academia Crédito USA.<br>
+                  Estás recibiendo este newsletter porque te suscribiste a Academia Omnia.<br>
                   <a href="${unsubscribeUrl}" style="color:${MUTED};text-decoration:underline;font-weight:600;">Cancelar suscripción</a>
                 </p>
               </td>
@@ -887,7 +887,7 @@ export async function sendPasswordResetEmail(
         <td style="padding:36px 0 0;">
           <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
             Hola ${firstName}, recibimos una solicitud para restablecer la contraseña de tu cuenta en
-            <strong style="color:${NAVY};font-weight:800;">Academia Crédito USA</strong>.
+            <strong style="color:${NAVY};font-weight:800;">Academia Omnia</strong>.
           </p>
 
           <p style="margin:0 0 28px;font-size:14px;color:#374151;line-height:1.7;">
@@ -935,9 +935,9 @@ export async function sendPasswordResetEmail(
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: "Restablecer contraseña — Academia Crédito USA",
+      subject: "Restablecer contraseña — Academia Omnia",
       html: buildEmail(
-        "Restablece tu contraseña de Academia Crédito USA. El enlace expira en 1 hora.",
+        "Restablece tu contraseña de Academia Omnia. El enlace expira en 1 hora.",
         body,
       ),
     });
@@ -1047,7 +1047,7 @@ export async function sendCoursePurchaseEmail(
       to: email,
       subject:
         config.subject ||
-        `Acceso activado: ${courseTitle} — Academia Crédito USA`,
+        `Acceso activado: ${courseTitle} — Academia Omnia`,
       html: buildEmail(
         config.preheader ||
           `${firstName}, tu acceso al curso "${courseTitle}" está listo. ¡Empieza ahora!`,
@@ -1097,7 +1097,7 @@ export async function sendAdminNewUserEmail(
       to: adminEmails,
       subject:
         config.subject ||
-        "Notificación: Nuevo Registro en Academia Crédito USA",
+        "Notificación: Nuevo Registro en Academia Omnia",
       html: buildEmail(
         config.preheader || `Nuevo usuario registrado: ${userName}`,
         body,
@@ -1171,7 +1171,7 @@ export async function sendSubscriptionExpiringSoonEmail(
       <tr>
         <td style="padding:40px;text-align:center;background-color:${WHITE};">
           <h1 style="margin:0 0 20px;font-size:24px;color:${NAVY};">${config.title}</h1>
-          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Hola ${firstName}, te informamos que tu membresía en Academia Crédito USA vencerá en <strong>${daysLeft} días</strong>.</p>
+          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Hola ${firstName}, te informamos que tu membresía en Academia Omnia vencerá en <strong>${daysLeft} días</strong>.</p>
           <div style="background-color:${CREAM};padding:20px;border-radius:12px;text-align:center;margin-bottom:30px;">
             <p style="margin:0;font-size:14px;color:${NAVY}; font-weight: bold;">Evita perder el acceso a tus cursos y sesiones en vivo.</p>
           </div>
@@ -1186,7 +1186,7 @@ export async function sendSubscriptionExpiringSoonEmail(
       from: FROM,
       to: email,
       subject:
-        config.subject || "Tu membresía vence pronto — Academia Crédito USA",
+        config.subject || "Tu membresía vence pronto — Academia Omnia",
       html: buildEmail(
         config.preheader || `Solo te quedan ${daysLeft} días de acceso.`,
         body,
@@ -1224,7 +1224,7 @@ export async function sendSubscriptionExpiredEmail(
       from: FROM,
       to: email,
       subject:
-        config.subject || "Tu membresía ha vencido — Academia Crédito USA",
+        config.subject || "Tu membresía ha vencido — Academia Omnia",
       html: buildEmail(
         config.preheader || "Tu acceso ha expirado. Renueva para continuar.",
         body,

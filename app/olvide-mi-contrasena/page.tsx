@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import ForgotPasswordPage from "@/app/auth/forgot-password/page";
+import ForgotPasswordForm from "./ForgotPasswordForm";
 
 export const metadata: Metadata = {
   title: "Olvidé mi Contraseña",
-  description: "Restablece tu contraseña de Academia Credito USA.",
+  description: "Restablece tu contraseña de Academia Omnia.",
   robots: { index: false, follow: false },
 };
 
 export default function OlvideMiContrasenaPage() {
-  return <ForgotPasswordPage />;
+  return <ForgotPasswordForm />;
 }

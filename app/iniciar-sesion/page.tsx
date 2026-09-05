@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import LoginPage from "@/app/auth/login/page";
+import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {
   title: "Iniciar Sesión",
-  description: "Accede a tu cuenta en Academia Credito USA y continúa tu aprendizaje sobre crédito y finanzas personales en Estados Unidos.",
+  description: "Accede a tu cuenta en Academia Omnia y continúa tu aprendizaje sobre herramientas digitales.",
   robots: { index: false, follow: false },
 };
 
 export default function IniciarSesionPage() {
-  return <LoginPage />;
+  return <LoginForm />;
 }
