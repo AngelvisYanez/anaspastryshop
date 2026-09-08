@@ -99,7 +99,7 @@ export default async function PagosPage({
           </div>
         ) : (
           <div className="space-y-4">
-            {inscriptions.map((inscription) => (
+            {inscriptions.map((inscription: any) => (
               <PaymentCard key={inscription.id} inscription={inscription} />
             ))}
           </div>

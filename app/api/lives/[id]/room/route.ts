@@ -40,7 +40,7 @@ export async function POST(
   }
 
   const role = (session.user as any).role as string;
-  const presetName = ["ADMIN", "MENTOR"].includes(role) ? "group_call_host" : "group_call_participant";
+  const presetName = role === "ADMIN" ? "group_call_host" : "group_call_participant";
 
   const participantRes = await fetch(`${BASE}/meetings/${meetingId}/participants`, {
     method: "POST",

@@ -1,100 +1,75 @@
 "use client";
-import { m } from "framer-motion";
-import { ArrowRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
-const FEATURES = [
-  "Cursos prácticos para dominar herramientas digitales",
-  "Sesiones en vivo con instructores expertos",
-  "Comunidad activa y actualizaciones en tiempo real",
-  "Acceso a grabaciones y material exclusivo",
-];
+import { m } from "framer-motion";
+import { ArrowRight, Cake } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 const TRUST_STATS = [
-  { value: "7+", label: "Años de experiencia" },
-  { value: "100%", label: "Online" },
-  { value: "∞", label: "Actualizaciones" },
+  { value: "6+", label: "Años Formando" },
+  { value: "100%", label: "Práctico Desde Cero" },
+  { value: "Calidad", label: "Y Experiencia Garantizada" },
 ];
 
-export default function Hero() {
-  const [price, setPrice] = useState<number | null>(null);
-  const [ctaText, setCtaText] = useState("Quiero unirme ahora");
-  const [ctaUrl, setCtaUrl] = useState("/membresia");
-
-  useEffect(() => {
-    fetch("/api/settings/site-config")
-      .then((r) => r.json())
-      .then((cfg) => {
-        if (cfg.subscriptionPrice) setPrice(cfg.subscriptionPrice);
-        if (cfg.ctaText) setCtaText(cfg.ctaText);
-        if (cfg.ctaUrl) setCtaUrl(cfg.ctaUrl);
-      })
-      .catch(() => {});
-  }, []);
+export default function Hero({
+  isLoggedIn = false,
+  userName,
+}: {
+  isLoggedIn?: boolean;
+  userName?: string | null;
+}) {
+  const ctaUrl = isLoggedIn ? "/dashboard" : "/cursos";
+  const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Workshops & Cursos";
 
   return (
-    <section className="relative">
-      <div className="relative overflow-hidden bg-[#0B1F3A] dark:bg-card min-h-screen flex items-center px-8 md:px-20 pt-32 pb-24 rounded-b-3xl">
-        <div className="absolute inset-0 opacity-[0.025] noise-bg pointer-events-none" />
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-5%] right-[0%] w-[30%] h-[30%] bg-accent/8 blur-[100px] rounded-full pointer-events-none" />
+    <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-gradient-to-b from-[#25072F] via-[#350A43] to-[#1C0425] text-white pt-32 pb-16">
+      {/* Background radial effects */}
+      <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-pink-600/20 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-80 h-80 bg-purple-700/25 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-12 lg:gap-20 items-center">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 w-full relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           <m.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="lg:col-span-7 flex flex-col justify-center"
           >
-            <div className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] px-4 py-2 rounded-full mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-white">
+              ¿Quieres formarte en la{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-pink-300 to-cyan-300">
+                pastelería profesional?
               </span>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-accent">
-                La academia online para dominar herramientas digitales
-              </span>
-            </div>
-
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tight mb-6">
-              Domina las herramientas
-              <br />
-              digitales con una{" "}
-              <span className="text-accent">visión 360°</span>
             </h1>
 
-            <p className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed">
-              Cursos prácticos, actualizados y en tu idioma. Aprende a tu ritmo,
-              aplica lo que ves en proyectos reales y crece profesionalmente sin límites.
+            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-8 max-w-xl font-normal">
+              Workshops presenciales y cursos online diseñados desde cero para enseñarte cada técnica, receta y método paso a paso, sin secretos. Para emprender o perfeccionar tu pasión.
             </p>
 
-            <div className="flex flex-wrap gap-4 mb-12">
+            <div className="flex flex-wrap items-center gap-4 mb-10">
               <Link href={ctaUrl}>
-                <button className="bg-accent text-[#0B1F3A] px-9 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-accent/25">
+                <button className="bg-accent text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-pink-600/30 text-sm md:text-base">
                   {ctaText} <ArrowRight size={18} />
                 </button>
               </Link>
-              <a href="#para-ti">
-                <button className="bg-white/[0.08] border border-white/[0.15] text-white px-9 py-4 rounded-xl font-bold hover:bg-white/[0.13] transition-all flex items-center gap-2">
-                  <ChevronDown size={16} /> ¿Es para mí?
+              <Link href="/pasteleria">
+                <button className="bg-white/10 border border-white/20 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-white/20 hover:scale-[1.03] transition-all backdrop-blur-sm text-sm md:text-base">
+                  Tortas y Pastelería <Cake size={18} />
                 </button>
-              </a>
+              </Link>
             </div>
 
-            <div className="pt-8 border-t border-white/[0.1] flex items-center gap-8 flex-wrap">
-              {TRUST_STATS.map((stat, i) => (
-                <div key={stat.label} className="flex items-center gap-8">
-                  <div>
-                    <p className="font-display text-3xl font-black text-accent leading-none">
-                      {stat.value}
-                    </p>
-                    <p className="text-[10px] text-white/35 font-bold uppercase tracking-widest mt-1">
-                      {stat.label}
-                    </p>
-                  </div>
-                  {i < TRUST_STATS.length - 1 && (
-                    <div className="h-9 w-px bg-white/[0.1]" />
-                  )}
+            <div className="pt-8 border-t border-white/[0.12] flex items-center gap-8 md:gap-12 flex-wrap">
+              {TRUST_STATS.map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-display text-2xl md:text-3xl font-black text-pink-300 leading-none">
+                    {stat.value}
+                  </p>
+                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mt-1.5">
+                    {stat.label}
+                  </p>
                 </div>
               ))}
             </div>
@@ -103,39 +78,24 @@ export default function Hero() {
           <m.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="lg:col-span-5 relative"
           >
-            <div className="relative bg-white/[0.06] backdrop-blur border border-white/[0.12] rounded-2xl overflow-hidden">
-              <div className="h-1 w-full bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
-              <div className="p-8">
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent/80 mb-2">
-                  Membresía mensual
-                </p>
-                {price !== null ? (
-                  <p className="font-display text-5xl font-black text-accent tracking-tight leading-none mb-1">
-                    ${price}
-                    <span className="text-lg font-bold text-white/30 tracking-normal"> /mes</span>
+            <div className="relative mx-auto max-w-md lg:max-w-none">
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl shadow-purple-950/80 group">
+                <Image
+                  src="/foto-1.webp"
+                  alt="Anais Flores impartiendo workshop de pastelería y decoración"
+                  fill
+                  priority
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#25072F]/90 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <p className="font-display text-lg font-bold text-white leading-tight">
+                    Clases prácticas 100% desde cero
                   </p>
-                ) : (
-                  <div className="h-12 mb-1" />
-                )}
-
-                <p className="text-[11px] text-white/30 mb-7">Cancela cuando quieras</p>
-
-                <ul className="space-y-3.5 mb-8">
-                  {FEATURES.map((feat) => (
-                    <li key={feat} className="flex items-start gap-3 text-sm text-white/60 leading-snug">
-                      <span className="text-accent shrink-0 text-xs mt-0.5">✦</span>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/membresia">
-                  <button className="w-full bg-accent text-[#0B1F3A] py-4 rounded-xl font-bold hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20 text-sm">
-                    Ver membresía <ArrowRight size={16} />
-                  </button>
-                </Link>
+                </div>
               </div>
             </div>
           </m.div>

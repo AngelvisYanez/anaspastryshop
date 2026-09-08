@@ -4,14 +4,13 @@ import { CheckCircle, ArrowRight, BookOpen } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pago Confirmado",
-  description: "Tu pago fue procesado exitosamente. Bienvenido a Academia Omnia.",
+  title: "Pago Confirmado | Ana's Pastry Shop",
+  description: "Tu pago fue procesado exitosamente. Te damos la bienvenida a Ana's Pastry Shop.",
   robots: { index: false, follow: false },
 };
 
 async function ConfirmacionContent({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
-  const isSub = type === "subscription";
 
   return (
     <main id="main-content" className="min-h-screen bg-background flex items-center justify-center p-6 pt-28 pb-16">
@@ -20,18 +19,14 @@ async function ConfirmacionContent({ searchParams }: { searchParams: Promise<{ t
           <CheckCircle className="text-green-500" size={40} />
         </div>
 
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent mb-3">
-          {isSub ? "Pago procesado" : "Compra exitosa"}
-        </p>
-
         <h1 className="font-display text-3xl font-black text-foreground mb-4 tracking-tight leading-tight">
-          {isSub ? "¡Bienvenido a Academia Omnia!" : "¡Acceso activado!"}
+          {type === "online" ? "¡Pago Exitoso!" : "¡Cupo Reservado!"}
         </h1>
 
         <p className="text-muted text-sm mb-10 leading-relaxed max-w-sm mx-auto">
-          {isSub
-            ? "Tu membresía está activa. Ahora tienes acceso completo a todos los cursos, sesiones en vivo y material exclusivo."
-            : "Tu curso está disponible en tu panel de aprendizaje. ¡Empieza ahora!"}
+          {type === "online"
+            ? "Tu acceso al curso ya está activo. Disfruta de las clases en video paso a paso."
+            : "Tu comprobante ha sido registrado. Recuerda revisar las condiciones del taller y llegar puntual a las 9:00 AM."}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -41,23 +36,27 @@ async function ConfirmacionContent({ searchParams }: { searchParams: Promise<{ t
           >
             Ir a mi Panel <ArrowRight size={16} />
           </Link>
-          {isSub && (
-            <Link
-              href="/cursos"
-              className="bg-card border border-card-border text-foreground px-8 py-4 rounded-xl font-bold hover:bg-card-hover transition-all inline-flex items-center justify-center gap-2"
-            >
-              <BookOpen size={16} /> Explorar Cursos
-            </Link>
-          )}
+          <Link
+            href="/cursos"
+            className="bg-card border border-card-border text-foreground px-8 py-4 rounded-xl font-bold hover:bg-card-hover transition-all inline-flex items-center justify-center gap-2"
+          >
+            <BookOpen size={16} /> Ver Talleres
+          </Link>
         </div>
       </div>
     </main>
   );
 }
 
-export default function PagarConfirmacionPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+export default function Page({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center" />}>
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-background flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+        </main>
+      }
+    >
       <ConfirmacionContent searchParams={searchParams} />
     </Suspense>
   );

@@ -9,16 +9,10 @@ import {
 } from "@/lib/email-template-defaults";
 import {
   sendWelcomeEmail,
-  sendSubscriptionConfirmedEmail,
-  sendSubscriptionCanceledEmail,
-  sendSubscriptionPendingEmail,
   sendAccountApprovedEmail,
   sendPaymentRejectedEmail,
   sendCoursePurchaseEmail,
   sendAdminNewUserEmail,
-  sendAdminNewSubscriptionEmail,
-  sendSubscriptionExpiringSoonEmail,
-  sendSubscriptionExpiredEmail,
 } from "@/lib/email";
 
 const TEST_EMAIL = "angelviselyanez@gmail.com";
@@ -119,20 +113,6 @@ export async function sendTestEmail(
       case "WELCOME":
         await sendWelcomeEmail(TEST_EMAIL, TEST_NAME);
         break;
-      case "SUBSCRIPTION_CONFIRMED":
-        await sendSubscriptionConfirmedEmail(
-          TEST_EMAIL,
-          TEST_NAME,
-          "Plan Premium",
-          97,
-        );
-        break;
-      case "SUBSCRIPTION_CANCELED":
-        await sendSubscriptionCanceledEmail(TEST_EMAIL, TEST_NAME);
-        break;
-      case "SUBSCRIPTION_PENDING":
-        await sendSubscriptionPendingEmail(TEST_EMAIL, TEST_NAME);
-        break;
       case "ACCOUNT_APPROVED":
         await sendAccountApprovedEmail(TEST_EMAIL, TEST_NAME);
         break;
@@ -156,20 +136,6 @@ export async function sendTestEmail(
           "prueba@ejemplo.com",
           "USER",
         );
-        break;
-      case "ADMIN_NEW_SUBSCRIPTION":
-        await sendAdminNewSubscriptionEmail(
-          "Usuario Prueba",
-          "prueba@ejemplo.com",
-          "Plan Premium",
-          97,
-        );
-        break;
-      case "SUBSCRIPTION_EXPIRING_SOON":
-        await sendSubscriptionExpiringSoonEmail(TEST_EMAIL, TEST_NAME, 3);
-        break;
-      case "SUBSCRIPTION_EXPIRED":
-        await sendSubscriptionExpiredEmail(TEST_EMAIL, TEST_NAME);
         break;
       default:
         return { error: "Tipo de email no válido." };

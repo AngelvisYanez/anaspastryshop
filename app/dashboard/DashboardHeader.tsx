@@ -1,26 +1,28 @@
 "use client";
-import { Bell, Search, User as UserIcon, Menu, X, CheckCircle2, AlertCircle, Info, Clock, Sun, Moon, Settings, LogOut } from "lucide-react";
+
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { signOut } from "next-auth/react";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import {
+  Menu, Bell, Moon, Sun, User, Settings, LogOut,
+  ChevronDown, CheckCircle2, AlertTriangle, Info,
+} from "lucide-react";
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Inicio",
-  "/dashboard/cursos": "Cursos",
-  "/dashboard/pagos": "Pagos",
+  "/dashboard/cursos": "Cursos & Workshops",
   "/dashboard/usuarios": "Usuarios",
+  "/dashboard/pagos": "Pagos",
+  "/dashboard/emails": "Emails",
   "/dashboard/logs": "Registro de Eventos",
   "/dashboard/settings": "Configuración",
-  "/dashboard/suscripciones": "Suscripciones",
   "/dashboard/metodos-pago": "Métodos de Pago",
   "/dashboard/modulos": "Módulos",
   "/dashboard/api-config": "Config. APIs",
-  "/dashboard/webinars": "Webinars",
+  "/dashboard/webinars": "Cursos Online",
   "/dashboard/lives": "Lives",
-  "/dashboard/mentores": "Mentores",
   "/dashboard/mis-cursos": "Mis Cursos",
 };
 
@@ -44,11 +46,9 @@ function timeAgo(date: Date): string {
 export default function DashboardHeader({
   user,
   onMenuClick,
-  isBlockedMentor = false,
 }: {
   user: any;
   onMenuClick?: () => void;
-  isBlockedMentor?: boolean;
 }) {
   const pathname = usePathname();
   const [notifOpen, setNotifOpen] = useState(false);
@@ -70,8 +70,7 @@ export default function DashboardHeader({
   };
 
   const roleLabel =
-    user.role === "ADMIN" ? "Administrador" :
-    user.role === "MENTOR" ? "Mentor" : "Alumno";
+    user.role === "ADMIN" ? "Administrador" : "Alumno";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -87,7 +86,7 @@ export default function DashboardHeader({
     if (!notifOpen) return;
     setLoading(true);
     fetch("/api/notifications")
-      .then((r) => r.ok ? r.json() : { notifications: [] })
+      .then((r) => (r.ok ? r.json() : { notifications: [] }))
       .then((data) => {
         setNotifications(data.notifications ?? []);
         setUnreadCount((data.notifications ?? []).filter((n: Notification) => !n.read).length);
@@ -98,12 +97,14 @@ export default function DashboardHeader({
 
   useEffect(() => {
     fetch("/api/notifications/count")
-      .then((r) => r.ok ? r.json() : { count: 0 })
+      .then((r) => (r.ok ? r.json() : { count: 0 }))
       .then((d) => setUnreadCount(d.count ?? 0))
       .catch(() => {});
   }, []);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -115,178 +116,170 @@ export default function DashboardHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [profileOpen]);
 
-  function markAllRead() {
+  const markAllAsRead = async () => {
+    await fetch("/api/notifications", { method: "PATCH" });
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
-  }
+  };
 
-  const iconMap = {
-    success: <CheckCircle2 size={15} className="text-green-500 shrink-0" />,
-    warning: <AlertCircle size={15} className="text-amber-500 shrink-0" />,
-    info: <Info size={15} className="text-accent shrink-0" />,
+  const notifIcon = (type: Notification["type"]) => {
+    if (type === "success") return <CheckCircle2 size={15} className="text-green-500 shrink-0 mt-0.5" />;
+    if (type === "warning") return <AlertTriangle size={15} className="text-amber-500 shrink-0 mt-0.5" />;
+    return <Info size={15} className="text-blue-500 shrink-0 mt-0.5" />;
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-card/90 backdrop-blur-md border-b border-card-border flex items-center justify-between px-3 sm:px-4 md:px-8 h-14 sm:h-16">
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-        <button
-          onClick={onMenuClick}
-          className="p-1.5 sm:p-2 lg:hidden text-muted hover:bg-card-hover rounded-md transition-colors shrink-0"
-        >
-          <Menu size={20} />
-        </button>
-        <div className="min-w-0">
-          <h2 className="font-display text-base sm:text-lg font-black text-foreground tracking-tight truncate">
-            {isBlockedMentor ? "Perfil Incompleto" : getPageTitle(pathname)}
-          </h2>
-          {isBlockedMentor ? (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-0.5 animate-pulse">
-              Acceso restringido: Sube tu foto
-            </p>
-          ) : (
-            <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-0.5 hidden sm:block">
-              Academia Omnia
-            </p>
-          )}
+    <header className="h-16 bg-card/80 backdrop-blur-md border-b border-card-border px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+      <div className="flex items-center gap-3">
+        {onMenuClick && (
+          <button
+            onClick={onMenuClick}
+            className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg md:hidden transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <div>
+          <h1 className="text-sm sm:text-base font-bold text-foreground leading-none">
+            {getPageTitle(pathname)}
+          </h1>
+          <span className="text-[11px] text-muted font-medium hidden sm:block mt-0.5">
+            Ana&apos;s Pastry Shop
+          </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <div className="flex items-center gap-0.5 sm:gap-1 pr-2 sm:pr-3 md:pr-4 border-r border-card-border">
+      <div className="flex items-center gap-2">
+        {/* Notificaciones */}
+        <div className="relative" ref={panelRef}>
           <button
-            className="hidden sm:block p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
-            title="Buscar"
-            aria-label="Buscar"
+            onClick={() => setNotifOpen((v) => !v)}
+            className="relative p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg transition-colors"
+            aria-label="Notificaciones"
           >
-            <Search size={18} />
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full ring-2 ring-card animate-pulse" />
+            )}
           </button>
 
-          <div className="relative" ref={panelRef}>
-            <button
-              onClick={() => setNotifOpen((v) => !v)}
-              className="relative p-1.5 sm:p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
-              aria-label="Notificaciones"
-            >
-              <Bell size={18} />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1.5 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-red-500 text-[8px] sm:text-[9px] font-bold text-white border border-card">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </button>
-
-            {notifOpen && (
-              <div className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] bg-card border border-card-border rounded-xl shadow-[var(--shadow-card)] overflow-hidden z-50">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-card-border">
-                  <h3 className="text-sm font-black text-foreground">Notificaciones</h3>
-                  <div className="flex items-center gap-2">
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllRead}
-                        className="text-[10px] font-bold text-accent hover:underline"
-                      >
-                        Marcar todo leído
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setNotifOpen(false)}
-                      className="p-1 text-muted hover:text-foreground"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
+          {notifOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-100">
+              <div className="p-4 border-b border-card-border flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-sm text-foreground">Notificaciones</p>
+                  <p className="text-[11px] text-muted font-medium">
+                    {unreadCount > 0 ? `${unreadCount} sin leer` : "Todo al día"}
+                  </p>
                 </div>
-
-                <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                  {loading ? (
-                    <div className="flex flex-col gap-2 p-4">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-12 bg-section-alt rounded-lg animate-pulse" />
-                      ))}
-                    </div>
-                  ) : notifications.length === 0 ? (
-                    <div className="flex flex-col items-center py-10 px-4 text-center">
-                      <Bell size={28} className="text-muted/30 mb-3" />
-                      <p className="text-sm font-bold text-muted">Sin notificaciones</p>
-                      <p className="text-[11px] text-muted/60 mt-1">Todo está en orden por ahora</p>
-                    </div>
-                  ) : (
-                    notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`flex items-start gap-3 px-4 py-3 border-b border-card-border last:border-0 hover:bg-card-hover transition-colors ${!n.read ? "bg-accent-subtle/30" : ""}`}
-                      >
-                        <div className="mt-0.5">{iconMap[n.type]}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-foreground truncate">{n.title}</p>
-                          <p className="text-[11px] text-muted line-clamp-2">{n.description}</p>
-                          <p className="text-[10px] text-muted/50 mt-0.5 flex items-center gap-1">
-                            <Clock size={9} /> {n.time}
-                          </p>
-                        </div>
-                        {!n.read && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-[11px] font-bold text-accent hover:underline"
+                  >
+                    Marcar leídas
+                  </button>
+                )}
               </div>
-            )}
-          </div>
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-card-border">
+                {loading ? (
+                  <div className="p-8 text-center text-xs text-muted">Cargando...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <Bell size={24} className="mx-auto text-muted/30 mb-2" />
+                    <p className="text-xs font-medium text-muted">No tienes notificaciones</p>
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`p-3.5 flex gap-3 hover:bg-card-hover transition-colors ${
+                        !n.read ? "bg-accent/5" : ""
+                      }`}
+                    >
+                      {notifIcon(n.type)}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-foreground leading-snug">{n.title}</p>
+                        <p className="text-[11px] text-muted leading-relaxed mt-0.5">{n.description}</p>
+                        <p className="text-[11px] text-muted/50 mt-1">{timeAgo(new Date(n.time))}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* Dark / Light Toggle */}
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-1.5 sm:p-2 text-muted hover:text-accent hover:bg-accent-subtle rounded-md transition-all"
-            title={theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
-            aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg transition-colors"
+            aria-label="Cambiar tema"
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         )}
 
+        <div className="h-5 w-px bg-card-border mx-1" />
+
+        {/* Profile Dropdown */}
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen((v) => !v)}
-            className="flex items-center gap-2 sm:gap-3 bg-card-hover px-1.5 sm:px-2 py-1 md:pr-4 rounded-lg border border-card-border hover:bg-section-alt transition-colors"
+            className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-card-hover transition-colors"
+            aria-label="Menú de usuario"
           >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-md overflow-hidden border border-card-border shadow-sm relative shrink-0">
+            <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-black shadow-sm overflow-hidden shrink-0">
               {user.image ? (
-                <Image src={user.image} alt={user.name || "Perfil"} width={32} height={32} className="w-full h-full object-cover" />
+                <img src={user.image} alt="" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-foreground text-background flex items-center justify-center font-bold text-[10px] sm:text-xs uppercase">
-                  {user.name ? user.name.substring(0, 2) : <UserIcon size={14} />}
-                </div>
+                (user.name || user.email || "U").charAt(0).toUpperCase()
               )}
             </div>
-            <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-bold text-foreground leading-tight truncate max-w-[100px] xl:max-w-[120px]">
-                {user.name || "Usuario"}
-              </span>
-              <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">
-                {roleLabel}
-              </span>
-            </div>
+            <span className="text-xs font-bold text-foreground hidden sm:block max-w-[120px] truncate">
+              {user.name || "Mi Cuenta"}
+            </span>
+            <ChevronDown size={14} className="text-muted hidden sm:block" />
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-card-border rounded-xl shadow-[var(--shadow-card)] overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-52 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left py-1 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-4 py-2.5 border-b border-card-border">
+                <p className="text-xs font-bold text-foreground truncate">{user.name || "Usuario"}</p>
+                <p className="text-[11px] text-muted truncate">{user.email}</p>
+                <span className="inline-block mt-1 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-accent-subtle text-accent rounded-full">
+                  {roleLabel}
+                </span>
+              </div>
+
               <Link
                 href="/dashboard/settings"
                 onClick={() => setProfileOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-card-hover transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-foreground hover:bg-card-hover transition-colors"
               >
-                <Settings size={14} className="text-muted shrink-0" />
-                Editar Perfil
+                <User size={14} className="text-muted" />
+                Mi Perfil
               </Link>
-              <div className="h-px bg-card-border mx-2" />
-              <button
-                onClick={() => { signOut({ callbackUrl: "/" }); setProfileOpen(false); }}
-                className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors w-full"
+              <Link
+                href="/dashboard/settings"
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-foreground hover:bg-card-hover transition-colors"
               >
-                <LogOut size={14} className="shrink-0" />
+                <Settings size={14} className="text-muted" />
+                Configuración
+              </Link>
+
+              <div className="h-px bg-card-border my-1" />
+
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+              >
+                <LogOut size={14} />
                 Cerrar Sesión
               </button>
             </div>

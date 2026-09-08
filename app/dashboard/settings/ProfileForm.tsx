@@ -100,7 +100,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 bg-navy text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
+                  className="absolute -bottom-2 -right-2 bg-accent text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
                   aria-label="Subir foto de perfil"
                 >
                   <Camera size={14} />
@@ -113,7 +113,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition-all border border-card-border"
+                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition-all border border-card-border"
                 >
                   <RefreshCcw size={13} /> Reemplazar
                 </button>
@@ -123,7 +123,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                     setPreviewImage(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition-all border border-red-200 dark:border-red-800"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition-all border border-red-200 dark:border-red-800"
                 >
                   <Trash2 size={13} /> Eliminar
                 </button>
@@ -140,7 +140,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             />
           </div>
           <h1 className="text-2xl font-black text-foreground">Ajustes de Perfil</h1>
-          <p className="text-muted font-medium">Actualiza tu información personal en Academia Omnia</p>
+          <p className="text-muted font-medium">Actualiza tu información personal en Ana's Pastry Shop</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -158,7 +158,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
           <div className="grid grid-cols-1 gap-5">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
+              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Nombre Completo
               </label>
               <div className="relative">
@@ -174,7 +174,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             </div>
 
             <div className="space-y-2 opacity-60">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
+              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Email de Cuenta (No modificable)
               </label>
               <div className="relative">
@@ -191,7 +191,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             <input type="hidden" name="image" value={previewImage || ""} />
 
             <div className="space-y-2 pt-4 border-t border-card-border">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">
+              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Cambiar Contraseña
               </label>
               <div className="relative">
@@ -203,13 +203,13 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                   className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
                 />
               </div>
-              <p className="text-[10px] text-muted font-medium px-1">Solo llena este campo si deseas actualizar tu clave actual.</p>
+              <p className="text-[11px] text-muted font-medium px-1">Solo llena este campo si deseas actualizar tu clave actual.</p>
             </div>
           </div>
 
           <button
             disabled={loading}
-            className="w-full bg-navy text-white py-3 rounded-lg font-black flex items-center justify-center gap-3 hover:bg-accent transition-all shadow-md uppercase tracking-widest text-sm"
+            className="w-full bg-accent text-white py-3 rounded-xl font-black flex items-center justify-center gap-3 hover:bg-accent-hover transition-all shadow-md uppercase tracking-widest text-sm"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             Guardar Cambios

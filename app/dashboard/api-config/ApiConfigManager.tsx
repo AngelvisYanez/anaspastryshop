@@ -87,7 +87,7 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
             <div className="flex items-center gap-3">
               <p className="font-bold text-foreground">{def.label}</p>
               {hasValues && (
-                <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-green-50 text-green-600">
+                <span className="text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-green-50 text-green-600">
                   Configurado
                 </span>
               )}
@@ -138,7 +138,7 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-[#0B1F3A] text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent-hover shadow-md shadow-accent/20 transition-all disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {saving ? "Guardando..." : "Guardar"}
@@ -162,9 +162,9 @@ export default function ApiConfigManager({ configs }: { configs: ApiConfigRecord
         ))}
       </div>
 
-      <div className="mt-8 bg-amber-50 rounded-xl p-6 border border-amber-200">
+      <div className="mt-8 bg-accent-subtle rounded-xl p-6 border border-accent/20">
         <p className="text-xs font-black uppercase tracking-widest text-accent mb-2">Nota de seguridad</p>
-        <p className="text-sm text-indigo-700 font-medium leading-relaxed">
+        <p className="text-sm text-foreground/80 font-medium leading-relaxed">
           Las credenciales se almacenan cifradas en la base de datos. Nunca se exponen al cliente. Para mayor seguridad en producción, usa variables de entorno en el servidor.
         </p>
       </div>

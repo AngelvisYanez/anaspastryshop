@@ -2,8 +2,8 @@
 import { useState, Suspense } from "react";
 import { m } from "framer-motion";
 import {
-  ArrowLeft, User, Lock, Loader2, Clock, CheckCircle2,
-  BookOpen, Eye, EyeOff, Shield, TrendingUp, Users, PlayCircle,
+  ArrowLeft, User, Lock, Loader2,
+  Eye, EyeOff, Shield, TrendingUp, Users, PlayCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -16,107 +16,105 @@ const benefits = [
   {
     icon: PlayCircle,
     title: "Cursos Completos",
-    description: "Desde los fundamentos hasta estrategias avanzadas, con una ruta de aprendizaje clara.",
+    description: "Desde los fundamentos de repostería hasta técnicas avanzadas de alta pastelería.",
   },
   {
     icon: Users,
-    title: "Sesiones en Vivo",
-    description: "Sesiones dinámicas con instructores expertos. Haz tus preguntas y recibe orientación directa.",
+    title: "Workshops & Lives",
+    description: "Talleres presenciales y transmisiones en directo con la Chef Anaís y chefs invitados.",
   },
   {
     icon: TrendingUp,
     title: "Método Práctico",
-    description: "Aprende con proyectos reales y aplica lo que ves desde el primer día.",
+    description: "Aprende con recetas paso a paso y elabora creaciones profesionales desde el primer día.",
   },
   {
     icon: Shield,
-    title: "Actualizaciones Incluidas",
-    description: "El mundo digital cambia. Tu acceso incluye actualizaciones en tiempo real, siempre al día.",
+    title: "Acceso Permanente",
+    description: "Tus formaciones adquiridas están siempre disponibles para que repases a tu propio ritmo.",
   },
 ];
 
-function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => void; onSuspended: (reason: string) => void }) {
+function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const registered = searchParams.get("registered");
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    try {
-      const res = await signIn("credentials", { email, password, redirect: false });
-      if (!res?.error) {
-        router.push(callbackUrl);
-        router.refresh();
-        return;
-      }
-    } catch {
-    }
+    const formData = new FormData();
+    formData.append("email", identifier);
+    formData.append("password", password);
 
     const statusCheck = await checkPreloginStatus(formData);
-    setLoading(false);
 
     if (statusCheck.isSuspended) {
-      onSuspended(statusCheck.reason || "Sin razón especificada");
-    } else if (statusCheck.isPendingMentor) {
-      onPendingMentor();
+      setLoading(false);
+      onSuspended(statusCheck.reason || "Tu cuenta ha sido desactivada por el administrador.");
+      return;
+    }
+
+    const res = await signIn("credentials", {
+      email: identifier,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError("Credenciales inválidas. Verifica tu correo y contraseña.");
+      setLoading(false);
     } else {
-      setError("Credenciales inválidas. Por favor intenta de nuevo.");
+      router.push(callbackUrl);
+      router.refresh();
     }
   }
 
   return (
     <>
-      {registered && (
-        <div className="bg-green-50 dark:bg-green-950/30 text-green-600 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-green-100 dark:border-green-800">
-          ¡Cuenta creada exitosamente! Por favor inicia sesión.
-        </div>
-      )}
       {error && (
-        <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
+        <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3.5 rounded-2xl text-xs font-bold text-center border border-red-100 dark:border-red-800 mb-6">
           {error}
         </div>
       )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="login-email" className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
-            Email o nombre de usuario
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
+            Email o Nombre
           </label>
           <div className="relative">
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={17} />
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
             <input
-              id="login-email"
               type="text"
-              name="email"
               required
-              placeholder="tu@email.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="tu@email.com o tu nombre"
               className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
             Contraseña
           </label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={17} />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
             <input
-              id="login-password"
               type={showPassword ? "text" : "password"}
-              name="password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
             />
@@ -149,7 +147,6 @@ function LoginForm({ onPendingMentor, onSuspended }: { onPendingMentor: () => vo
 }
 
 export default function LoginPage() {
-  const [isPendingMentor, setIsPendingMentor] = useState(false);
   const [suspendedReason, setSuspendedReason] = useState<string | null>(null);
 
   if (suspendedReason) {
@@ -158,84 +155,22 @@ export default function LoginPage() {
         <Navbar forceSolid />
         <main className="min-h-screen bg-background flex items-center justify-center p-6 pt-32 relative overflow-hidden">
           <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-red-100/20 blur-[100px] rounded-full pointer-events-none" />
           <div className="w-full max-w-lg bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
             <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 bg-red-100 dark:bg-red-950/30 rounded-xl animate-pulse" />
-              <div className="relative w-20 h-20 bg-red-50 dark:bg-red-950/20 rounded-xl flex items-center justify-center">
+              <div className="absolute inset-0 bg-red-100 rounded-xl" />
+              <div className="relative w-20 h-20 bg-red-50 rounded-xl flex items-center justify-center">
                 <Lock className="text-red-500" size={36} />
               </div>
             </div>
             <h1 className="font-display text-3xl font-black text-foreground mb-4 leading-tight tracking-tight">
-              Cuenta Desactivada
+              Cuenta Suspendida
             </h1>
             <p className="text-muted leading-relaxed mb-6 text-sm">
-              Tu cuenta ha sido desactivada temporalmente por la siguiente razón:
+              Tu acceso a la plataforma ha sido revocado.
             </p>
-            <div className="bg-red-50 dark:bg-red-950/20 text-red-600 font-bold p-4 rounded-2xl mb-8 border border-red-100 dark:border-red-800 text-sm">
-              {suspendedReason}
-            </div>
-            <p className="text-xs text-muted mb-6">
-              Si crees que es un error, contacta a soporte:{" "}
-              <a href="mailto:soporte@academiaomnia.com" className="text-accent font-bold hover:underline">
-                soporte@academiaomnia.com
-              </a>
-            </p>
-            <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-accent transition-colors">
-              ← Volver al inicio
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </>
-    );
-  }
-
-  if (isPendingMentor) {
-    return (
-      <>
-        <Navbar forceSolid />
-        <main className="min-h-screen bg-background flex items-center justify-center p-6 pt-32 relative overflow-hidden">
-          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-accent/10 blur-[130px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-[-10%] left-[-5%] w-[35%] h-[35%] bg-foreground/[0.04] blur-[100px] rounded-full pointer-events-none" />
-          <div className="w-full max-w-lg bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
-            <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 bg-accent-subtle rounded-xl animate-pulse" />
-              <div className="relative w-20 h-20 bg-accent-subtle rounded-xl flex items-center justify-center">
-                <Clock className="text-accent" size={36} />
-              </div>
-            </div>
-            <h1 className="font-display text-3xl font-black text-foreground mb-4 leading-tight tracking-tight">
-              Tu cuenta está en revisión
-            </h1>
-            <p className="text-muted leading-relaxed mb-8 text-sm">
-              Gracias por registrarte como mentor en{" "}
-              <span className="font-bold text-accent">Academia Omnia</span>.
-              Un administrador revisará tu solicitud en las próximas{" "}
-              <span className="font-bold text-foreground">24 horas</span>.
-            </p>
-            <div className="space-y-3 mb-10 text-left">
-              <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-950/20 rounded-2xl border border-green-100 dark:border-green-900">
-                <CheckCircle2 className="text-green-500 shrink-0" size={20} />
-                <div>
-                  <p className="text-sm font-bold text-foreground">Registro completado</p>
-                  <p className="text-xs text-muted">Tu cuenta fue creada exitosamente.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-accent-subtle rounded-2xl border border-accent/20">
-                <Clock className="text-accent shrink-0" size={20} />
-                <div>
-                  <p className="text-sm font-bold text-foreground">Revisión del administrador</p>
-                  <p className="text-xs text-muted">En proceso — hasta 24 horas.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-section-alt rounded-2xl border border-card-border">
-                <BookOpen className="text-muted/40 shrink-0" size={20} />
-                <div>
-                  <p className="text-sm font-bold text-muted">Acceso al panel de mentor</p>
-                  <p className="text-xs text-muted/60">Disponible una vez aprobado.</p>
-                </div>
-              </div>
+            <div className="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm font-medium mb-8">
+              <p className="font-bold text-xs uppercase tracking-wider mb-1">Motivo:</p>
+              <p className="italic">&ldquo;{suspendedReason}&rdquo;</p>
             </div>
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-accent transition-colors">
               ← Volver al inicio
@@ -273,12 +208,12 @@ export default function LoginPage() {
                   Bienvenido de nuevo
                 </h1>
                 <p className="text-muted text-sm">
-                  Accede a tu cuenta en Academia Omnia
+                  Accede a tu cuenta en Ana&apos;s Pastry Shop
                 </p>
               </div>
 
               <Suspense fallback={<div className="text-center py-4"><Loader2 className="animate-spin mx-auto text-accent" size={24} /></div>}>
-                <LoginForm onPendingMentor={() => setIsPendingMentor(true)} onSuspended={(r) => setSuspendedReason(r)} />
+                <LoginForm onSuspended={(r) => setSuspendedReason(r)} />
               </Suspense>
 
               <p className="text-center mt-8 text-sm text-muted">
@@ -300,11 +235,8 @@ export default function LoginPage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-14"
             >
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent mb-3">
-                Por qué elegir la academia
-              </p>
               <h2 className="font-display text-3xl md:text-4xl font-black text-white leading-tight">
-                Todo lo que necesitas para<br className="hidden sm:block" /> dominar el crédito en USA
+                Todo lo que necesitas para<br className="hidden sm:block" /> dominar el arte de la repostería
               </h2>
             </m.div>
 
@@ -341,18 +273,18 @@ export default function LoginPage() {
             >
               <div className="flex items-center gap-8 text-center">
                 <div>
-                  <p className="font-display text-3xl font-black text-accent">7+</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">Años de experiencia</p>
+                  <p className="font-display text-3xl font-black text-pink-300">10+</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-white/70 mt-1">Años de experiencia</p>
                 </div>
                 <div className="w-px h-10 bg-white/10" />
                 <div>
-                  <p className="font-display text-3xl font-black text-accent">8</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">Módulos completos</p>
+                  <p className="font-display text-3xl font-black text-pink-300">100%</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-white/70 mt-1">Práctico y guiado</p>
                 </div>
                 <div className="w-px h-10 bg-white/10" />
                 <div>
-                  <p className="font-display text-3xl font-black text-accent">∞</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">Actualizaciones</p>
+                  <p className="font-display text-3xl font-black text-pink-300">∞</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-white/70 mt-1">Acceso permanente</p>
                 </div>
               </div>
             </m.div>

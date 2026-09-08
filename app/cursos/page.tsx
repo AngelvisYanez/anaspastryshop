@@ -5,14 +5,15 @@ import { cacheTag, cacheLife } from "next/cache";
 import PublicCoursesClient from "./PublicCoursesClient";
 import Footer from "@/components/Footer";
 import type { Metadata } from "next";
+import { parseWorkshopDetails } from "@/lib/utils/workshop";
 
 export const metadata: Metadata = {
-  title: "Catálogo de Cursos",
+  title: "Cursos Online de Pastelería | Ana's Pastry Shop",
   description:
-    "Explora nuestro catálogo de cursos sobre herramientas digitales, tecnología y desarrollo profesional. Formación práctica en español para crecer sin fronteras.",
+    "Cursos online de pastelería y repostería con módulos en video dictados por Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones paso a paso.",
   openGraph: {
-    title: "Catálogo de Cursos | Academia Omnia",
-    description: "Cursos de herramientas digitales y desarrollo profesional en español.",
+    title: "Cursos Online de Pastelería | Ana's Pastry Shop",
+    description: "Cursos online de pastelería con la Chef Anais Flores.",
   },
 };
 
@@ -27,7 +28,19 @@ async function getPublicCourses() {
         { status: "SCHEDULED", publishedAt: { lte: new Date() } },
       ],
     },
-    include: { instructor: true },
+    include: {
+      instructor: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+      _count: {
+        select: {
+          courseModules: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -36,7 +49,7 @@ async function CursosContent() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [coursesDB, userInscriptions, userSubscription] = await Promise.all([
+  const [coursesDB, userInscriptions, userPurchases] = await Promise.all([
     getPublicCourses(),
     userId
       ? prisma.inscription.findMany({
@@ -45,39 +58,47 @@ async function CursosContent() {
         })
       : Promise.resolve([]),
     userId
-      ? prisma.subscription.findUnique({ where: { userId } })
-      : Promise.resolve(null),
+      ? prisma.coursePurchase.findMany({
+          where: { userId, status: "COMPLETED" },
+          select: { cursoId: true },
+        })
+      : Promise.resolve([]),
   ]);
 
-  const paidCourseIds = new Set(userInscriptions.map((ins) => ins.cursoId));
-
-  const formattedCourses = coursesDB.map((c) => {
-    let hasAccess = paidCourseIds.has(c.id) || session?.user?.role === "ADMIN";
-
-    if (!hasAccess && userSubscription?.status === "ACTIVE") {
-      const plan = userSubscription.plan;
-      const level = c.level;
-      if (plan === "PREMIUM") hasAccess = true;
-      else if (plan === "STANDARD" && (level === "Principiante" || level === "Intermedio")) hasAccess = true;
-      else if (plan === "BASIC" && level === "Principiante") hasAccess = true;
-    }
-
-    return {
-      id: c.id,
-      title: c.title,
-      instructor: c.instructor.name || "Tutor",
-      type: c.isLive ? "Híbrido" : "Online",
-      category: c.category || "General",
-      image: c.image || null,
-      hasAccess,
-    };
+  const enrolledCourseIds = new Set<string>();
+  userInscriptions.forEach((i) => {
+    if (i.cursoId) enrolledCourseIds.add(i.cursoId);
+  });
+  userPurchases.forEach((p) => {
+    if (p.cursoId) enrolledCourseIds.add(p.cursoId);
   });
 
-  return (
-    <PublicCoursesClient courses={formattedCourses}>
-      <Footer />
-    </PublicCoursesClient>
-  );
+  const courses = coursesDB
+    .map((c) => {
+      const workshopInfo = parseWorkshopDetails(c.content, c.isLive, c.title);
+      return {
+        id: c.id,
+        slug: workshopInfo.slug,
+        title: c.title,
+        description: c.description,
+        price: c.price,
+        image: c.image,
+        category: c.category,
+        level: c.level,
+        totalHours: c.totalHours,
+        totalClasses: c.totalClasses,
+        modulesCount: c._count.courseModules,
+        instructor: c.instructor,
+        isWorkshop: workshopInfo.isWorkshop,
+        workshopLocation: workshopInfo.location,
+        workshopDate: workshopInfo.workshopDate,
+        workshopTime: workshopInfo.workshopTime,
+        hasAccess: enrolledCourseIds.has(c.id),
+      };
+    })
+    .filter((c) => !c.isWorkshop);
+
+  return <PublicCoursesClient initialCourses={courses} />;
 }
 
 export default function CursosPage() {

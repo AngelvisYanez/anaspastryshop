@@ -1,38 +1,108 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import ForYou from "@/components/ForYou";
-import VideoIntro from "@/components/VideoIntro";
 import WhatYouGet from "@/components/WhatYouGet";
-import About from "@/components/About";
 import Testimonials from "@/components/Testimonials";
-import CoursesCarousel from "@/components/CoursesCarousel";
+import Achievements from "@/components/Achievements";
+import CapacitacionesTabs from "@/components/CapacitacionesTabs";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import type { FormacionCardData } from "@/components/FormacionCard";
 
 async function getData() {
   "use cache";
   cacheLife("hours");
   cacheTag("home-data", "cursos", "planes");
-  const [courses, plan] = await Promise.all([
-    prisma.curso.findMany({
-      select: { id: true, title: true, category: true, image: true, totalHours: true },
-      orderBy: { createdAt: "desc" },
-      take: 12,
-    }),
-    prisma.subscriptionPlan.findFirst({
-      where: { isActive: true },
-      select: { price: true, name: true },
-      orderBy: { price: "asc" },
-    }),
+
+  interface CourseRow {
+    id: string;
+    title: string;
+    category: string;
+    image: string | null;
+    price: number;
+    description: string | null;
+    level: string | null;
+    totalHours: number | null;
+    totalClasses: number | null;
+    isLive: boolean;
+    content: string | null;
+    _count: { courseModules: number };
+  }
+
+  const toCard = (c: CourseRow): FormacionCardData => {
+    const w = parseWorkshopDetails(c.content, c.isLive, c.title);
+    return {
+      id: c.id,
+      slug: w.slug,
+      title: c.title,
+      description: c.description,
+      price: c.price,
+      image: c.image,
+      category: c.category,
+      level: c.level,
+      totalHours: c.totalHours,
+      totalClasses: c.totalClasses,
+      modulesCount: c._count.courseModules,
+      isWorkshop: w.isWorkshop,
+      workshopLocation: w.location,
+      workshopDate: w.workshopDate,
+      workshopTime: w.workshopTime,
+      hasAccess: false,
+    };
+  };
+
+  const [workshops, onlineCourses] = await Promise.all([
+    prisma.curso
+      .findMany({
+        where: { category: "Workshops Presenciales" },
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          image: true,
+          price: true,
+          description: true,
+          level: true,
+          totalHours: true,
+          totalClasses: true,
+          isLive: true,
+          content: true,
+          _count: { select: { courseModules: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 12,
+      })
+      .then((rows) => (rows as CourseRow[]).map(toCard)),
+    prisma.curso
+      .findMany({
+        where: { category: "Cursos Online" },
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          image: true,
+          price: true,
+          description: true,
+          level: true,
+          totalHours: true,
+          totalClasses: true,
+          isLive: true,
+          content: true,
+          _count: { select: { courseModules: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 12,
+      })
+      .then((rows) => (rows as CourseRow[]).map(toCard)),
   ]);
-  return { courses, plan };
+  return { workshops, onlineCourses };
 }
 
 export default async function Home() {
-  const { courses, plan } = await getData();
+  const { workshops, onlineCourses } = await getData();
 
   return (
     <main className="min-h-screen bg-background">
@@ -40,61 +110,48 @@ export default async function Home() {
 
       <Hero />
 
-      <ForYou />
+      <section className="py-24 max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+        <div className="mb-12">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent mb-3">
+            Catálogo de Capacitaciones
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight">
+            Workshops & Cursos Online
+          </h2>
+          <p className="text-muted font-medium mt-2">
+            Formación práctica desde cero con técnicas profesionales de pastelería y panadería.
+          </p>
+        </div>
 
-      <VideoIntro />
+        <CapacitacionesTabs workshops={workshops} onlineCourses={onlineCourses} />
+      </section>
 
       <WhatYouGet />
 
-      <section className="py-24 px-4 md:px-10 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent mb-3">
-              Catálogo
-            </p>
-            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight">
-              Explorar Cursos
-            </h2>
-            <p className="text-muted font-medium mt-2">
-              Formación práctica y técnica para potenciar tu perfil profesional.
-            </p>
-          </div>
-          <Link href="/cursos">
-            <button className="bg-card border border-card-border px-6 py-3 rounded-xl font-bold text-sm hover:bg-card-hover transition-colors shadow-sm text-foreground whitespace-nowrap">
-              Ver todos los cursos
-            </button>
-          </Link>
-        </div>
-
-        <CoursesCarousel courses={courses} />
-      </section>
-
-      <About />
-
       <Testimonials />
 
+      <Achievements />
+
       <section className="py-24 px-4 md:px-10 max-w-5xl mx-auto">
-        <div className="bg-section-alt rounded-2xl p-12 md:p-20 flex flex-col md:flex-row items-center justify-between gap-10 border border-card-border">
+        <div className="bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-[#25092F] dark:to-[#180520] rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 border border-card-border shadow-xl">
           <div className="max-w-lg">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent mb-4">
-              Empieza hoy
-            </p>
             <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-4">
-              Tu crecimiento profesional
-              empieza con una decisión.
+              Capacítate hoy: invertir en conocimientos produce siempre los mejores beneficios.
             </h2>
-            <p className="text-muted leading-relaxed">
-              Accede a todos nuestros cursos, sesiones en vivo y recursos actualizados con una sola membresía.
+            <p className="text-muted text-sm leading-relaxed mb-4">
+              Reserva formalmente tu cupo y aprende técnicas infalibles con la orientación personalizada de Anais Flores.
+            </p>
+            <p className="text-xs font-semibold text-accent flex items-center gap-1.5">
+              <Sparkles size={14} /> Workshops diseñados desde cero · Insumos incluidos · 8 horas de práctica
             </p>
           </div>
-          <div className="flex flex-col items-center gap-4 shrink-0">
-            <Link href="/membresia">
-              <button className="bg-foreground text-background px-10 py-5 rounded-xl font-bold text-base flex items-center gap-3 hover:opacity-90 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
-                Ver membresía <ArrowRight size={20} />
-              </button>
-            </Link>
-            <Link href="/cursos" className="text-sm text-muted hover:text-foreground transition-colors font-medium">
-              Explorar cursos →
+
+          <div className="flex flex-col items-center gap-4 shrink-0 w-full sm:w-auto">
+            <Link
+              href="/cursos"
+              className="w-full sm:w-auto bg-accent text-white px-8 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-3 hover:bg-accent-hover hover:scale-105 transition-all shadow-lg shadow-pink-600/30 whitespace-nowrap"
+            >
+              Reserva tu cupo ahora mismo <ArrowRight size={20} />
             </Link>
           </div>
         </div>

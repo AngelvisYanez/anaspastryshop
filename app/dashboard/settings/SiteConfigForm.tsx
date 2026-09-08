@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {
   Globe, Menu, AtSign, Instagram, Linkedin, Save,
-  Loader2, CheckCircle, Plus, Trash2, DollarSign,
+  Loader2, CheckCircle, Plus, Trash2,
 } from "lucide-react";
 
 interface NavItem { label: string; href: string; }
@@ -15,8 +15,6 @@ interface SiteConfigData {
   instagramUrl: string | null;
   linkedinUrl: string | null;
   tiktokUrl: string | null;
-  subscriptionPrice: number;
-  subscriptionPriceId: string | null;
   navItems: NavItem[];
 }
 
@@ -67,7 +65,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
   }
 
   const inputClass = "w-full bg-background border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium";
-  const labelClass = "text-[10px] font-black uppercase tracking-widest text-muted mb-1.5 block ml-1";
+  const labelClass = "text-[11px] font-black uppercase tracking-widest text-muted mb-1.5 block ml-1";
 
   const TABS = [
     { id: "general", label: "General", icon: Globe },
@@ -76,13 +74,13 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
   ] as const;
 
   return (
-    <div className="bg-card border border-card-border rounded-lg p-8 md:p-10">
+    <div className="bg-card border border-card-border rounded-2xl p-8 md:p-10 shadow-sm">
       <div className="flex items-center gap-3 mb-8">
         <Globe size={20} className="text-accent" />
         <h2 className="text-xl font-black text-foreground">Configuración del Sitio</h2>
       </div>
 
-      <div className="flex gap-2 mb-8 bg-background p-1 rounded-lg w-fit">
+      <div className="flex gap-2 mb-8 bg-background p-1 rounded-xl w-fit">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -106,7 +104,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
               className={inputClass}
               value={config.siteName}
               onChange={(e) => setConfig((c) => ({ ...c, siteName: e.target.value }))}
-              placeholder="Academia Omnia"
+              placeholder="Ana's Pastry Shop"
             />
           </div>
           <div>
@@ -115,102 +113,82 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
               className={inputClass}
               value={config.logoUrl ?? ""}
               onChange={(e) => setConfig((c) => ({ ...c, logoUrl: e.target.value || null }))}
-              placeholder="https://tu-dominio.com/logo.png"
+              placeholder="/logo-anas-pastry-shop.png"
             />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={labelClass}>Precio de Suscripción (USD/mes)</label>
-              <div className="relative">
-                <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                <input
-                  className={`${inputClass} pl-8`}
-                  type="number"
-                  min={0}
-                  step={0.01}
-                  value={config.subscriptionPrice}
-                  onChange={(e) => setConfig((c) => ({ ...c, subscriptionPrice: parseFloat(e.target.value) || 0 }))}
-                  placeholder="97.00"
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelClass}>Stripe Price ID (suscripción recurrente)</label>
-              <input
-                className={inputClass}
-                value={config.subscriptionPriceId ?? ""}
-                onChange={(e) => setConfig((c) => ({ ...c, subscriptionPriceId: e.target.value || null }))}
-                placeholder="price_xxxxxxxxxxxx"
-              />
-            </div>
           </div>
         </div>
       )}
 
       {tab === "header" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Texto del Botón CTA</label>
               <input
                 className={inputClass}
                 value={config.ctaText}
                 onChange={(e) => setConfig((c) => ({ ...c, ctaText: e.target.value }))}
-                placeholder="Quiero unirme ahora"
+                placeholder="Ver Talleres Presenciales"
               />
             </div>
             <div>
-              <label className={labelClass}>URL del Botón CTA</label>
+              <label className={labelClass}>Enlace del Botón CTA</label>
               <input
                 className={inputClass}
                 value={config.ctaUrl}
                 onChange={(e) => setConfig((c) => ({ ...c, ctaUrl: e.target.value }))}
-                placeholder="/membresia o /checkout/subscription"
+                placeholder="/cursos"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <label className={labelClass}>Ítems del Menú de Navegación</label>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-black text-foreground">Enlaces Adicionales de Navegación</p>
+                <p className="text-xs text-muted">Aparecerán en el header junto a las secciones de la plataforma</p>
+              </div>
               <button
                 type="button"
                 onClick={addNavItem}
-                className="flex items-center gap-1.5 text-accent font-bold text-xs hover:bg-accent-subtle px-3 py-1.5 rounded-xl transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-subtle text-accent rounded-lg text-xs font-bold hover:opacity-80 transition-opacity"
               >
-                <Plus size={14} /> Agregar
+                <Plus size={14} /> Agregar Enlace
               </button>
             </div>
-            <div className="space-y-3">
-              {config.navItems.length === 0 && (
-                <p className="text-sm text-muted italic text-center py-6 bg-background rounded-lg">
-                  No hay ítems de menú. Los dinámicos se obtienen de Módulos de Plataforma.
-                </p>
-              )}
-              {config.navItems.map((item, i) => (
-                <div key={i} className="flex gap-3 items-center">
-                  <input
-                    className={`${inputClass} flex-1`}
-                    value={item.label}
-                    onChange={(e) => updateNavItem(i, "label", e.target.value)}
-                    placeholder="Etiqueta (ej. Cursos)"
-                  />
-                  <input
-                    className={`${inputClass} flex-1`}
-                    value={item.href}
-                    onChange={(e) => updateNavItem(i, "href", e.target.value)}
-                    placeholder="URL (ej. /cursos)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeNavItem(i)}
-                    className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors shrink-0"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
+
+            {config.navItems.length === 0 ? (
+              <p className="text-xs text-muted italic py-4 text-center border border-dashed border-card-border rounded-xl">
+                No hay enlaces personalizados configurados.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {config.navItems.map((item, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      className={`${inputClass} flex-1`}
+                      value={item.label}
+                      onChange={(e) => updateNavItem(i, "label", e.target.value)}
+                      placeholder="Texto del enlace (ej. Blog)"
+                    />
+                    <input
+                      className={`${inputClass} flex-1`}
+                      value={item.href}
+                      onChange={(e) => updateNavItem(i, "href", e.target.value)}
+                      placeholder="URL (ej. /blog o https://...)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeNavItem(i)}
+                      className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -220,36 +198,33 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
           <div>
             <label className={labelClass}>Instagram URL</label>
             <div className="relative">
-              <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+              <Instagram size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
-                className={`${inputClass} pl-9`}
+                className={`${inputClass} pl-11`}
                 value={config.instagramUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, instagramUrl: e.target.value || null }))}
-                placeholder="https://instagram.com/academiaomnia"
-              />
-            </div>
-          </div>
-          <div>
-            <label className={labelClass}>LinkedIn URL</label>
-            <div className="relative">
-              <Linkedin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                className={`${inputClass} pl-9`}
-                value={config.linkedinUrl ?? ""}
-                onChange={(e) => setConfig((c) => ({ ...c, linkedinUrl: e.target.value || null }))}
-                placeholder="https://linkedin.com/company/academiaomnia"
+                placeholder="https://instagram.com/anaspastryshop"
               />
             </div>
           </div>
           <div>
             <label className={labelClass}>TikTok URL</label>
+            <input
+              className={inputClass}
+              value={config.tiktokUrl ?? ""}
+              onChange={(e) => setConfig((c) => ({ ...c, tiktokUrl: e.target.value || null }))}
+              placeholder="https://tiktok.com/@anaspastryshop"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>LinkedIn URL (opcional)</label>
             <div className="relative">
-              <AtSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+              <Linkedin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
-                className={`${inputClass} pl-9`}
-                value={config.tiktokUrl ?? ""}
-                onChange={(e) => setConfig((c) => ({ ...c, tiktokUrl: e.target.value || null }))}
-                placeholder="https://tiktok.com/@academiaomnia"
+                className={`${inputClass} pl-11`}
+                value={config.linkedinUrl ?? ""}
+                onChange={(e) => setConfig((c) => ({ ...c, linkedinUrl: e.target.value || null }))}
+                placeholder="https://linkedin.com/..."
               />
             </div>
           </div>
@@ -257,19 +232,20 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
       )}
 
       <div className="mt-8 pt-6 border-t border-card-border flex items-center justify-between">
-        {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
-        {success && (
-          <div className="flex items-center gap-2 text-green-600 text-sm font-bold">
-            <CheckCircle size={16} /> Guardado correctamente
-          </div>
-        )}
-        {!error && !success && <span />}
+        <div>
+          {error && <p className="text-xs text-red-500 font-bold">{error}</p>}
+          {success && (
+            <p className="text-xs text-green-600 font-bold flex items-center gap-1.5">
+              <CheckCircle size={14} /> Guardado exitosamente
+            </p>
+          )}
+        </div>
         <button
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 bg-navy dark:bg-accent text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-colors disabled:opacity-50 shadow-md shadow-pink-600/20"
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
           Guardar Cambios
         </button>
       </div>

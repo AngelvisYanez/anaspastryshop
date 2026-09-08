@@ -33,7 +33,7 @@ export default function NotFound() {
 
         <p className="text-lg text-muted mb-12 leading-relaxed max-w-md mx-auto">
           El enlace que buscas no está disponible. Vuelve al inicio o explora
-          nuestro catálogo de cursos.
+          nuestro catálogo de talleres.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -45,7 +45,7 @@ export default function NotFound() {
 
           <Link href="/cursos">
             <button className="bg-card text-foreground px-10 py-5 rounded-xl font-bold border border-card-border hover:bg-card-hover transition-all flex items-center gap-2">
-              Ver Cursos <ArrowRight size={18} className="text-accent" />
+              Ver Talleres <ArrowRight size={18} className="text-accent" />
             </button>
           </Link>
         </div>
@@ -58,7 +58,7 @@ export default function NotFound() {
         className="mt-24 flex items-center justify-center gap-3 text-muted text-xs font-bold uppercase tracking-[0.25em] z-10"
       >
         <div className="w-8 h-px bg-card-border" />
-        Error 404 · Academia Omnia
+        Error 404 · Ana&apos;s Pastry Shop
         <div className="w-8 h-px bg-card-border" />
       </m.div>
     </main>

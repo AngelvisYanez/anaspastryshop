@@ -111,12 +111,12 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <CheckCircle size={13} className="text-green-500 shrink-0" />
-            <p className="text-[10px] text-green-600 dark:text-green-400 font-bold truncate">{uploadedUrl}</p>
+            <p className="text-[11px] text-green-600 dark:text-green-400 font-bold truncate">{uploadedUrl}</p>
           </div>
           <button
             type="button"
             onClick={() => { setUploadedUrl(null); onUpload(""); }}
-            className="flex items-center gap-1 text-[10px] text-muted hover:text-red-500 font-bold transition-colors shrink-0"
+            className="flex items-center gap-1 text-[11px] text-muted hover:text-red-500 font-bold transition-colors shrink-0"
           >
             <X size={11} /> Quitar
           </button>
@@ -143,7 +143,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="text-[10px] text-muted font-medium">No cierres esta ventana hasta que el upload finalice.</p>
+        <p className="text-[11px] text-muted font-medium">No cierres esta ventana hasta que el upload finalice.</p>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
               o <span className="text-accent font-bold underline underline-offset-2">selecciona desde tu PC</span>
             </p>
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-muted font-medium">
+          <div className="flex items-center gap-2 text-[11px] text-muted font-medium">
             <Video size={11} />
             <span>MP4, MOV, WebM — Sin límite de tamaño — Cloudflare Stream</span>
           </div>

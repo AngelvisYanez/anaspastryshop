@@ -44,7 +44,7 @@ export default function WebinarActions({ id, status }: { id: string; status: Sta
             <>
               <button
                 onClick={() => router.push(`/webinars/${id}`)}
-                className="flex-1 py-3 rounded-xl font-bold text-sm bg-amber-50 text-accent hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl font-bold text-sm bg-accent text-white hover:bg-accent-hover transition-colors flex items-center justify-center gap-2"
               >
                 <ExternalLink size={15} /> Entrar
               </button>

@@ -192,7 +192,7 @@ export default function CreateLiveForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#0B1F3A] text-white py-5 rounded-lg font-bold shadow-xl hover:bg-accent transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-accent text-white py-5 rounded-xl font-bold shadow-xl shadow-accent/20 hover:bg-accent-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? <Loader2 className="animate-spin" size={20} /> : <Radio size={20} />}
           {loading ? "Creando..." : "Crear Live"}

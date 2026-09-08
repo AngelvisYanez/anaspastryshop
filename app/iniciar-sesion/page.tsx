@@ -3,7 +3,7 @@ import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {
   title: "Iniciar Sesión",
-  description: "Accede a tu cuenta en Academia Omnia y continúa tu aprendizaje sobre herramientas digitales.",
+  description: "Accede a tu cuenta en Ana's Pastry Shop y continúa tu formación en pastelería y panadería.",
   robots: { index: false, follow: false },
 };
 

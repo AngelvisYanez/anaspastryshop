@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { approvePayment, rejectPayment } from "@/lib/actions/payments";
-import { Check, X, Loader2, FileImage, BadgeCheck, AlertTriangle, Phone } from "lucide-react";
+import { Check, X, Loader2, FileImage, AlertTriangle, Phone, Sparkles, BookOpen } from "lucide-react";
 
 type Inscription = {
   id: string;
@@ -21,7 +21,8 @@ type Inscription = {
 const METHOD_LABELS: Record<string, string> = {
   BANK_TRANSFER: "Transferencia Bancaria",
   ZELLE: "Zelle",
-  PAGO_MOVIL: "Pago Móvil",
+  PAGO_MOVIL: "Pago Móvil (BCV)",
+  BINANCE: "Binance Pay",
   USDT: "USDT",
   TRANSFERENCIA: "Transferencia",
   STRIPE: "Stripe",
@@ -34,10 +35,12 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
   const [rejectionReason, setRejectionReason] = useState("");
   const router = useRouter();
 
-  const isSubscription = !inscription.cursoId;
-  const itemTitle = isSubscription ? "Membresía Academia" : (inscription.curso?.title ?? "Curso desconocido");
-  const expectedPrice = isSubscription ? inscription.amountPaid : (inscription.curso?.price ?? 0);
-  const amountMismatch = !isSubscription && inscription.amountPaid < expectedPrice;
+  const isPastryService = !inscription.cursoId;
+  const itemTitle = isPastryService
+    ? "Servicio de Pastelería / Pedido Especial"
+    : (inscription.curso?.title ?? "Taller / Curso");
+  const expectedPrice = isPastryService ? inscription.amountPaid : (inscription.curso?.price ?? 0);
+  const amountMismatch = !isPastryService && inscription.amountPaid < expectedPrice;
 
   async function handleApprove() {
     setLoading("approve");
@@ -64,9 +67,13 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
             <span className="text-xs font-black uppercase tracking-widest bg-orange-50 dark:bg-orange-950/20 text-orange-500 px-3 py-1 rounded-md">
               Pendiente
             </span>
-            {isSubscription && (
-              <span className="text-xs font-black uppercase tracking-widest bg-amber-50 dark:bg-amber-950/20 text-amber-600 px-3 py-1 rounded-md flex items-center gap-1">
-                <BadgeCheck size={12} /> Membresía
+            {isPastryService ? (
+              <span className="text-xs font-black uppercase tracking-widest bg-pink-50 dark:bg-pink-950/20 text-pink-600 px-3 py-1 rounded-md flex items-center gap-1">
+                <Sparkles size={12} /> Servicio de Pastelería
+              </span>
+            ) : (
+              <span className="text-xs font-black uppercase tracking-widest bg-accent-subtle text-accent px-3 py-1 rounded-md flex items-center gap-1">
+                <BookOpen size={12} /> Taller / Curso
               </span>
             )}
             {amountMismatch && (
@@ -86,20 +93,20 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
             <p className="text-sm text-muted mb-1">{inscription.user.email}</p>
           )}
           <p className="text-sm text-muted font-medium mb-4">
-            {isSubscription ? "Solicita activar:" : "Quiere acceder a:"}{" "}
+            {isPastryService ? "Pago reportado para:" : "Compra de:"}{" "}
             <span className="text-accent font-bold">{itemTitle}</span>
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-section-alt p-4 rounded-lg">
             <div>
-              <p className="text-[10px] font-black uppercase text-muted mb-0.5">Método</p>
+              <p className="text-[11px] font-black uppercase text-muted mb-0.5">Método</p>
               <p className="text-sm font-bold text-foreground">
                 {METHOD_LABELS[inscription.method] ?? inscription.method}
               </p>
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted mb-0.5">
-                {inscription.phoneNumber ? "Teléfono" : "Referencia"}
+              <p className="text-[11px] font-black uppercase text-muted mb-0.5">
+                {inscription.phoneNumber ? "Teléfono / Ref" : "Referencia"}
               </p>
               <p className="text-sm font-bold text-foreground flex items-center gap-1">
                 {inscription.phoneNumber ? (
@@ -112,17 +119,17 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
                 )}
               </p>
               {inscription.phoneNumber && inscription.reference && (
-                <p className="text-xs text-muted mt-0.5">Ref: {inscription.reference}</p>
+                <p className="text-xs text-muted mt-0.5 break-all">Ref: {inscription.reference}</p>
               )}
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted mb-0.5">Monto Reportado</p>
+              <p className="text-[11px] font-black uppercase text-muted mb-0.5">Monto Reportado</p>
               <p className={`text-sm font-bold ${amountMismatch ? "text-red-500" : "text-foreground"}`}>
-                ${inscription.amountPaid} / ${expectedPrice}
+                ${inscription.amountPaid} {isPastryService ? "USD" : `/ $${expectedPrice}`}
               </p>
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase text-muted mb-0.5">Captura</p>
+              <p className="text-[11px] font-black uppercase text-muted mb-0.5">Captura</p>
               {inscription.receiptImage ? (
                 <a
                   href={inscription.receiptImage}
@@ -130,7 +137,7 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
                   rel="noreferrer"
                   className="text-accent text-sm font-bold flex items-center gap-1 hover:underline"
                 >
-                  <FileImage size={14} /> Ver imagen
+                  <FileImage size={14} /> Ver comprobante
                 </a>
               ) : (
                 <p className="text-sm font-bold text-muted">Sin imagen</p>
@@ -200,19 +207,24 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
           <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-md w-full">
             <h3 className="text-lg font-bold text-foreground mb-1">Rechazar pago</h3>
             <p className="text-sm text-muted mb-4">
-              Ingresa el motivo del rechazo. El usuario recibirá un correo con esta información.
+              ¿Estás seguro de rechazar el pago de{" "}
+              <strong className="text-foreground">{inscription.user.name || inscription.user.email}</strong>?
             </p>
-            <textarea
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Ej: La referencia no coincide con nuestros registros..."
-              className="w-full border border-card-border rounded-lg p-3 text-sm bg-section-alt text-foreground placeholder:text-muted resize-none focus:outline-none focus:ring-2 focus:ring-accent mb-4"
-              rows={3}
-              autoFocus
-            />
+            <div className="mb-4">
+              <label className="text-xs font-bold text-muted block mb-1">
+                Motivo del rechazo (opcional, se enviará por email al usuario)
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Ej. El número de referencia no coincide, comprobante ilegible..."
+                rows={3}
+                className="w-full bg-section-alt border border-card-border rounded-lg p-3 text-sm text-foreground outline-none focus:border-accent resize-none"
+              />
+            </div>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => { setShowRejectDialog(false); setRejectionReason(""); }}
+                onClick={() => setShowRejectDialog(false)}
                 className="px-4 py-2 rounded-lg text-sm font-bold text-muted hover:text-foreground transition-colors"
               >
                 Cancelar
@@ -221,7 +233,7 @@ export default function PaymentCard({ inscription }: { inscription: Inscription 
                 onClick={handleReject}
                 className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-lg transition-all"
               >
-                <X size={16} /> Rechazar pago
+                <X size={16} /> Confirmar rechazo
               </button>
             </div>
           </div>

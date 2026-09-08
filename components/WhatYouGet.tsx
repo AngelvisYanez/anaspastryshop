@@ -1,60 +1,50 @@
 "use client";
 import { m } from "framer-motion";
-import { Radio, BookOpen, Users } from "lucide-react";
+import { Cake, BookOpen, Palette, CheckCircle2 } from "lucide-react";
 
 const CARDS = [
   {
-    icon: Radio,
-    title: "Sesiones en Vivo",
+    icon: Cake,
+    title: "Workshops Presenciales Intensivos",
     description:
-      "Sesiones prácticas donde puedes traer tus dudas específicas y recibir orientación directa de instructores expertos.",
+      "Jornadas de 8 horas continuas (9:00 AM a 5:00 PM) con práctica individual desde cero en un ambiente completamente equipado.",
     features: [
-      "Sesiones dinámicas 100% en vivo",
-      "Varios encuentros al mes",
-      "Preguntas y respuestas en tiempo real",
-      "Grabaciones disponibles para miembros",
+      "Práctica 100% individual",
+      "Insumos de primera calidad incluidos",
+      "Te llevas tus creaciones a casa",
+      "Cupos reducidos para atención cercana",
     ],
   },
   {
     icon: BookOpen,
-    title: "Cursos Completos",
+    title: "Técnicas & Métodos Exactos",
     description:
-      "Contenido estructurado desde los fundamentos hasta niveles avanzados, con proyectos y ejercicios reales.",
+      "Aprende el porqué de cada paso: puntos de batido, temperaturas, hidratación y cómo evitar errores comunes para que tus recetas siempre salgan perfectas.",
     features: [
-      "Ruta de aprendizaje clara",
-      "Proyectos prácticos paso a paso",
-      "Material descargable exclusivo",
-      "Seguimiento de tu progreso",
+      "El porqué de cada ingrediente",
+      "Técnicas infalibles de horneado",
+      "Cómo rescatar cremas y masas",
+      "Estandarización y rendimientos",
     ],
   },
   {
-    icon: Users,
-    title: "Comunidad & Recursos",
+    icon: Palette,
+    title: "Decoración & Tendencias",
     description:
-      "Una comunidad activa que aprende junta, con material exclusivo y actualizaciones constantes para estar siempre al día.",
+      "Domina el manejo de la base giratoria, alisados prolijos, bordes perfectos y técnicas decorativas modernas.",
     features: [
-      "Comunidad activa de miembros",
-      "Actualizaciones en tiempo real",
-      "Material exclusivo descargable",
-      "Soporte entre pares",
+      "Bordes afilados y texturas en tendencia",
+      "Manejo de mangas y boquillas",
+      "Estructuras y montaje seguro",
+      "Presentación lista para la venta",
     ],
   },
-];
-
-const RESULTS = [
-  "Dominar las herramientas digitales esenciales para tu campo profesional.",
-  "Aplicar lo aprendido en proyectos reales desde las primeras semanas.",
-  "Entender los fundamentos y las estrategias avanzadas de cada tema.",
-  "Trabajar de forma más eficiente y productiva con los recursos adecuados.",
-  "Construir un portafolio y una base de conocimiento sólida.",
-  "Adaptarte con confianza a un mundo digital que cambia constantemente.",
-  "Seguir aprendiendo y creciendo con contenido siempre actualizado.",
 ];
 
 export default function WhatYouGet() {
   return (
-    <section className="w-full bg-foreground py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-10">
+    <section className="w-full bg-gradient-to-b from-[#2B0938] via-[#24062E] to-[#1C0524] py-24 text-white">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -62,44 +52,47 @@ export default function WhatYouGet() {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
-            Lo que incluye la academia
-          </span>
-          <h2 className="font-display text-4xl md:text-6xl font-black text-background tracking-tight leading-[0.95]">
-            Todo lo que necesitas para{" "}
-            <span className="text-accent">dominar tus habilidades</span>
+          <h2 className="font-display text-4xl md:text-6xl font-black text-white tracking-tight leading-[1.05]">
+            Todo lo que incluye{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-cyan-300">
+              tu experiencia formativa
+            </span>
           </h2>
+          <p className="text-white/70 max-w-2xl mt-4 text-base md:text-lg">
+            Combinamos práctica intensiva individual, recetas comprobadas y acompañamiento cercano para que aprendas con total seguridad.
+          </p>
         </m.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          {CARDS.map((card, idx) => {
+        <div className="flex md:grid md:grid-cols-3 gap-5 md:gap-8 overflow-x-auto pb-2 scrollbar-hide">
+          {CARDS.map((card, i) => {
             const Icon = card.icon;
             return (
               <m.div
                 key={card.title}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-card rounded-xl p-8 border border-card-border flex flex-col"
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="w-[85vw] max-w-sm shrink-0 md:w-auto md:shrink-0 bg-white/[0.05] border border-white/10 rounded-3xl p-8 backdrop-blur hover:border-pink-400/40 transition-all flex flex-col justify-between"
               >
-                <div className="w-11 h-11 bg-accent-subtle rounded-lg flex items-center justify-center mb-5 shrink-0">
-                  <Icon size={20} className="text-accent" />
+                <div>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-14 h-14 rounded-2xl bg-pink-500/20 border border-pink-400/30 flex items-center justify-center text-pink-300 shrink-0">
+                      <Icon size={26} />
+                    </div>
+                    <h3 className="font-display text-xl md:text-2xl font-black text-white tracking-tight">
+                      {card.title}
+                    </h3>
+                  </div>
+                  <p className="text-white/70 text-sm leading-relaxed mb-6">
+                    {card.description}
+                  </p>
                 </div>
-                <h3 className="font-display text-xl font-black text-foreground mb-2">
-                  {card.title}
-                </h3>
-                <p className="text-xs text-muted leading-relaxed mb-6">
-                  {card.description}
-                </p>
-                <ul className="space-y-0 mt-auto">
-                  {card.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-center gap-3 py-2.5 border-b border-card-border last:border-b-0 text-xs text-muted"
-                    >
-                      <span className="text-accent text-[10px] shrink-0">✦</span>
-                      {f}
+                <ul className="space-y-3 pt-6 border-t border-white/10">
+                  {card.features.map((feat) => (
+                    <li key={feat} className="flex items-center gap-2.5 text-xs text-white/80 font-medium">
+                      <CheckCircle2 size={16} className="text-accent shrink-0" />
+                      <span>{feat}</span>
                     </li>
                   ))}
                 </ul>
@@ -107,40 +100,6 @@ export default function WhatYouGet() {
             );
           })}
         </div>
-
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-0.5 bg-accent" />
-            <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
-              Al terminar la academia podrás:
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-0">
-            {RESULTS.map((text, i) => (
-              <m.div
-                key={text}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.07 }}
-                className="flex items-start gap-5 py-5 border-b border-background/[0.12]"
-              >
-                <span className="font-display text-3xl font-black text-accent tracking-tight shrink-0 w-12 leading-none mt-0.5 tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="text-sm text-background/55 leading-relaxed pt-1">
-                  {text}
-                </p>
-              </m.div>
-            ))}
-          </div>
-        </m.div>
       </div>
     </section>
   );

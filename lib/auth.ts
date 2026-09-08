@@ -31,8 +31,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           if (!user.isActive) return null;
 
-          if (user.role === "MENTOR" && !user.isApproved) return null;
-
           return {
             id: user.id,
             email: user.email,

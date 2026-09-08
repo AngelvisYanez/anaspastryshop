@@ -1,95 +1,98 @@
 import type { Metadata } from "next";
-import { Sora, DM_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 
-const sora = Sora({
-  subsets: ["latin"],
+const displayFont = Plus_Jakarta_Sans({
   variable: "--font-display",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com";
+const bodyFont = DM_Sans({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const serifFont = Playfair_Display({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "900"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://anaspastryshop.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Academia Omnia | Aprende Herramientas Digitales en Español",
-    template: "%s | Academia Omnia",
+    default: "Ana's Pastry Shop | Workshops de Pastelería & Panadería Profesional",
+    template: "%s | Ana's Pastry Shop",
   },
   description:
-    "La plataforma líder en educación digital en español. Aprende herramientas digitales, cursos prácticos y sesiones en vivo para dominar el mundo digital con una visión 360°.",
+    "Fórmate en el arte de la pastelería y repostería profesional en Ana's Pastry Shop con la Chef Anais Flores. Workshops presenciales intensivos de 8 horas y cursos online desde cero.",
   keywords: [
-    "cursos digitales español",
-    "educación digital hispanos",
-    "aprender herramientas digitales",
-    "cursos online español",
-    "formación digital",
-    "academia digital",
+    "talleres de pastelería",
+    "cursos de repostería presenciales",
+    "Ana's Pastry Shop",
+    "Anais Flores pastelera",
+    "decoración de pasteles",
+    "panadería profesional",
+    "workshops repostería",
+    "aprender pastelería desde cero",
   ],
-  authors: [{ name: "Academia Omnia" }],
-  creator: "Academia Omnia",
+  authors: [{ name: "Anais Flores · Ana's Pastry Shop" }],
+  creator: "Ana's Pastry Shop",
   openGraph: {
     type: "website",
-    locale: "es_US",
+    locale: "es_ES",
     url: siteUrl,
-    siteName: "Academia Omnia",
-    title: "Academia Omnia | Aprende Herramientas Digitales en Español",
+    siteName: "Ana's Pastry Shop",
+    title: "Ana's Pastry Shop | Workshops de Pastelería & Panadería Profesional",
     description:
-      "Aprende herramientas digitales, cursos prácticos y sesiones en vivo con una visión 360°. Formación en español para crecer sin fronteras.",
+      "Fórmate en pastelería y repostería profesional con la Chef Anais Flores. Workshops presenciales intensivos y cursos online desde cero.",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Academia Omnia",
+        url: "/logo-anas-pastry-shop.png",
+        width: 1080,
+        height: 1080,
+        alt: "Ana's Pastry Shop",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Academia Omnia | Aprende Herramientas Digitales en Español",
-    description: "Aprende herramientas digitales y cursos prácticos en español con Academia Omnia.",
-    images: ["/og-image.png"],
+    title: "Ana's Pastry Shop | Workshops de Pastelería Profesional",
+    description: "Workshops presenciales de pastelería, panadería y técnicas modernas con Anais Flores.",
+    images: ["/logo-anas-pastry-shop.png"],
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-snippet": 150,
-      "max-image-preview": "large",
-    },
-  },
-  alternates: {
-    canonical: siteUrl,
   },
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/logo-anas-pastry-shop.png",
+    shortcut: "/logo-anas-pastry-shop.png",
+    apple: "/logo-anas-pastry-shop.png",
   },
 };
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  name: "Academia Omnia",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com",
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com"}/logo-acu.png`,
+  name: "Ana's Pastry Shop",
+  url: siteUrl,
+  logo: `${siteUrl}/logo-anas-pastry-shop.png`,
   description:
-    "Plataforma líder en educación digital en español. Domina las herramientas del mundo digital con una visión 360°.",
-  sameAs: ["https://instagram.com/academiaomnia"],
+    "Talleres presenciales y formación en pastelería y panadería profesional en Ana's Pastry Shop con Anais Flores.",
+  sameAs: ["https://instagram.com/anaspastryshop"],
   contactPoint: {
     "@type": "ContactPoint",
-    email: "contacto@academiaomnia.com",
+    email: "contacto@anaspastryshop.com",
     contactType: "customer service",
     availableLanguage: "Spanish",
   },
@@ -97,25 +100,18 @@ const organizationJsonLd = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body
-        className={`${sora.variable} ${dmSans.variable} antialiased text-foreground bg-background`}
-        suppressHydrationWarning
-      >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-accent focus:text-[#0B1F3A] focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold focus:text-sm"
-        >
-          Saltar al contenido principal
-        </a>
+      <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+      </head>
+      <body className={`${bodyFont.variable} ${displayFont.variable} ${serifFont.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>

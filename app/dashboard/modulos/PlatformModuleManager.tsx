@@ -16,8 +16,7 @@ const ICON_OPTIONS = [
 ];
 
 const ROLES = [
-  { key: "ADMIN",  label: "Admin",  color: "bg-amber-100 text-indigo-700 border-indigo-200" },
-  { key: "MENTOR", label: "Mentor", color: "bg-purple-100 text-purple-700 border-purple-200" },
+  { key: "ADMIN",  label: "Admin",  color: "bg-accent-subtle text-accent border-accent/20" },
   { key: "USER",   label: "Usuario", color: "bg-blue-100 text-blue-700 border-blue-200" },
 ];
 
@@ -32,11 +31,11 @@ function slugify(text: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 }
 
-type Section = {
+interface Section {
   id: string;
   name: string;
   slug: string;
@@ -44,141 +43,110 @@ type Section = {
   order: number;
   isActive: boolean;
   roles: string[];
-};
+}
 
-type CreateForm = { name: string; slug: string; icon: string; order: number; roles: string[] };
-type EditForm = { name: string; slug: string; icon: string; order: number; isActive: boolean; roles: string[] };
-
-const EMPTY_CREATE: CreateForm = { name: "", slug: "", icon: "BookOpen", order: 0, roles: ["ADMIN", "MENTOR", "USER"] };
-
-function RoleToggleGroup({
-  selected,
-  onChange,
+export default function PlatformModuleManager({
+  initialSections,
 }: {
-  selected: string[];
-  onChange: (roles: string[]) => void;
+  initialSections: Section[];
 }) {
-  function toggle(key: string) {
-    onChange(
-      selected.includes(key) ? selected.filter((r) => r !== key) : [...selected, key]
-    );
-  }
-  return (
-    <div className="flex gap-2">
-      {ROLES.map(({ key, label, color }) => {
-        const active = selected.includes(key);
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => toggle(key)}
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
-              active ? color + " border-current" : "border-card-border text-muted bg-card hover:border-gray-300"
-            }`}
-          >
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function IconPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5">
-      {ICON_OPTIONS.map((name) => (
-        <button
-          key={name}
-          type="button"
-          title={name}
-          onClick={() => onChange(name)}
-          className={`p-2.5 rounded-xl border-2 flex items-center justify-center transition-all ${
-            value === name
-              ? "border-accent bg-amber-50 text-accent"
-              : "border-card-border text-muted hover:border-gray-300 hover:text-foreground"
-          }`}
-        >
-          <DynamicIcon name={name} size={15} />
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function PlatformModuleManager({ initialSections }: { initialSections: Section[] }) {
   const [sections, setSections] = useState<Section[]>(initialSections);
+  const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
-  const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [createSuccess, setCreateSuccess] = useState(false);
 
+  // Form state for creating
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    slug: "",
+    icon: "Layers",
+    order: initialSections.length + 1,
+    roles: ["ADMIN", "USER"],
+  });
+
+  // Editing state
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<EditForm | null>(null);
-  const [editLoading, setEditLoading] = useState(false);
+  const [editForm, setEditForm] = useState<Omit<Section, "id"> | null>(null);
+  const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  function startEdit(section: Section) {
-    setEditingId(section.id);
-    setEditForm({
-      name: section.name,
-      slug: section.slug,
-      icon: section.icon,
-      order: section.order,
-      isActive: section.isActive,
-      roles: section.roles.length ? section.roles : ["ADMIN", "MENTOR", "USER"],
-    });
-    setEditError(null);
+  // Deleting / toggling state
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  function triggerSuccess(msg: string) {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(null), 3000);
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setEditForm(null);
-    setEditError(null);
+  function handleCreateNameChange(name: string) {
+    setCreateForm((prev) => ({
+      ...prev,
+      name,
+      slug: prev.slug === slugify(prev.name) || !prev.slug ? slugify(name) : prev.slug,
+    }));
+  }
+
+  function toggleRole(role: string, isCreate: boolean) {
+    if (isCreate) {
+      setCreateForm((prev) => ({
+        ...prev,
+        roles: prev.roles.includes(role)
+          ? prev.roles.filter((r) => r !== role)
+          : [...prev.roles, role],
+      }));
+    } else if (editForm) {
+      setEditForm((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          roles: prev.roles.includes(role)
+            ? prev.roles.filter((r) => r !== role)
+            : [...prev.roles, role],
+        };
+      });
+    }
   }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (createForm.roles.length === 0) {
-      setCreateError("Selecciona al menos un rol");
-      return;
-    }
-    setCreateLoading(true);
+    setCreating(true);
     setCreateError(null);
 
     const fd = new FormData();
-    fd.set("name", createForm.name);
-    fd.set("slug", createForm.slug);
-    fd.set("icon", createForm.icon);
-    fd.set("order", String(createForm.order));
-    fd.set("roles", createForm.roles.join(","));
+    fd.append("name", createForm.name);
+    fd.append("slug", createForm.slug);
+    fd.append("icon", createForm.icon);
+    fd.append("order", String(createForm.order));
+    fd.append("roles", createForm.roles.join(","));
 
-    const result = await createSection(fd);
-    setCreateLoading(false);
+    const res = await createSection(fd);
+    setCreating(false);
 
-    if (result.error) {
-      setCreateError(result.error);
-    } else if (result.section) {
-      setSections((prev) => [...prev, result.section as Section].sort((a, b) => a.order - b.order));
-      setCreateForm(EMPTY_CREATE);
-      setCreating(false);
-      setCreateSuccess(true);
-      setTimeout(() => setCreateSuccess(false), 3000);
+    if (res.error) {
+      setCreateError(res.error);
+    } else if (res.section) {
+      setSections((prev) => [...prev, res.section as Section].sort((a, b) => a.order - b.order));
+      setShowCreate(false);
+      setCreateForm({ name: "", slug: "", icon: "Layers", order: sections.length + 2, roles: ["ADMIN", "USER"] });
+      triggerSuccess("Módulo creado correctamente");
     }
   }
 
-  async function handleSaveEdit(id: string) {
-    if (!editForm) return;
-    if (editForm.roles.length === 0) {
-      setEditError("Selecciona al menos un rol");
-      return;
-    }
-    setEditLoading(true);
+  function startEditing(s: Section) {
+    setEditingId(s.id);
+    setEditForm({ name: s.name, slug: s.slug, icon: s.icon, order: s.order, isActive: s.isActive, roles: s.roles });
+    setEditError(null);
+  }
+
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingId || !editForm) return;
+    setSaving(true);
     setEditError(null);
 
-    const result = await updateSection(id, {
+    const res = await updateSection(editingId, {
       name: editForm.name,
       slug: editForm.slug,
       icon: editForm.icon,
@@ -186,350 +154,393 @@ export default function PlatformModuleManager({ initialSections }: { initialSect
       isActive: editForm.isActive,
       roles: editForm.roles,
     });
+    setSaving(false);
 
-    setEditLoading(false);
-    if (result.error) {
-      setEditError(result.error);
-    } else if (result.section) {
+    if (res.error) {
+      setEditError(res.error);
+    } else if (res.section) {
       setSections((prev) =>
-        prev
-          .map((s) => (s.id === id ? (result.section as Section) : s))
-          .sort((a, b) => a.order - b.order)
+        prev.map((s) => (s.id === editingId ? (res.section as Section) : s)).sort((a, b) => a.order - b.order)
       );
-      cancelEdit();
+      setEditingId(null);
+      setEditForm(null);
+      triggerSuccess("Módulo actualizado");
     }
   }
 
-  async function handleToggleActive(id: string, current: boolean) {
-    await updateSection(id, { isActive: !current });
-    setSections((prev) => prev.map((s) => (s.id === id ? { ...s, isActive: !current } : s)));
+  async function handleToggle(s: Section) {
+    setTogglingId(s.id);
+    const res = await updateSection(s.id, { isActive: !s.isActive });
+    setTogglingId(null);
+    if (res.section) {
+      setSections((prev) => prev.map((item) => (item.id === s.id ? (res.section as Section) : item)));
+    }
   }
 
-  async function confirmDeleteModule() {
-    if (!deleteConfirmId) return;
-    await deleteSection(deleteConfirmId);
-    setSections((prev) => prev.filter((s) => s.id !== deleteConfirmId));
-    setDeleteConfirmId(null);
+  async function handleDelete(id: string) {
+    if (!confirm("¿Eliminar este módulo de navegación? Esta acción no se puede deshacer.")) return;
+    setDeletingId(id);
+    const res = await deleteSection(id);
+    setDeletingId(null);
+    if (res.success) {
+      setSections((prev) => prev.filter((s) => s.id !== id));
+      triggerSuccess("Módulo eliminado");
+    }
   }
-
-  const sorted = [...sections].sort((a, b) => a.order - b.order);
 
   return (
-    <>
-    <div className="max-w-5xl">
-      <div className="mb-8">
-        <p className="text-muted font-medium mb-4">Gestiona las secciones de navegación con icono, orden y visibilidad por rol.</p>
-        <button
-          onClick={() => { setCreating(!creating); setCreateError(null); }}
-          className={`flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-sm transition-all ${
-            creating
-              ? "bg-section-alt text-foreground hover:bg-muted/20"
-              : "bg-accent text-white shadow-lg shadow-accent/10 hover:bg-accent-hover"
-          }`}
-        >
-          {creating ? <X size={16} /> : <Plus size={16} />}
-          {creating ? "Cancelar" : "Nuevo Módulo"}
-        </button>
-      </div>
-
-      {createSuccess && (
-        <div className="bg-green-50 text-green-600 p-4 rounded-lg text-sm font-bold flex gap-2 items-center mb-6">
-          <CheckCircle size={16} /> Módulo creado correctamente
+    <div className="space-y-6">
+      {/* Toast Notification */}
+      {successMsg && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle size={18} />
+          <span className="text-xs font-black">{successMsg}</span>
         </div>
       )}
 
-      {/* CREATE FORM */}
-      {creating && (
-        <div className="bg-card rounded-xl p-4 sm:p-8 border border-accent/20 shadow-lg shadow-amber-50 mb-8">
-          <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-6 flex items-center gap-2">
-            <LayoutGrid size={14} /> Nuevo Módulo
+      {/* Header bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-black text-foreground">Módulos del Sistema</h2>
+          <p className="text-xs text-muted">
+            Gestiona la visibilidad y roles de cada sección del panel de navegación lateral.
           </p>
+        </div>
+        <button
+          onClick={() => {
+            setShowCreate(!showCreate);
+            setCreateError(null);
+          }}
+          className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-pink-600/20"
+        >
+          {showCreate ? <X size={15} /> : <Plus size={15} />}
+          {showCreate ? "Cancelar" : "Nuevo Módulo"}
+        </button>
+      </div>
+
+      {/* Create Section Form */}
+      {showCreate && (
+        <form
+          onSubmit={handleCreate}
+          className="bg-card border-2 border-accent/30 rounded-2xl p-6 shadow-md space-y-5 animate-in fade-in duration-200"
+        >
+          <div className="flex items-center justify-between border-b border-card-border pb-3">
+            <h3 className="text-sm font-black uppercase tracking-wider text-accent flex items-center gap-2">
+              <Plus size={16} /> Crear Nueva Sección de Navegación
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowCreate(false)}
+              className="text-muted hover:text-foreground"
+            >
+              <X size={16} />
+            </button>
+          </div>
 
           {createError && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold mb-4">{createError}</div>
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded-xl flex items-center gap-2">
+              <AlertCircle size={14} /> {createError}
+            </div>
           )}
 
-          <form onSubmit={handleCreate} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Nombre</label>
-                <input
-                  required
-                  value={createForm.name}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setCreateForm((f) => ({ ...f, name: v, slug: slugify(v) }));
-                  }}
-                  placeholder="Ej. Cursos Online"
-                  className="w-full bg-section-alt rounded-lg py-3.5 px-5 outline-none focus:ring-2 focus:ring-accent font-bold text-foreground"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Slug (URL)</label>
-                <input
-                  required
-                  value={createForm.slug}
-                  onChange={(e) => setCreateForm((f) => ({ ...f, slug: e.target.value }))}
-                  placeholder="cursos-online"
-                  className="w-full bg-section-alt rounded-lg py-3.5 px-5 outline-none focus:ring-2 focus:ring-accent font-mono text-sm text-foreground"
-                />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">
+                Nombre
+              </label>
+              <input
+                type="text"
+                required
+                value={createForm.name}
+                onChange={(e) => handleCreateNameChange(e.target.value)}
+                placeholder="Ej. Recetas VIP"
+                className="w-full bg-background border border-card-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-accent"
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Orden</label>
-                <input
-                  type="number"
-                  min={0}
-                  value={createForm.order}
-                  onChange={(e) => setCreateForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-section-alt rounded-lg py-3.5 px-5 outline-none focus:ring-2 focus:ring-accent font-bold text-foreground"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">
-                  Visible para roles
-                </label>
-                <RoleToggleGroup
-                  selected={createForm.roles}
-                  onChange={(roles) => setCreateForm((f) => ({ ...f, roles }))}
-                />
+            <div>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">
+                Slug (Ruta /dashboard/...)
+              </label>
+              <input
+                type="text"
+                required
+                value={createForm.slug}
+                onChange={(e) => setCreateForm((p) => ({ ...p, slug: slugify(e.target.value) }))}
+                placeholder="recetas-vip"
+                className="w-full bg-background border border-card-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">
+                Ícono
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-section-alt border border-card-border flex items-center justify-center text-accent shrink-0">
+                  <DynamicIcon name={createForm.icon} size={18} />
+                </div>
+                <select
+                  value={createForm.icon}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, icon: e.target.value }))}
+                  className="w-full bg-background border border-card-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:border-accent"
+                >
+                  {ICON_OPTIONS.map((ico) => (
+                    <option key={ico} value={ico}>{ico}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-2">
-                Icono — <span className="text-accent">{createForm.icon}</span>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">
+                Orden
               </label>
-              <IconPicker value={createForm.icon} onChange={(v) => setCreateForm((f) => ({ ...f, icon: v }))} />
+              <input
+                type="number"
+                value={createForm.order}
+                onChange={(e) => setCreateForm((p) => ({ ...p, order: parseInt(e.target.value) || 0 }))}
+                className="w-full bg-background border border-card-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-accent"
+              />
             </div>
+          </div>
 
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={createLoading}
-                className="flex items-center gap-2 bg-[#0B1F3A] text-white px-8 py-3.5 rounded-lg font-bold text-sm hover:bg-accent transition-all disabled:opacity-50"
-              >
-                {createLoading ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
-                {createLoading ? "Creando..." : "Crear Módulo"}
-              </button>
+          <div>
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-2">
+              Roles con Acceso
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {ROLES.map((r) => {
+                const checked = createForm.roles.includes(r.key);
+                return (
+                  <button
+                    key={r.key}
+                    type="button"
+                    onClick={() => toggleRole(r.key, true)}
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      checked
+                        ? "bg-accent text-white border-accent shadow-sm"
+                        : "bg-background text-muted border-card-border hover:border-accent/40"
+                    }`}
+                  >
+                    <span>{r.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </form>
-        </div>
-      )}
+          </div>
 
-      {/* LIST */}
-      <div className="bg-card rounded-xl border border-card-border shadow-sm overflow-hidden">
-        <div className="px-4 sm:px-8 py-4 sm:py-5 border-b border-card-border flex items-center justify-between">
-          <h2 className="font-bold text-foreground">
-            Módulos Configurados
-            <span className="ml-2 text-xs text-muted font-normal">({sections.length})</span>
-          </h2>
-          <p className="text-[10px] text-muted font-bold uppercase tracking-widest">
-            Ordenado por prioridad
-          </p>
-        </div>
-
-        {sorted.length === 0 ? (
-          <div className="p-16 text-center">
-            <LayoutGrid className="mx-auto text-muted/30 mb-4" size={40} />
-            <p className="text-muted font-bold text-sm">No hay módulos creados.</p>
+          <div className="flex justify-end gap-2 pt-2">
             <button
-              onClick={() => setCreating(true)}
-              className="mt-4 text-accent font-bold text-sm hover:underline"
+              type="submit"
+              disabled={creating}
+              className="bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 disabled:opacity-50"
             >
-              Crear el primero
+              {creating ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+              Guardar Módulo
             </button>
           </div>
-        ) : (
-          <div className="divide-y divide-gray-50">
-            {sorted.map((section) => {
-              const isEditing = editingId === section.id;
-              return (
-                <div key={section.id}>
-                  <div className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-4 sm:py-5 transition-colors ${isEditing ? "bg-amber-50/40" : "hover:bg-card-hover"}`}>
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${section.isActive ? "bg-amber-50 text-accent" : "bg-section-alt text-muted"}`}>
-                      <DynamicIcon name={section.icon} size={18} />
+        </form>
+      )}
+
+      {/* Sections List */}
+      <div className="bg-card border border-card-border rounded-2xl overflow-hidden shadow-sm">
+        <div className="divide-y divide-card-border">
+          {sections.map((section) => {
+            const isEditing = editingId === section.id;
+            const isToggling = togglingId === section.id;
+            const isDeleting = deletingId === section.id;
+
+            return (
+              <div
+                key={section.id}
+                className={`p-4 transition-colors ${
+                  !section.isActive ? "bg-card/50 opacity-70" : "hover:bg-card-hover/40"
+                }`}
+              >
+                {isEditing && editForm ? (
+                  /* Edit Form */
+                  <form onSubmit={handleUpdate} className="space-y-4 py-2">
+                    {editError && (
+                      <div className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded-xl flex items-center gap-2">
+                        <AlertCircle size={14} /> {editError}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-muted block mb-1">Nombre</label>
+                        <input
+                          type="text"
+                          required
+                          value={editForm.name}
+                          onChange={(e) => setEditForm((p) => p && ({ ...p, name: e.target.value }))}
+                          className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-muted block mb-1">Slug</label>
+                        <input
+                          type="text"
+                          required
+                          value={editForm.slug}
+                          onChange={(e) => setEditForm((p) => p && ({ ...p, slug: slugify(e.target.value) }))}
+                          className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-muted block mb-1">Ícono</label>
+                        <select
+                          value={editForm.icon}
+                          onChange={(e) => setEditForm((p) => p && ({ ...p, icon: e.target.value }))}
+                          className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+                        >
+                          {ICON_OPTIONS.map((ico) => (
+                            <option key={ico} value={ico}>{ico}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold uppercase text-muted block mb-1">Orden</label>
+                        <input
+                          type="number"
+                          value={editForm.order}
+                          onChange={(e) => setEditForm((p) => p && ({ ...p, order: parseInt(e.target.value) || 0 }))}
+                          className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
+                        />
+                      </div>
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className={`font-bold text-sm ${section.isActive ? "text-foreground" : "text-muted"}`}>
-                          {section.name}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                      <div className="flex flex-wrap gap-1.5">
+                        {ROLES.map((r) => {
+                          const checked = editForm.roles.includes(r.key);
+                          return (
+                            <button
+                              key={r.key}
+                              type="button"
+                              onClick={() => toggleRole(r.key, false)}
+                              className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all ${
+                                checked
+                                  ? "bg-accent text-white border-accent"
+                                  : "bg-background text-muted border-card-border"
+                              }`}
+                            >
+                              {r.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditForm(null);
+                          }}
+                          className="px-3 py-1.5 rounded-lg border border-card-border text-xs text-muted hover:text-foreground"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={saving}
+                          className="bg-accent hover:bg-accent-hover text-white px-4 py-1.5 rounded-lg font-black text-xs uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+                          Guardar
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                ) : (
+                  /* Row View */
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-section-alt border border-card-border flex items-center justify-center text-accent shrink-0 shadow-sm">
+                        <DynamicIcon name={section.icon} size={20} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-foreground truncate">{section.name}</h4>
+                          <span className="text-[11px] font-bold text-muted bg-section-alt border border-card-border px-1.5 py-0.5 rounded">
+                            #{section.order}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted truncate font-mono">
+                          /dashboard/{section.slug}
                         </p>
-                        <span className="text-[10px] text-muted font-mono bg-section-alt px-2 py-0.5 rounded-md">
-                          /{section.slug}
-                        </span>
-                        <span className="text-[10px] text-muted font-bold bg-section-alt px-2 py-0.5 rounded-md">
-                          #{section.order}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {section.roles.length > 0 ? (
-                          section.roles.map((r) => {
-                            const meta = ROLES.find((x) => x.key === r);
-                            return (
-                              <span
-                                key={r}
-                                className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${meta?.color ?? "bg-section-alt text-muted border-card-border"}`}
-                              >
-                                {meta?.label ?? r}
-                              </span>
-                            );
-                          })
-                        ) : (
-                          <span className="text-[9px] text-muted font-bold">Sin roles asignados</span>
-                        )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    {/* Roles Badges */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {section.roles.map((rk) => {
+                        const roleObj = ROLES.find((r) => r.key === rk);
+                        return (
+                          <span
+                            key={rk}
+                            className={`text-[11px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                              roleObj ? roleObj.color : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {roleObj?.label || rk}
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
-                        onClick={() => handleToggleActive(section.id, section.isActive)}
-                        title={section.isActive ? "Desactivar" : "Activar"}
-                        className="p-2 rounded-xl text-muted hover:text-accent hover:bg-amber-50 transition-colors"
+                        onClick={() => handleToggle(section)}
+                        disabled={isToggling}
+                        title={section.isActive ? "Desactivar módulo" : "Activar módulo"}
+                        className={`p-2 rounded-xl border transition-colors ${
+                          section.isActive
+                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20"
+                            : "bg-section-alt border-card-border text-muted hover:text-foreground"
+                        }`}
                       >
-                        {section.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                        {isToggling ? (
+                          <Loader2 size={15} className="animate-spin" />
+                        ) : section.isActive ? (
+                          <Eye size={15} />
+                        ) : (
+                          <EyeOff size={15} />
+                        )}
                       </button>
+
                       <button
-                        onClick={() => isEditing ? cancelEdit() : startEdit(section)}
-                        className={`p-2 rounded-xl transition-colors ${isEditing ? "text-accent bg-amber-50" : "text-muted/40 hover:text-accent hover:bg-amber-50"}`}
+                        onClick={() => startEditing(section)}
+                        title="Editar módulo"
+                        className="p-2 rounded-xl bg-section-alt border border-card-border text-muted hover:text-accent hover:border-accent/40 transition-colors"
                       >
-                        {isEditing ? <X size={16} /> : <Pencil size={16} />}
+                        <Pencil size={15} />
                       </button>
+
                       <button
-                        onClick={() => setDeleteConfirmId(section.id)}
-                        className="p-2 rounded-xl text-muted hover:text-red-500 hover:bg-red-50 transition-colors"
+                        onClick={() => handleDelete(section.id)}
+                        disabled={isDeleting}
+                        title="Eliminar módulo"
+                        className="p-2 rounded-xl bg-section-alt border border-card-border text-muted hover:text-red-500 hover:border-red-500/40 transition-colors"
                       >
-                        <Trash2 size={16} />
+                        {isDeleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
                       </button>
                     </div>
                   </div>
+                )}
+              </div>
+            );
+          })}
 
-                  {/* — INLINE EDIT FORM — */}
-                  {isEditing && editForm && (
-                    <div className="px-4 sm:px-8 pb-6 sm:pb-8 pt-4 bg-amber-50/30 border-t border-amber-200/60">
-                      {editError && (
-                        <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold mb-4">{editError}</div>
-                      )}
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Nombre</label>
-                          <input
-                            value={editForm.name}
-                            onChange={(e) => setEditForm((f) => f && ({ ...f, name: e.target.value }))}
-                            className="w-full bg-card border border-amber-200 rounded-lg py-3 px-4 outline-none focus:border-accent font-bold text-sm text-foreground"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Slug</label>
-                          <input
-                            value={editForm.slug}
-                            onChange={(e) => setEditForm((f) => f && ({ ...f, slug: e.target.value }))}
-                            className="w-full bg-card border border-amber-200 rounded-lg py-3 px-4 outline-none focus:border-accent font-mono text-sm text-foreground"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">Orden</label>
-                          <input
-                            type="number"
-                            min={0}
-                            value={editForm.order}
-                            onChange={(e) => setEditForm((f) => f && ({ ...f, order: parseInt(e.target.value) || 0 }))}
-                            className="w-full bg-card border border-amber-200 rounded-lg py-3 px-4 outline-none focus:border-accent font-bold text-sm text-foreground"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-1.5">
-                            Visible para roles
-                          </label>
-                          <RoleToggleGroup
-                            selected={editForm.roles}
-                            onChange={(roles) => setEditForm((f) => f && ({ ...f, roles }))}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1 block mb-2">
-                          Icono — <span className="text-accent">{editForm.icon}</span>
-                        </label>
-                        <IconPicker
-                          value={editForm.icon}
-                          onChange={(v) => setEditForm((f) => f && ({ ...f, icon: v }))}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <button
-                          type="button"
-                          onClick={() => setEditForm((f) => f && ({ ...f, isActive: !f.isActive }))}
-                          className="flex items-center gap-2 text-sm font-bold text-foreground"
-                        >
-                          <div className={`w-10 h-5 rounded-full relative transition-colors ${editForm.isActive ? "bg-accent" : "bg-muted/20"}`}>
-                            <div className={`w-4 h-4 bg-card rounded-full shadow absolute top-0.5 transition-transform ${editForm.isActive ? "translate-x-5" : "translate-x-0.5"}`} />
-                          </div>
-                          {editForm.isActive ? "Activo" : "Inactivo"}
-                        </button>
-
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={cancelEdit}
-                            className="px-5 py-2.5 rounded-lg font-bold text-sm text-muted bg-card border border-card-border hover:bg-section-alt transition-colors"
-                          >
-                            Cancelar
-                          </button>
-                          <button
-                            type="button"
-                            disabled={editLoading}
-                            onClick={() => handleSaveEdit(section.id)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm bg-[#0B1F3A] text-white hover:bg-accent transition-all disabled:opacity-50"
-                          >
-                            {editLoading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                            Guardar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+          {sections.length === 0 && (
+            <div className="p-12 text-center text-muted text-xs">
+              No hay módulos configurados. Crea el primero haciendo clic en &quot;Nuevo Módulo&quot;.
+            </div>
+          )}
+        </div>
       </div>
     </div>
-
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-sm w-full">
-            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-center text-foreground mb-2">¿Eliminar Módulo?</h3>
-            <p className="text-sm text-center text-muted mb-6">
-              Esta acción no se puede deshacer.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-card-border text-sm font-bold text-muted hover:text-foreground transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmDeleteModule}
-                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors"
-              >
-                <Trash2 size={14} /> Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }

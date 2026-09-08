@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, Copy, Check, Eye, EyeOff, Radio, Square, Clock } from "lucide-react";
-import Link from "next/link";
 import { updateLive, updateLiveStatus } from "@/lib/actions/lives";
+import { ArrowLeft, Loader2, Check, Radio, Square, Clock, Eye, EyeOff, Copy } from "lucide-react";
+import Link from "next/link";
 
 type Status = "SCHEDULED" | "LIVE" | "ENDED";
 
@@ -20,7 +20,7 @@ type Live = {
 };
 
 const STATUS_LABELS: Record<Status, { label: string; class: string; dot: string }> = {
-  SCHEDULED: { label: "Programado", class: "bg-indigo-50 text-[#5A4FCF]", dot: "bg-indigo-400" },
+  SCHEDULED: { label: "Programado", class: "bg-pink-50 dark:bg-pink-950/30 text-accent border border-pink-200 dark:border-pink-900/40", dot: "bg-accent" },
   LIVE: { label: "En Vivo", class: "bg-green-50 text-green-600", dot: "bg-green-500 animate-pulse" },
   ENDED: { label: "Finalizado", class: "bg-section-alt text-muted", dot: "bg-gray-300" },
 };
@@ -90,10 +90,10 @@ export default function EditLiveForm({ live }: { live: Live }) {
           href="/dashboard/lives"
           className="p-2 hover:bg-card rounded-xl transition-colors border border-transparent hover:border-card-border"
         >
-          <ArrowLeft size={24} className="text-[#1A1A2E]" />
+          <ArrowLeft size={24} className="text-foreground" />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-[#1A1A2E] tracking-tighter">Editar Live</h1>
+          <h1 className="text-3xl font-black text-foreground tracking-tighter">Editar Live</h1>
           <p className="text-muted font-medium mt-1">{live.title}</p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function EditLiveForm({ live }: { live: Live }) {
       <div className="bg-card p-6 rounded-xl border border-card-border shadow-sm mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Estado actual</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Estado actual</p>
             <span className={`inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-lg ${cfg.class}`}>
               <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
               {cfg.label}
@@ -140,18 +140,18 @@ export default function EditLiveForm({ live }: { live: Live }) {
 
         {(rtmpsUrl || streamKey) && (
           <div className="border-t border-card-border pt-4 mt-4 space-y-3">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted">
               Configuración OBS
             </p>
             {rtmpsUrl && (
               <div className="flex items-center justify-between bg-section-alt rounded-xl px-4 py-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] text-muted font-bold uppercase mb-0.5">RTMPS URL</p>
-                  <p className="text-xs font-mono text-[#1A1A2E] truncate">{rtmpsUrl}</p>
+                  <p className="text-[11px] text-muted font-bold uppercase mb-0.5">RTMPS URL</p>
+                  <p className="text-xs font-mono text-foreground truncate">{rtmpsUrl}</p>
                 </div>
                 <button
                   onClick={() => copyToClipboard(rtmpsUrl, "rtmps")}
-                  className="ml-3 shrink-0 text-muted hover:text-[#5A4FCF]"
+                  className="ml-3 shrink-0 text-muted hover:text-accent"
                 >
                   {copied === "rtmps" ? <Check size={15} className="text-green-500" /> : <Copy size={15} />}
                 </button>
@@ -160,21 +160,21 @@ export default function EditLiveForm({ live }: { live: Live }) {
             {streamKey && (
               <div className="flex items-center justify-between bg-section-alt rounded-xl px-4 py-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] text-muted font-bold uppercase mb-0.5">Stream Key</p>
-                  <p className="text-xs font-mono text-[#1A1A2E] truncate">
+                  <p className="text-[11px] text-muted font-bold uppercase mb-0.5">Stream Key</p>
+                  <p className="text-xs font-mono text-foreground truncate">
                     {showKey ? streamKey : "••••••••••••••••"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 ml-3 shrink-0">
                   <button
                     onClick={() => setShowKey(!showKey)}
-                    className="text-muted hover:text-[#5A4FCF]"
+                    className="text-muted hover:text-accent"
                   >
                     {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                   <button
                     onClick={() => copyToClipboard(streamKey, "key")}
-                    className="text-muted hover:text-[#5A4FCF]"
+                    className="text-muted hover:text-accent"
                   >
                     {copied === "key" ? <Check size={15} className="text-green-500" /> : <Copy size={15} />}
                   </button>
@@ -196,66 +196,66 @@ export default function EditLiveForm({ live }: { live: Live }) {
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm space-y-5">
-          <h2 className="text-lg font-bold text-[#1A1A2E] flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <span className="bg-accent text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">1</span>
             Información General
           </h2>
 
           <div>
-            <label htmlFor="edit-live-title" className="block text-sm font-bold text-[#1A1A2E] mb-2">Título</label>
+            <label htmlFor="edit-live-title" className="block text-sm font-bold text-foreground mb-2">Título</label>
             <input
               id="edit-live-title"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E]"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground"
             />
           </div>
 
           <div>
-            <label htmlFor="edit-live-desc" className="block text-sm font-bold text-[#1A1A2E] mb-2">Descripción</label>
+            <label htmlFor="edit-live-desc" className="block text-sm font-bold text-foreground mb-2">Descripción</label>
             <textarea
               id="edit-live-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E] resize-none"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground resize-none"
             />
           </div>
 
           <div>
-            <label htmlFor="edit-live-date" className="block text-sm font-bold text-[#1A1A2E] mb-2">Fecha y hora programada</label>
+            <label htmlFor="edit-live-date" className="block text-sm font-bold text-foreground mb-2">Fecha y hora programada</label>
             <input
               id="edit-live-date"
               type="datetime-local"
               value={scheduledAt}
               onChange={(e) => setScheduledAt(e.target.value)}
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-[#1A1A2E]"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground"
             />
           </div>
         </div>
 
         <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm space-y-5">
-          <h2 className="text-lg font-bold text-[#1A1A2E] flex items-center gap-2">
-            <span className="bg-[#5A4FCF] text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <span className="bg-accent text-white w-6 h-6 flex items-center justify-center rounded-md text-xs">2</span>
             Configuración OBS / Streaming
           </h2>
 
           <div>
-            <label htmlFor="edit-live-rtmps" className="block text-sm font-bold text-[#1A1A2E] mb-2">RTMPS Server URL</label>
+            <label htmlFor="edit-live-rtmps" className="block text-sm font-bold text-foreground mb-2">RTMPS Server URL</label>
             <div className="flex gap-2">
               <input
                 id="edit-live-rtmps"
                 value={rtmpsUrl}
                 onChange={(e) => setRtmpsUrl(e.target.value)}
                 placeholder="rtmps://live.cloudflare.com:443/live/"
-                className="flex-1 bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all font-mono text-sm text-[#1A1A2E]"
+                className="flex-1 bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all font-mono text-sm text-foreground"
               />
               {rtmpsUrl && (
                 <button
                   type="button"
                   onClick={() => copyToClipboard(rtmpsUrl, "rtmps")}
-                  className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-[#5A4FCF]"
+                  className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-accent"
                 >
                   {copied === "rtmps" ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
@@ -264,7 +264,7 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label htmlFor="edit-live-key" className="block text-sm font-bold text-[#1A1A2E] mb-2">Stream Key</label>
+            <label htmlFor="edit-live-key" className="block text-sm font-bold text-foreground mb-2">Stream Key</label>
             <div className="flex gap-2">
               <input
                 id="edit-live-key"
@@ -272,12 +272,12 @@ export default function EditLiveForm({ live }: { live: Live }) {
                 value={streamKey}
                 onChange={(e) => setStreamKey(e.target.value)}
                 placeholder="Tu clave de transmisión"
-                className="flex-1 bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all font-mono text-sm text-[#1A1A2E]"
+                className="flex-1 bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all font-mono text-sm text-foreground"
               />
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-[#5A4FCF]"
+                className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-accent"
               >
                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -285,7 +285,7 @@ export default function EditLiveForm({ live }: { live: Live }) {
                 <button
                   type="button"
                   onClick={() => copyToClipboard(streamKey, "key")}
-                  className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-[#5A4FCF]"
+                  className="px-4 bg-section-alt border border-card-border rounded-xl text-muted hover:text-accent"
                 >
                   {copied === "key" ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
@@ -294,13 +294,13 @@ export default function EditLiveForm({ live }: { live: Live }) {
           </div>
 
           <div>
-            <label htmlFor="edit-live-playback" className="block text-sm font-bold text-[#1A1A2E] mb-2">Playback URL / ID</label>
+            <label htmlFor="edit-live-playback" className="block text-sm font-bold text-foreground mb-2">Playback URL / ID</label>
             <input
               id="edit-live-playback"
               value={playbackId}
               onChange={(e) => setPlaybackId(e.target.value)}
               placeholder="ID o URL para los espectadores"
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-[#5A4FCF] transition-all text-sm text-[#1A1A2E]"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-sm text-foreground"
             />
           </div>
         </div>
@@ -308,7 +308,7 @@ export default function EditLiveForm({ live }: { live: Live }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#1A1A2E] text-white py-5 rounded-lg font-bold shadow-xl hover:bg-[#5A4FCF] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-accent text-white py-5 rounded-xl font-bold shadow-xl shadow-accent/20 hover:bg-accent-hover transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />}
           {loading ? "Guardando..." : "Guardar Cambios"}

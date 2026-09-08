@@ -2,115 +2,232 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
-import { PlayCircle, ChevronDown, ArrowRight, Zap, ChevronRight, LockIcon, CheckCircle } from "lucide-react";
+import {
+  PlayCircle, ChevronDown, ArrowRight, CheckCircle, ChevronRight,
+  LockIcon, MapPin, Calendar, Clock, Sparkles, BookOpen, AlertTriangle, ShieldCheck,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
+import WorkshopConditions from "@/components/WorkshopConditions";
+import AddToBagButton from "@/components/cart/AddToBagButton";
 import Link from "next/link";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import type { WorkshopDetails } from "@/lib/utils/workshop";
 
 function getEmbedUrl(url: string | null | undefined): string | null {
   if (!url) return null;
-  if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
-  if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
-  if (url.includes('vimeo.com/')) return url.replace('vimeo.com/', 'player.vimeo.com/video/');
+  if (url.includes("youtube.com/watch?v=")) return url.replace("watch?v=", "embed/");
+  if (url.includes("youtu.be/")) return url.replace("youtu.be/", "youtube.com/embed/");
+  if (url.includes("vimeo.com/")) return url.replace("vimeo.com/", "player.vimeo.com/video/");
   return url;
 }
 
 const FAQS = [
-  { q: "¿Es obligatorio registrarse?", a: "Sí. Para garantizar el acceso permanente a tus clases, debes crear una cuenta gratuita antes de activar tu membresía." },
-  { q: "¿Cómo recibo el acceso?", a: "Una vez activa tu membresía mensual, todos los cursos se desbloquean automáticamente en tu panel de alumno." },
-  { q: "¿Qué incluye la membresía?", a: "La membresía mensual da acceso completo a todo el catálogo de cursos disponibles en Academia Omnia." },
+  {
+    q: "¿Cómo se formaliza la reserva?",
+    a: "Para workshops presenciales, reservas formalmente con el 50% del valor del taller. El 50% restante se cancela el mismo día al ingresar al aula. Para cursos online, el acceso se activa de forma inmediata tras validar el comprobante.",
+  },
+  {
+    q: "¿Qué sucede si no puedo asistir al workshop?",
+    a: "Debido a que los insumos frescos y la logística se preparan individualmente para cada alumno, los pagos de reserva no son reembolsables bajo ninguna excepción.",
+  },
+  {
+    q: "¿Necesito experiencia previa?",
+    a: "No. Todos nuestros workshops y cursos están diseñados desde cero para que aprendas técnicas, métodos y recetas paso a paso con total soltura.",
+  },
+  {
+    q: "¿Cuáles son los métodos de pago aceptados?",
+    a: "Aceptamos Pago Móvil en Bolívares a tasa oficial BCV, Zelle con código QR, Binance Pay en USDT y efectivo en divisas.",
+  },
 ];
 
-export default function CourseDetailClient({ course, hasPaid, children }: { course: any; hasPaid: boolean; children?: ReactNode }) {
+export default function CourseDetailClient({
+  course,
+  hasPaid,
+  workshopInfo,
+  children,
+}: {
+  course: any;
+  hasPaid: boolean;
+  workshopInfo?: WorkshopDetails;
+  children?: ReactNode;
+}) {
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
   const embedUrl = getEmbedUrl(course.introVideo);
+  const isWorkshop = workshopInfo?.isWorkshop ?? (course.isLive || /workshop|taller|presencial/i.test(course.title));
+  const isDecoration = /decoraci|alisad|torta|pastel/i.test(course.title);
+  const reservationFee = Math.round(course.price * 0.5);
+  const remainderFee = course.price - reservationFee;
 
   return (
-    <main className="min-h-screen bg-[#F8F4EE]">
+    <main className="min-h-screen bg-[#FAF6F0]">
       <Navbar />
 
-      <section className="bg-[#0B1F3A] pt-28 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(201,168,76,0.10)_0%,_transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(201,168,76,0.05)_0%,_transparent_50%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A84C]/30 to-transparent" />
+      <section className="bg-gradient-to-b from-[#2B0735] via-[#350A43] to-[#1C0425] pt-28 pb-20 relative overflow-hidden text-white">
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/25 mb-10">
-            <Link href="/cursos" className="hover:text-[#C9A84C] transition-colors">Cursos</Link>
+        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10">
+          <nav className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/50 mb-10">
+            <Link href="/cursos" className="hover:text-pink-300 transition-colors">
+              Workshops & Cursos
+            </Link>
             <ChevronRight size={10} />
-            <span className="text-white/50">{course.title}</span>
+            <span className="text-white/80 truncate max-w-xs">{course.title}</span>
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-7">
               <m.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                 <div className="flex flex-wrap items-center gap-2.5 mb-7">
-                  {course.isLive && (
-                    <span className="bg-orange-500/15 border border-orange-500/25 text-orange-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                      🔴 EN VIVO
-                    </span>
-                  )}
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] bg-[#C9A84C]/10 border border-[#C9A84C]/20 px-3 py-1 rounded-full">
+                  <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest ${
+                    isWorkshop
+                      ? "bg-pink-500/20 border border-pink-400/40 text-pink-200"
+                      : "bg-purple-500/20 border border-purple-400/30 text-purple-200"
+                  }`}>
+                    {isWorkshop ? "Workshop Presencial (8 Horas)" : "Curso Online en Video"}
+                  </span>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-white/80 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
                     {course.category}
                   </span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+                  <span className="text-[11px] font-black uppercase tracking-widest text-pink-300 bg-pink-500/10 border border-pink-400/20 px-3 py-1 rounded-full">
                     {course.level}
                   </span>
                 </div>
 
-                <h1 className="text-5xl md:text-[5.5rem] font-black text-white mb-5 leading-[0.88] tracking-tighter">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-5 leading-[0.98] tracking-tight">
                   {course.title}
                 </h1>
-                <p className="text-lg text-white/45 mb-10 leading-relaxed max-w-xl">
+                <p className="text-base sm:text-lg text-white/90 mb-8 leading-relaxed max-w-md font-normal">
                   {course.description}
                 </p>
 
+                {/* Workshop Logistics Box */}
+                {isWorkshop && (
+                  <div className="bg-white/10 border border-pink-500/30 rounded-2xl p-5 mb-8 backdrop-blur-md max-w-xl">
+                    <div className="flex items-center gap-2 text-pink-300 text-xs font-black uppercase tracking-wider mb-3">
+                      <Sparkles size={14} /> Logística del Taller Presencial
+                    </div>
+                    <div className="space-y-2.5 text-xs text-white">
+                      <div className="flex items-start gap-2.5">
+                        <MapPin size={16} className="text-pink-300 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="font-bold block text-white/95">Sede confirmada:</span>
+                          <span className="text-white/75">{workshopInfo?.location || "Caracas, Las Mercedes — Sede Ana's Pastry Shop"}</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-white/15 text-[11px]">
+                        <div className="flex items-center gap-2">
+                          <Calendar size={14} className="text-pink-300 shrink-0" />
+                          <span><strong>Fecha:</strong> {workshopInfo?.workshopDate || "Próximamente"}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} className="text-pink-300 shrink-0" />
+                          <span><strong>Horario:</strong> {workshopInfo?.workshopTime || "09:00 AM — 05:00 PM"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </m.div>
             </div>
 
             <div className="lg:col-span-5">
               <m.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-                <div className="bg-white/[0.04] border border-white/10 rounded-2xl overflow-hidden">
-                  <div className="relative h-52 bg-[#060F1E] flex items-center justify-center overflow-hidden">
-                    {embedUrl && embedUrl.includes('http') ? (
+                <div className="bg-white/[0.06] border border-white/15 rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl">
+                  <div className="relative h-56 bg-[#120317] flex items-center justify-center overflow-hidden">
+                    {embedUrl && embedUrl.includes("http") ? (
                       <iframe
                         src={embedUrl}
-                        title="Course Intro"
+                        title="Vista previa"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                         className="absolute inset-0 w-full h-full border-0"
                       />
+                    ) : course.image ? (
+                      <Image
+                        src={course.image}
+                        alt={course.title}
+                        fill
+                        className="object-cover opacity-90"
+                      />
                     ) : (
                       <div className="text-center flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-full flex items-center justify-center">
-                          <PlayCircle className="text-[#C9A84C]" size={28} />
+                        <div className="w-16 h-16 bg-pink-500/20 border border-pink-500/30 rounded-full flex items-center justify-center">
+                          <PlayCircle className="text-pink-300" size={28} />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">Vista previa no disponible</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Vista previa de la formación</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5 space-y-4">
+                  <div className="p-6 space-y-4">
                     {hasPaid ? (
-                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center gap-3">
-                        <div className="w-9 h-9 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
-                          <CheckCircle size={16} className="text-emerald-400" />
+                      <div className="space-y-3">
+                        <div className="pt-3 border-t border-emerald-500/25 flex items-center gap-3">
+                          <div className="w-9 h-9 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
+                            <CheckCircle size={18} className="text-emerald-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-black text-emerald-400 uppercase tracking-tight">Cupo Confirmado</p>
+                            <p className="text-xs text-emerald-300/80 mt-0.5">Estás formalmente inscrito en este workshop.</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-black text-emerald-400 uppercase tracking-tight">Acceso Activo</p>
-                          <p className="text-xs text-emerald-400/60 mt-0.5">Tienes acceso completo a este curso.</p>
-                        </div>
+
+                        <Link
+                          href={`/dashboard/cursos/${course.id}`}
+                          className="w-full bg-accent hover:bg-accent-hover text-white py-3.5 rounded-xl font-black flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all shadow-md"
+                        >
+                          Ver Detalles en tu Dashboard <ArrowRight size={14} />
+                        </Link>
                       </div>
                     ) : (
-                      <Link
-                        href="/membresia"
-                        className="w-full bg-[#C9A84C] text-[#0B1F3A] py-4 rounded-xl font-black flex items-center justify-center gap-2.5 hover:bg-[#d4b55c] transition-all text-xs uppercase tracking-widest shadow-lg shadow-[#C9A84C]/20"
-                      >
-                        <Zap size={13} className="fill-current" /> Activar Membresía <ArrowRight size={14} />
-                      </Link>
-                    )}
+                      <div className="space-y-4">
+                        <div className="flex items-baseline justify-between px-1">
+                          <span className="text-xs text-white/70 font-bold uppercase tracking-widest">
+                            {isWorkshop ? "Inversión Total" : "Acceso Permanente"}
+                          </span>
+                          <span className="text-3xl font-black text-white tracking-tight">
+                            ${course.price} <span className="text-xs text-pink-300 font-bold">USD</span>
+                          </span>
+                        </div>
 
+                        {isWorkshop && (
+                          <div className="pt-3 border-t border-white/15 space-y-1.5 text-xs font-medium text-white/90">
+                            <p className="flex justify-between">
+                              <span className="text-white/70">50% Reserva hoy:</span>
+                              <strong className="text-pink-300">${reservationFee} USD</strong>
+                            </p>
+                            <p className="flex justify-between">
+                              <span className="text-white/70">50% Saldo el día del taller:</span>
+                              <strong>${remainderFee} USD</strong>
+                            </p>
+                          </div>
+                        )}
+
+                        <Link
+                          href={`/pagar/curso/${course.id}`}
+                          className="w-full bg-accent text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2.5 hover:bg-accent-hover transition-all text-xs uppercase tracking-widest shadow-xl shadow-pink-600/30"
+                        >
+                          {isWorkshop ? "Reservar Mi Cupo al Workshop" : "Comprar Curso Online"} <ArrowRight size={14} />
+                        </Link>
+
+                        <AddToBagButton
+                          item={{
+                            id: course.id,
+                            title: course.title,
+                            price: course.price,
+                            image: course.image ?? null,
+                            isWorkshop,
+                          }}
+                          variant="solid"
+                        />
+
+                        <div className="pt-3 border-t border-white/15 space-y-1 text-xs font-bold">
+                          <p className="text-white">💳 Medios de pago aceptados:</p>
+                          <p className="text-white/90 font-medium">Pago Móvil BCV · Zelle QR · Binance Pay · Efectivo</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </m.div>
@@ -119,92 +236,100 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      {/* Main Content Section */}
+      <section className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
             <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-1 h-4 bg-[#C9A84C] rounded-full" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C]">Contenido</p>
+                <span className="w-1 h-4 bg-accent rounded-full" />
+                <p className="text-[11px] font-black uppercase tracking-widest text-accent">
+                  {isWorkshop ? "Programa del Taller" : "Módulos & Lecciones"}
+                </p>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-[#0B1F3A] tracking-tighter mb-10">
-                Contenido del curso
+              <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight mb-8">
+                Contenido del Programa ({course.courseModules.length} módulos prácticos)
               </h2>
 
-              <div className="space-y-2.5 mb-20">
+              <div className="space-y-3 mb-16">
                 {course.courseModules.map((module: any, idx: number) => (
                   <div
                     key={module.id}
-                    className="bg-white border border-gray-100 rounded-xl overflow-hidden transition-all shadow-sm hover:shadow-md hover:border-[#C9A84C]/30"
+                    className="bg-card border border-card-border rounded-2xl overflow-hidden transition-all shadow-sm hover:shadow-md hover:border-accent/40"
                   >
                     <button
+                      type="button"
                       onClick={() => setOpenAccordion(openAccordion === idx ? null : idx)}
                       className="w-full px-6 py-5 flex justify-between items-center text-left group"
                     >
                       <div className="flex-1 min-w-0">
-                        <span className="text-[10px] font-black text-[#C9A84C] uppercase tracking-widest block mb-1">
-                          Módulo {String(idx + 1).padStart(2, '0')}
+                        <span className="text-[11px] font-black text-accent uppercase tracking-widest block mb-1">
+                          Módulo {String(idx + 1).padStart(2, "0")}
                         </span>
-                        <span className="text-base font-bold text-[#0B1F3A] group-hover:text-[#C9A84C] transition-colors leading-tight">
+                        <span className="text-base font-bold text-foreground group-hover:text-accent transition-colors leading-tight">
                           {module.title}
                         </span>
                         {openAccordion !== idx && module.lessons.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {module.lessons.slice(0, 3).map((lesson: any) => (
-                              <span key={lesson.id} className="text-[10px] bg-gray-50 text-gray-400 px-2 py-0.5 rounded-md font-medium border border-gray-100">
+                              <span key={lesson.id} className="text-[11px] bg-section-alt text-muted px-2 py-0.5 rounded-md font-medium">
                                 {lesson.title}
                               </span>
                             ))}
                             {module.lessons.length > 3 && (
-                              <span className="text-[10px] text-gray-300 font-medium self-center">+{module.lessons.length - 3} más</span>
+                              <span className="text-[11px] text-muted font-medium self-center">
+                                +{module.lessons.length - 3} más
+                              </span>
                             )}
                           </div>
                         )}
                       </div>
                       <ChevronDown
-                        size={16}
-                        className={`ml-4 shrink-0 transition-all ${openAccordion === idx ? 'rotate-180 text-[#C9A84C]' : 'text-gray-300'}`}
+                        size={18}
+                        className={`ml-4 shrink-0 transition-all ${
+                          openAccordion === idx ? "rotate-180 text-accent" : "text-muted"
+                        }`}
                       />
                     </button>
 
                     {openAccordion === idx && (
-                      <div className="border-t border-gray-50">
-                        {hasPaid && module.videoUrl ? (
-                          <div className="p-4">
+                      <div className="border-t border-card-border">
+                        {hasPaid ? (
+                          <div className="px-6 py-4 border-b border-card-border">
                             <Link
-                              href={`/clases/${encodeURIComponent(course.title)}/${encodeURIComponent(module.title)}`}
-                              className="w-full bg-[#0B1F3A] text-white font-black py-3.5 px-5 rounded-xl flex items-center justify-between hover:bg-[#C9A84C] hover:text-[#0B1F3A] transition-all group text-xs uppercase tracking-widest shadow-lg"
+                              href={`/dashboard/cursos/${course.id}`}
+                              className="w-full bg-accent text-white font-black py-3 px-5 rounded-xl flex items-center justify-between hover:bg-accent-hover transition-all text-xs uppercase tracking-widest shadow-md"
                             >
-                              <div className="flex items-center gap-2.5">
+                              <div className="flex items-center gap-2">
                                 <PlayCircle size={16} />
-                                <span>Entrar al Aula</span>
+                                <span>Ver detalles en tu panel</span>
                               </div>
-                              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                              <ArrowRight size={14} />
                             </Link>
                           </div>
-                        ) : !hasPaid && module.videoUrl ? (
-                          <div className="mx-4 my-4 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
-                            <LockIcon size={13} className="text-[#C9A84C] shrink-0" />
-                            <p className="text-xs font-bold text-[#C9A84C]">Activa tu membresía para acceder a este módulo.</p>
+                        ) : (
+                          <div className="flex items-center gap-2.5 px-6 py-3 border-b border-card-border">
+                            <LockIcon size={14} className="text-accent shrink-0" />
+                            <p className="text-xs font-semibold text-foreground">
+                              Reserva tu cupo para desbloquear el material completo de este módulo.
+                            </p>
                           </div>
-                        ) : null}
+                        )}
 
                         <div className="px-6 pb-5 pt-3 space-y-2">
-                          {module.lessons.map((lesson: any) => (
-                            <div key={lesson.id} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]/60 mt-2 shrink-0" />
+                          {module.lessons.map((lesson: any, lIdx: number) => (
+                            <div key={lesson.id} className="flex items-start gap-3 py-3 px-2 border-b border-card-border last:border-b-0">
+                              <span className="text-xs font-bold text-accent mt-0.5">{lIdx + 1}.</span>
                               <div className="flex-1 min-w-0">
-                                <span className="text-sm font-bold text-[#0B1F3A]">{lesson.title}</span>
+                                <span className="text-sm font-bold text-foreground">{lesson.title}</span>
                                 {lesson.summary && (
-                                  <span className="text-xs text-gray-400 ml-1">
-                                    {lesson.summary.trim().startsWith(':') ? '' : ': '}{lesson.summary}
-                                  </span>
+                                  <p className="text-xs text-muted mt-0.5 leading-relaxed max-w-sm">{lesson.summary}</p>
                                 )}
                               </div>
                             </div>
                           ))}
                           {module.lessons.length === 0 && (
-                            <p className="text-xs text-gray-300 italic px-1 py-2">Sin lecciones publicadas aún.</p>
+                            <p className="text-xs text-muted italic px-1 py-2">Sin lecciones desglosadas en este módulo.</p>
                           )}
                         </div>
                       </div>
@@ -213,23 +338,35 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
                 ))}
 
                 {course.courseModules.length === 0 && (
-                  <div className="text-center p-16 bg-white rounded-xl border border-gray-100 text-gray-300 shadow-sm">
-                    No hay contenido publicado en este curso todavía.
+                  <div className="text-center p-14 bg-card rounded-2xl border border-card-border text-muted shadow-sm">
+                    El contenido detallado de este programa estará disponible próximamente.
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-gray-200 pt-14">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-1 h-4 bg-[#C9A84C] rounded-full" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C]">FAQ</p>
+              {/* Conditions Component exclusively for in-person workshops */}
+              {isWorkshop && (
+                <div className="mb-16">
+                  <WorkshopConditions
+                    workshopTitle={course.title}
+                    location={workshopInfo?.location}
+                    workshopDate={workshopInfo?.workshopDate}
+                    workshopTime={workshopInfo?.workshopTime}
+                    price={course.price}
+                    isDecorationWorkshop={isDecoration}
+                    showCta={!hasPaid}
+                  />
                 </div>
-                <h3 className="text-2xl font-black text-[#0B1F3A] tracking-tighter mb-8">Preguntas Frecuentes</h3>
-                <div className="space-y-3">
-                  {FAQS.map((faq) => (
-                    <div key={faq.q} className="p-6 bg-white border border-gray-100 rounded-xl shadow-sm">
-                      <h4 className="font-black text-[#0B1F3A] mb-2 text-sm">{faq.q}</h4>
-                      <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
+              )}
+
+              {/* FAQs */}
+              <div>
+                <h3 className="text-2xl font-black text-foreground mb-6">Preguntas Frecuentes</h3>
+                <div className="space-y-4">
+                  {FAQS.map((faq, i) => (
+                    <div key={i} className="bg-card border border-card-border rounded-2xl p-5 shadow-sm">
+                      <h4 className="font-bold text-sm text-foreground mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted leading-relaxed font-medium max-w-md">{faq.a}</p>
                     </div>
                   ))}
                 </div>
@@ -237,53 +374,48 @@ export default function CourseDetailClient({ course, hasPaid, children }: { cour
             </m.div>
           </div>
 
-          <div className="lg:col-span-4">
-            <div className="sticky top-28 space-y-3">
-              {!hasPaid && (
-                <div className="bg-[#0B1F3A] border border-[#C9A84C]/20 rounded-2xl p-6 space-y-5 relative overflow-hidden shadow-xl">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C]/5 rounded-full blur-2xl" />
-                  <div className="relative z-10">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] mb-2">Accede ahora</p>
-                    <p className="text-xl font-black text-white tracking-tight leading-tight mb-4">Todo el catálogo por un solo precio.</p>
-                    <Link
-                      href="/membresia"
-                      className="w-full bg-[#C9A84C] text-[#0B1F3A] py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:bg-[#d4b55c] transition-all text-xs uppercase tracking-widest shadow-xl shadow-[#C9A84C]/20"
-                    >
-                      <Zap size={13} className="fill-current" /> Ver membresía <ArrowRight size={13} />
-                    </Link>
-                  </div>
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-card border border-card-border rounded-3xl p-6 shadow-sm space-y-4">
+              <h3 className="font-black text-xs uppercase tracking-wider text-muted">
+                Ficha del Programa
+              </h3>
+              <div className="space-y-3 text-xs divide-y divide-card-border">
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Modalidad</span>
+                  <span className="font-bold text-foreground">{isWorkshop ? "Workshop Presencial" : "Curso Online"}</span>
                 </div>
-              )}
-
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-gray-100 bg-amber-50 flex items-center justify-center">
-                  {course.instructor.image ? (
-                    <Image src={course.instructor.image} alt={course.instructor.name} width={48} height={48} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="font-black text-lg text-[#C9A84C]">{course.instructor.name?.charAt(0).toUpperCase()}</span>
-                  )}
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Duración</span>
+                  <span className="font-bold text-foreground">{course.totalHours} horas</span>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold text-[#C9A84C] uppercase tracking-widest mb-0.5">Instructor</p>
-                  <p className="text-sm font-black text-[#0B1F3A] tracking-tight">{course.instructor.name}</p>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Módulos</span>
+                  <span className="font-bold text-foreground">{course.courseModules.length} módulos</span>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2.5">
-                <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-                  <p className="text-xl font-black text-[#C9A84C] leading-none mb-1">{course.totalHours}h</p>
-                  <p className="text-[9px] text-[#0B1F3A] uppercase tracking-widest font-bold">Duración</p>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Insumos & Guía</span>
+                  <span className="font-bold text-emerald-600">Incluidos</span>
                 </div>
-                <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-                  <p className="text-xl font-black text-[#C9A84C] leading-none mb-1">{course.totalClasses}</p>
-                  <p className="text-[9px] text-[#0B1F3A] uppercase tracking-widest font-bold">Lecciones</p>
-                </div>
-                <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-                  <p className="text-xl font-black text-[#C9A84C] leading-none mb-1">{course.courseModules.length}</p>
-                  <p className="text-[9px] text-[#0B1F3A] uppercase tracking-widest font-bold">Módulos</p>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Instructora</span>
+                  <span className="font-bold text-foreground">{course.instructor?.name || "Anais Flores"}</span>
                 </div>
               </div>
             </div>
+
+            {isWorkshop && (
+              <div className="bg-card border border-card-border rounded-3xl p-6 shadow-sm space-y-3 text-xs">
+                <h4 className="font-black text-xs uppercase tracking-wider text-accent flex items-center gap-1.5">
+                  <ShieldCheck size={16} /> Resumen de Logística
+                </h4>
+                <div className="space-y-2 text-muted">
+                  <p>• <strong>Horario:</strong> 9:00 AM puntual a 5:00 PM (8 horas).</p>
+                  <p>• <strong>Reserva:</strong> 50% ($${reservationFee} USD) + 50% al ingresar.</p>
+                  <p>• <strong>Herramienta:</strong> {isDecoration ? "Traer base giratoria (bailarina)." : "Todas las herramientas suministradas."}</p>
+                  <p>• <strong>Cancelación:</strong> No reembolsable sin excepción.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

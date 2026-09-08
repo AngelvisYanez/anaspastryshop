@@ -7,7 +7,7 @@ export default async function CreateLivePage() {
 
   if (!session?.user) redirect("/iniciar-sesion");
   const role = (session.user as any).role as string;
-  if (!["ADMIN", "MENTOR"].includes(role)) redirect("/dashboard");
+  if (role !== "ADMIN") redirect("/dashboard");
 
   return <CreateLiveForm />;
 }

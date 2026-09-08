@@ -33,14 +33,12 @@ type Subscriber = {
 const RECIPIENT_LABELS: Record<string, string> = {
   USER: "Usuario",
   ADMIN: "Admin",
-  MENTOR: "Mentor",
   SUBSCRIBER: "Suscriptor",
 };
 
 const RECIPIENT_COLORS: Record<string, string> = {
-  USER: "bg-blue-100 dark:bg-blue-950/30 text-blue-600",
+  USER: "bg-section-alt text-foreground",
   ADMIN: "bg-purple-100 dark:bg-purple-950/30 text-purple-600",
-  MENTOR: "bg-amber-100 dark:bg-amber-950/30 text-amber-600",
   SUBSCRIBER: "bg-green-100 dark:bg-green-950/30 text-green-600",
 };
 
@@ -48,52 +46,50 @@ const NEWSLETTER_TEMPLATES = [
   {
     id: "bienvenida",
     label: "Bienvenida",
-    subject: "¡Bienvenido a Academia Omnia!",
-    title: "Empieza tu camino digital hoy",
-    preheader: "Tu acceso al mundo digital comienza aquí.",
-    content: `<p>Nos alegra tenerte en nuestra comunidad. En Academia Omnia encontrarás todo lo que necesitas para dominar las herramientas digitales.</p>
-<p style="margin-top:16px;">Explora nuestros cursos, únete a las sesiones en vivo con instructores expertos y conecta con una comunidad activa de miembros en todo el mundo.</p>
+    subject: "¡Bienvenido a Ana's Pastry Shop!",
+    title: "Empieza tu camino en la repostería",
+    preheader: "Tu pasión por la pastelería comienza aquí.",
+    content: `<p>Nos alegra tenerte en nuestra comunidad de repostería. En Ana's Pastry Shop encontrarás todo lo necesario para elaborar postres y creaciones de nivel profesional.</p>
+<p style="margin-top:16px;">Explora nuestros cursos online, inscríbete a nuestros workshops presenciales y aprende de la mano de chefs apasionados.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
-    <td style="border-radius:50px;background-color:#0B1F3A;">
-      <a href="https://academiaomnia.com/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Cursos &rarr;</a>
+    <td style="border-radius:50px;background-color:#D92080;">
+      <a href="/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Cursos &rarr;</a>
     </td>
   </tr>
 </table>`,
   },
   {
     id: "novedad",
-    label: "Nuevo Contenido",
-    subject: "Nuevo contenido disponible en la Academia",
-    title: "Hay contenido nuevo esperándote",
-    preheader: "Descubre las últimas novedades de Academia Omnia.",
-    content: `<p>Hemos publicado nuevo contenido en la plataforma. Entra ahora y descubre las últimas actualizaciones pensadas para que sigas creciendo profesionalmente.</p>
+    label: "Nuevo Curso o Workshop",
+    subject: "Nueva formación disponible en Ana's Pastry Shop",
+    title: "Nueva clase esperándote",
+    preheader: "Descubre las últimas técnicas y recetas.",
+    content: `<p>Hemos lanzado una nueva formación en la plataforma. Ingresa ahora para descubrir las nuevas recetas y técnicas paso a paso.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
-    <td style="border-radius:50px;background-color:#C9A84C;">
-      <a href="https://academiaomnia.com/dashboard" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Ver Novedades &rarr;</a>
+    <td style="border-radius:50px;background-color:#D92080;">
+      <a href="/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Formaciones &rarr;</a>
     </td>
   </tr>
 </table>`,
   },
   {
-    id: "membresia",
-    label: "Promover Membresía",
-    subject: "Desbloquea el acceso completo — Academia Omnia",
-    title: "Acceso ilimitado a todo el contenido",
-    preheader: "Activa tu membresía y lleva tu aprendizaje al siguiente nivel.",
-    content: `<p>Con la membresía de Academia Omnia obtienes acceso ilimitado a todos los cursos, sesiones en vivo con instructores expertos y recursos exclusivos actualizados mes a mes.</p>
-<p style="margin-top:16px;font-weight:700;color:#0B1F3A;">¿Qué incluye tu membresía?</p>
+    id: "workshop",
+    label: "Promoción Cursos Online",
+    subject: "Aprende repostería a tu propio ritmo — Ana's Pastry Shop",
+    title: "Cursos online con acceso permanente",
+    preheader: "Aprende paso a paso con la Chef Anaís.",
+    content: `<p>Accede a nuestras clases en video paso a paso, con guías descargables e ingredientes detallados para crear los postres más deliciosos.</p>
 <ul style="margin-top:8px;padding-left:20px;color:#374151;line-height:2;">
-  <li>Acceso completo a todos los cursos</li>
-  <li>Sesiones en vivo exclusivas</li>
-  <li>Comunidad activa de miembros</li>
-  <li>Contenido actualizado constantemente</li>
+  <li>Video clases en alta definición</li>
+  <li>Módulos ordenados y detallados</li>
+  <li>Acceso permanente a tu ritmo</li>
 </ul>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
-    <td style="border-radius:50px;background-color:#C9A84C;">
-      <a href="https://academiaomnia.com/membresia" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#0B1F3A;text-decoration:none;border-radius:50px;">Activar Membresía &rarr;</a>
+    <td style="border-radius:50px;background-color:#D92080;">
+      <a href="/cursos?tipo=online" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Explorar Cursos Online &rarr;</a>
     </td>
   </tr>
 </table>`,
@@ -118,7 +114,6 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
     setTitle(t.title);
     setPreheader(t.preheader);
     setContent(t.content);
-    setResult(null);
   }
 
   async function handleSend() {
@@ -144,17 +139,17 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
           <p className="text-3xl font-black text-foreground">{subscribers.length}</p>
           <p className="text-xs text-muted font-medium mt-1">suscriptores registrados</p>
         </div>
         <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Activos</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Activos</p>
           <p className="text-3xl font-black text-accent">{activeCount}</p>
           <p className="text-xs text-muted font-medium mt-1">recibirán el próximo envío</p>
         </div>
         <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Inactivos</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Inactivos</p>
           <p className="text-3xl font-black text-foreground">{subscribers.filter((s) => !s.isActive).length}</p>
           <p className="text-xs text-muted font-medium mt-1">cancelaron suscripción</p>
         </div>
@@ -165,7 +160,7 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
           <h2 className="text-base font-black text-foreground mb-4">Redactar Campaña</h2>
 
           <div className="mb-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-2">Plantilla rápida</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-2">Plantilla rápida</p>
             <div className="flex flex-wrap gap-2">
               {NEWSLETTER_TEMPLATES.map((t) => (
                 <button
@@ -181,27 +176,27 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
 
           <div className="space-y-3">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Asunto *</label>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Asunto *</label>
               <input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ej: Novedades de Mayo — Academia Omnia"
+                placeholder="Ej: Nuevas recetas de temporada — Ana's Pastry Shop"
                 className="w-full bg-section-alt border border-card-border rounded-lg px-4 py-2.5 text-sm font-medium text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Título Principal *</label>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Título Principal *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ej: Hay novedades esperándote"
+                placeholder="Ej: Hay novedades esperándote en la cocina"
                 className="w-full bg-section-alt border border-card-border rounded-lg px-4 py-2.5 text-sm font-medium text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Texto de Previsualización</label>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Texto de Previsualización</label>
               <input
                 type="text"
                 value={preheader}
@@ -211,7 +206,7 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Contenido HTML *</label>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Contenido HTML *</label>
               <textarea
                 rows={8}
                 value={content}
@@ -235,7 +230,7 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
           <button
             onClick={handleSend}
             disabled={sending || !subject.trim() || !title.trim() || !content.trim()}
-            className="mt-4 w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 disabled:opacity-50 text-white font-black py-3 px-6 rounded-lg transition-all shadow-sm"
+            className="mt-4 w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-black py-3 px-6 rounded-lg transition-all shadow-sm"
           >
             {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
             {sending ? "Enviando..." : `Enviar a ${activeCount} suscriptor${activeCount !== 1 ? "es" : ""} activo${activeCount !== 1 ? "s" : ""}`}
@@ -340,8 +335,8 @@ function TemplateCard({ template }: { template: EmailTemplateData }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-black text-foreground">{template.label}</p>
                 <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${RECIPIENT_COLORS[template.recipient] ?? "bg-gray-100 text-gray-600"}`}>
-                  {RECIPIENT_LABELS[template.recipient] ?? template.recipient}
-                </span>
+                  {RECIPIENT_LABELS[template.recipient] ?? template.recipient
+                }</span>
               </div>
               <p className="text-xs text-muted font-medium truncate mt-0.5">{subject}</p>
             </div>
@@ -367,7 +362,7 @@ function TemplateCard({ template }: { template: EmailTemplateData }) {
       {expanded && (
         <div className="border-t border-card-border px-5 pb-5 pt-4 space-y-3">
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Asunto del Email</label>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Asunto del Email</label>
             <input
               type="text"
               value={subject}
@@ -376,7 +371,7 @@ function TemplateCard({ template }: { template: EmailTemplateData }) {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-1.5">Texto de Previsualización</label>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">Texto de Previsualización</label>
             <input
               type="text"
               value={preheader}
@@ -390,7 +385,7 @@ function TemplateCard({ template }: { template: EmailTemplateData }) {
               onClick={handleTest}
               disabled={testing}
               className="flex items-center gap-2 bg-section-alt hover:bg-card-hover border border-card-border disabled:opacity-50 text-foreground font-bold py-2 px-4 rounded-lg text-sm transition-all"
-              title="Enviar prueba a angelviselyanez@gmail.com"
+              title="Enviar prueba"
             >
               {testing ? (
                 <Loader2 size={13} className="animate-spin" />
@@ -407,7 +402,7 @@ function TemplateCard({ template }: { template: EmailTemplateData }) {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-accent hover:bg-accent/90 disabled:opacity-50 text-white font-black py-2 px-5 rounded-lg text-sm transition-all"
+              className="flex items-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-black py-2 px-5 rounded-lg text-sm transition-all shadow-sm"
             >
               {saving ? (
                 <Loader2 size={13} className="animate-spin" />
@@ -432,7 +427,7 @@ function NotificationsTab({ templates }: { templates: EmailTemplateData[] }) {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4">Emails a Usuarios</p>
+        <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-4">Emails a Usuarios</p>
         <div className="space-y-3">
           {userTemplates.map((t) => (
             <TemplateCard key={t.type} template={t} />
@@ -442,7 +437,7 @@ function NotificationsTab({ templates }: { templates: EmailTemplateData[] }) {
 
       {otherTemplates.length > 0 && (
         <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4">Otros Emails</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-4">Otros Emails</p>
           <div className="space-y-3">
             {otherTemplates.map((t) => (
               <TemplateCard key={t.type} template={t} />
@@ -455,10 +450,6 @@ function NotificationsTab({ templates }: { templates: EmailTemplateData[] }) {
         <p className="text-xs font-bold text-muted leading-relaxed">
           Los cambios en el asunto y previsualización se aplican a los próximos emails enviados. Desactivar un tipo impide su envío automático.
         </p>
-        <p className="text-xs text-muted mt-2 leading-relaxed">
-          <span className="font-black text-foreground">Enviar prueba</span> — manda el email con datos de ejemplo a{" "}
-          <span className="font-mono text-accent">angelviselyanez@gmail.com</span>.
-        </p>
       </div>
     </div>
   );
@@ -469,36 +460,36 @@ const TABS = [
   { id: "notificaciones", label: "Notificaciones", icon: Bell },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
-
 export default function EmailsClient({
-  templates,
   subscribers,
+  templates,
 }: {
-  templates: EmailTemplateData[];
   subscribers: Subscriber[];
+  templates: EmailTemplateData[];
 }) {
-  const [activeTab, setActiveTab] = useState<TabId>("newsletter");
+  const [activeTab, setActiveTab] = useState<"newsletter" | "notificaciones">("newsletter");
 
   return (
-    <div>
-      <p className="text-muted font-medium mb-6">Gestiona newsletters, plantillas y configuración de emails de notificación.</p>
-
-      <div className="flex gap-1 p-1 bg-section-alt rounded-xl border border-card-border mb-6 w-fit">
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-              activeTab === id
-                ? "bg-card text-foreground shadow-sm border border-card-border"
-                : "text-muted hover:text-foreground"
-            }`}
-          >
-            <Icon size={14} />
-            {label}
-          </button>
-        ))}
+    <div className="space-y-6">
+      <div className="flex gap-2 border-b border-card-border pb-4">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const active = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${
+                active
+                  ? "bg-accent text-white shadow-md shadow-accent/20"
+                  : "text-muted hover:text-foreground hover:bg-section-alt"
+              }`}
+            >
+              <Icon size={14} />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {activeTab === "newsletter" && <NewsletterTab subscribers={subscribers} />}

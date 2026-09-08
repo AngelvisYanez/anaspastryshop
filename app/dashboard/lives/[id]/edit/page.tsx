@@ -8,14 +8,10 @@ async function EditContent({ id }: { id: string }) {
   const session = await auth();
   if (!session?.user) redirect("/iniciar-sesion");
   const role = (session.user as any).role as string;
-  if (!["ADMIN", "MENTOR"].includes(role)) redirect("/dashboard");
+  if (role !== "ADMIN") redirect("/dashboard");
 
   const live = await prisma.liveStream.findUnique({ where: { id } });
   if (!live) notFound();
-
-  if (role === "MENTOR" && live.instructorId !== session.user.id) {
-    redirect("/dashboard/lives");
-  }
 
   return <EditLiveForm live={live} />;
 }

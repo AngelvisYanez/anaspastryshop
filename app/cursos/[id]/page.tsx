@@ -1,29 +1,55 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import CourseDetailClient from "./CourseDetailClient";
 import Footer from "@/components/Footer";
-import { isSubscriptionValid } from "@/lib/utils/subscription";
+import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { getWorkshopBySlug } from "@/lib/data/workshops";
+import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 
 async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const session = await auth();
 
-  const course = await prisma.curso.findUnique({
-    where: { id },
+  // Si el parámetro coincide con un slug de workshop, redirigir a la ruta amigable
+  const matchedWorkshop = getWorkshopBySlug(id);
+  if (matchedWorkshop) {
+    redirect(`/workshop/${matchedWorkshop.slug}`);
+  }
+
+  const session = await auth();
+  const onlineCourse = getOnlineCourseBySlug(id);
+  const targetId = onlineCourse?.id || id;
+
+  const course = await prisma.curso.findFirst({
+    where: {
+      OR: [
+        { id: targetId },
+        { id },
+        ...(onlineCourse ? [{ title: { contains: onlineCourse.shortTitle } }] : []),
+        { content: { contains: id } },
+      ],
+    },
     include: {
       instructor: true,
       courseModules: {
         orderBy: { order: "asc" },
         include: {
-          lessons: { orderBy: { order: "asc" } }
-        }
-      }
-    }
+          lessons: { orderBy: { order: "asc" } },
+        },
+      },
+    },
   });
 
   if (!course) notFound();
+
+  const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
+
+  // Si es un workshop presencial con slug amigable, redirigir a la ruta amigable
+  if (workshopInfo.isWorkshop && workshopInfo.slug) {
+    const w = getWorkshopBySlug(workshopInfo.slug);
+    redirect(`/workshop/${w?.slug || workshopInfo.slug}`);
+  }
 
   let hasPaid = false;
 
@@ -32,29 +58,21 @@ async function CourseContent({ params }: { params: Promise<{ id: string }> }) {
       hasPaid = true;
     } else {
       const inscription = await prisma.inscription.findFirst({
-        where: { userId: session.user.id, cursoId: course.id, status: "APPROVED" }
+        where: { userId: session.user.id, cursoId: course.id, status: "APPROVED" },
       });
       if (inscription) hasPaid = true;
 
       if (!hasPaid) {
         const purchase = await prisma.coursePurchase.findFirst({
-          where: { userId: session.user.id, cursoId: course.id, status: "COMPLETED" }
+          where: { userId: session.user.id, cursoId: course.id, status: "COMPLETED" },
         });
         if (purchase) hasPaid = true;
       }
     }
-
-    if (!hasPaid) {
-      const sub = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: { status: true, endDate: true },
-      });
-      if (sub && isSubscriptionValid(sub)) hasPaid = true;
-    }
   }
 
   return (
-    <CourseDetailClient course={course} hasPaid={hasPaid}>
+    <CourseDetailClient course={course} hasPaid={hasPaid} workshopInfo={workshopInfo}>
       <Footer />
     </CourseDetailClient>
   );

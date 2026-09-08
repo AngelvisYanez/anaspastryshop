@@ -23,7 +23,7 @@ export async function createSection(formData: FormData) {
   const icon = formData.get("icon") as string;
   const order = parseInt(formData.get("order") as string) || 0;
   const rolesRaw = formData.get("roles") as string;
-  const roles = rolesRaw ? rolesRaw.split(",").filter(Boolean) : ["ADMIN", "MENTOR", "USER"];
+  const roles = rolesRaw ? rolesRaw.split(",").filter(Boolean) : ["ADMIN", "USER"];
 
   try {
     const section = await prisma.platformSection.create({

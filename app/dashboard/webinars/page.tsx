@@ -6,7 +6,7 @@ import { Video, Plus, Calendar, Users } from "lucide-react";
 import WebinarActions from "./WebinarActions";
 
 const STATUS_CONFIG = {
-  SCHEDULED: { label: "Programado", class: "bg-amber-50 dark:bg-amber-950/20 text-accent", dot: "bg-indigo-400" },
+  SCHEDULED: { label: "Programado", class: "bg-accent-subtle text-accent", dot: "bg-accent" },
   LIVE: { label: "En Vivo", class: "bg-green-50 dark:bg-green-950/20 text-green-600", dot: "bg-green-500 animate-pulse" },
   ENDED: { label: "Finalizado", class: "bg-section-alt text-muted", dot: "bg-muted/40" },
 };
@@ -42,11 +42,11 @@ export default async function WebinarsDashboardPage() {
               return (
                 <div key={webinar.id} className="bg-card rounded-xl p-6 border border-card-border shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-4">
-                    <span className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}>
+                    <span className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                       {cfg.label}
                     </span>
-                    <span className="text-[10px] text-muted font-bold">{webinar.instructor.name}</span>
+                    <span className="text-[11px] text-muted font-bold">{webinar.instructor.name}</span>
                   </div>
 
                   <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">{webinar.title}</h3>
@@ -92,15 +92,15 @@ export default async function WebinarsDashboardPage() {
       {webinars.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
             <p className="text-3xl font-black text-foreground">{webinars.length}</p>
           </div>
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">En Vivo</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">En Vivo</p>
             <p className="text-3xl font-black text-green-500">{enVivo}</p>
           </div>
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Programados</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Programados</p>
             <p className="text-3xl font-black text-accent">{programados}</p>
           </div>
         </div>
@@ -121,11 +121,11 @@ export default async function WebinarsDashboardPage() {
             return (
               <div key={webinar.id} className="bg-card rounded-xl p-6 border border-card-border shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
-                  <span className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}>
+                  <span className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                     {cfg.label}
                   </span>
-                  <span className="text-[10px] text-muted font-bold">{webinar.instructor.name}</span>
+                  <span className="text-[11px] text-muted font-bold">{webinar.instructor.name}</span>
                 </div>
 
                 <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">{webinar.title}</h3>

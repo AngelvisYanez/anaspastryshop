@@ -1,54 +1,60 @@
 "use client";
 import { m } from "framer-motion";
 import Image from "next/image";
+import { MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 const STATS = [
-  { num: "7+", label: "Años de experiencia" },
-  { num: "360°", label: "Visión integral" },
-  { num: "∞", label: "Actualizaciones" },
+  { num: "6+", label: "Años formando alumnos" },
+  { num: "100%", label: "Práctico desde cero" },
+  { num: "8 Horas", label: "Jornada intensiva guiada" },
 ];
 
 export default function About() {
   return (
-    <section className="w-full bg-section-alt py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-10">
+    <section id="sobre-anais" className="w-full bg-section-alt py-24 scroll-mt-20">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-16 block">
-            Acerca de la academia
+          <span className="text-accent font-bold uppercase tracking-[0.25em] text-xs mb-12 block">
+            Sobre Anais Flores · Ana&apos;s Pastry Shop
           </span>
         </m.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-20 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-20 items-center">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="aspect-[3/4] bg-card rounded-xl border border-card-border overflow-hidden relative">
+            <div className="relative aspect-[3/4] bg-card rounded-3xl border border-card-border overflow-hidden shadow-xl group">
               <Image
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
-                alt="Estudiantes aprendiendo en línea"
+                src="/foto-2.webp"
+                alt="Anais Flores impartiendo workshop"
                 fill
-                className="object-cover object-center"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-card to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#2B0938]/90 via-[#2B0938]/40 to-transparent p-6 flex flex-col justify-end">
+                <p className="text-white font-black text-xl">Anais Flores</p>
+                <p className="text-pink-300 text-xs font-medium">Ingeniero Químico · Panadera y Pastelera Profesional</p>
+              </div>
             </div>
+
             <div className="grid grid-cols-3 gap-3 mt-4">
               {STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="text-center p-4 bg-card rounded-xl border border-card-border"
+                  className="text-center p-4 bg-card rounded-2xl border border-card-border shadow-sm"
                 >
-                  <span className="font-display block text-2xl font-black text-accent tracking-tight mb-1">
+                  <span className="font-display block text-xl md:text-2xl font-black text-accent tracking-tight mb-1">
                     {stat.num}
                   </span>
-                  <span className="text-[10px] font-bold text-muted leading-tight block">
+                  <span className="text-[11px] font-bold text-muted leading-tight block">
                     {stat.label}
                   </span>
                 </div>
@@ -62,45 +68,47 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-2">
-              Academia Omnia
+            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-6">
+              ¡Hola! Soy Anais Flores
             </h2>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-10">
-              Educación online · Cursos prácticos y actualizados
+
+            <p className="text-base text-foreground/85 leading-relaxed mb-5 font-medium max-w-prose">
+              Cuento con más de 6 años en el mundo de la pastelería y con una amplia experiencia dictando talleres a lo largo de este tiempo.
             </p>
 
-            <p className="text-sm text-muted leading-relaxed mb-6">
-              Academia Omnia nace con un objetivo claro: que cualquier persona
-              pueda dominar las herramientas digitales de manera integral, con
-              una visión 360° que conecta lo técnico con lo práctico. Nuestro
-              nombre viene del latín <span className="font-bold text-foreground">omnia</span> — "todo" — porque creemos
-              que el conocimiento no debería llegar fragmentado.
-            </p>
-            <p className="text-sm text-muted leading-relaxed mb-10">
-              Diseñamos cada curso con métodos comprobados, acompañamiento
-              real y contenidos que se actualizan al ritmo del mundo actual.
-              Ya sea que empieces desde cero o quieras llevar tu nivel al
-              siguiente paso, aquí encuentras el camino para lograrlo.
+            <p className="text-sm text-muted leading-relaxed mb-8 max-w-prose">
+              Hemos adaptado nuestros talleres para que te sientas plenamente cómodo a la hora de realizarlos. Están desarrollados <strong>desde cero</strong>, es decir, no es necesario tener ningún conocimiento previo ya que en ellos nos encargamos de enseñarte todas las técnicas, recetas y métodos necesarios para que te desenvuelvas de la mejor manera posible.
             </p>
 
-            <div className="relative bg-card rounded-xl px-8 py-7 border border-card-border overflow-hidden">
-              <span className="font-display absolute top-2 left-5 text-[7rem] leading-none text-accent/10 font-black select-none pointer-events-none">
-                &ldquo;
-              </span>
-              <p className="relative z-10 text-base text-foreground leading-relaxed font-medium">
-                El objetivo no es darte una lista de pasos a seguir ciegamente.
-                Es que desarrolles tu propio criterio para tomar decisiones
-                con confianza y aplicar lo aprendido en tu día a día.
+            <div className="relative bg-card rounded-2xl p-7 border border-card-border overflow-hidden mb-8 shadow-sm">
+              <p className="relative z-10 text-base md:text-lg text-foreground leading-relaxed font-bold italic mb-3">
+                &ldquo;El conocimiento nos hace responsables. Invertir en conocimientos produce siempre los mejores beneficios.&rdquo;
               </p>
-              <div className="mt-5 pt-5 border-t border-card-border flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
-                  <span className="text-accent text-xs font-bold">AO</span>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-foreground">Academia Omnia</p>
-                  <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Nuestra misión</p>
-                </div>
-              </div>
+              <p className="relative z-10 text-xs text-muted leading-relaxed mb-5">
+                Por favor, lee detalladamente toda la información que te presento para que resolvamos todas tus dudas, y si decides capacitarte... ¡escríbeme!
+              </p>
+
+              <a
+                href="https://wa.me/?text=Hola%20Anais!%20He%20le%C3%ADdo%20sobre%20tus%20workshops%20y%20quiero%20capacitarme"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-pink-600/20"
+              >
+                <MessageCircle size={14} /> ¡Escríbeme para capacitarte!
+              </a>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/cursos">
+                <button className="w-full sm:w-auto bg-accent text-white px-8 py-3.5 rounded-xl font-bold hover:bg-accent-hover transition-all text-sm shadow-md shadow-pink-600/20">
+                  Ver Próximos Workshops
+                </button>
+              </Link>
+              <Link href="/nosotros">
+                <button className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold transition-all text-sm">
+                  Conocer Historia Completa
+                </button>
+              </Link>
             </div>
           </m.div>
         </div>

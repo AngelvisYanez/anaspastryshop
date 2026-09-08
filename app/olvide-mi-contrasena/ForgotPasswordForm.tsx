@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <label htmlFor="fp-email" className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
+                      <label htmlFor="fp-email" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                         Correo electrónico
                       </label>
                       <div className="relative">
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
 
                     <button
                       disabled={loading}
-                      className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-4 flex justify-center items-center gap-2 disabled:opacity-50"
+                      className="w-full bg-foreground text-background py-4 px-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-4 flex justify-center items-center gap-2 disabled:opacity-70"
                     >
                       {loading ? <Loader2 size={18} className="animate-spin" /> : "Enviar enlace de restablecimiento"}
                     </button>

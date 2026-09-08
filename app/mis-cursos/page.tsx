@@ -8,6 +8,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Clock, BarChart2, PlayCircle, ShoppingBag } from "lucide-react";
 
+export const metadata = {
+  title: "Mis Workshops & Cursos | Ana's Pastry Shop",
+  description: "Accede a tus workshops y cursos online adquiridos.",
+};
+
 async function MisCursosContent() {
   const session = await auth();
   if (!session?.user) redirect("/iniciar-sesion");
@@ -48,26 +53,27 @@ async function MisCursosContent() {
   for (const i of inscriptions) {
     if (i.curso && i.cursoId) courseMap.set(i.cursoId, i.curso);
   }
+
   const courses = Array.from(courseMap.values());
 
   if (courses.length === 0) redirect("/cursos");
 
   return (
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
+    <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="flex flex-col items-center text-center gap-4 mb-10">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-1">
-            Cursos adquiridos
+          <p className="text-[11px] font-black uppercase tracking-widest text-accent mb-1">
+            Workshops & Cursos adquiridos
           </p>
-          <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Cursos</h1>
+          <h1 className="text-3xl font-black text-foreground tracking-tighter">Mis Workshops</h1>
           <p className="text-muted font-medium mt-1">
-            Acceso completo a los cursos que has comprado.
+            Acceso completo y permanente a los workshops y cursos que has adquirido.
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-accent-subtle text-accent px-4 py-2 rounded-xl border border-accent/20">
+        <div className="flex items-center gap-2 bg-accent-subtle text-accent px-4 py-2 rounded-xl border border-accent/20 w-fit">
           <ShoppingBag size={14} />
           <span className="text-xs font-black uppercase tracking-widest">
-            {courses.length} {courses.length === 1 ? "Curso" : "Cursos"}
+            {courses.length} {courses.length === 1 ? "Workshop" : "Workshops"}
           </span>
         </div>
       </div>
@@ -93,7 +99,7 @@ async function MisCursosContent() {
               )}
 
               <div className="p-6 flex flex-col flex-1">
-                <span className="text-[10px] font-black uppercase tracking-widest bg-accent-subtle text-accent px-2 py-0.5 rounded-md w-fit mb-3">
+                <span className="text-[11px] font-black uppercase tracking-widest bg-accent-subtle text-accent px-2 py-0.5 rounded-md w-fit mb-3">
                   {curso.level}
                 </span>
                 <h3 className="text-base font-bold text-foreground mb-1 leading-snug line-clamp-2 flex-1">
@@ -125,7 +131,7 @@ export default function MisCursosPage() {
   return (
     <main className="min-h-screen bg-background pt-28 pb-20">
       <Navbar />
-      <Suspense fallback={<div className="max-w-7xl mx-auto px-6 py-20" />}>
+      <Suspense fallback={<div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-20" />}>
         <MisCursosContent />
       </Suspense>
       <Footer />

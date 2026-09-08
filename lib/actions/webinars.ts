@@ -85,27 +85,6 @@ export async function joinWebinarRoom(webinarId: string): Promise<{ token: strin
   const webinar = await prisma.webinar.findUnique({ where: { id: webinarId } });
   if (!webinar) return { error: "Webinar no encontrado" };
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true, subscription: { select: { status: true, plan: true } } },
-  });
-
-  const role = user?.role ?? "USER";
-  const isStaff = ["ADMIN", "MENTOR"].includes(role);
-
-  if (!isStaff) {
-    if (!user?.subscription || user.subscription.status !== "ACTIVE") {
-      return { error: "Se requiere suscripción activa" };
-    }
-    const plan = await prisma.subscriptionPlan.findFirst({
-      where: { slug: user.subscription.plan, isActive: true },
-      select: { hasWebinarAccess: true },
-    });
-    if (!plan?.hasWebinarAccess) {
-      return { error: "Tu plan no incluye acceso a webinars" };
-    }
-  }
-
   const existingSession = await prisma.webinarSession.findUnique({
     where: { webinarId_userId: { webinarId, userId } },
   });
@@ -113,7 +92,7 @@ export async function joinWebinarRoom(webinarId: string): Promise<{ token: strin
     return { error: "Ya tienes una sesión activa en este webinar. Cierra la otra pestaña o dispositivo." };
   }
 
-  if (!isStaff && webinar.maxParticipants) {
+  if (webinar.maxParticipants) {
     const activeCount = await prisma.webinarSession.count({ where: { webinarId } });
     if (activeCount >= webinar.maxParticipants) {
       return { error: `La sala está llena. El límite de ${webinar.maxParticipants} participantes ha sido alcanzado.` };
@@ -137,13 +116,12 @@ export async function joinWebinarRoom(webinarId: string): Promise<{ token: strin
     await prisma.webinar.update({ where: { id: webinarId }, data: { rtkMeetingId: meetingId } });
   }
 
-  const presetName = isStaff ? "group_call_host" : "group_call_participant";
   const participantRes = await fetch(`${BASE}/meetings/${meetingId}/participants`, {
     method: "POST",
     headers: HEADERS,
     body: JSON.stringify({
       name: session.user.name ?? "Participante",
-      preset_name: presetName,
+      preset_name: "group_call_participant",
       custom_participant_id: userId,
     }),
   });

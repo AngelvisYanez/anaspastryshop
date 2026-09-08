@@ -13,7 +13,7 @@ type DataPoint = {
   value: number;
 };
 
-const COLORS = ["#C9A84C", "#8B5CF6", "#D8B4FE", "#EDE9FE", "#C7D2FE"];
+const COLORS = ["#D92080", "#8B5CF6", "#EC4899", "#A855F7", "#F43F5E"];
 
 export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
   return (

@@ -10,7 +10,7 @@ export default function StudentsView({
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card p-8 rounded-xl border border-card-border shadow-sm flex items-center gap-6">
-          <div className="p-4 bg-amber-50 text-accent rounded-lg">
+          <div className="p-4 bg-accent-subtle text-accent rounded-lg">
             <Users size={32} />
           </div>
           <div>

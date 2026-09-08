@@ -58,7 +58,7 @@ export async function adminEditUser(id: string, formData: FormData) {
   const role = formData.get("role") as string;
 
   if (!name?.trim()) return { error: "El nombre no puede estar vacío." };
-  if (!["USER", "MENTOR", "ADMIN"].includes(role))
+  if (!["USER", "ADMIN"].includes(role))
     return { error: "Rol inválido." };
 
   await prisma.user.update({
@@ -79,8 +79,9 @@ export async function adminEditUser(id: string, formData: FormData) {
   });
 
   revalidatePath("/dashboard/usuarios");
-  revalidatePath("/dashboard/mentores");
 }
+
+export const adminUpdateUser = adminEditUser;
 
 /** ADMIN: Elimina cualquier usuario */
 export async function adminDeleteUser(id: string) {
@@ -115,7 +116,6 @@ export async function adminDeleteUser(id: string) {
   await prisma.liveStream.deleteMany({ where: { instructorId: id } });
   await prisma.webinar.deleteMany({ where: { instructorId: id } });
 
-  await prisma.subscription.deleteMany({ where: { userId: id } });
   await prisma.coursePurchase.deleteMany({ where: { userId: id } });
   await prisma.inscription.deleteMany({ where: { userId: id } });
   await prisma.activityLog.deleteMany({ where: { userId: id } });
@@ -130,7 +130,6 @@ export async function adminDeleteUser(id: string) {
   });
 
   revalidatePath("/dashboard/usuarios");
-  revalidatePath("/dashboard/mentores");
 }
 
 export async function adminToggleUserStatus(userId: string, isActive: boolean, reason?: string) {
@@ -173,40 +172,4 @@ export async function adminToggleUserStatus(userId: string, isActive: boolean, r
     console.error("Error al cambiar estado del usuario:", error);
     return { error: "Hubo un error al cambiar el estado del usuario" };
   }
-}
-
-/** ADMIN: Asigna o cambia el plan de suscripción de un usuario */
-export async function adminAssignPlan(userId: string, planSlug: string | null) {
-  await assertAdmin();
-
-  if (!planSlug) {
-    await prisma.subscription.deleteMany({ where: { userId } });
-    revalidatePath("/dashboard/usuarios");
-    return { success: true };
-  }
-
-  const plan = await prisma.subscriptionPlan.findUnique({ where: { slug: planSlug } });
-  if (!plan) return { error: "Plan no encontrado" };
-
-  await prisma.subscription.upsert({
-    where: { userId },
-    update: { plan: planSlug, status: "ACTIVE", startDate: new Date(), endDate: null },
-    create: { userId, plan: planSlug, status: "ACTIVE" },
-  });
-
-  revalidatePath("/dashboard/usuarios");
-  return { success: true };
-}
-
-/** Obtener imagen de perfil del usuario actual (evita cookies pesadas) */
-export async function getUserImage() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { image: true }
-  });
-
-  return user?.image || null;
 }

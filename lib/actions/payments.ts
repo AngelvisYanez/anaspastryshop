@@ -4,12 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
-import { subscriptionEndDate } from "@/lib/utils/subscription";
 import {
-  sendSubscriptionConfirmedEmail,
   sendCoursePurchaseEmail,
   sendPaymentRejectedEmail,
-  sendAdminNewSubscriptionEmail,
 } from "@/lib/email";
 
 export async function getPendingPayments() {
@@ -33,7 +30,7 @@ export async function getPendingPayments() {
     return { inscriptions };
   } catch (error) {
     console.error("Error fetching pending payments:", error);
-    return { error: "No se pudieron obtener los pagos pendientes" };
+    return { error: "No se pudieron obtener los pagos pendientes", inscriptions: [] };
   }
 }
 
@@ -59,42 +56,20 @@ export async function approvePayment(inscriptionId: string) {
     });
 
     if (!inscription.cursoId) {
-      const plan = await prisma.subscriptionPlan.findFirst({
-        where: { isActive: true },
-      });
-      const now = new Date();
-      const endDate = subscriptionEndDate(now);
-
-      await prisma.subscription.upsert({
-        where: { userId: inscription.userId },
-        create: {
-          userId: inscription.userId,
-          plan: plan?.slug ?? "membresia",
-          status: "ACTIVE",
-          startDate: now,
-          endDate,
-        },
-        update: {
-          status: "ACTIVE",
-          startDate: now,
-          endDate,
+      // Servicio de Pastelería / Pedido Especial
+      await logActivity({
+        userId: session.user.id as string,
+        action: "APPROVE_PASTRY_PAYMENT",
+        entityType: "INSCRIPTION",
+        entityId: inscriptionId,
+        details: {
+          status: "APPROVED",
+          type: "PASTRY_SERVICE",
+          amount: inscription.amountPaid,
         },
       });
-
-      sendSubscriptionConfirmedEmail(
-        inscription.user.email,
-        inscription.user.name,
-        plan?.name ?? "Membresía Academia",
-        inscription.amountPaid,
-      ).catch(() => {});
-
-      sendAdminNewSubscriptionEmail(
-        inscription.user.name ?? "Sin nombre",
-        inscription.user.email,
-        plan?.name ?? "Membresía Academia",
-        inscription.amountPaid,
-      ).catch(() => {});
     } else {
+      // Workshop / Curso Online
       const curso = await prisma.curso.findUnique({
         where: { id: inscription.cursoId },
         select: { title: true },
@@ -103,19 +78,25 @@ export async function approvePayment(inscriptionId: string) {
       sendCoursePurchaseEmail(
         inscription.user.email,
         inscription.user.name,
-        curso?.title ?? "Curso",
+        curso?.title ?? "Workshop / Curso",
       ).catch(() => {});
 
-      revalidatePath("/dashboard/mis-cursos");
-    }
+      await logActivity({
+        userId: session.user.id as string,
+        action: "APPROVE_COURSE_PAYMENT",
+        entityType: "INSCRIPTION",
+        entityId: inscriptionId,
+        details: {
+          status: "APPROVED",
+          type: "CURSO",
+          cursoId: inscription.cursoId,
+          amount: inscription.amountPaid,
+        },
+      });
 
-    await logActivity({
-      userId: session.user.id as string,
-      action: "APPROVE_PAYMENT",
-      entityType: "INSCRIPTION",
-      entityId: inscriptionId,
-      details: { status: "APPROVED", isSubscription: !inscription.cursoId },
-    });
+      revalidatePath("/dashboard/mis-cursos");
+      revalidatePath(`/cursos/${inscription.cursoId}`);
+    }
 
     revalidatePath("/dashboard/pagos");
     revalidatePath("/dashboard");
@@ -206,7 +187,10 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
   try {
     const inscription = await prisma.inscription.findUnique({
       where: { id: inscriptionId },
-      include: { user: { select: { email: true, name: true } } },
+      include: {
+        user: { select: { email: true, name: true } },
+        curso: { select: { title: true } },
+      },
     });
 
     if (!inscription) return { error: "Inscripción no encontrada" };
@@ -216,10 +200,14 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
       data: { status: "REJECTED" },
     });
 
+    const rejectReason = reason
+      ? `${inscription.curso?.title ? `Workshop: ${inscription.curso.title} - ` : "Servicio de Pastelería - "}${reason}`
+      : reason;
+
     sendPaymentRejectedEmail(
       inscription.user.email,
       inscription.user.name,
-      reason,
+      rejectReason,
     ).catch(() => {});
 
     await logActivity({
@@ -227,7 +215,11 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
       action: "REJECT_PAYMENT",
       entityType: "INSCRIPTION",
       entityId: inscriptionId,
-      details: { status: "REJECTED", reason: reason ?? null },
+      details: {
+        status: "REJECTED",
+        reason: reason ?? null,
+        type: inscription.cursoId ? "CURSO" : "PASTRY_SERVICE",
+      },
     });
 
     revalidatePath("/dashboard/pagos");

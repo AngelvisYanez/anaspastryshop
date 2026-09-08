@@ -27,22 +27,9 @@ model User {
   activities         ActivityLog[]
   cursos             Curso[]         @relation("MentorCursos")
   inscripciones      Inscription[]
-  subscription       Subscription?
   coursePurchases    CoursePurchase[]
   lives              LiveStream[]    @relation("InstructorLives")
   webinars           Webinar[]       @relation("InstructorWebinars")
-}
-
-model Subscription {
-  id                   String    @id @default(cuid())
-  userId               String    @unique
-  plan                 String
-  status               String    @default("ACTIVE")
-  startDate            DateTime  @default(now())
-  endDate              DateTime?
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  user                 User      @relation(fields: [userId], references: [id])
 }
 
 model Curso {
@@ -55,7 +42,7 @@ model Curso {
   category      String         @default("General")
   totalHours    Int
   totalClasses  Int
-  language      String         @default("EspaÃ±ol")
+  language      String         @default("Español")
   level         String
   content       String?
   isLive        Boolean        @default(false)
@@ -161,21 +148,6 @@ model PaymentGatewayConfig {
   updatedAt     DateTime @updatedAt
 }
 
-model SubscriptionPlan {
-  id                String   @id @default(cuid())
-  name              String   @unique
-  slug              String   @unique
-  price             Float
-  description       String?
-  hasLiveAccess     Boolean  @default(false)
-  hasWebinarAccess  Boolean  @default(false)
-  moduleIds         String[]
-  paymentMethods    String[]
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-}
-
 model Webinar {
   id              String           @id @default(cuid())
   title           String
@@ -246,19 +218,26 @@ model EmailTemplate {
   updatedAt DateTime @updatedAt
 }
 
+model GalleryItem {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  alt       String?
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
 model SiteConfig {
-  id                String   @id @default(cuid())
-  siteName          String   @default("Academia Omnia")
-  logoUrl           String?
-  ctaText           String   @default("Quiero unirme ahora")
-  ctaUrl            String   @default("/planes")
-  instagramUrl      String?
-  linkedinUrl       String?
-  tiktokUrl         String?
-  subscriptionPrice Float    @default(97)
-  subscriptionPriceId String?
-  navItems          Json     @default("[]")
-  updatedAt         DateTime @updatedAt
+  id           String   @id @default(cuid())
+  siteName     String   @default("Ana's Pastry Shop")
+  logoUrl      String?
+  ctaText      String   @default("Ver Talleres Presenciales")
+  ctaUrl       String   @default("/cursos")
+  instagramUrl String?
+  linkedinUrl  String?
+  tiktokUrl    String?
+  navItems     Json     @default("[]")
+  updatedAt    DateTime @updatedAt
 }
 
 model PasswordResetToken {

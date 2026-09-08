@@ -4,15 +4,15 @@ import { m } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const SITUATIONS = [
-  "Sientes que te quedas atrás porque no dominas las herramientas que el mercado laboral pide hoy.",
-  "Has intentado aprender por tu cuenta, pero te pierdes entre tanto contenido suelto y sin un plan claro.",
-  "Quieres crecer en tu carrera o dar un giro profesional, pero no sabes por dónde empezar.",
-  "Te frustra invertir tiempo en cursos que prometen mucho y entregan poco.",
-  "Necesitas aplicar lo aprendido en proyectos reales, no solo quedarte en la teoría.",
-  "El lenguaje técnico o las herramientas digitales te intimidan y buscas aprender en tu idioma.",
-  "Quieres construir un portafolio que demuestre lo que realmente sabes hacer.",
-  "Buscas una comunidad que te acompañe en el proceso, no aprender en soledad.",
-  "Quieres mantenerte actualizado porque el mundo digital cambia a toda velocidad.",
+  "Quieres aprender pastelería y repostería desde cero, sin importar que nunca antes hayas tocado un horno.",
+  "Te frustra que las recetas de internet unas veces funcionen y otras fallen, sin saber la técnica correcta ni cómo corregirlas.",
+  "Deseas dominar técnicas de decoración en tendencia, bordes perfectos y montaje seguro de varios pisos.",
+  "Quieres emprender tu propio negocio de pastelería con recetas estandarizadas, estables y rentables.",
+  "Buscas una experiencia 100% práctica y presencial de 8 horas con asesoría directa y acompañamiento paso a paso.",
+  "Quieres comprender a fondo el comportamiento de los ingredientes: grasas, harinas, puntos de batido y temperaturas de horneado.",
+  "Deseas perfeccionar la elaboración de panes artesanales, fermentaciones y masas que sorprendan por su textura.",
+  "Buscas capacitarte en un ambiente cómodo, cercano y profesional donde cada duda se responde en tiempo real.",
+  "Valoras capacitarte con una instructora profesional dedicada a enseñarte con paciencia, cercanía y métodos probados.",
 ];
 
 export default function ForYou() {
@@ -42,67 +42,56 @@ export default function ForYou() {
 
   return (
     <section id="para-ti" className="w-full bg-section-alt py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-10">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12"
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
         >
           <div>
-            <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
-              Esta academia es para ti si…
-            </span>
-            <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight leading-[0.95]">
-              ¿Te identificas con{" "}
-              <span className="text-accent">
-                alguna de estas situaciones?
-              </span>
+            <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight">
+              ¿Es para ti? Está diseñado para quienes desean{" "}
+              <span className="text-accent">formarse de verdad</span>
             </h2>
           </div>
-
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex gap-2">
             <button
               onClick={() => scroll("left")}
               disabled={!canPrev}
-              className="w-11 h-11 rounded-xl border border-card-border bg-card flex items-center justify-center hover:bg-card-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Anterior"
+              className="w-12 h-12 rounded-full border border-card-border bg-card flex items-center justify-center text-foreground hover:bg-card-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
             >
-              <ChevronLeft size={20} className="text-foreground" />
+              <ChevronLeft size={20} />
             </button>
             <button
               onClick={() => scroll("right")}
               disabled={!canNext}
-              className="w-11 h-11 rounded-xl border border-card-border bg-card flex items-center justify-center hover:bg-card-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Siguiente"
+              className="w-12 h-12 rounded-full border border-card-border bg-card flex items-center justify-center text-foreground hover:bg-card-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
             >
-              <ChevronRight size={20} className="text-foreground" />
+              <ChevronRight size={20} />
             </button>
           </div>
         </m.div>
 
         <div
           ref={ref}
-          className="flex gap-4 overflow-x-auto scroll-smooth pb-2"
-          style={{ scrollbarWidth: "none" }}
+          className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4"
         >
-          {SITUATIONS.map((text, i) => (
-            <m.div
-              key={text}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="flex-none w-[300px] md:w-[340px] bg-card border border-card-border rounded-2xl p-8 hover:bg-card-hover transition-colors group cursor-default"
+          {SITUATIONS.map((sit, i) => (
+            <div
+              key={i}
+              className="min-w-[280px] sm:min-w-[340px] max-w-[360px] snap-start bg-card rounded-2xl p-7 border border-card-border flex flex-col justify-between shadow-sm hover:border-accent/40 transition-colors"
             >
-              <div className="font-display text-5xl font-black text-navy leading-none mb-6 tabular-nums">
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <p className="text-sm text-muted leading-relaxed">
-                {text}
+              <p className="text-sm text-foreground/80 leading-relaxed font-medium mb-6">
+                &ldquo;{sit}&rdquo;
               </p>
-            </m.div>
+              <span className="text-xs font-bold text-accent">
+                Ana&apos;s Pastry Shop es para ti →
+              </span>
+            </div>
           ))}
         </div>
       </div>

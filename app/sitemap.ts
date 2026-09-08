@@ -1,23 +1,19 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://academiaomnia.com";
-
-export const dynamic = "force-dynamic";
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let courseEntries: MetadataRoute.Sitemap = [];
+  const siteUrl = process.env.NEXTAUTH_URL || "https://anaspastryshop.com";
 
+  let courseEntries: MetadataRoute.Sitemap = [];
   try {
-    const cursos = await prisma.curso.findMany({
+    const courses = await prisma.curso.findMany({
       select: { id: true, createdAt: true },
-      orderBy: { createdAt: "desc" },
     });
-    courseEntries = cursos.map((c) => ({
+    courseEntries = courses.map((c) => ({
       url: `${siteUrl}/cursos/${c.id}`,
       lastModified: c.createdAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
+      changeFrequency: "weekly",
+      priority: 0.8,
     }));
   } catch {
     courseEntries = [];
@@ -26,13 +22,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: siteUrl,                              changeFrequency: "daily",   priority: 1.0 },
     { url: `${siteUrl}/cursos`,                  changeFrequency: "daily",   priority: 0.9 },
-    { url: `${siteUrl}/membresia`,               changeFrequency: "weekly",  priority: 0.9 },
     { url: `${siteUrl}/nosotros`,                changeFrequency: "monthly", priority: 0.6 },
-    { url: `${siteUrl}/lives`,                   changeFrequency: "daily",   priority: 0.8 },
-    { url: `${siteUrl}/webinars`,                changeFrequency: "daily",   priority: 0.7 },
     { url: `${siteUrl}/registro`,                changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/iniciar-sesion`,          changeFrequency: "monthly", priority: 0.4 },
-    { url: `${siteUrl}/registro-mentor`,         changeFrequency: "monthly", priority: 0.4 },
+    { url: `${siteUrl}/webinars`,                changeFrequency: "weekly",   priority: 0.6 },
+    { url: `${siteUrl}/lives`,                   changeFrequency: "weekly",   priority: 0.6 },
   ];
 
   return [...staticPages, ...courseEntries];

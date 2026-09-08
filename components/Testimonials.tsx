@@ -2,71 +2,115 @@
 import { m } from "framer-motion";
 import { Star } from "lucide-react";
 
-const TESTIMONIALS = Array.from({ length: 6 }, (_, i) => ({
-  id: i,
-  text: "TESTIMONIO DEL MIEMBRO — Agrega aquí el testimonio real de uno de tus estudiantes.",
-  name: "Nombre del Miembro",
-  location: "Ciudad, Estado",
-  initials: "NM",
-}));
+const TESTIMONIALS = [
+  {
+    id: 1,
+    text: "El workshop con Anais cambió por completo mi forma de hornear. Al fin entendí el porqué de cada técnica y paso; mis bizcochos ahora quedan perfectos, nivelados y súper húmedos.",
+    name: "Valentina Mendoza",
+    location: "Emprendedora Repostera",
+    initials: "VM",
+    workshop: "Workshop Decoración y Bordes Perfectos",
+  },
+  {
+    id: 2,
+    text: "Llegué con cero experiencia previa y bastante nervios. Anais tiene una paciencia increíble y una metodología tan clara que logré hacer un pastel de varios pisos hermoso. ¡100% recomendado!",
+    name: "Camila Rodríguez",
+    location: "Alumna Principiante",
+    initials: "CR",
+    workshop: "Workshop de Pastelería Desde Cero",
+  },
+  {
+    id: 3,
+    text: "Las 8 horas del workshop se pasan volando. La calidad de los insumos, la explicación detallada de cada paso y el acompañamiento durante todo el taller hacen que valga cada centavo invertido.",
+    name: "Gabriela Salazar",
+    location: "Pastelera Profesional",
+    initials: "GS",
+    workshop: "Masterclass Cremas y Rellenos",
+  },
+  {
+    id: 4,
+    text: "Invertir en conocimientos produce siempre los mejores beneficios, tal como dice Anais. Gracias al workshop pude lanzar mi propio menú de pasteles para eventos con total confianza.",
+    name: "Mariana Silva",
+    location: "Fundadora de Dulce Arte",
+    initials: "MS",
+    workshop: "Workshop Presencial Intensivo",
+  },
+  {
+    id: 5,
+    text: "La técnica de alisado y uso de la base giratoria que enseña Anais es de otro nivel. Mis clientes quedaron fascinados con los acabados prolijos que ahora logro entregar.",
+    name: "Andrea Castillo",
+    location: "Pastelera Creativa",
+    initials: "AC",
+    workshop: "Workshop de Alisados y Bordes",
+  },
+  {
+    id: 6,
+    text: "El ambiente del taller es súper acogedor, te explican absolutamente todo sin guardarse nada. Salí motivada y con mi propio pastel listo para disfrutar en familia.",
+    name: "Sofía Paredes",
+    location: "Apasionada por la Repostería",
+    initials: "SP",
+    workshop: "Workshop Pastelero Fin de Semana",
+  },
+];
 
 export default function Testimonials() {
   return (
-    <section className="py-24 px-4 md:px-10 max-w-7xl mx-auto">
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-16"
-      >
-        <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4 block">
-          Lo que dicen los miembros
-        </span>
-        <h2 className="font-display text-4xl md:text-6xl font-black text-foreground tracking-tight leading-[0.95]">
-          Resultados <span className="text-accent">reales</span>
-        </h2>
-      </m.div>
+    <section className="w-full bg-section py-24 border-t border-card-border">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+        <m.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
+          <h2 className="font-display text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">
+            Experiencias reales de{" "}
+            <span className="text-accent">nuestras alumnas y alumnos</span>
+          </h2>
+          <p className="text-muted text-base">
+            Historias de personas que decidieron invertir en su capacitación y hoy crean con soltura, técnica y seguridad.
+          </p>
+        </m.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {TESTIMONIALS.map((t, i) => (
-          <m.div
-            key={t.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
-            className="bg-card rounded-xl p-8 border border-card-border flex flex-col gap-5 relative overflow-hidden"
-          >
-            <span className="font-display absolute top-3 right-7 text-[5rem] leading-none text-accent/[0.07] font-black select-none pointer-events-none">
-              &rdquo;
-            </span>
-
-            <div className="flex gap-1 text-accent relative z-10">
-              {Array.from({ length: 5 }).map((_, j) => (
-                <Star key={j} size={14} fill="currentColor" />
-              ))}
-            </div>
-
-            <p className="text-sm text-muted leading-relaxed flex-1 relative z-10">
-              &ldquo;{t.text}&rdquo;
-            </p>
-
-            <div className="flex items-center gap-3 mt-auto pt-5 border-t border-card-border relative z-10">
-              <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center shrink-0">
-                <span className="font-display text-xs font-black text-background">
-                  {t.initials}
-                </span>
-              </div>
+        <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 overflow-x-auto pb-2 scrollbar-hide">
+          {TESTIMONIALS.map((t, i) => (
+            <m.div
+              key={t.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="w-[85vw] max-w-sm shrink-0 md:w-auto bg-card rounded-2xl p-7 border border-card-border flex flex-col justify-between shadow-sm hover:border-accent/40 transition-colors"
+            >
               <div>
-                <p className="text-sm font-bold text-foreground">{t.name}</p>
-                <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
-                  {t.location}
+                <div className="flex gap-1 mb-4 text-amber-400">
+                  {[...Array(5)].map((_, s) => (
+                    <Star key={s} size={15} fill="currentColor" />
+                  ))}
+                </div>
+                <p className="text-foreground/80 text-sm leading-relaxed mb-6 italic">
+                  &ldquo;{t.text}&rdquo;
                 </p>
               </div>
-            </div>
-          </m.div>
-        ))}
+
+              <div className="pt-4 border-t border-card-border flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-accent/15 text-accent font-black text-sm flex items-center justify-center">
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-foreground">{t.name}</p>
+                    <p className="text-xs text-muted font-medium">{t.location}</p>
+                  </div>
+                </div>
+                <span className="text-[11px] text-accent/80 font-bold bg-accent/10 px-2.5 py-1 rounded-full text-right hidden sm:inline-block">
+                  {t.workshop.split(" ")[1]}
+                </span>
+              </div>
+            </m.div>
+          ))}
+        </div>
       </div>
     </section>
   );

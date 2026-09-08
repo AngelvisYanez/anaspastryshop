@@ -35,7 +35,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
     redirect("/iniciar-sesion");
   }
 
-  const [dbUser, platformSections, pendingInscription, subscription] = await Promise.all([
+  const [dbUser, platformSections] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: {
@@ -51,21 +51,10 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
       where: { isActive: true },
       orderBy: { order: "asc" },
     }),
-    prisma.inscription.findFirst({
-      where: { userId: session.user.id, cursoId: null, status: "PENDING" },
-      select: { id: true },
-    }),
-    prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-      select: { status: true },
-    }),
   ]);
 
   const isActive = dbUser?.isActive !== false;
   const deactivationReason = dbUser?.deactivationReason;
-  const hasPendingPayment =
-    !!pendingInscription && subscription?.status !== "ACTIVE";
-  const hasActiveSubscription = subscription?.status === "ACTIVE";
 
   if (!isActive) {
     return (
@@ -95,8 +84,8 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
 
           <p className="text-xs text-muted mb-6">
             No tienes acceso al panel. Contacta a soporte:{" "}
-            <a href="mailto:soporte@academiaomnia.com" className="text-red-500 font-bold hover:underline">
-              soporte@academiaomnia.com
+            <a href="mailto:soporte@anaspastryshop.com" className="text-red-500 font-bold hover:underline">
+              soporte@anaspastryshop.com
             </a>
           </p>
 
@@ -109,7 +98,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
             >
               <button
                 type="submit"
-                className="bg-navy text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg hover:bg-accent transition-all"
+                className="bg-accent text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-accent/20 hover:bg-accent-hover transition-all"
               >
                 Cerrar Sesión y Salir
               </button>
@@ -129,9 +118,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isMentor = dbUser.role === "MENTOR";
   const hasPhoto = !!dbUser.image;
-  const isBlockedMentor = isMentor && !hasPhoto;
 
   return (
     <DashboardShell
@@ -142,10 +129,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
         role: dbUser.role,
         image: dbUser.image,
       }}
-      isBlockedMentor={isBlockedMentor}
       platformSections={platformSections}
-      hasPendingPayment={hasPendingPayment}
-      hasActiveSubscription={hasActiveSubscription}
     >
       <RealTimeGuard />
       <Suspense fallback={<DashboardLoading />}>

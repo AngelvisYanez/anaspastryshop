@@ -1,35 +1,36 @@
 import { Suspense } from "react";
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, PlayCircle, LockIcon, AlertCircle } from "lucide-react";
+import { ArrowLeft, PlayCircle, LockIcon } from "lucide-react";
 
-async function ClaseContent({ params }: { params: Promise<{ courseTitle: string; moduleTitle: string }> }) {
-  const { courseTitle, moduleTitle } = await params;
-  const decodedCourseTitle = decodeURIComponent(courseTitle);
-  const decodedModuleTitle = decodeURIComponent(moduleTitle);
+async function ClaseContent({
+  paramsPromise,
+}: {
+  paramsPromise: Promise<{ courseTitle: string; moduleTitle: string }>;
+}) {
+  const { courseTitle, moduleTitle } = await paramsPromise;
+  const decodedCourse = decodeURIComponent(courseTitle);
+  const decodedModule = decodeURIComponent(moduleTitle);
 
   const session = await auth();
-
   if (!session?.user) {
-    redirect("/iniciar-sesion");
+    redirect(`/iniciar-sesion?callbackUrl=/clases/${courseTitle}/${moduleTitle}`);
   }
 
   const course = await prisma.curso.findFirst({
-    where: { title: decodedCourseTitle },
+    where: { title: decodedCourse },
     include: {
       courseModules: {
-        where: { title: decodedModuleTitle },
-        include: {
-          lessons: { orderBy: { order: "asc" } }
-        }
-      }
-    }
+        where: { title: decodedModule },
+        include: { lessons: { orderBy: { order: "asc" } } },
+      },
+    },
   });
 
   if (!course || course.courseModules.length === 0) {
-    notFound(); 
+    notFound();
   }
 
   const modulo = course.courseModules[0];
@@ -42,25 +43,38 @@ async function ClaseContent({ params }: { params: Promise<{ courseTitle: string;
       where: {
         userId: session.user.id,
         cursoId: course.id,
-        status: "APPROVED"
-      }
+        status: "APPROVED",
+      },
     });
-    if (inscription) hasAccess = true;
+    if (inscription) {
+      hasAccess = true;
+    } else {
+      const purchase = await prisma.coursePurchase.findFirst({
+        where: {
+          userId: session.user.id,
+          cursoId: course.id,
+          status: "COMPLETED",
+        },
+      });
+      if (purchase) {
+        hasAccess = true;
+      }
+    }
   }
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-[#0A0A15] flex items-center justify-center p-8 text-center text-white">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-xl">
-          <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="min-h-screen bg-[#1C0524] flex items-center justify-center p-8 text-center text-white">
+        <div className="max-w-md w-full bg-[#2B0938] border border-pink-500/20 p-8 rounded-2xl shadow-2xl">
+          <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
             <LockIcon size={32} />
           </div>
-          <h1 className="text-2xl font-bold mb-2">Acceso Denegado</h1>
-          <p className="text-slate-400 mb-8 leading-relaxed text-sm">
-            No tienes los pases necesarios para ver esta clase confidencial. Debes comprar el curso primero.
+          <h1 className="text-2xl font-bold mb-2">Acceso Restringido</h1>
+          <p className="text-white/70 mb-8 leading-relaxed text-sm">
+            Para ver esta clase y su material, debes estar inscrito formalmente en este curso.
           </p>
-          <Link href={`/cursos/${course.id}`} className="block w-full py-3 bg-indigo-600 hover:bg-amber-500 font-bold rounded-xl transition-colors">
-            Volver a la tienda
+          <Link href={`/cursos/${course.id}`} className="block w-full py-3.5 bg-accent hover:bg-accent-hover font-bold rounded-xl transition-all shadow-md shadow-pink-600/25">
+            Ver Detalles del Curso
           </Link>
         </div>
       </div>
@@ -68,92 +82,100 @@ async function ClaseContent({ params }: { params: Promise<{ courseTitle: string;
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A15] text-white">
-      
-      <nav className="h-16 bg-black/50 border-b border-white/5 flex items-center px-6 gap-4 sticky top-0 z-50 backdrop-blur-xl">
-        <Link href={`/cursos/${course.id}`} className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+    <div className="min-h-screen bg-[#1C0524] text-white">
+      <nav className="h-16 bg-black/50 border-b border-white/10 flex items-center px-6 gap-4 sticky top-0 z-50 backdrop-blur-xl">
+        <Link href={`/dashboard/cursos/${course.id}`} className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
           <ArrowLeft size={20} />
         </Link>
         <span className="w-px h-6 bg-white/10 block" />
         <div className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
-          <span className="text-xs font-black uppercase tracking-widest text-indigo-500 bg-amber-500/10 px-2 py-0.5 rounded mr-3">Curso</span>
+          <span className="text-xs font-black uppercase tracking-widest text-pink-300 bg-pink-500/20 px-2.5 py-0.5 rounded-full mr-3 border border-pink-500/30">Curso Online</span>
           <span className="text-sm font-bold opacity-90">{course.title}</span>
         </div>
       </nav>
 
       <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] overflow-hidden">
-        
-        <main className="flex-1 bg-gray-950 flex flex-col items-center justify-center relative overflow-hidden h-[40vh] lg:h-full">
+        <main className="flex-1 bg-black flex flex-col items-center justify-center relative overflow-hidden h-[40vh] lg:h-full">
           {modulo.videoUrl ? (
             <div className="w-full h-full relative aspect-video lg:aspect-auto">
               <iframe
-                src={modulo.videoUrl.includes('youtube') 
-                    ? modulo.videoUrl.replace('watch?v=', 'embed/').split('&')[0] 
-                    : modulo.videoUrl} 
-                title="Video del curso"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                src={
+                  modulo.videoUrl.includes("youtube")
+                    ? modulo.videoUrl.replace("watch?v=", "embed/")
+                    : modulo.videoUrl.includes("youtu.be")
+                    ? `https://www.youtube.com/embed/${modulo.videoUrl.split("/").pop()}`
+                    : modulo.videoUrl
+                }
+                title={modulo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
-                className="absolute inset-0 w-full h-full border-0"
+                className="w-full h-full border-0 absolute inset-0"
               />
             </div>
           ) : (
-            <div className="text-center flex flex-col items-center p-8">
-              <div className="w-24 h-24 mb-6 relative">
-                 <div className="absolute inset-0 bg-indigo-600/30 blur-2xl rounded-full" />
-                 <AlertCircle size={80} className="text-amber-400 relative z-10 mx-auto" />
-              </div>
-              <h2 className="text-3xl font-black text-white mb-2">Clase en Producción</h2>
-              <p className="text-slate-400 max-w-sm">No hay video configurado todavía para este módulo. Vuelve más tarde o pregúntale a tu mentor.</p>
+            <div className="text-center p-8">
+              <PlayCircle size={64} className="text-pink-400/40 mx-auto mb-4 animate-pulse" />
+              <h2 className="text-xl font-bold text-white/60">Contenido en Producción</h2>
+              <p className="text-white/40 text-sm mt-1 max-w-sm">
+                El instructor aún no ha configurado el video de este módulo.
+              </p>
             </div>
           )}
         </main>
 
-        <aside className="w-full lg:w-[400px] xl:w-[450px] bg-[#0F0F1A] border-l border-white/5 overflow-y-auto">
-          <div className="p-8 pb-32">
-            <h2 className="text-2xl font-black mb-1">{modulo.title}</h2>
-            <p className="text-sm text-amber-400 font-bold mb-8 flex items-center gap-2 uppercase tracking-wide">
-              <PlayCircle size={16} /> Ahora Reproduciendo
-            </p>
+        <aside className="w-full lg:w-96 bg-[#2B0938] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-[60vh] lg:h-full">
+          <div className="p-6 border-b border-white/10">
+            <h2 className="text-lg font-bold leading-snug">{modulo.title}</h2>
+            <span className="text-xs text-pink-300 block mt-1">{modulo.lessons.length} Temas desglosados</span>
+          </div>
 
-            <div className="space-y-6 relative">
-              <div className="absolute left-[15px] top-6 bottom-8 w-px bg-white/10 z-0" />
-               
-              {modulo.lessons.map((task, idx) => (
-                <div key={task.id} className="relative z-10 flex gap-5 group">
-                  <div className="w-8 h-8 rounded-full border border-white/20 bg-[#0F0F1A] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-lg group-hover:border-indigo-500 group-hover:text-amber-400 transition-colors">
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1 bg-white/[0.02] border border-white/5 p-4 rounded-2xl hover:bg-white/[0.05] transition-colors">
-                    <h4 className="font-bold text-sm text-slate-200 mb-2 leading-tight">
-                      {task.title}
-                    </h4>
-                    {task.summary && (
-                      <p className="text-xs text-slate-500 leading-relaxed">
-                        {task.summary}
-                      </p>
-                    )}
-                  </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {modulo.lessons.map((lesson, idx) => (
+              <div
+                key={lesson.id}
+                className="p-3.5 bg-white/[0.04] border border-white/5 rounded-xl hover:bg-white/[0.08] transition-all flex items-start gap-3"
+              >
+                <div className="w-6 h-6 rounded bg-pink-500/20 text-pink-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border border-pink-500/30">
+                  {idx + 1}
                 </div>
-              ))}
+                <div>
+                  <h3 className="text-sm font-semibold text-white/90">{lesson.title}</h3>
+                  {lesson.summary && (
+                    <p className="text-xs text-white/50 mt-1 line-clamp-2">{lesson.summary}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
 
-              {modulo.lessons.length === 0 && (
-                <div className="relative z-10 pl-12 text-slate-500 italic text-sm">
-                   Este módulo no tiene tareas descritas.
-                </div>
-              )}
-            </div>
+          <div className="p-4 bg-black/30 border-t border-white/10">
+            <Link
+              href={`/dashboard/cursos/${course.id}`}
+              className="block w-full text-center py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all border border-white/10"
+            >
+              Volver al Temario Completo
+            </Link>
           </div>
         </aside>
-
       </div>
     </div>
   );
 }
 
-export default function ClaseViewerPage({ params }: { params: Promise<{ courseTitle: string; moduleTitle: string }> }) {
+export default function ClasePage({
+  params,
+}: {
+  params: Promise<{ courseTitle: string; moduleTitle: string }>;
+}) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0A0A15]" />}>
-      <ClaseContent params={params} />
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#1C0524]">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-pink-500/30 border-t-pink-500" />
+        </div>
+      }
+    >
+      <ClaseContent paramsPromise={params} />
     </Suspense>
   );
 }

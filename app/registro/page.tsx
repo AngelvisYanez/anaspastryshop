@@ -25,7 +25,7 @@ export default function RegistroPage() {
       setError(result.error);
       setLoading(false);
     } else {
-      router.push("/membresia?bienvenida=true");
+      router.push("/cursos?bienvenida=true");
     }
   }
 
@@ -45,7 +45,7 @@ export default function RegistroPage() {
           <div className="text-center mb-10">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-8 text-[10px] font-bold uppercase tracking-[0.2em]"
+              className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-8 text-[11px] font-bold uppercase tracking-[0.2em]"
             >
               <ArrowLeft size={13} /> Volver al inicio
             </Link>
@@ -58,7 +58,7 @@ export default function RegistroPage() {
               Crea tu cuenta
             </h1>
             <p className="text-muted text-sm">
-              Únete a la comunidad de Academia Omnia.
+              Únete a la comunidad de Ana&apos;s Pastry Shop.
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export default function RegistroPage() {
             )}
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Nombre Completo
               </label>
               <div className="relative">
@@ -86,7 +86,7 @@ export default function RegistroPage() {
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Correo Electrónico
               </label>
               <div className="relative">
@@ -102,7 +102,7 @@ export default function RegistroPage() {
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Contraseña
               </label>
               <div className="relative">
@@ -120,7 +120,7 @@ export default function RegistroPage() {
 
             <button
               disabled={loading}
-              className="md:col-span-2 w-full bg-foreground text-background py-5 rounded-lg font-bold hover:opacity-90 transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-50"
+              className="md:col-span-2 w-full bg-accent text-white py-5 rounded-xl font-bold hover:bg-accent-hover transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-50 shadow-lg shadow-pink-600/25"
             >
               {loading ? <Loader2 size={18} className="animate-spin" /> : "Empezar ahora"}
             </button>

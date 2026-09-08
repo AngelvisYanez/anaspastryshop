@@ -14,16 +14,14 @@ type LiveData = {
   scheduledAt?: string;
 };
 
-async function requireRole() {
+async function requireAdmin() {
   const session = await auth();
-  if (!session?.user) throw new Error("No autorizado");
-  const role = (session.user as any).role as string;
-  if (!["ADMIN", "MENTOR"].includes(role)) throw new Error("No autorizado");
+  if (!session?.user || session.user.role !== "ADMIN") throw new Error("No autorizado");
   return session;
 }
 
 export async function createLive(data: LiveData) {
-  const session = await requireRole();
+  const session = await requireAdmin();
   try {
     const live = await prisma.liveStream.create({
       data: {
@@ -47,7 +45,7 @@ export async function updateLive(
   id: string,
   data: Partial<LiveData & { status: string }>,
 ) {
-  await requireRole();
+  await requireAdmin();
   try {
     await prisma.liveStream.update({
       where: { id },
@@ -67,14 +65,14 @@ export async function updateLiveStatus(
   id: string,
   status: "SCHEDULED" | "LIVE" | "ENDED",
 ) {
-  await requireRole();
+  await requireAdmin();
   await prisma.liveStream.update({ where: { id }, data: { status } });
   revalidatePath("/dashboard/lives");
   return { success: true };
 }
 
 export async function deleteLive(id: string) {
-  await requireRole();
+  await requireAdmin();
   await prisma.liveStream.delete({ where: { id } });
   revalidatePath("/dashboard/lives");
   return { success: true };
@@ -88,23 +86,6 @@ export async function joinLiveRoom(
 
   const live = await prisma.liveStream.findUnique({ where: { id: liveId } });
   if (!live) return { error: "Live no encontrado" };
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id as string },
-    select: {
-      role: true,
-      subscription: { select: { status: true, plan: true } },
-    },
-  });
-
-  const role = user?.role ?? "USER";
-  const isStaff = ["ADMIN", "MENTOR"].includes(role);
-
-  if (!isStaff) {
-    if (!user?.subscription || user.subscription.status !== "ACTIVE") {
-      return { error: "Se requiere suscripción activa" };
-    }
-  }
 
   const { accountId, appId, apiToken } = await getRtkConfig();
   const BASE = `https://api.cloudflare.com/client/v4/accounts/${accountId}/realtime/kit/${appId}`;
@@ -129,8 +110,6 @@ export async function joinLiveRoom(
     });
   }
 
-  const presetName = isStaff ? "group_call_host" : "group_call_participant";
-
   const participantRes = await fetch(
     `${BASE}/meetings/${meetingId}/participants`,
     {
@@ -138,7 +117,7 @@ export async function joinLiveRoom(
       headers: HEADERS,
       body: JSON.stringify({
         name: session.user.name ?? "Participante",
-        preset_name: presetName,
+        preset_name: "group_call_participant",
         custom_participant_id: session.user.id,
       }),
     },

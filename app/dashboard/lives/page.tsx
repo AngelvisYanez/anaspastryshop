@@ -8,8 +8,8 @@ import LiveActions from "./LiveActions";
 const STATUS_CONFIG = {
   SCHEDULED: {
     label: "Programado",
-    class: "bg-amber-50 dark:bg-amber-950/20 text-accent",
-    dot: "bg-indigo-400",
+    class: "bg-accent-subtle text-accent",
+    dot: "bg-accent",
   },
   LIVE: {
     label: "En Vivo",
@@ -30,12 +30,10 @@ export default async function LivesDashboardPage() {
   const role = (session.user as any).role as string;
 
   const isUser = role === "USER";
-  const where = role === "ADMIN" ? {} : role === "MENTOR" ? { instructorId: session.user.id as string } : {};
 
-  if (!["ADMIN", "MENTOR", "USER"].includes(role)) redirect("/dashboard");
+  if (!["ADMIN", "USER"].includes(role)) redirect("/dashboard");
 
   const lives = await prisma.liveStream.findMany({
-    where: isUser ? {} : where,
     include: { instructor: { select: { name: true } } },
     orderBy: { createdAt: "desc" },
   });
@@ -64,12 +62,12 @@ export default async function LivesDashboardPage() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <span
-                      className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}
+                      className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                       {cfg.label}
                     </span>
-                    <span className="text-[10px] text-muted font-bold">{live.instructor.name}</span>
+                    <span className="text-[11px] text-muted font-bold">{live.instructor.name}</span>
                   </div>
 
                   <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">{live.title}</h3>
@@ -110,15 +108,15 @@ export default async function LivesDashboardPage() {
       {lives.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
             <p className="text-3xl font-black text-foreground">{lives.length}</p>
           </div>
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">En Vivo</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">En Vivo</p>
             <p className="text-3xl font-black text-green-500">{enVivo}</p>
           </div>
           <div className="bg-card rounded-lg p-5 border border-card-border shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-1">Programados</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Programados</p>
             <p className="text-3xl font-black text-accent">{programados}</p>
           </div>
         </div>
@@ -145,13 +143,13 @@ export default async function LivesDashboardPage() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <span
-                    className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}
+                    className={`inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md ${cfg.class}`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                     {cfg.label}
                   </span>
                   {role === "ADMIN" && (
-                    <span className="text-[10px] text-muted font-bold">
+                    <span className="text-[11px] text-muted font-bold">
                       {live.instructor.name}
                     </span>
                   )}

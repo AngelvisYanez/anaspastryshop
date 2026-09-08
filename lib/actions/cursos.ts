@@ -4,16 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/lib/types";
+import { serializeWorkshopDetails } from "@/lib/utils/workshop";
 
-async function assertMentorOrAdmin() {
+async function assertAdmin() {
   const session = await auth();
-  if (!session?.user || (session.user.role !== "ADMIN" && session.user.role !== "MENTOR")) {
-    throw new Error("No autorizado. Solo administradores o mentores.");
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("No autorizado. Solo administradores.");
   }
   return session;
 }
 
-type CoursePayload = {
+export type CoursePayload = {
   title: string;
   description: string;
   price: number;
@@ -27,6 +28,10 @@ type CoursePayload = {
   liveUrl?: string;
   status: "DRAFT" | "PUBLISHED" | "SCHEDULED";
   publishedAt?: string | null;
+  location?: string;
+  workshopDate?: string;
+  workshopTime?: string;
+  content?: string;
   modules: {
     title: string;
     videoUrl?: string;
@@ -39,18 +44,22 @@ type CoursePayload = {
 };
 
 export async function createCourse(data: CoursePayload): Promise<ActionResult<{ courseId: string }>> {
-  const session = await assertMentorOrAdmin();
+  const session = await assertAdmin();
 
   try {
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     let finalInstructorId = session.user.id as string;
-    if (session.user.role === "ADMIN") {
-      if (!data.instructorId) {
-        return { error: "Como administrador, debes asignar un mentor responsable al curso." };
-      }
+    if (data.instructorId && data.instructorId !== session.user.id) {
       finalInstructorId = data.instructorId;
     }
+
+    const workshopContent = serializeWorkshopDetails({
+      isWorkshop: data.isLive,
+      location: data.location,
+      workshopDate: data.workshopDate,
+      workshopTime: data.workshopTime,
+    });
 
     const curso = await prisma.curso.create({
       data: {
@@ -65,6 +74,7 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
         introVideo: data.introVideo,
         isLive: data.isLive,
         liveUrl: data.liveUrl,
+        content: workshopContent,
         status: data.status,
         publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
         instructorId: finalInstructorId,
@@ -95,7 +105,7 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
 }
 
 export async function deleteCourse(courseId: string): Promise<ActionResult> {
-  const session = await assertMentorOrAdmin();
+  const session = await assertAdmin();
 
   try {
     const course = await prisma.curso.findUnique({
@@ -104,14 +114,6 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
     });
 
     if (!course) return { error: "Curso no encontrado" };
-
-    if (session.user.role !== "ADMIN" && course.instructorId !== session.user.id) {
-      return { error: "No autorizado." };
-    }
-
-    if (course._count.inscritos > 0) {
-      return { error: "No se puede eliminar un curso con alumnos inscritos." };
-    }
 
     await prisma.curso.delete({ where: { id: courseId } });
     revalidatePath("/dashboard/cursos");
@@ -123,7 +125,7 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
 }
 
 export async function updateCourse(courseId: string, data: CoursePayload): Promise<ActionResult> {
-  const session = await assertMentorOrAdmin();
+  const session = await assertAdmin();
 
   try {
     const course = await prisma.curso.findUnique({
@@ -133,13 +135,16 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
 
     if (!course) return { error: "Curso no encontrado" };
 
-    if (session.user.role !== "ADMIN" && course.instructorId !== session.user.id) {
-      return { error: "No autorizado para editar este curso." };
-    }
-
     const hasEnrolled = course._count.inscritos > 0;
     const finalPrice = hasEnrolled ? course.price : data.price;
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+
+    const workshopContent = serializeWorkshopDetails({
+      isWorkshop: data.isLive,
+      location: data.location,
+      workshopDate: data.workshopDate,
+      workshopTime: data.workshopTime,
+    });
 
     const updateData: Parameters<typeof prisma.curso.update>[0]["data"] & { instructorId?: string } = {
       title: data.title,
@@ -153,6 +158,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       introVideo: data.introVideo,
       isLive: data.isLive,
       liveUrl: data.liveUrl,
+      content: workshopContent,
       status: data.status,
       publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
       courseModules: {
@@ -171,7 +177,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       },
     };
 
-    if (session.user.role === "ADMIN" && data.instructorId) {
+    if (data.instructorId && data.instructorId !== session.user.id) {
       updateData.instructorId = data.instructorId;
     }
 
@@ -181,6 +187,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     ]);
 
     revalidatePath("/dashboard/cursos");
+    revalidatePath(`/dashboard/cursos/${courseId}`);
     revalidatePath("/cursos");
     revalidatePath(`/cursos/${courseId}`);
     return { success: true };

@@ -21,7 +21,6 @@ const ACTION_STYLES: Record<string, string> = {
   REVOKE: "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800",
   REGISTER: "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800",
   APPROVE_PAYMENT: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
-  SUBSCRIPTION_PAYMENT_SUBMITTED: "bg-violet-50 dark:bg-violet-950/20 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -32,20 +31,17 @@ const ACTION_LABELS: Record<string, string> = {
   REVOKE: "Revocar",
   REGISTER: "Registro",
   APPROVE_PAYMENT: "Pago aprobado",
-  SUBSCRIPTION_PAYMENT_SUBMITTED: "Pago enviado",
 };
 
 const ENTITY_LABELS: Record<string, string> = {
   USER: "Usuario",
-  MENTOR: "Mentor",
-  CURSO: "Curso",
+  CURSO: "Curso / Workshop",
   CATEGORY: "Categoría",
   INSCRIPTION: "Inscripción",
 };
 
 const ENTITY_COLORS: Record<string, string> = {
   USER: "text-blue-500",
-  MENTOR: "text-violet-500",
   CURSO: "text-emerald-500",
   CATEGORY: "text-amber-500",
   INSCRIPTION: "text-accent",
@@ -58,10 +54,10 @@ function formatDetails(raw: string | null): string {
     const labels: Record<string, string> = {
       title: "Título", name: "Nombre", email: "Email",
       role: "Rol", message: "Mensaje", status: "Estado",
-      type: "Tipo", method: "Método", isSubscription: "Suscripción",
+      type: "Tipo", method: "Método",
     };
     const roleNames: Record<string, string> = {
-      USER: "Alumno", MENTOR: "Mentor", ADMIN: "Administrador",
+      USER: "Alumno", ADMIN: "Administrador",
     };
     const parts = Object.entries(obj)
       .filter(([, v]) => v !== null && v !== undefined && v !== "")
@@ -85,7 +81,6 @@ const ALL_ACTIONS = [
   { value: "REVOKE", label: "Revocar" },
   { value: "REGISTER", label: "Registro" },
   { value: "APPROVE_PAYMENT", label: "Pago aprobado" },
-  { value: "SUBSCRIPTION_PAYMENT_SUBMITTED", label: "Pago enviado" },
 ];
 
 const PAGE_SIZE = 20;
@@ -181,11 +176,11 @@ export default function LogsClient({
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-card-border bg-section-alt/60">
-                  <th className="py-3 pl-5 pr-3 text-[10px] font-black uppercase tracking-widest text-muted w-36">#&nbsp;&nbsp;Fecha</th>
-                  <th className="py-3 px-3 text-[10px] font-black uppercase tracking-widest text-muted">Usuario</th>
-                  <th className="py-3 px-3 text-[10px] font-black uppercase tracking-widest text-muted">Acción</th>
-                  <th className="py-3 px-3 text-[10px] font-black uppercase tracking-widest text-muted">Entidad</th>
-                  <th className="py-3 pl-3 pr-5 text-[10px] font-black uppercase tracking-widest text-muted">Detalles</th>
+                  <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted w-36">#&nbsp;&nbsp;Fecha</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Usuario</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Acción</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Entidad</th>
+                  <th className="py-3 pl-3 pr-5 text-[11px] font-black uppercase tracking-widest text-muted">Detalles</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-card-border">
@@ -193,7 +188,7 @@ export default function LogsClient({
                   <tr key={log.id} className="hover:bg-card-hover transition-colors group">
                     <td className="py-4 pl-5 pr-3 whitespace-nowrap">
                       <div className="flex items-start gap-2">
-                        <span className="text-[10px] font-bold text-muted/40 tabular-nums mt-0.5 w-5 text-right shrink-0">
+                        <span className="text-[11px] font-bold text-muted/40 tabular-nums mt-0.5 w-5 text-right shrink-0">
                           {from + i}
                         </span>
                         <div className="flex flex-col">
@@ -202,7 +197,7 @@ export default function LogsClient({
                               day: "numeric", month: "short", year: "numeric",
                             })}
                           </span>
-                          <span suppressHydrationWarning className="text-[10px] text-muted font-medium">
+                          <span suppressHydrationWarning className="text-[11px] text-muted font-medium">
                             {new Date(log.createdAt).toLocaleTimeString("es-ES", {
                               hour: "2-digit", minute: "2-digit",
                             })}
@@ -216,14 +211,14 @@ export default function LogsClient({
                         <span className="text-sm font-bold text-foreground truncate max-w-[160px]">
                           {log.user.name || "Sin nombre"}
                         </span>
-                        <span className="text-[10px] text-muted font-medium truncate max-w-[160px]">
+                        <span className="text-[11px] text-muted font-medium truncate max-w-[160px]">
                           {log.user.email}
                         </span>
                       </div>
                     </td>
 
                     <td className="py-4 px-3">
-                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black tracking-widest inline-block whitespace-nowrap ${
+                      <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black tracking-widest inline-block whitespace-nowrap ${
                         ACTION_STYLES[log.action] ?? "bg-section-alt text-muted border border-card-border"
                       }`}>
                         {ACTION_LABELS[log.action] ?? log.action}
@@ -259,48 +254,23 @@ export default function LogsClient({
 
         <div className="flex items-center gap-1">
           <button
-            disabled={page <= 1}
             onClick={() => updateParams({ page: String(page - 1) })}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold border border-card-border bg-card text-muted hover:text-accent hover:border-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={page <= 1 || isPending}
+            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition-all"
+            aria-label="Página anterior"
           >
-            <ChevronLeft size={15} />
-            Anterior
+            <ChevronLeft size={16} />
           </button>
-
-          <div className="flex items-center gap-1 px-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-              .reduce<(number | "...")[]>((acc, p, idx, arr) => {
-                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((p, idx) =>
-                p === "..." ? (
-                  <span key={`ellipsis-${idx}`} className="w-8 text-center text-sm text-muted">…</span>
-                ) : (
-                  <button
-                    key={p}
-                    onClick={() => updateParams({ page: String(p) })}
-                    className={`w-8 h-8 rounded-xl text-sm font-bold transition-all ${
-                      p === page
-                        ? "bg-accent text-white shadow-sm"
-                        : "text-muted hover:text-accent hover:bg-accent-subtle"
-                    }`}
-                  >
-                    {p}
-                  </button>
-                )
-              )}
-          </div>
-
+          <span className="px-3 py-1.5 text-xs font-bold text-foreground">
+            {page} / {totalPages}
+          </span>
           <button
-            disabled={page >= totalPages}
             onClick={() => updateParams({ page: String(page + 1) })}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold border border-card-border bg-card text-muted hover:text-accent hover:border-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={page >= totalPages || isPending}
+            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition-all"
+            aria-label="Página siguiente"
           >
-            Siguiente
-            <ChevronRight size={15} />
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>

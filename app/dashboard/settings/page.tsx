@@ -42,15 +42,13 @@ export default async function SettingsPage() {
       {isAdmin && (
         <SiteConfigForm
           initialConfig={{
-            siteName: siteConfig?.siteName ?? "Academia Omnia",
+            siteName: siteConfig?.siteName ?? "Ana's Pastry Shop",
             logoUrl: siteConfig?.logoUrl ?? null,
             ctaText: siteConfig?.ctaText ?? "Quiero unirme ahora",
-            ctaUrl: siteConfig?.ctaUrl ?? "/planes",
+            ctaUrl: siteConfig?.ctaUrl ?? "/cursos",
             instagramUrl: siteConfig?.instagramUrl ?? null,
             linkedinUrl: siteConfig?.linkedinUrl ?? null,
             tiktokUrl: siteConfig?.tiktokUrl ?? null,
-            subscriptionPrice: siteConfig?.subscriptionPrice ?? 97,
-            subscriptionPriceId: siteConfig?.subscriptionPriceId ?? null,
             navItems: (siteConfig?.navItems as { label: string; href: string }[]) ?? [],
           }}
         />

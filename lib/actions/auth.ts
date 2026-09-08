@@ -10,7 +10,7 @@ import {
   sendAdminNewUserEmail,
 } from "@/lib/email";
 
-const BASE_URL = process.env.NEXTAUTH_URL ?? "https://academiaomnia.com";
+const BASE_URL = process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
 
 export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
@@ -79,16 +79,13 @@ export async function checkPreloginStatus(formData: FormData) {
     if (user) {
       const isValid = await bcrypt.compare(password, user.password!);
       if (isValid) {
-        if (user.role === "MENTOR" && !user.isApproved) {
-          return { isPendingMentor: true };
-        }
         if (!user.isActive) {
           return { isSuspended: true, reason: user.deactivationReason };
         }
       }
     }
   } catch {}
-  return { isPendingMentor: false, isSuspended: false };
+  return { isSuspended: false };
 }
 
 export async function requestPasswordReset(formData: FormData) {
@@ -150,30 +147,21 @@ export async function resetPassword(formData: FormData) {
       };
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: record.email },
-    });
-
-    if (!user) {
-      return { error: "Usuario no encontrado" };
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: { password: hashedPassword },
-      }),
-      prisma.passwordResetToken.update({
-        where: { id: record.id },
-        data: { used: true },
-      }),
-    ]);
+    await prisma.user.update({
+      where: { email: record.email },
+      data: { password: hashedPassword },
+    });
+
+    await prisma.passwordResetToken.update({
+      where: { token },
+      data: { used: true },
+    });
 
     return { success: true };
   } catch (error) {
     console.error("Error en resetPassword:", error);
-    return { error: "Ocurrió un error. Intenta de nuevo." };
+    return { error: "Ocurrió un error al restablecer la contraseña" };
   }
 }

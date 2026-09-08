@@ -1,483 +1,756 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { m, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import {
-  Menu, X, User, ChevronRight, LogOut, LayoutDashboard, Bell,
-  Mail, Home, CheckCircle2, AlertCircle, Info, Clock, Settings,
+  Menu, X, Sparkles, User, LogIn, ChevronRight, ChevronDown,
+  Shield, LogOut, BookOpen, Clock, HeartHandshake, MapPin,
+  GraduationCap, PlayCircle, Video, ShoppingBag,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import { getUserImage } from "@/lib/actions/user";
-import { getSections } from "@/lib/actions/platformSections";
-import Image from "next/image";
-import logoDark from "@/public/logo-acu-white.png";
-import logoLight from "@/public/logo-acu.png";
+import { WORKSHOPS_DATA } from "@/lib/data/workshops";
+import { ONLINE_COURSES_DATA } from "@/lib/data/online-courses";
+import { useCart } from "@/components/cart/CartContext";
 
-type NavLink = { name: string; href: string };
-type Notification = {
-  id: string;
-  type: "success" | "warning" | "info";
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-};
-
-const AUTH_ONLY_SLUGS = ["/mis-cursos", "/webinars"];
-const PURCHASE_REQUIRED_SLUGS = ["/mis-cursos"];
-const NAV_DESIRED_ORDER = ["/nosotros", "/membresia", "/cursos", "/webinars", "/lives", "/mis-cursos"];
-
-const iconMap = {
-  success: <CheckCircle2 size={14} className="text-green-500 shrink-0" />,
-  warning: <AlertCircle size={14} className="text-amber-500 shrink-0" />,
-  info: <Info size={14} className="text-accent shrink-0" />,
-};
-
-function InstagramIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  );
+interface SiteConfig {
+  logoUrl?: string;
+  logoDarkUrl?: string;
+  siteName?: string;
+  faviconUrl?: string;
 }
 
-export default function Navbar({ forceSolid }: { forceSolid?: boolean } = {}) {
+export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { data: session, status } = useSession();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
-  const [ctaText, setCtaText] = useState("Únete ahora");
-  const [ctaUrl, setCtaUrl] = useState("/membresia");
-  const { setTheme } = useTheme();
-  const loading = status === "loading";
-
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [notifLoading, setNotifLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [hasMisCursos, setHasMisCursos] = useState(false);
-  const notifRef = useRef<HTMLDivElement>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [workshopsDropdownOpen, setWorkshopsDropdownOpen] = useState(false);
+  const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
+  const [mobileWorkshopsOpen, setMobileWorkshopsOpen] = useState(false);
+  const [mobileCoursesOpen, setMobileCoursesOpen] = useState(false);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>({});
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const { items: cartItems, openCart } = useCart();
+  const cartCount = cartItems.length;
 
-  useEffect(() => { setTheme("light"); }, []);
+  const workshopsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const coursesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isDarkHero =
+    !forceSolid &&
+    (pathname === "/" ||
+      pathname === "/cursos" ||
+      pathname.startsWith("/cursos/") ||
+      pathname === "/workshops" ||
+      pathname.startsWith("/workshops/") ||
+      pathname.startsWith("/workshop/") ||
+      pathname === "/nosotros" ||
+      pathname === "/pasteleria" ||
+      pathname.startsWith("/clases/"));
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    getSections().then((sections) => {
-      const links = sections
-        .filter((s) => s.isActive && s.roles.includes("USER"))
-        .sort((a, b) => a.order - b.order)
-        .map((s) => ({ name: s.name, href: `/${s.slug}` }));
-      setNavLinks(links);
-    });
     fetch("/api/settings/site-config")
       .then((r) => r.json())
-      .then((cfg) => {
-        if (cfg.ctaText) setCtaText(cfg.ctaText);
-        if (cfg.ctaUrl) setCtaUrl(cfg.ctaUrl);
-        if (cfg.navItems?.length) {
-          setNavLinks((prev) => [
-            ...prev,
-            ...(cfg.navItems as NavLink[]).map((i: any) => ({ name: i.label, href: i.href })),
-          ]);
-        }
-      })
+      .then((d) => setSiteConfig(d))
       .catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (session?.user) {
-      const fetchImage = async () => {
-        const cached = localStorage.getItem(`user-img-${session.user.id}`);
-        if (cached) { setProfileImage(cached); return; }
-        const img = await getUserImage();
-        if (img) {
-          setProfileImage(img);
-          localStorage.setItem(`user-img-${session.user.id}`, img);
-        }
-      };
-      fetchImage();
-      fetch("/api/notifications/count")
-        .then((r) => r.ok ? r.json() : { count: 0 })
-        .then((d) => setUnreadCount(d.count ?? 0))
-        .catch(() => {});
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (session?.user?.id) {
       fetch("/api/user/has-courses")
-        .then((r) => r.ok ? r.json() : { hasCourses: false })
-        .then((d) => setHasMisCursos(d.hasCourses ?? false))
-        .catch(() => {});
+        .then((r) => r.json())
+        .then((d) => setHasMisCursos(!!d.hasCourses))
+        .catch(() => setHasMisCursos(false));
     } else {
-      setProfileImage(null);
       setHasMisCursos(false);
     }
-  }, [session]);
+  }, [session?.user?.id]);
 
   useEffect(() => {
-    if (!notifOpen) return;
-    setNotifLoading(true);
-    fetch("/api/notifications")
-      .then((r) => r.ok ? r.json() : { notifications: [] })
-      .then((data) => {
-        setNotifications(data.notifications ?? []);
-        setUnreadCount((data.notifications ?? []).filter((n: Notification) => !n.read).length);
-      })
-      .catch(() => setNotifications([]))
-      .finally(() => setNotifLoading(false));
-  }, [notifOpen]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
-        setNotifOpen(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("#user-menu-container")) {
+        setUserMenuOpen(false);
       }
-    }
-    if (notifOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [notifOpen]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
+      if (!target.closest("#workshops-dropdown-container")) {
+        setWorkshopsDropdownOpen(false);
       }
-    }
-    if (profileOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [profileOpen]);
+      if (!target.closest("#courses-dropdown-container")) {
+        setCoursesDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
-  const isTransparent = forceSolid ? false : !scrolled;
+  // Workshop dropdown hover handlers
+  const handleWorkshopsEnter = () => {
+    if (workshopsTimeoutRef.current) clearTimeout(workshopsTimeoutRef.current);
+    if (coursesTimeoutRef.current) clearTimeout(coursesTimeoutRef.current);
+    setCoursesDropdownOpen(false);
+    setWorkshopsDropdownOpen(true);
+  };
 
-  const containerBg = isTransparent
-    ? "bg-transparent border-transparent shadow-none"
-    : "bg-white border-black/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.12)]";
+  const handleWorkshopsLeave = () => {
+    workshopsTimeoutRef.current = setTimeout(() => {
+      setWorkshopsDropdownOpen(false);
+    }, 180);
+  };
 
-  const linkColor = isTransparent
+  // Courses dropdown hover handlers
+  const handleCoursesEnter = () => {
+    if (coursesTimeoutRef.current) clearTimeout(coursesTimeoutRef.current);
+    if (workshopsTimeoutRef.current) clearTimeout(workshopsTimeoutRef.current);
+    setWorkshopsDropdownOpen(false);
+    setCoursesDropdownOpen(true);
+  };
+
+  const handleCoursesLeave = () => {
+    coursesTimeoutRef.current = setTimeout(() => {
+      setCoursesDropdownOpen(false);
+    }, 180);
+  };
+
+  const logoSrc = isDarkHero
+    ? siteConfig.logoDarkUrl || "/logo-anas-pastry-shop-white.png"
+    : siteConfig.logoUrl || "/logo-anas-pastry-shop.png";
+
+  const navBg = forceSolid
+    ? "bg-background/95 backdrop-blur-xl border-b border-card-border shadow-sm"
+    : scrolled
+    ? isDarkHero
+      ? "bg-[#1C0425]/90 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-purple-950/40"
+      : "bg-background/90 backdrop-blur-xl border-b border-card-border shadow-sm"
+    : "bg-transparent border-b border-transparent";
+
+  const linkColor = isDarkHero
     ? "text-white/80 hover:text-white"
-    : "text-foreground/65 hover:text-foreground";
+    : "text-foreground/75 hover:text-foreground";
 
-  const iconColor = isTransparent
-    ? "text-white/70 hover:text-white hover:bg-white/[0.1]"
-    : "text-foreground/50 hover:text-foreground hover:bg-black/[0.06]";
+  const isWorkshopsActive =
+    pathname === "/workshops" ||
+    pathname.startsWith("/workshops/") ||
+    pathname.startsWith("/workshop/");
 
-  const currentLogo = isTransparent ? logoDark : logoLight;
+  const isCursosActive =
+    (pathname === "/cursos" || pathname.startsWith("/cursos/")) && !isWorkshopsActive;
 
   return (
-    <m.nav
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 w-full z-[100] px-2 md:px-2 py-2"
-    >
-      <div className={`max-w-7xl mx-auto backdrop-blur-xl border rounded-2xl px-3 md:px-5 py-2.5 flex justify-between items-center relative transition-all duration-300 ${containerBg}`}>
-        <Link href="/" className="flex items-center gap-2 group z-50">
-          <Image
-            src={currentLogo}
-            alt="Academia Omnia"
-            className="h-11 w-auto object-contain transition-all group-hover:scale-105"
-          />
+    <>
+<header className={`fixed z-50 transition-all duration-300 ${navBg} ${
+      scrolled ? "top-2 inset-x-2 md:top-3 md:inset-x-6 rounded-2xl" : "top-0 left-0 right-0"
+    }`}>
+  <div className={`max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 grid grid-cols-[auto_1fr_auto] items-center relative transition-all duration-300 ${scrolled ? "h-20" : "h-32"}`}>
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 group shrink-0 justify-self-start">
+          <div className="relative h-32 w-80 sm:w-96 xl:w-80 2xl:w-96">
+            <Image
+              src={logoSrc}
+              alt="Ana's Pastry Shop"
+              fill
+              priority
+              className="object-contain object-left transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
         </Link>
 
-        <div className="hidden md:flex gap-6 items-center">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden xl:flex items-center gap-4 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">
           <Link
             href="/"
-            className={`transition-colors rounded-lg p-1.5 ${iconColor}`}
-            aria-label="Inicio"
+            className={`font-display text-sm font-semibold transition-colors relative group ${linkColor} ${
+              pathname === "/" ? "text-accent font-bold" : ""
+            }`}
           >
-            <Home size={18} />
+            Inicio
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
           </Link>
-          {[
-            ...navLinks,
-            ...(session && !navLinks.find(l => l.href === "/webinars") ? [{ name: "Webinars", href: "/webinars" }] : []),
-          ].filter((l) => {
-            if (!session && AUTH_ONLY_SLUGS.includes(l.href)) return false;
-            if (PURCHASE_REQUIRED_SLUGS.includes(l.href) && !hasMisCursos) return false;
-            return true;
-          }).sort((a, b) => {
-            const ai = NAV_DESIRED_ORDER.indexOf(a.href);
-            const bi = NAV_DESIRED_ORDER.indexOf(b.href);
-            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-          }).map((link) => (
+
+          {/* Workshops Presenciales Dropdown */}
+          <div
+            id="workshops-dropdown-container"
+            className="relative"
+            onMouseEnter={handleWorkshopsEnter}
+            onMouseLeave={handleWorkshopsLeave}
+          >
             <Link
-              key={link.href}
-              href={link.href}
-              className={`font-display text-sm font-semibold transition-colors relative group ${linkColor}`}
+              href="/workshops"
+              className={`font-display text-sm font-semibold transition-colors relative group flex items-center gap-1.5 ${linkColor} ${
+                isWorkshopsActive ? "text-accent font-bold" : ""
+              }`}
             >
-              {link.name}
+              Workshops Presenciales
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-200 ${
+                  workshopsDropdownOpen ? "rotate-180 text-accent" : "opacity-70"
+                }`}
+              />
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
             </Link>
-          ))}
-        </div>
 
-        <div className="flex items-center gap-2 z-50" suppressHydrationWarning>
-          {!loading && (
-            <>
-              {session ? (
-                <div className="hidden sm:flex items-center gap-2">
-                  <div className="relative" ref={notifRef}>
-                    <button
-                      onClick={() => setNotifOpen((v) => !v)}
-                      className={`relative p-2 rounded-lg transition-colors ${iconColor}`}
-                      aria-label="Notificaciones"
-                    >
-                      <Bell size={20} />
-                      {unreadCount > 0 && (
-                        <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border-2 border-white/30">
-                          {unreadCount > 9 ? "9+" : unreadCount}
-                        </span>
-                      )}
-                    </button>
-
-                    <AnimatePresence>
-                      {notifOpen && (
-                        <m.div
-                          initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] bg-white border border-black/[0.08] rounded-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] overflow-hidden z-50"
-                        >
-                          <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
-                            <h3 className="text-sm font-black text-foreground">Notificaciones</h3>
-                            <div className="flex items-center gap-2">
-                              {unreadCount > 0 && (
-                                <button
-                                  onClick={() => {
-                                    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-                                    setUnreadCount(0);
-                                  }}
-                                  className="text-[10px] font-bold text-accent hover:underline"
-                                >
-                                  Marcar todo leído
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setNotifOpen(false)}
-                                className="p-1 text-foreground/40 hover:text-foreground transition-colors"
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="max-h-80 overflow-y-auto">
-                            {notifLoading ? (
-                              <div className="flex flex-col gap-2 p-4">
-                                {[1, 2, 3].map((i) => (
-                                  <div key={i} className="h-12 bg-black/[0.04] rounded-lg animate-pulse" />
-                                ))}
-                              </div>
-                            ) : notifications.length === 0 ? (
-                              <div className="flex flex-col items-center py-10 px-4 text-center">
-                                <Bell size={28} className="text-foreground/20 mb-3" />
-                                <p className="text-sm font-bold text-foreground/50">Sin notificaciones</p>
-                                <p className="text-[11px] text-foreground/30 mt-1">Todo está en orden por ahora</p>
-                              </div>
-                            ) : (
-                              notifications.map((n) => (
-                                <div
-                                  key={n.id}
-                                  className={`flex items-start gap-3 px-4 py-3 border-b border-black/[0.05] last:border-0 hover:bg-black/[0.02] transition-colors ${!n.read ? "bg-accent/[0.04]" : ""}`}
-                                >
-                                  <div className="mt-0.5">{iconMap[n.type]}</div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-foreground truncate">{n.title}</p>
-                                    <p className="text-[11px] text-foreground/50 line-clamp-2">{n.description}</p>
-                                    <p className="text-[10px] text-foreground/30 mt-0.5 flex items-center gap-1">
-                                      <Clock size={9} /> {n.time}
-                                    </p>
-                                  </div>
-                                  {!n.read && (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
-                                  )}
-                                </div>
-                              ))
-                            )}
-                          </div>
-                        </m.div>
-                      )}
-                    </AnimatePresence>
+            {/* Workshops Dropdown Menu */}
+            {workshopsDropdownOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-card border border-card-border rounded-3xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-card-border mb-2">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
+                      <Sparkles size={13} /> Workshops Presenciales
+                    </p>
+                    <p className="text-[11px] text-muted">Caracas, Las Mercedes · Práctica 100% en vivo</p>
                   </div>
-
-                  <div className="relative" ref={profileRef}>
-                    <button
-                      onClick={() => setProfileOpen((v) => !v)}
-                      className="w-10 h-10 rounded-xl overflow-hidden border-2 border-transparent hover:border-accent transition-all relative shadow-sm"
-                      aria-label="Perfil"
-                    >
-                      {profileImage ? (
-                        <Image src={profileImage} alt={session.user.name || "Usuario"} width={40} height={40} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-[#0B1F3A] to-[#1A3A5C] text-white flex items-center justify-center font-bold text-sm">
-                          {session.user.name ? session.user.name.substring(0, 2).toUpperCase() : <User size={16} />}
-                        </div>
-                      )}
-                    </button>
-                    <AnimatePresence>
-                      {profileOpen && (
-                        <m.div
-                          initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-full mt-2 w-44 bg-white border border-black/[0.08] rounded-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] overflow-hidden z-50"
-                        >
-                          <Link
-                            href="/dashboard"
-                            onClick={() => setProfileOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-black/[0.04] transition-colors"
-                          >
-                            <LayoutDashboard size={14} className="text-foreground/50 shrink-0" />
-                            Panel
-                          </Link>
-                          <div className="h-px bg-black/[0.06] mx-2" />
-                          <Link
-                            href="/dashboard/settings"
-                            onClick={() => setProfileOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-foreground hover:bg-black/[0.04] transition-colors"
-                          >
-                            <Settings size={14} className="text-foreground/50 shrink-0" />
-                            Editar Perfil
-                          </Link>
-                          <div className="h-px bg-black/[0.06] mx-2" />
-                          <button
-                            onClick={() => { signOut({ callbackUrl: "/" }); setProfileOpen(false); }}
-                            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors w-full"
-                          >
-                            <LogOut size={14} className="shrink-0" />
-                            Cerrar Sesión
-                          </button>
-                        </m.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              ) : (
-                <div className="hidden sm:flex items-center gap-1.5">
-                  <Link href={ctaUrl} className="flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-accent-hover hover:scale-105 transition-all shadow-lg shadow-accent/25">
-                    {ctaText}
-                  </Link>
                   <Link
-                    href="/iniciar-sesion"
-                    className={`p-2.5 rounded-lg transition-colors ${iconColor}`}
-                    aria-label="Iniciar sesión"
+                    href="/workshops"
+                    onClick={() => setWorkshopsDropdownOpen(false)}
+                    className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
                   >
-                    <User size={18} />
+                    Ver Cartelera &rarr;
                   </Link>
                 </div>
-              )}
-            </>
+
+                <div className="grid grid-cols-2 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
+                  {WORKSHOPS_DATA.map((w) => (
+                    <Link
+                      key={w.slug}
+                      href={`/workshop/${w.slug}`}
+                      onClick={() => setWorkshopsDropdownOpen(false)}
+                      className="p-2.5 rounded-2xl hover:bg-card-hover transition-colors group flex flex-col justify-between border border-transparent hover:border-accent/20"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
+                            {w.spots} Cupos
+                          </span>
+                          <span className="text-[11px] font-black text-foreground font-mono">
+                            ${w.price} USD
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
+                          {w.shortTitle}
+                        </p>
+                      </div>
+                      <span className="text-[11px] text-muted mt-1 truncate">
+                        {w.schedule.split("(")[0].trim()} · {w.startTime}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-card-border flex items-center justify-between text-[11px] text-muted px-2">
+                  <span className="flex items-center gap-1">
+                    <Clock size={12} className="text-accent" /> Reserva con el 50%
+                  </span>
+                  <Link
+                    href="/workshops"
+                    onClick={() => setWorkshopsDropdownOpen(false)}
+                    className="font-bold text-foreground hover:text-accent"
+                  >
+                    Ver los 8 Talleres Completos
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cursos Online Dropdown */}
+          <div
+            id="courses-dropdown-container"
+            className="relative"
+            onMouseEnter={handleCoursesEnter}
+            onMouseLeave={handleCoursesLeave}
+          >
+            <Link
+              href="/cursos"
+              className={`font-display text-sm font-semibold transition-colors relative group flex items-center gap-1.5 ${linkColor} ${
+                isCursosActive ? "text-accent font-bold" : ""
+              }`}
+            >
+              Cursos Online
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-200 ${
+                  coursesDropdownOpen ? "rotate-180 text-accent" : "opacity-70"
+                }`}
+              />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+            </Link>
+
+            {/* Courses Dropdown Menu */}
+            {coursesDropdownOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[460px] bg-card border border-card-border rounded-3xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-card-border mb-2">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
+                      <GraduationCap size={14} /> Cursos Online
+                    </p>
+                    <p className="text-[11px] text-muted">Aprende a tu propio ritmo · Clases en video HD</p>
+                  </div>
+                  <Link
+                    href="/cursos"
+                    onClick={() => setCoursesDropdownOpen(false)}
+                    className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
+                  >
+                    Ver Todos &rarr;
+                  </Link>
+                </div>
+
+                <div className="space-y-1.5 max-h-[360px] overflow-y-auto pr-1">
+                  {ONLINE_COURSES_DATA.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/cursos/${c.id}`}
+                      onClick={() => setCoursesDropdownOpen(false)}
+                      className="p-3 rounded-2xl hover:bg-card-hover transition-colors group flex items-center justify-between border border-transparent hover:border-accent/20"
+                    >
+                      <div className="flex-1 pr-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          {c.badge && (
+                            <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
+                              {c.badge}
+                            </span>
+                          )}
+                          <span className="text-[11px] text-muted font-medium">
+                            {c.totalClasses} clases · {c.totalHours} hrs
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
+                          {c.shortTitle}
+                        </p>
+                        <p className="text-[11px] text-muted line-clamp-1 mt-0.5">
+                          {c.subtitle}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-black text-foreground font-mono block">
+                          ${c.price} USD
+                        </span>
+                        <span className="text-[9px] font-bold text-accent">
+                          Ver Curso &rarr;
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+
+                  {/* Promo coupon link in dropdown */}
+                  <Link
+                    href="/cursos"
+                    onClick={() => setCoursesDropdownOpen(false)}
+                    className="p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/5 border border-pink-500/20 flex items-center justify-between group hover:border-pink-500/40 transition-colors"
+                  >
+                    <div>
+                      <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-accent" /> Promoción Cupón Especial
+                      </p>
+                      <p className="text-[11px] text-muted mt-0.5">
+                        Aplica el cupón <strong className="text-accent">TODOSLOSCURSOS</strong> al inscribirte
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-bold text-accent group-hover:underline">
+                      Explorar &rarr;
+                    </span>
+                  </Link>
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-card-border flex items-center justify-between text-[11px] text-muted px-2">
+                  <span className="flex items-center gap-1">
+                    <BookOpen size={12} className="text-accent" /> Acceso Inmediato 24/7
+                  </span>
+                  <Link
+                    href="/cursos"
+                    onClick={() => setCoursesDropdownOpen(false)}
+                    className="font-bold text-foreground hover:text-accent"
+                  >
+                    Ver Todos los Cursos Online
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Pastelería & Tortas */}
+          <Link
+            href="/pasteleria"
+            className={`font-display text-sm font-semibold transition-colors relative group ${linkColor} ${
+              pathname === "/pasteleria" ? "text-accent font-bold" : ""
+            }`}
+          >
+            Pastelería & Tortas
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+          </Link>
+
+          {/* Sobre Anais */}
+          <Link
+            href="/nosotros"
+            className={`font-display text-sm font-semibold transition-colors relative group ${linkColor} ${
+              pathname === "/nosotros" ? "text-accent font-bold" : ""
+            }`}
+          >
+            Sobre Anais
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+          </Link>
+
+          {/* Mis Cursos (Auth only) */}
+          {session && hasMisCursos && (
+            <Link
+              href="/mis-cursos"
+              className={`font-display text-sm font-semibold transition-colors relative group ${linkColor} ${
+                pathname === "/mis-cursos" ? "text-accent font-bold" : ""
+              }`}
+            >
+              Mis Cursos
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+            </Link>
           )}
 
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`hidden sm:flex p-2.5 rounded-lg transition-colors ${iconColor}`}
-            aria-label="Instagram"
-          >
-            <InstagramIcon size={18} />
-          </a>
+          {session && (
+            <Link
+              href="/dashboard"
+              className={`font-display text-sm font-semibold transition-colors relative group ${linkColor} ${
+                pathname === "/dashboard" ? "text-accent font-bold" : ""
+              }`}
+            >
+              Mi Panel
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+            </Link>
+          )}
+        </nav>
 
-          <a
-            href="mailto:contacto@academiaomnia.com"
-            className={`hidden sm:flex p-2.5 rounded-lg transition-colors ${iconColor}`}
-            aria-label="Correo"
-          >
-            <Mail size={18} />
-          </a>
+        {/* Right CTA & Profile */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 justify-self-end" suppressHydrationWarning>
+          {session ? (
+            <div id="user-menu-container" className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 p-1.5 rounded-full bg-accent/15 border border-accent/30 hover:bg-accent/25 transition-all text-white"
+              >
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center font-black text-xs text-white">
+                  {session.user?.name?.[0]?.toUpperCase() || "A"}
+                </div>
+              </button>
 
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-3 w-56 bg-card border border-card-border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-3 py-2 border-b border-card-border mb-1">
+                    <p className="text-xs font-bold text-foreground truncate">{session.user?.name}</p>
+                    <p className="text-[11px] text-muted truncate">{session.user?.email}</p>
+                  </div>
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-foreground hover:bg-card-hover transition-colors"
+                  >
+                    <User size={14} className="text-accent" /> Panel de Usuario
+                  </Link>
+
+                  <Link
+                    href="/mis-cursos"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-foreground hover:bg-card-hover transition-colors"
+                  >
+                    <BookOpen size={14} className="text-accent" /> Mis Cursos
+                  </Link>
+
+                  {session.user?.role === "ADMIN" && (
+                    <Link
+                      href="/dashboard/pagos"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-foreground hover:bg-card-hover transition-colors"
+                    >
+                      <Shield size={14} className="text-accent" /> Administrar Pagos
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      signOut();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors mt-1 border-t border-card-border pt-2"
+                  >
+                    <LogOut size={14} /> Cerrar Sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="/iniciar-sesion">
+                <button
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                    isDarkHero
+                      ? "text-white/80 hover:text-white hover:bg-white/10"
+                      : "text-foreground hover:bg-muted/20"
+                  }`}
+                >
+                  Iniciar Sesión
+                </button>
+              </Link>
+              <Link href="/registro">
+                <button className="bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-pink-600/25">
+                  Registrarse
+                </button>
+              </Link>
+            </div>
+          )}
+
+          {/* Bag / Cart button (se oculta del header al scrollear) */}
+          {!scrolled && (
+            <button
+              onClick={openCart}
+              className={`relative p-2.5 rounded-xl border transition-all ${
+                isDarkHero
+                  ? "text-white border-white/20 hover:bg-white/10"
+                  : "text-foreground border-card-border hover:bg-card-hover"
+              }`}
+              aria-label="Ver bolsa de compras"
+            >
+              <ShoppingBag size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-accent text-white text-[10px] font-black flex items-center justify-center border-2 border-card shadow-md shadow-pink-600/30">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2.5 rounded-lg transition-colors ${iconColor}`}
-            aria-label="Menu"
+            className={`xl:hidden p-2 rounded-xl border transition-all ${
+              isDarkHero
+                ? "text-white border-white/20 hover:bg-white/10"
+                : "text-foreground border-card-border hover:bg-card-hover"
+            }`}
+            aria-label="Abrir menú"
           >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
+      </div>
 
-        <AnimatePresence>
-          {isOpen && (
-            <m.div
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-[calc(100%+12px)] left-0 right-0 bg-card rounded-2xl p-8 shadow-2xl border border-card-border md:hidden flex flex-col gap-4 overflow-hidden"
+      {/* Mobile Drawer */}
+      {isOpen && (
+        <div className="xl:hidden bg-card/95 backdrop-blur-xl border-b border-card-border px-6 py-6 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div className="flex flex-col space-y-2">
+            <Link
+              href="/"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between p-3 rounded-xl hover:bg-card-hover text-foreground font-semibold text-sm transition-colors"
             >
-              <div className="flex flex-col gap-2">
+              <span>Inicio</span>
+              <ChevronRight size={16} className="text-muted" />
+            </Link>
+
+            {/* Mobile Workshops Presenciales Accordion */}
+            <div className="rounded-xl border border-card-border/70 overflow-hidden">
+              <div className="flex items-center justify-between p-3 bg-section-alt">
                 <Link
-                  href="/"
+                  href="/workshops"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors"
+                  className="font-black text-sm text-pink-600 dark:text-pink-400 flex items-center gap-1.5"
                 >
-                  Inicio
-                  <Home size={20} className="text-muted group-hover:text-accent transition-colors" />
+                  <Sparkles size={14} /> Workshops Presenciales
                 </Link>
-                {[
-                  ...navLinks,
-                  ...(session && !navLinks.find(l => l.href === "/webinars") ? [{ name: "Webinars", href: "/webinars" }] : []),
-                ].filter((l) => {
-                  if (!session && AUTH_ONLY_SLUGS.includes(l.href)) return false;
-                  if (PURCHASE_REQUIRED_SLUGS.includes(l.href) && !hasMisCursos) return false;
-                  return true;
-                }).sort((a, b) => {
-                  const ai = NAV_DESIRED_ORDER.indexOf(a.href);
-                  const bi = NAV_DESIRED_ORDER.indexOf(b.href);
-                  return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-                }).map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-xl hover:bg-card-hover text-xl font-bold text-foreground group transition-colors"
-                  >
-                    {link.name}
-                    <ChevronRight size={20} className="text-muted group-hover:text-accent transition-colors" />
-                  </Link>
-                ))}
+                <button
+                  onClick={() => setMobileWorkshopsOpen(!mobileWorkshopsOpen)}
+                  className="p-1 text-muted hover:text-foreground"
+                  aria-label="Desplegar workshops"
+                >
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      mobileWorkshopsOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
               </div>
 
-              <div className="h-px bg-card-border my-2" />
-
-              {!session ? (
-                <>
-                  <Link href="/membresia" onClick={() => setIsOpen(false)} className="w-full bg-foreground text-background py-5 rounded-xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
-                    <User size={18} /> Unirme ahora
-                  </Link>
-                  <Link href="/iniciar-sesion" onClick={() => setIsOpen(false)} className="text-center py-2">
-                    <span className="text-sm font-bold text-muted">¿Ya tienes cuenta? </span>
-                    <span className="text-sm font-bold text-accent">Inicia Sesión</span>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                    <button className="w-full bg-foreground text-background py-5 rounded-xl font-bold flex items-center justify-center gap-2 text-base shadow-xl shadow-accent/10">
-                      <LayoutDashboard size={18} /> Ir al Panel
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => { signOut(); setIsOpen(false); }}
-                    className="w-full bg-red-50 dark:bg-red-950/30 text-red-500 py-4 rounded-xl font-bold flex items-center justify-center gap-2 text-sm"
+              {mobileWorkshopsOpen && (
+                <div className="p-2 space-y-1 bg-card border-t border-card-border/60">
+                  <Link
+                    href="/workshops"
+                    onClick={() => setIsOpen(false)}
+                    className="block p-2 rounded-lg text-xs font-bold text-accent hover:bg-card-hover"
                   >
-                    <LogOut size={18} /> Cerrar Sesión
-                  </button>
-                </>
+                    &rarr; Ver Cartelera Completa de Workshops
+                  </Link>
+                  {WORKSHOPS_DATA.map((w) => (
+                    <Link
+                      key={w.slug}
+                      href={`/workshop/${w.slug}`}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-[9px] font-black text-pink-600 dark:text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded">
+                          {w.spots}p
+                        </span>
+                        <span className="truncate">{w.shortTitle}</span>
+                      </div>
+                      <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
+                        ${w.price}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               )}
-            </m.div>
+            </div>
+
+            {/* Mobile Cursos Online Accordion */}
+            <div className="rounded-xl border border-card-border/70 overflow-hidden">
+              <div className="flex items-center justify-between p-3 bg-section-alt">
+                <Link
+                  href="/cursos"
+                  onClick={() => setIsOpen(false)}
+                  className="font-black text-sm text-foreground flex items-center gap-1.5"
+                >
+                  <GraduationCap size={14} className="text-accent" /> Cursos Online
+                </Link>
+                <button
+                  onClick={() => setMobileCoursesOpen(!mobileCoursesOpen)}
+                  className="p-1 text-muted hover:text-foreground"
+                  aria-label="Desplegar cursos online"
+                >
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      mobileCoursesOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {mobileCoursesOpen && (
+                <div className="p-2 space-y-1 bg-card border-t border-card-border/60">
+                  <Link
+                    href="/cursos"
+                    onClick={() => setIsOpen(false)}
+                    className="block p-2 rounded-lg text-xs font-bold text-accent hover:bg-card-hover"
+                  >
+                    &rarr; Ver Catálogo Completo de Cursos Online
+                  </Link>
+                  {ONLINE_COURSES_DATA.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/cursos/${c.id}`}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
+                    >
+                      <div className="truncate">
+                        <span className="block truncate font-semibold">{c.shortTitle}</span>
+                        <span className="text-[11px] text-muted">{c.totalClasses} clases · {c.totalHours}h</span>
+                      </div>
+                      <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
+                        ${c.price}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Pastelería & Tortas */}
+            <Link
+              href="/pasteleria"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between p-3 rounded-xl hover:bg-card-hover text-foreground font-semibold text-sm transition-colors"
+            >
+              <span>Pastelería & Tortas</span>
+              <ChevronRight size={16} className="text-muted" />
+            </Link>
+
+            {/* Sobre Anais */}
+            <Link
+              href="/nosotros"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between p-3 rounded-xl hover:bg-card-hover text-foreground font-semibold text-sm transition-colors"
+            >
+              <span>Sobre Anais</span>
+              <ChevronRight size={16} className="text-muted" />
+            </Link>
+
+            {session && hasMisCursos && (
+              <Link
+                href="/mis-cursos"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-card-hover text-foreground font-semibold text-sm transition-colors"
+              >
+                <span>Mis Cursos</span>
+                <ChevronRight size={16} className="text-muted" />
+              </Link>
+            )}
+
+            {session && (
+              <Link
+                href="/dashboard"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-card-hover text-foreground font-semibold text-sm transition-colors"
+              >
+                <span>Mi Panel</span>
+                <ChevronRight size={16} className="text-muted" />
+              </Link>
+            )}
+          </div>
+
+          <div className="pt-4 border-t border-card-border space-y-3">
+            {session ? (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  signOut();
+                }}
+                className="w-full bg-red-500/10 text-red-500 py-3 rounded-xl font-bold text-xs hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <LogOut size={16} /> Cerrar Sesión
+              </button>
+            ) : (
+              <>
+                <Link href="/iniciar-sesion" onClick={() => setIsOpen(false)} className="block">
+                  <button className="w-full bg-card border border-card-border text-foreground py-3 rounded-xl font-bold text-xs hover:bg-card-hover transition-colors">
+                    Iniciar Sesión
+                  </button>
+                </Link>
+                <Link href="/registro" onClick={() => setIsOpen(false)} className="block">
+                  <button className="w-full bg-accent text-white py-3 rounded-xl font-bold text-xs hover:bg-accent-hover transition-colors shadow-md shadow-pink-600/30">
+                    Registrarse
+                  </button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+
+    {/* Bolsa flotante al scrollear */}
+    {scrolled && (
+      <button
+        onClick={openCart}
+        aria-label="Abrir bolsa de compras"
+        className="fixed bottom-5 right-5 z-50 lg:bottom-7 lg:right-7"
+      >
+        <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-accent text-white shadow-xl shadow-pink-600/40 border-2 border-white/20 hover:scale-105 transition-transform">
+          <ShoppingBag size={22} />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-white text-accent text-[11px] font-black flex items-center justify-center border-2 border-accent shadow-md">
+              {cartCount}
+            </span>
           )}
-        </AnimatePresence>
-      </div>
-    </m.nav>
+        </span>
+      </button>
+    )}
+    </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, X, BadgeCheck, FileImage, ChevronLeft, ChevronRight, History } from "lucide-react";
+import { Check, X, FileImage, ChevronLeft, ChevronRight, History, Sparkles, BookOpen } from "lucide-react";
 
 type HistoryInscription = {
   id: string;
@@ -19,7 +19,8 @@ type HistoryInscription = {
 const METHOD_LABELS: Record<string, string> = {
   BANK_TRANSFER: "Transferencia",
   ZELLE: "Zelle",
-  PAGO_MOVIL: "Pago Móvil",
+  PAGO_MOVIL: "Pago Móvil (BCV)",
+  BINANCE: "Binance Pay",
   USDT: "USDT",
   TRANSFERENCIA: "Transferencia",
   STRIPE: "Stripe",
@@ -73,21 +74,21 @@ export default function PaymentHistoryTable({
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-card-border bg-section-alt">
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Usuario</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Producto</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Método</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Monto</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Fecha</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Estado</th>
-              <th className="py-3.5 px-5 text-[10px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Comprobante</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Usuario</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Producto / Servicio</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Método</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Monto</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Fecha</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Estado</th>
+              <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Comprobante</th>
             </tr>
           </thead>
           <tbody>
             {inscriptions.map((ins) => {
-              const isSubscription = !ins.cursoId;
-              const itemTitle = isSubscription
-                ? "Membresía Academia"
-                : (ins.curso?.title ?? "Curso desconocido");
+              const isPastry = !ins.cursoId;
+              const itemTitle = isPastry
+                ? "Servicio de Pastelería"
+                : (ins.curso?.title ?? "Taller / Curso");
               const isApproved = ins.status === "APPROVED";
 
               return (
@@ -105,11 +106,18 @@ export default function PaymentHistoryTable({
                   </td>
                   <td className="py-3.5 px-5">
                     <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                      {isSubscription && (
-                        <BadgeCheck size={13} className="text-amber-500 shrink-0" />
+                      {isPastry ? (
+                        <Sparkles size={13} className="text-pink-500 shrink-0" />
+                      ) : (
+                        <BookOpen size={13} className="text-accent shrink-0" />
                       )}
-                      {itemTitle}
+                      <span>{itemTitle}</span>
                     </span>
+                    {ins.reference && ins.reference.startsWith("[Servicio:") && (
+                      <p className="text-[11px] text-muted truncate max-w-xs mt-0.5">
+                        {ins.reference.split("]")[0].replace("[Servicio:", "").trim()}
+                      </p>
+                    )}
                   </td>
                   <td className="py-3.5 px-5">
                     <span className="text-sm font-bold text-muted whitespace-nowrap">
@@ -118,7 +126,7 @@ export default function PaymentHistoryTable({
                   </td>
                   <td className="py-3.5 px-5">
                     <span className="text-sm font-black text-foreground whitespace-nowrap">
-                      ${ins.amountPaid}
+                      ${ins.amountPaid} USD
                     </span>
                   </td>
                   <td className="py-3.5 px-5">
@@ -162,60 +170,62 @@ export default function PaymentHistoryTable({
         </table>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-card-border">
-        <p className="text-sm text-muted font-medium">
-          Mostrando <span className="text-foreground font-bold">{from}–{to}</span> de{" "}
-          <span className="text-foreground font-bold">{total}</span> registros
-        </p>
+      {pages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-card-border bg-section-alt">
+          <p className="text-xs text-muted font-medium">
+            Mostrando <strong className="text-foreground">{from}</strong> a{" "}
+            <strong className="text-foreground">{to}</strong> de{" "}
+            <strong className="text-foreground">{total}</strong> pagos
+          </p>
+          <div className="flex items-center gap-1">
+            {page > 1 ? (
+              <Link
+                href={pageHref(page - 1)}
+                className="p-2 rounded-lg border border-card-border hover:bg-card-hover transition-colors text-muted hover:text-foreground"
+              >
+                <ChevronLeft size={16} />
+              </Link>
+            ) : (
+              <span className="p-2 rounded-lg border border-card-border opacity-40 cursor-not-allowed text-muted">
+                <ChevronLeft size={16} />
+              </span>
+            )}
 
-        <div className="flex items-center gap-1">
-          <Link
-            href={pageHref(page - 1)}
-            aria-disabled={page <= 1}
-            className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-              page <= 1
-                ? "text-muted/40 pointer-events-none"
-                : "text-muted hover:text-foreground hover:bg-section-alt"
-            }`}
-          >
-            <ChevronLeft size={15} /> Anterior
-          </Link>
-
-          <div className="flex items-center gap-1 mx-1">
-            {pageNumbers.map((p, i) =>
+            {pageNumbers.map((p, idx) =>
               p === "..." ? (
-                <span key={`ellipsis-${i}`} className="px-1 text-muted text-sm select-none">
-                  …
+                <span key={`ellipsis-${idx}`} className="px-3 py-1 text-xs text-muted">
+                  ...
                 </span>
               ) : (
                 <Link
                   key={p}
                   href={pageHref(p as number)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold transition-colors ${
-                    page === p
-                      ? "bg-foreground text-background shadow-sm"
-                      : "text-muted hover:text-foreground hover:bg-section-alt"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                    p === page
+                      ? "bg-accent text-white"
+                      : "border border-card-border hover:bg-card-hover text-muted hover:text-foreground"
                   }`}
                 >
                   {p}
                 </Link>
               )
             )}
-          </div>
 
-          <Link
-            href={pageHref(page + 1)}
-            aria-disabled={page >= pages}
-            className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-              page >= pages
-                ? "text-muted/40 pointer-events-none"
-                : "text-muted hover:text-foreground hover:bg-section-alt"
-            }`}
-          >
-            Siguiente <ChevronRight size={15} />
-          </Link>
+            {page < pages ? (
+              <Link
+                href={pageHref(page + 1)}
+                className="p-2 rounded-lg border border-card-border hover:bg-card-hover transition-colors text-muted hover:text-foreground"
+              >
+                <ChevronRight size={16} />
+              </Link>
+            ) : (
+              <span className="p-2 rounded-lg border border-card-border opacity-40 cursor-not-allowed text-muted">
+                <ChevronRight size={16} />
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

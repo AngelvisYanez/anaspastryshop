@@ -19,7 +19,7 @@ export default function VideoIntro() {
           <div className="w-16 h-16 rounded-xl bg-accent-subtle flex items-center justify-center">
             <Play size={28} className="text-accent ml-1" />
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted">
+          <span className="text-[11px] font-black uppercase tracking-widest text-muted">
             Video introductorio
           </span>
         </div>

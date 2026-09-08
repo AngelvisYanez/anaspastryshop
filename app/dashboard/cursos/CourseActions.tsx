@@ -40,7 +40,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 transition-opacity drop-shadow-md">
         <Link
           href={`/dashboard/cursos/${courseId}/edit`}
-          className="bg-card text-amber-700 hover:bg-amber-50 p-2.5 rounded-xl shadow-lg border border-card-border transition-all hover:scale-105"
+          className="bg-card text-accent hover:bg-accent hover:text-white p-2.5 rounded-xl shadow-lg border border-card-border transition-all hover:scale-105"
           title="Editar Curso"
         >
           <Edit2 size={16} />
@@ -59,7 +59,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
           <Trash2 size={16} className={isDeleting ? "animate-pulse" : ""} />
           
           {hasEnrolled && (
-            <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 w-48 bg-gray-900 text-white text-[10px] p-2 rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none">
+            <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 w-48 bg-gray-900 text-white text-[11px] p-2 rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none">
               <span className="font-bold flex items-center gap-1"><AlertCircle size={10} /> Bloqueado</span>
               Este curso tiene inscripciones. No es posible eliminarlo.
             </div>
@@ -87,7 +87,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
               <button 
                 onClick={() => { setShowModal(false); setDeleteError(null); }} 
                 disabled={isDeleting}
-                className="flex-1 py-3 px-4 bg-section-alt hover:bg-muted/20 text-gray-700 font-bold rounded-xl transition-colors disabled:opacity-50"
+                className="flex-1 py-3 px-4 bg-section-alt hover:bg-muted/20 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>

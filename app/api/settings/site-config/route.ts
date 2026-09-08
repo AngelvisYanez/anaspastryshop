@@ -5,10 +5,9 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   const config = await prisma.siteConfig.findFirst();
   return NextResponse.json(config ?? {
-    siteName: "Academia Omnia",
-    ctaText: "Quiero unirme ahora",
-    ctaUrl: "/planes",
-    subscriptionPrice: 97,
+    siteName: "Ana's Pastry Shop",
+    ctaText: "Ver Talleres Presenciales",
+    ctaUrl: "/cursos",
     navItems: [],
   });
 }
@@ -31,8 +30,6 @@ export async function PUT(req: Request) {
     instagramUrl: body.instagramUrl ?? null,
     linkedinUrl: body.linkedinUrl ?? null,
     tiktokUrl: body.tiktokUrl ?? null,
-    subscriptionPrice: parseFloat(body.subscriptionPrice) || 97,
-    subscriptionPriceId: body.subscriptionPriceId ?? null,
     navItems: body.navItems ?? [],
   };
 
