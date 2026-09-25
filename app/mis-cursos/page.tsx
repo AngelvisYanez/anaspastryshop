@@ -129,7 +129,7 @@ async function MisCursosContent() {
 
 export default function MisCursosPage() {
   return (
-    <main className="min-h-screen bg-background pt-28 pb-20">
+    <main className="min-h-screen bg-background pt-36 pb-20">
       <Navbar />
       <Suspense fallback={<div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-20" />}>
         <MisCursosContent />

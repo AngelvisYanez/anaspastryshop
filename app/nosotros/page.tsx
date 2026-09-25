@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
+import ScrollIndicator from "@/components/ScrollIndicator";
 
 const PILLARS = [
   {
@@ -45,7 +46,7 @@ export default function NosotrosPage() {
       <Navbar />
 
       {/* Hero Nosotros */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#280732] via-[#350A43] to-[#1C0425] pt-36 pb-24 px-6 md:px-20 text-white rounded-b-3xl">
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-36 pb-28 text-white rounded-b-3xl">
         <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-pink-600/15 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full blur-[140px] pointer-events-none" />
@@ -72,6 +73,7 @@ export default function NosotrosPage() {
             Conoce la historia, filosofía y método formativo liderado por Anais Flores, diseñado para enseñarte pastelería profesional desde cero.
           </m.p>
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* Main Bio Section */}

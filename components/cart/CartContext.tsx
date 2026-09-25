@@ -15,7 +15,7 @@ interface CartContextValue {
   isOpen: boolean;
   total: number;
   isInCart: (id: string) => boolean;
-  addItem: (item: CartItem) => void;
+  addItem: (item: CartItem, openDrawer?: boolean) => void;
   removeItem: (id: string) => void;
   clearBag: () => void;
   openCart: () => void;
@@ -57,9 +57,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const isInCart = (id: string) => items.some((item) => item.id === id);
 
-  const addItem = (item: CartItem) => {
+  const addItem = (item: CartItem, openDrawer = true) => {
     setItems((prev) => (prev.some((i) => i.id === item.id) ? prev : [...prev, item]));
-    setIsOpen(true);
+    if (openDrawer) {
+      setIsOpen(true);
+    }
   };
 
   const removeItem = (id: string) => {

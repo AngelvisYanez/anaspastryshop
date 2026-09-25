@@ -4,6 +4,7 @@ import InstagramFeed from "@/components/InstagramFeed";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Cake, Candy, Gift, Building2 } from "lucide-react";
+import ScrollIndicator from "@/components/ScrollIndicator";
 
 
 export const metadata = {
@@ -44,9 +45,9 @@ export default function PasteleriaPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-36 pb-20 overflow-hidden bg-gradient-to-b from-[#1C0524] via-[#24062E] to-[#120217] text-white">
+      <section className="relative min-h-screen flex flex-col justify-center pt-36 pb-28 overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white">
         <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.05] max-w-4xl mx-auto mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] max-w-4xl mx-auto mb-6">
             Momentos dulces creados con{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-200 to-pink-400">
               arte y técnica profesional
@@ -59,6 +60,7 @@ export default function PasteleriaPage() {
 
 
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* Services Grid */}

@@ -3,7 +3,7 @@ import { useState, Suspense } from "react";
 import { m } from "framer-motion";
 import {
   ArrowLeft, User, Lock, Loader2,
-  Eye, EyeOff, Shield, TrendingUp, Users, PlayCircle,
+  Eye, EyeOff, Shield, TrendingUp, Users, PlayCircle, LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { checkPreloginStatus } from "@/lib/actions/auth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 
 const benefits = [
   {
@@ -20,8 +21,8 @@ const benefits = [
   },
   {
     icon: Users,
-    title: "Workshops & Lives",
-    description: "Talleres presenciales y transmisiones en directo con la Chef Anaís y chefs invitados.",
+    title: "Talleres Presenciales",
+    description: "Clases prácticas con la Chef Anaís para perfeccionar técnicas frente a frente con tus pares.",
   },
   {
     icon: TrendingUp,
@@ -96,6 +97,7 @@ function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
             <input
               type="text"
               required
+              autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="tu@email.com o tu nombre"
@@ -113,6 +115,7 @@ function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
             <input
               type={showPassword ? "text" : "password"}
               required
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -121,6 +124,7 @@ function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
               tabIndex={-1}
             >
@@ -153,29 +157,29 @@ export default function LoginPage() {
     return (
       <>
         <Navbar forceSolid />
-        <main className="min-h-screen bg-background flex items-center justify-center p-6 pt-32 relative overflow-hidden">
-          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
-          <div className="w-full max-w-lg bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border z-10 relative">
-            <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 bg-red-100 rounded-xl" />
-              <div className="relative w-20 h-20 bg-red-50 rounded-xl flex items-center justify-center">
-                <Lock className="text-red-500" size={36} />
+        <main id="main-content">
+          <PageHero
+            title={<>Tu cuenta ha sido suspendida</>}
+            subtitle="Tu acceso a la plataforma ha sido revocado."
+          />
+          <section className="bg-background py-16 px-6 relative overflow-hidden">
+            <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
+            <div className="w-full max-w-lg mx-auto relative z-10 bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border">
+              <div className="relative w-20 h-20 mx-auto mb-8">
+                <div className="absolute inset-0 bg-red-100 rounded-xl" />
+                <div className="relative w-20 h-20 bg-red-50 rounded-xl flex items-center justify-center">
+                  <Lock className="text-red-500" size={36} />
+                </div>
               </div>
+              <div className="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm font-medium mb-8">
+                <p className="font-bold text-xs uppercase tracking-wider mb-1">Motivo:</p>
+                <p className="italic">&ldquo;{suspendedReason}&rdquo;</p>
+              </div>
+              <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-accent transition-colors">
+                Volver al inicio
+              </Link>
             </div>
-            <h1 className="font-display text-3xl font-black text-foreground mb-4 leading-tight tracking-tight">
-              Cuenta Suspendida
-            </h1>
-            <p className="text-muted leading-relaxed mb-6 text-sm">
-              Tu acceso a la plataforma ha sido revocado.
-            </p>
-            <div className="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm font-medium mb-8">
-              <p className="font-bold text-xs uppercase tracking-wider mb-1">Motivo:</p>
-              <p className="italic">&ldquo;{suspendedReason}&rdquo;</p>
-            </div>
-            <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-accent transition-colors">
-              ← Volver al inicio
-            </Link>
-          </div>
+          </section>
         </main>
         <Footer />
       </>
@@ -186,7 +190,17 @@ export default function LoginPage() {
     <>
       <Navbar forceSolid />
       <main id="main-content">
-        <section className="bg-background pt-32 pb-16 px-6 relative overflow-hidden">
+        <PageHero
+          badge={
+            <div className="flex items-center justify-center gap-2 bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 w-fit mx-auto text-xs font-semibold text-white/90">
+              <LogIn size={16} className="text-pink-200" />
+              <span>Área de clientes</span>
+            </div>
+          }
+          title={<>Bienvenido de nuevo</>}
+          subtitle="Accede a tu cuenta en Ana's Pastry Shop"
+        />
+        <section className="bg-background py-16 px-6 relative overflow-hidden">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/[0.06] blur-[130px] rounded-full pointer-events-none" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-foreground/[0.04] blur-[100px] rounded-full pointer-events-none" />
 
@@ -195,21 +209,15 @@ export default function LoginPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-card rounded-xl p-10 shadow-[var(--shadow-card)] border border-card-border"
+              className="bg-card rounded-2xl p-8 md:p-12 shadow-[var(--shadow-card)] border border-card-border"
             >
-              <div className="text-center mb-10">
+              <div className="text-center mb-6">
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-6 text-xs font-bold uppercase tracking-widest"
+                  className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors text-xs font-bold uppercase tracking-widest"
                 >
                   <ArrowLeft size={14} /> Volver al inicio
                 </Link>
-                <h1 className="font-display text-3xl font-black text-foreground mb-2 tracking-tight">
-                  Bienvenido de nuevo
-                </h1>
-                <p className="text-muted text-sm">
-                  Accede a tu cuenta en Ana&apos;s Pastry Shop
-                </p>
               </div>
 
               <Suspense fallback={<div className="text-center py-4"><Loader2 className="animate-spin mx-auto text-accent" size={24} /></div>}>

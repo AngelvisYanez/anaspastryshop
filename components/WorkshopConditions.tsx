@@ -156,7 +156,7 @@ export default function WorkshopConditions({
         </div>
 
         {/* Bottom Banner */}
-        <div className="bg-gradient-to-r from-purple-950 via-[#280732] to-[#1C0524] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-pink-500/20 shadow-lg">
+        <div className="bg-gradient-to-r from-brand-purple-mid via-brand-purple to-brand-purple-deep text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-pink-500/20 shadow-lg">
           <div className="max-w-2xl">
             <h4 className="font-display text-xl sm:text-2xl font-black text-white mb-2">
               ¡Estamos listos para aprender y crear juntos!

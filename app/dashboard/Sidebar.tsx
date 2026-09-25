@@ -6,16 +6,14 @@ import { signOut } from "next-auth/react";
 import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Activity, X,
-  Radio, Wallet, Mail, Compass, ChefHat, Images,
+  Wallet, Mail, Compass, ChefHat, Images,
 } from "lucide-react";
 
 const SYSTEM_ITEMS = [
   { name: "Inicio",                     href: "/dashboard",               icon: LayoutDashboard, roles: ["ADMIN", "USER"] },
   { name: "Mis Cursos & Workshops",     href: "/dashboard/mis-cursos",    icon: BookOpen,        roles: ["USER"] },
   { name: "Explorar Formaciones",       href: "/cursos",                  icon: Compass,         roles: ["USER"] },
-  { name: "Lives",                      href: "/dashboard/lives",         icon: Radio,           roles: ["USER"] },
   { name: "Cursos & Workshops",         href: "/dashboard/cursos",        icon: BookOpen,        roles: ["ADMIN"] },
-  { name: "Gestionar Lives",            href: "/dashboard/lives",         icon: Radio,           roles: ["ADMIN"] },
   { name: "Galería & Instagram",        href: "/dashboard/galeria",       icon: Images,          roles: ["ADMIN"] },
   { name: "Usuarios",                   href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN"] },
   { name: "Pagos",                      href: "/dashboard/pagos",         icon: CreditCard,      roles: ["ADMIN"] },

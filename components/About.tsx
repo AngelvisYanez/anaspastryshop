@@ -39,7 +39,7 @@ export default function About() {
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#2B0938]/90 via-[#2B0938]/40 to-transparent p-6 flex flex-col justify-end">
+              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-brand-purple/90 via-brand-purple/40 to-transparent p-6 flex flex-col justify-end">
                 <p className="text-white font-black text-xl">Anais Flores</p>
                 <p className="text-pink-300 text-xs font-medium">Ingeniero Químico · Panadera y Pastelera Profesional</p>
               </div>

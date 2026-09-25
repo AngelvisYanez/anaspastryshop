@@ -64,8 +64,8 @@ async function ClaseContent({
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-[#1C0524] flex items-center justify-center p-8 text-center text-white">
-        <div className="max-w-md w-full bg-[#2B0938] border border-pink-500/20 p-8 rounded-2xl shadow-2xl">
+      <div className="min-h-screen bg-brand-purple-deep flex items-center justify-center p-8 text-center text-white">
+        <div className="max-w-md w-full bg-brand-purple border border-pink-500/20 p-8 rounded-2xl shadow-2xl">
           <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
             <LockIcon size={32} />
           </div>
@@ -82,7 +82,7 @@ async function ClaseContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#1C0524] text-white">
+    <div className="min-h-screen bg-brand-purple-deep text-white">
       <nav className="h-16 bg-black/50 border-b border-white/10 flex items-center px-6 gap-4 sticky top-0 z-50 backdrop-blur-xl">
         <Link href={`/dashboard/cursos/${course.id}`} className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
           <ArrowLeft size={20} />
@@ -123,7 +123,7 @@ async function ClaseContent({
           )}
         </main>
 
-        <aside className="w-full lg:w-96 bg-[#2B0938] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-[60vh] lg:h-full">
+        <aside className="w-full lg:w-96 bg-brand-purple border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-[60vh] lg:h-full">
           <div className="p-6 border-b border-white/10">
             <h2 className="text-lg font-bold leading-snug">{modulo.title}</h2>
             <span className="text-xs text-pink-300 block mt-1">{modulo.lessons.length} Temas desglosados</span>
@@ -170,7 +170,7 @@ export default function ClasePage({
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#1C0524]">
+        <div className="min-h-screen flex items-center justify-center bg-brand-purple-deep">
           <div className="animate-spin rounded-full h-12 w-12 border-2 border-pink-500/30 border-t-pink-500" />
         </div>
       }

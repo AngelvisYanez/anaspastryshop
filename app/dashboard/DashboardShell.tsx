@@ -71,7 +71,7 @@ export default function DashboardShell({
         />
 
         {user?.role === "USER" && (
-          <div className="bg-gradient-to-r from-[#280732] via-[#3B074B] to-[#1C0524] text-white px-4 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
+          <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-4 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
             <div className="flex items-center gap-2 text-xs font-medium text-pink-100">
               <span className="flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30">
                 <Tag size={10} /> Cupón Promocional

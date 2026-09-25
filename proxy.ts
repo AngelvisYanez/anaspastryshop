@@ -9,8 +9,7 @@ export default auth((req) => {
 
   if (
     !isLoggedIn &&
-    (nextUrl.pathname.startsWith("/dashboard") ||
-      nextUrl.pathname.startsWith("/webinars"))
+    nextUrl.pathname.startsWith("/dashboard")
   ) {
     return NextResponse.redirect(new URL("/iniciar-sesion", nextUrl));
   }
@@ -28,5 +27,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/webinars/:path*"],
+  matcher: ["/dashboard/:path*"],
 };

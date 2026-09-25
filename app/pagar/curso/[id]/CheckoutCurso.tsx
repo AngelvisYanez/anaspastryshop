@@ -14,6 +14,7 @@ import { registerUser } from "@/lib/actions/auth";
 import { createCourseInscription, type PaymentMethod } from "@/lib/actions/inscription";
 import { validateCoupon, type CouponResult } from "@/lib/actions/coupons";
 import type { WorkshopDetails } from "@/lib/utils/workshop";
+import PageHero from "@/components/PageHero";
 
 type GatewayItem = {
   provider: string;
@@ -352,32 +353,26 @@ export default function CheckoutCurso({
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-16">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#25072F] via-[#350A43] to-[#1C0425] pt-28 pb-16 px-6 md:px-20 rounded-b-3xl mb-10 text-center">
-        <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-        <div className="relative z-10 max-w-xl mx-auto">
-          <Link
-            href={`/cursos/${course.id}`}
-            className="inline-flex items-center gap-1.5 text-pink-300 hover:text-white text-xs font-bold uppercase tracking-widest mb-4 transition-colors"
-          >
-            <ArrowLeft size={14} /> Volver al Detalle
-          </Link>
-          <div className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] px-4 py-1.5 rounded-xl mb-4 block mx-auto w-fit">
-            <BookOpen size={13} className="text-pink-300" />
-            <span className="text-[11px] font-black uppercase tracking-widest text-pink-300">
-              {isWorkshop ? "Workshop Presencial" : "Curso Online"}
-            </span>
+      {/* Hero */}
+      <PageHero
+        backHref={`/cursos/${course.id}`}
+        backLabel="Volver al Detalle"
+        badge={
+          <div className="flex items-center justify-center gap-2 bg-white/15 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 w-fit mx-auto text-xs font-semibold text-white/90">
+            <BookOpen size={16} className="text-pink-200" />
+            <span>{isWorkshop ? "Workshop Presencial" : "Curso Online"}</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
-            {step === 1 && "Crea tu cuenta para inscribirte"}
-            {step === 2 && "Finaliza tu inscripción individual"}
-            {step === 3 && "¡Comprobante de inscripción recibido!"}
-          </h1>
-          <p className="text-xs md:text-sm text-white/70 font-medium max-w-md mx-auto">
-            {course.title}
-          </p>
-        </div>
-      </div>
+        }
+        title={
+          step === 1
+            ? "Crea tu cuenta para inscribirte"
+            : step === 2
+            ? "Finaliza tu inscripción individual"
+            : "¡Comprobante de inscripción recibido!"
+        }
+        subtitle={course.title}
+        className="mb-12"
+      />
 
       <div className="max-w-xl mx-auto px-4">
         <StepIndicator step={step} />

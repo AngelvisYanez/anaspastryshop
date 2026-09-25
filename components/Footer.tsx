@@ -6,7 +6,7 @@ import NewsletterForm from "./NewsletterForm";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#1A0322] border-t border-white/10 text-white relative z-20">
+    <footer className="w-full bg-brand-plum-deep border-t border-white/10 text-white relative z-20">
       <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
           <div className="lg:col-span-2 space-y-4">

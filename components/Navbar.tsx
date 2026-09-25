@@ -41,8 +41,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
 
   const isDarkHero =
     !forceSolid &&
-    (pathname === "/" ||
-      pathname === "/cursos" ||
+    (pathname === "/cursos" ||
       pathname.startsWith("/cursos/") ||
       pathname === "/workshops" ||
       pathname.startsWith("/workshops/") ||
@@ -50,6 +49,8 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
       pathname === "/nosotros" ||
       pathname === "/pasteleria" ||
       pathname.startsWith("/clases/"));
+
+  const overDark = !scrolled && isDarkHero;
 
   useEffect(() => {
     fetch("/api/settings/site-config")
@@ -122,21 +123,25 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
     }, 180);
   };
 
-  const logoSrc = isDarkHero
+  const logoSrc = scrolled || forceSolid
+    ? siteConfig.logoUrl || "/logo-anas-pastry-shop.png"
+    : overDark
     ? siteConfig.logoDarkUrl || "/logo-anas-pastry-shop-white.png"
     : siteConfig.logoUrl || "/logo-anas-pastry-shop.png";
 
   const navBg = forceSolid
     ? "bg-background/95 backdrop-blur-xl border-b border-card-border shadow-sm"
     : scrolled
-    ? isDarkHero
-      ? "bg-[#1C0425]/90 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-purple-950/40"
-      : "bg-background/90 backdrop-blur-xl border-b border-card-border shadow-sm"
+    ? "bg-white/95 backdrop-blur-xl border-b border-card-border shadow-sm dark:bg-brand-purple-deep/90 dark:border-white/10"
     : "bg-transparent border-b border-transparent";
 
-  const linkColor = isDarkHero
-    ? "text-white/80 hover:text-white"
+  const linkColor = overDark
+    ? "text-white/85 hover:text-white"
     : "text-foreground/75 hover:text-foreground";
+
+  const loginBtnClass = overDark
+    ? "text-white/85 hover:text-white hover:bg-white/10"
+    : "text-brand-purple border border-brand-purple/30 hover:bg-brand-purple hover:text-white dark:text-on-purple dark:border-white/25 dark:hover:bg-white/10";
 
   const isWorkshopsActive =
     pathname === "/workshops" ||
@@ -154,12 +159,13 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
   <div className={`max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 grid grid-cols-[auto_1fr_auto] items-center relative transition-all duration-300 ${scrolled ? "h-20" : "h-32"}`}>
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group shrink-0 justify-self-start">
-          <div className="relative h-32 w-80 sm:w-96 xl:w-80 2xl:w-96">
+          <div className={`relative aspect-[594/368] transition-all duration-300 w-auto ${scrolled ? "h-14 md:h-16" : "h-20 md:h-24"}`}>
             <Image
               src={logoSrc}
               alt="Ana's Pastry Shop"
               fill
               priority
+              sizes="160px"
               className="object-contain object-left transition-transform duration-300 group-hover:scale-105"
             />
           </div>
@@ -488,11 +494,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
             <div className="flex items-center gap-3">
               <Link href="/iniciar-sesion">
                 <button
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
-                    isDarkHero
-                      ? "text-white/80 hover:text-white hover:bg-white/10"
-                      : "text-foreground hover:bg-muted/20"
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${loginBtnClass}`}
                 >
                   Iniciar Sesión
                 </button>
@@ -510,7 +512,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
             <button
               onClick={openCart}
               className={`relative p-2.5 rounded-xl border transition-all ${
-                isDarkHero
+                overDark
                   ? "text-white border-white/20 hover:bg-white/10"
                   : "text-foreground border-card-border hover:bg-card-hover"
               }`}
@@ -529,7 +531,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
           <button
             onClick={() => setIsOpen(!isOpen)}
             className={`xl:hidden p-2 rounded-xl border transition-all ${
-              isDarkHero
+              overDark
                 ? "text-white border-white/20 hover:bg-white/10"
                 : "text-foreground border-card-border hover:bg-card-hover"
             }`}

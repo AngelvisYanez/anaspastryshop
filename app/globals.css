@@ -25,6 +25,20 @@
   --border-radius: 1rem;
   --shadow-card: 0 8px 30px 0 rgba(43, 9, 56, 0.06), 0 1px 4px 0 rgba(217, 32, 128, 0.04);
   --shadow-glow: 0 10px 40px 0 rgba(217, 32, 128, 0.22);
+
+  --brand-purple: #2B0938;
+  --brand-purple-mid: #350A43;
+  --brand-purple-deep: #1C0425;
+  --brand-plum-deep: #1A0322;
+
+  --on-purple: #FFFFFF;
+  --on-purple-soft: rgba(255, 255, 255, 0.80);
+  --on-purple-muted: rgba(255, 255, 255, 0.60);
+  --on-purple-accent: #F9A8D4;
+
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-hover: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.14);
 }
 
 .dark {
@@ -75,6 +89,17 @@
   --color-navy-light: var(--navy-light);
   --color-brand-dark: var(--navy);
   --color-brand-dark-light: var(--navy-light);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-purple-mid: var(--brand-purple-mid);
+  --color-brand-purple-deep: var(--brand-purple-deep);
+  --color-brand-plum-deep: var(--brand-plum-deep);
+  --color-on-purple: var(--on-purple);
+  --color-on-purple-soft: var(--on-purple-soft);
+  --color-on-purple-muted: var(--on-purple-muted);
+  --color-on-purple-accent: var(--on-purple-accent);
+  --color-glass: var(--glass);
+  --color-glass-hover: var(--glass-hover);
+  --color-glass-border: var(--glass-border);
 }
 
 body {

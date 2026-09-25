@@ -132,7 +132,7 @@ export default function DashboardCourseViewer({
 
       {/* Workshop Presencial Logistics Banner */}
       {isWorkshop && (
-        <div className="bg-gradient-to-br from-[#280732] via-[#1C0524] to-[#0D0212] border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-brand-purple via-brand-purple-deep to-brand-purple-deep border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-80 h-80 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10">

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/ThemeProvider";
 import {
   Menu, Bell, Moon, Sun, User, Settings, LogOut,
   ChevronDown, CheckCircle2, AlertTriangle, Info,
@@ -21,8 +21,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/metodos-pago": "Métodos de Pago",
   "/dashboard/modulos": "Módulos",
   "/dashboard/api-config": "Config. APIs",
-  "/dashboard/webinars": "Cursos Online",
-  "/dashboard/lives": "Lives",
   "/dashboard/mis-cursos": "Mis Cursos",
 };
 

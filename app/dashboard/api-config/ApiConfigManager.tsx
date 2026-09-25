@@ -21,7 +21,7 @@ const API_PROVIDERS: ApiDef[] = [
   {
     provider: "CLOUDFLARE_RTK",
     label: "Cloudflare RealtimeKit",
-    description: "Credenciales para las salas de video en tiempo real (Webinars & Meetings).",
+    description: "Credenciales para salas de video en tiempo real.",
     Icon: Cloud,
     color: "orange",
     fields: [
@@ -33,7 +33,7 @@ const API_PROVIDERS: ApiDef[] = [
   {
     provider: "CLOUDFLARE_STREAM",
     label: "Cloudflare Stream",
-    description: "Credenciales para streaming RTMPS (Lives con OBS).",
+    description: "Credenciales para transmisiones de video (streaming).",
     Icon: Zap,
     color: "blue",
     fields: [

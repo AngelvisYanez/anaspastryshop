@@ -105,16 +105,24 @@ export async function adminDeleteUser(id: string) {
     where: { instructorId: id },
     select: { id: true },
   });
-  const courseIds = instructedCourses.map((c) => c.id);
 
-  if (courseIds.length > 0) {
-    await prisma.inscription.deleteMany({ where: { cursoId: { in: courseIds } } });
-    await prisma.coursePurchase.deleteMany({ where: { cursoId: { in: courseIds } } });
-    await prisma.curso.deleteMany({ where: { id: { in: courseIds } } });
+  // No eliminar en cascada los cursos/workshops del usuario: se transfieren al admin que ejecuta la acción.
+  if (instructedCourses.length > 0) {
+    await prisma.curso.updateMany({
+      where: { instructorId: id },
+      data: { instructorId: session.user.id },
+    });
   }
 
-  await prisma.liveStream.deleteMany({ where: { instructorId: id } });
-  await prisma.webinar.deleteMany({ where: { instructorId: id } });
+  // Igual para lives y webinars: transferir en lugar de cascada.
+  await prisma.liveStream.updateMany({
+    where: { instructorId: id },
+    data: { instructorId: session.user.id },
+  });
+  await prisma.webinar.updateMany({
+    where: { instructorId: id },
+    data: { instructorId: session.user.id },
+  });
 
   await prisma.coursePurchase.deleteMany({ where: { userId: id } });
   await prisma.inscription.deleteMany({ where: { userId: id } });

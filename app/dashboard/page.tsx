@@ -195,7 +195,7 @@ export default async function DashboardPage() {
       {role === "USER" && (
         <div className="space-y-6 sm:space-y-8">
           {/* Promo Card: Bundle de Cursos Online con Cupón */}
-          <div className="bg-gradient-to-br from-[#280732] via-[#1C0524] to-[#0D0212] border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-brand-purple via-brand-purple-deep to-brand-purple-deep border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-72 h-72 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-xl">

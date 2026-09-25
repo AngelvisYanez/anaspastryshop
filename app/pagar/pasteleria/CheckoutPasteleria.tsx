@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { registerUser } from "@/lib/actions/auth";
 import { createPastryServicePayment, type PaymentMethod } from "@/lib/actions/inscription";
+import PageHero from "@/components/PageHero";
 
 type GatewayItem = {
   provider: string;
@@ -48,7 +49,7 @@ function StepIndicator({ step }: { step: Step }) {
                 step > s.n
                   ? "bg-green-500 text-white"
                   : step === s.n
-                  ? "bg-[#1C0524] dark:bg-accent text-white scale-110 shadow-lg"
+                  ? "bg-brand-purple-deep dark:bg-accent text-white scale-110 shadow-lg"
                   : "bg-card border border-card-border text-muted"
               }`}
             >
@@ -288,26 +289,21 @@ export default function CheckoutPasteleria({
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-16">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#1C0524] to-[#2B0938] pt-28 pb-16 px-6 md:px-20 rounded-b-3xl mb-10 text-center">
-        <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-        <div className="relative z-10 max-w-xl mx-auto">
-          <Link
-            href="/pasteleria"
-            className="inline-flex items-center gap-1.5 text-pink-300 hover:text-white text-xs font-bold uppercase tracking-widest mb-4 transition-colors"
-          >
-            <ArrowLeft size={14} /> Conoce Nuestros Servicios
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-2">
-            {step === 1 && "Crea tu cuenta para reportar tu pago"}
-            {step === 2 && "Detalle del Pedido & Pago"}
-            {step === 3 && "Comprobante de Pedido Recibido"}
-          </h1>
-          <p className="text-xs md:text-sm text-white/60 font-medium max-w-md mx-auto">
-            Reporta el comprobante de tu abono o pago de pastelería personalizada, tortas de diseño o catering dulce.
-          </p>
-        </div>
-      </div>
+      {/* Hero */}
+      <PageHero
+        variant="deep"
+        backHref="/pasteleria"
+        backLabel="Conoce Nuestros Servicios"
+        title={
+          step === 1
+            ? "Crea tu cuenta para reportar tu pago"
+            : step === 2
+            ? "Detalle del Pedido & Pago"
+            : "Comprobante de Pedido Recibido"
+        }
+        subtitle="Reporta el comprobante de tu abono o pago de pastelería personalizada, tortas de diseño o catering dulce."
+        className="mb-12"
+      />
 
       <div className="max-w-xl mx-auto px-4">
         <StepIndicator step={step} />
@@ -917,7 +913,7 @@ export default function CheckoutPasteleria({
                     <button
                       type="submit"
                       disabled={loading || uploadingReceipt || !reference.trim() || !receiptImage || !serviceDescription.trim() || isNaN(numAmount) || numAmount <= 0}
-                      className="w-full bg-[#1C0524] text-white py-4 px-4 rounded-2xl font-bold hover:bg-accent transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-lg"
+                      className="w-full bg-brand-purple-deep text-white py-4 px-4 rounded-2xl font-bold hover:bg-accent transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-lg"
                     >
                       {loading ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle size={18} />}
                       {loading ? "Enviando para revisión..." : "Confirmar Reporte de Pago de Pastelería"}
@@ -986,7 +982,7 @@ export default function CheckoutPasteleria({
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/pasteleria"
-                className="flex-1 bg-[#1C0524] text-white py-3.5 px-5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent transition-colors text-center"
+                className="flex-1 bg-brand-purple-deep text-white py-3.5 px-5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent transition-colors text-center"
               >
                 Volver a Pastelería
               </Link>

@@ -37,8 +37,12 @@ const ACHIEVEMENTS = [
 
 export default function Achievements() {
   return (
-    <section className="w-full bg-gradient-to-b from-[#25072F] via-[#350A43] to-[#1C0425] py-24 border-t border-white/10">
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+    <section className="w-full relative overflow-hidden bg-gradient-to-b from-brand-purple-deep via-brand-purple-mid to-brand-purple py-24 border-t border-white/10">
+      <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
+      <div className="absolute -top-20 right-1/4 w-96 h-96 bg-purple-500/20 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-10 w-80 h-80 bg-pink-500/20 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,11 +50,13 @@ export default function Achievements() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-tight mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-black text-on-purple tracking-tight mb-4">
             Lo que serás capaz de lograr al{" "}
-            <span className="text-pink-400">finalizar tu capacitación</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-pink-200 to-purple-300">
+              finalizar tu capacitación
+            </span>
           </h2>
-          <p className="text-white/70 text-base font-medium">
+          <p className="text-on-purple-soft text-base font-medium">
             Cada técnica y método está diseñado para que termines el taller con resultados reales y aplicables desde el primer día.
           </p>
         </m.div>
@@ -63,18 +69,18 @@ export default function Achievements() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`w-[85vw] max-w-md shrink-0 sm:w-auto bg-white/[0.05] border border-white/10 rounded-2xl p-6 flex items-start gap-4 hover:border-pink-400/40 hover:bg-white/[0.08] transition-colors ${
+              className={`w-[85vw] max-w-md shrink-0 sm:w-auto bg-glass border border-glass-border rounded-2xl p-6 flex items-start gap-4 shadow-lg shadow-black/20 hover:border-white/30 hover:shadow-xl transition-all ${
                 i === ACHIEVEMENTS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""
               }`}
             >
-              <div className="w-11 h-11 rounded-xl bg-pink-500/20 border border-pink-400/30 text-pink-300 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-on-purple-accent flex items-center justify-center shrink-0">
                 <item.icon size={20} />
               </div>
               <div>
-                <h3 className="font-display text-lg font-bold text-white mb-1.5 leading-snug">
+                <h3 className="font-display text-lg font-bold text-on-purple mb-1.5 leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-sm text-white/70 leading-relaxed">{item.text}</p>
+                <p className="text-sm text-on-purple-soft leading-relaxed">{item.text}</p>
               </div>
             </m.div>
           ))}

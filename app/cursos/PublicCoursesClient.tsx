@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FormacionCard, { type FormacionCardData } from "@/components/FormacionCard";
 import * as m from "framer-motion/m";
+import ScrollIndicator from "@/components/ScrollIndicator";
 
 export interface Course extends FormacionCardData {}
 
@@ -34,13 +35,13 @@ export default function PublicCoursesClient({
       <Navbar />
 
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#280732] via-[#320A3F] to-[#1C0425] pt-36 pb-20 px-6 md:px-20 rounded-b-3xl mb-12 text-white">
+      <div className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-36 pb-28 rounded-b-3xl mb-12 text-white">
         <div className="absolute inset-0 opacity-[0.035] noise-bg pointer-events-none" />
         <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-pink-600/15 blur-[140px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-5%] right-[0%] w-[35%] h-[35%] bg-purple-600/25 blur-[110px] rounded-full pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 text-center">
-          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight mb-6 leading-[1.02]">
+          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6 leading-[1.15]">
             Cursos Online de{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-pink-300 to-cyan-300">
               Pastelería Profesional.
@@ -50,6 +51,7 @@ export default function PublicCoursesClient({
             Modalidad 100% online organizada por módulos en video, dictada por la Chef Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones técnicas paso a paso.
           </p>
         </div>
+        <ScrollIndicator />
       </div>
 
       <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
@@ -103,7 +105,7 @@ export default function PublicCoursesClient({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {filteredCourses.map((course) => (
               <m.div
                 key={course.id}

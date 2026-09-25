@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { resetPassword } from "@/lib/actions/auth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -83,21 +84,6 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <div className="text-center mb-10">
-        <Link
-          href="/iniciar-sesion"
-          className="inline-flex items-center gap-2 text-muted hover:text-accent transition-colors mb-6 text-xs font-bold uppercase tracking-widest"
-        >
-          <ArrowLeft size={14} /> Volver
-        </Link>
-        <h1 className="font-display text-3xl font-black text-foreground mb-2 tracking-tight">
-          Nueva contraseña
-        </h1>
-        <p className="text-muted text-sm">
-          Elige una contraseña segura para tu cuenta.
-        </p>
-      </div>
-
       {error && (
         <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
           {error}
@@ -171,7 +157,13 @@ export default function ResetPasswordPage() {
     <>
       <Navbar forceSolid />
       <main id="main-content">
-        <section className="bg-background min-h-screen pt-32 pb-16 px-6 relative overflow-hidden flex items-center">
+        <PageHero
+          backHref="/iniciar-sesion"
+          backLabel="Volver"
+          title={<>Restablece tu contraseña</>}
+          subtitle="Crea una contraseña segura para recuperar el acceso a tu cuenta."
+        />
+        <section className="bg-background py-16 px-6 relative overflow-hidden">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/[0.06] blur-[130px] rounded-full pointer-events-none" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-foreground/[0.04] blur-[100px] rounded-full pointer-events-none" />
 

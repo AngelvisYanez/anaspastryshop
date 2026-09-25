@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import FormacionCard, { type FormacionCardData } from "@/components/FormacionCard";
 import { WORKSHOPS_DATA } from "@/lib/data/workshops";
 import { Clock, Users, MapPin, CheckCircle2 } from "lucide-react";
+import ScrollIndicator from "@/components/ScrollIndicator";
 
 export const metadata: Metadata = {
   title: "Workshops Presenciales de Pastelería & Panadería | Ana's Pastry Shop",
@@ -19,7 +20,7 @@ export default function WorkshopsPage() {
       <Navbar />
 
       {/* Hero Header Section */}
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 bg-gradient-to-b from-[#25072F] via-[#350A43] to-[#1C0425] text-white overflow-hidden">
+      <section className="relative min-h-screen flex flex-col justify-center pt-32 pb-24 sm:pt-40 sm:pb-32 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
         <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#E82D8A_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10 text-center">
@@ -46,6 +47,7 @@ export default function WorkshopsPage() {
             </span>
           </div>
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* Grid of Workshops */}
@@ -61,7 +63,7 @@ export default function WorkshopsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {workshops.map((workshop) => {
             const card: FormacionCardData = {
               id: workshop.legacySlug ?? workshop.id,

@@ -22,12 +22,12 @@ export default function Hero({
   const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Workshops & Cursos";
 
   return (
-    <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-gradient-to-b from-[#25072F] via-[#350A43] to-[#1C0425] text-white pt-32 pb-16">
+    <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-section-alt text-foreground pt-32 pb-16">
       {/* Background radial effects */}
       <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-pink-600/20 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-80 h-80 bg-purple-700/25 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-pink-400/25 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-80 h-80 bg-purple-400/25 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-300/20 blur-[130px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -37,14 +37,14 @@ export default function Hero({
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="lg:col-span-7 flex flex-col justify-center"
           >
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-white">
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-foreground">
               ¿Quieres formarte en la{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-pink-300 to-cyan-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-[#C51E75] to-purple-500">
                 pastelería profesional?
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-8 max-w-xl font-normal">
+            <p className="text-base sm:text-lg text-muted leading-relaxed mb-8 max-w-xl font-normal">
               Workshops presenciales y cursos online diseñados desde cero para enseñarte cada técnica, receta y método paso a paso, sin secretos. Para emprender o perfeccionar tu pasión.
             </p>
 
@@ -55,19 +55,19 @@ export default function Hero({
                 </button>
               </Link>
               <Link href="/pasteleria">
-                <button className="bg-white/10 border border-white/20 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-white/20 hover:scale-[1.03] transition-all backdrop-blur-sm text-sm md:text-base">
+                <button className="bg-white/70 border border-card-border text-foreground px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-white hover:scale-[1.03] transition-all backdrop-blur-sm text-sm md:text-base">
                   Tortas y Pastelería <Cake size={18} />
                 </button>
               </Link>
             </div>
 
-            <div className="pt-8 border-t border-white/[0.12] flex items-center gap-8 md:gap-12 flex-wrap">
+            <div className="pt-8 border-t border-card-border flex items-center gap-8 md:gap-12 flex-wrap">
               {TRUST_STATS.map((stat) => (
                 <div key={stat.label}>
-                  <p className="font-display text-2xl md:text-3xl font-black text-pink-300 leading-none">
+                  <p className="font-display text-2xl md:text-3xl font-black text-accent leading-none">
                     {stat.value}
                   </p>
-                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mt-1.5">
+                  <p className="text-[11px] text-muted font-bold uppercase tracking-widest mt-1.5">
                     {stat.label}
                   </p>
                 </div>
@@ -82,7 +82,7 @@ export default function Hero({
             className="lg:col-span-5 relative"
           >
             <div className="relative mx-auto max-w-md lg:max-w-none">
-              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl shadow-purple-950/80 group">
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border-2 border-accent/30 shadow-xl shadow-accent/20 group">
                 <Image
                   src="/foto-1.webp"
                   alt="Anais Flores impartiendo workshop de pastelería y decoración"
@@ -90,7 +90,7 @@ export default function Hero({
                   priority
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#25072F]/90 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-purple/80 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="font-display text-lg font-bold text-white leading-tight">
                     Clases prácticas 100% desde cero

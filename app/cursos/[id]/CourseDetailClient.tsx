@@ -9,6 +9,7 @@ import {
 import Navbar from "@/components/Navbar";
 import WorkshopConditions from "@/components/WorkshopConditions";
 import AddToBagButton from "@/components/cart/AddToBagButton";
+import ScrollIndicator from "@/components/ScrollIndicator";
 import Link from "next/link";
 import Image from "next/image";
 import type { ReactNode } from "react";
@@ -63,7 +64,7 @@ export default function CourseDetailClient({
     <main className="min-h-screen bg-[#FAF6F0]">
       <Navbar />
 
-      <section className="bg-gradient-to-b from-[#2B0735] via-[#350A43] to-[#1C0425] pt-28 pb-20 relative overflow-hidden text-white">
+      <section className="bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-32 pb-28 relative overflow-hidden text-white min-h-screen flex flex-col justify-center">
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pink-500/30 to-transparent" />
 
         <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10">
@@ -143,19 +144,15 @@ export default function CourseDetailClient({
                         allowFullScreen
                         className="absolute inset-0 w-full h-full border-0"
                       />
-                    ) : course.image ? (
-                      <Image
-                        src={course.image}
-                        alt={course.title}
-                        fill
-                        className="object-cover opacity-90"
-                      />
                     ) : (
-                      <div className="text-center flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 bg-pink-500/20 border border-pink-500/30 rounded-full flex items-center justify-center">
-                          <PlayCircle className="text-pink-300" size={28} />
-                        </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">Vista previa de la formación</span>
+                      <div className="relative w-40 sm:w-44 h-14 sm:h-16">
+                        <Image
+                          src="/logo-anas-pastry-shop-white.png"
+                          alt="Ana's Pastry Shop"
+                          fill
+                          sizes="(max-width: 768px) 160px, 200px"
+                          className="object-contain"
+                        />
                       </div>
                     )}
                   </div>
@@ -234,6 +231,7 @@ export default function CourseDetailClient({
             </div>
           </div>
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* Main Content Section */}
