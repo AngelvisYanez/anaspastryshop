@@ -81,6 +81,9 @@ export function toOnlineFormacionCard(
   return {
     id: course.id,
     slug: course.slug,
+    // El id de marketing (`cake-de-pina`) también sirve como bagId: el checkout
+    // de bolsa lo resuelve contra `Curso.slug`.
+    bagId: course.slug || course.id,
     title: course.shortTitle || course.title,
     description: course.description,
     price: course.price,

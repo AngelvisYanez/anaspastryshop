@@ -7,7 +7,7 @@ export function CheckoutRegisterForm({
   loading,
   onSubmit,
   loginHref,
-  minPasswordLength = 6,
+  minPasswordLength = 8,
   submitLabel = "Continuar al Pago",
   loadingLabel,
 }: {

@@ -394,7 +394,8 @@ export function toFormacionCard(
     title: workshop.shortTitle,
     description: workshop.description,
     price: workshop.price,
-    image: workshop.image,
+    // Cards de workshops usan el placeholder de marca (no fotos de producto).
+    image: null,
     category: "Workshops Presenciales",
     level: workshop.level,
     isWorkshop: true,

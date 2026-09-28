@@ -11,6 +11,8 @@ import Link from "next/link";
 import Image from "next/image";
 import type { WorkshopDetails } from "@/lib/utils/workshop";
 import { getCourseEmbedUrl } from "./courseEmbed";
+import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
+import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
 
 export function CourseDetailHero({
   course,
@@ -28,6 +30,12 @@ export function CourseDetailHero({
   remainderFee: number;
 }) {
   const embedUrl = getCourseEmbedUrl(course.introVideo);
+  const coverSrc = resolveCourseCover({
+    title: course.title,
+    slug: course.slug,
+    image: course.image,
+    isWorkshop,
+  });
 
   return (
 <section className="bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-32 pb-28 relative overflow-hidden text-white min-h-screen flex flex-col justify-center">
@@ -101,7 +109,7 @@ export function CourseDetailHero({
             <div className="lg:col-span-5">
               <m.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
                 <div className="bg-white/[0.06] border border-white/15 rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl">
-                  <div className="relative h-56 bg-[#120317] flex items-center justify-center overflow-hidden">
+                  <div className="relative w-full aspect-square bg-[#120317] overflow-hidden">
                     {embedUrl && embedUrl.includes("http") ? (
                       <iframe
                         src={embedUrl}
@@ -110,16 +118,23 @@ export function CourseDetailHero({
                         allowFullScreen
                         className="absolute inset-0 w-full h-full border-0"
                       />
+                    ) : coverSrc ? (
+                      <Image
+                        src={coverSrc}
+                        alt={course.title}
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 92vw, 420px"
+                        className="object-cover"
+                      />
                     ) : (
-                      <div className="relative w-40 sm:w-44 h-14 sm:h-16">
-                        <Image
-                          src="/logo-anas-pastry-shop-white.png"
-                          alt="Ana's Pastry Shop"
-                          fill
-                          sizes="(max-width: 768px) 160px, 200px"
-                          className="object-contain"
-                        />
-                      </div>
+                      <CourseCoverPlaceholder
+                        title={course.title}
+                        category={course.category}
+                        isWorkshop={isWorkshop}
+                        forceWhite
+                        className="border-0 bg-transparent"
+                      />
                     )}
                   </div>
 
@@ -179,7 +194,7 @@ export function CourseDetailHero({
                             id: course.id,
                             title: course.title,
                             price: course.price,
-                            image: course.image ?? null,
+                            image: coverSrc,
                             isWorkshop,
                           }}
                           variant="solid"

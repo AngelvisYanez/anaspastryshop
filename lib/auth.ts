@@ -17,11 +17,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           if (!credentials?.email || !credentials?.password) return null;
 
-          const identifier = credentials.email as string;
+          const identifier = (credentials.email as string).trim().toLowerCase();
           const user = identifier.includes("@")
             ? await prisma.user.findUnique({ where: { email: identifier } })
             : await prisma.user.findFirst({
-                where: { name: { equals: identifier, mode: "insensitive" } },
+                where: { name: { equals: credentials.email as string, mode: "insensitive" } },
               });
 
           if (!user || !user.password) return null;

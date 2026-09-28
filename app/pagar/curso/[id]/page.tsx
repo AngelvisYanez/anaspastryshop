@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import CheckoutCurso from "./CheckoutCurso";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { bagIdLookupOr } from "@/lib/utils/bagCourseLookup";
 
 export const metadata = {
   title: "Inscripción & Pago",
@@ -12,33 +13,36 @@ export const metadata = {
 
 async function CursoCheckoutContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [session, course] = await Promise.all([
-    auth(),
-    prisma.curso.findFirst({
-      where: {
-        OR: [
-          { id },
-          { content: { contains: id } },
-          { title: { contains: id } },
-        ],
+
+  let userId: string | undefined;
+  let userName: string | undefined;
+  let userEmail: string | undefined;
+  try {
+    const session = await auth();
+    userId = session?.user?.id;
+    userName = session?.user?.name ?? undefined;
+    userEmail = session?.user?.email ?? undefined;
+  } catch (err) {
+    console.error("[pagar/curso] auth unavailable:", err);
+  }
+
+  const course = await prisma.curso.findFirst({
+    where: { OR: bagIdLookupOr([id]) },
+    include: {
+      instructor: {
+        select: { name: true, image: true },
       },
-      include: {
-        instructor: {
-          select: { name: true, image: true },
-        },
-      },
-    }),
-  ]);
+    },
+  });
 
   if (!course) {
     notFound();
   }
 
-  // Verificar si ya está inscrito y aprobado
-  if (session?.user?.id) {
+  if (userId) {
     const existingApproved = await prisma.inscription.findFirst({
       where: {
-        userId: session.user.id,
+        userId,
         cursoId: course.id,
         status: "APPROVED",
       },
@@ -65,9 +69,9 @@ async function CursoCheckoutContent({ params }: { params: Promise<{ id: string }
         instructorName: course.instructor?.name ?? "Anais Flores",
       }}
       workshopInfo={workshopInfo}
-      initialLoggedIn={Boolean(session?.user)}
-      initialName={session?.user?.name ?? undefined}
-      initialEmail={session?.user?.email ?? undefined}
+      initialLoggedIn={Boolean(userId)}
+      initialName={userName}
+      initialEmail={userEmail}
     />
   );
 }

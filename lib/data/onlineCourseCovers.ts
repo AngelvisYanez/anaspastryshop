@@ -44,7 +44,8 @@ export function normalize(value?: string | null): string {
 export function resolveCourseCover(
   course: Pick<FormacionCardData, "title" | "slug" | "image" | "isWorkshop">
 ): string | null {
-  if (course.isWorkshop) return course.image ?? null;
+  // Workshops: siempre placeholder de marca (sin foto de producto).
+  if (course.isWorkshop) return null;
 
   const slug = normalize(course.slug);
   if (slug) {

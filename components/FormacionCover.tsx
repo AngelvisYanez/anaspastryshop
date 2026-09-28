@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
+import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 
-const SIZES = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw";
+/** Tamaños pensados para cards 1:1 en grillas 1/2/3 columnas. */
+const SIZES = "(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw";
 
 function usableSrc(image?: string | null): string | null {
   const value = (image ?? "").trim();
@@ -13,24 +15,32 @@ function usableSrc(image?: string | null): string | null {
 }
 
 /**
- * Cover for a workshop/course card. Uses the real portada when the record has
- * one and falls back to the branded Ana's Pastry Shop placeholder otherwise, so
- * every card in the app looks identical.
+ * Cover for a workshop/course card.
+ * - Workshops → placeholder de marca (logo).
+ * - Cursos online → portada dedicada si existe, si no `image`.
  */
 export default function FormacionCover({
   image,
   title,
   category,
   isWorkshop,
+  slug,
 }: {
   image?: string | null;
   title: string;
   category?: string;
   isWorkshop: boolean;
+  slug?: string | null;
 }) {
   const [failed, setFailed] = useState(false);
-  const src = usableSrc(image);
-  const showImage = src !== null && !failed;
+  const resolved = resolveCourseCover({
+    title,
+    slug: slug ?? undefined,
+    image,
+    isWorkshop,
+  });
+  const src = usableSrc(resolved);
+  const showImage = !isWorkshop && src !== null && !failed;
 
   return (
     <div className="absolute inset-0">

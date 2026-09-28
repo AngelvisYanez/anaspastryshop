@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import CheckoutBolsa from "./CheckoutBolsa";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { bagIdLookupOr, courseMatchesBagId } from "@/lib/utils/bagCourseLookup";
 
 export const metadata = {
   title: "Pago de tu Bolsa",
@@ -21,7 +22,14 @@ async function BolsaCheckoutContent({
     redirect("/cursos");
   }
 
-  const session = await auth();
+  let userId: string | undefined;
+  try {
+    const session = await auth();
+    userId = session?.user?.id;
+  } catch (err) {
+    console.error("[pagar/bolsa] auth unavailable:", err);
+  }
+
   const requestedIds = [
     ...new Set(
       itemsParam
@@ -35,36 +43,27 @@ async function BolsaCheckoutContent({
     redirect("/cursos");
   }
 
+  const lookup = bagIdLookupOr(requestedIds);
   const coursesDB = await prisma.curso.findMany({
-      where: {
-        OR: requestedIds.flatMap((id) => [
-          { id },
-          { content: { contains: id } },
-          { title: { contains: id } },
-        ]),
+    where: { OR: lookup },
+    include: {
+      instructor: {
+        select: { name: true, image: true },
       },
-      include: {
-        instructor: {
-          select: { name: true, image: true },
-        },
-      },
-    });
+    },
+  });
 
   const orderedCourseRows = requestedIds.flatMap((id) =>
-    coursesDB.filter(
-      (c) => c.id === id || c.content?.includes(id) || c.title?.includes(id)
-    )
+    coursesDB.filter((c) => courseMatchesBagId(c, id))
   );
-  const courseRows = [
-    ...new Map(orderedCourseRows.map((c) => [c.id, c])).values(),
-  ];
+  const courseRows = [...new Map(orderedCourseRows.map((c) => [c.id, c])).values()];
   const activeCourseIds = courseRows.map((c) => c.id);
 
   const userInscriptions =
-    session?.user?.id && activeCourseIds.length > 0
+    userId && activeCourseIds.length > 0
       ? await prisma.inscription.findMany({
           where: {
-            userId: session.user.id,
+            userId,
             cursoId: { in: activeCourseIds },
             status: { in: ["PENDING", "APPROVED"] },
           },
@@ -105,7 +104,7 @@ async function BolsaCheckoutContent({
     <CheckoutBolsa
       courses={notApproved}
       skippedApproved={courses.length - notApproved.length}
-      initialLoggedIn={Boolean(session?.user)}
+      initialLoggedIn={Boolean(userId)}
     />
   );
 }
