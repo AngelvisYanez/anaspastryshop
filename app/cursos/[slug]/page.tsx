@@ -96,15 +96,18 @@ async function CourseContent({ params }: PageProps) {
     permanentRedirect(`/cursos/${canonicalSlug}`);
   }
 
-  let session: Awaited<ReturnType<typeof auth>> = null;
+  let userId: string | undefined;
+  let role: string | undefined;
   try {
-    session = await auth();
+    const session = await auth();
+    userId = session?.user?.id;
+    role = session?.user?.role;
   } catch (err) {
     console.error("[cursos/[slug]] auth unavailable:", err);
   }
   const hasPaid = await checkUserCourseAccess({
-    userId: session?.user?.id,
-    role: session?.user?.role,
+    userId,
+    role,
     courseId: course.id,
     instructorId: course.instructorId,
   });
