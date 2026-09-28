@@ -76,7 +76,7 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
     <div className="bg-card border border-card-border rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-accent/40 transition flex flex-col group h-full">
       <Link
         href={detailHref}
-        className="relative aspect-[16/10] overflow-hidden block group/cover bg-section-alt"
+        className="relative aspect-square overflow-hidden block group/cover bg-section-alt"
         aria-label={course.title}
       >
         <FormacionCover

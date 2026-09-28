@@ -96,7 +96,12 @@ async function CourseContent({ params }: PageProps) {
     permanentRedirect(`/cursos/${canonicalSlug}`);
   }
 
-  const session = await auth();
+  let session: Awaited<ReturnType<typeof auth>> = null;
+  try {
+    session = await auth();
+  } catch (err) {
+    console.error("[cursos/[slug]] auth unavailable:", err);
+  }
   const hasPaid = await checkUserCourseAccess({
     userId: session?.user?.id,
     role: session?.user?.role,
