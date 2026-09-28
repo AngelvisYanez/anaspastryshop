@@ -56,7 +56,7 @@ function ResetPasswordForm() {
         </p>
         <Link
           href="/iniciar-sesion"
-          className="inline-flex items-center justify-center gap-2 bg-accent text-white px-8 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all"
+          className="inline-flex items-center justify-center gap-2 bg-accent-solid text-white px-8 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition"
         >
           Iniciar sesión
         </Link>
@@ -71,21 +71,24 @@ function ResetPasswordForm() {
 
     const formData = new FormData(e.currentTarget);
     formData.set("token", token!);
-    const result = await resetPassword(formData);
 
-    setLoading(false);
+    try {
+      const result = await resetPassword(formData);
 
-    if (result.error) {
-      setError(result.error);
-    } else {
-      setSuccess(true);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSuccess(true);
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
       {error && (
-        <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
+        <div role="alert" className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
           {error}
         </div>
       )}
@@ -103,13 +106,13 @@ function ResetPasswordForm() {
               name="password"
               required
               placeholder="Mínimo 8 caracteres"
-              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-              tabIndex={-1}
+              aria-label={showPassword ? "Ocultar nueva contraseña" : "Mostrar nueva contraseña"}
+              className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 grid place-items-center text-muted hover:text-accent transition-colors"
             >
               {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
@@ -128,13 +131,13 @@ function ResetPasswordForm() {
               name="confirmPassword"
               required
               placeholder="Repite tu contraseña"
-              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
             />
             <button
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-              tabIndex={-1}
+              aria-label={showConfirm ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
+              className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 grid place-items-center text-muted hover:text-accent transition-colors"
             >
               {showConfirm ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
@@ -142,10 +145,13 @@ function ResetPasswordForm() {
         </div>
 
         <button
+          type="submit"
           disabled={loading}
-          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-4 flex justify-center items-center gap-2 disabled:opacity-50"
+          aria-busy={loading}
+          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-opacity mt-4 flex justify-center items-center gap-2 disabled:opacity-50"
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : "Restablecer contraseña"}
+          {loading && <Loader2 size={18} className="animate-spin" />}
+          Restablecer contraseña
         </button>
       </form>
     </>
@@ -155,7 +161,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <>
-      <Navbar forceSolid />
+      <Navbar />
       <main id="main-content">
         <PageHero
           backHref="/iniciar-sesion"
@@ -172,7 +178,7 @@ export default function ResetPasswordPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-card rounded-xl p-10 shadow-[var(--shadow-card)] border border-card-border"
+              className="bg-card rounded-xl p-10 shadow-card border border-card-border"
             >
               <Suspense fallback={<div className="text-center py-4"><Loader2 className="animate-spin mx-auto text-accent" size={24} /></div>}>
                 <ResetPasswordForm />

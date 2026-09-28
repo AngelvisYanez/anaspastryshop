@@ -2,12 +2,18 @@
 import { useState, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
-  Users, GraduationCap, UserCheck, Mail, Calendar, BookOpen,
-  ShieldCheck, Shield, ShieldOff, Clock, Hash, Pencil, Trash2,
-  X, Loader2, AlertTriangle, Lock, Unlock, Star, Search, Filter,
+  Users, Mail, Calendar, BookOpen,
+  ShieldCheck, Hash, Pencil, Trash2,
+  X, Loader2, AlertTriangle, Lock, Unlock, Search, Filter,
 } from "lucide-react";
 import { adminEditUser, adminDeleteUser, adminToggleUserStatus } from "@/lib/actions/user";
 import Image from "next/image";
+import {
+  EditUserDialog,
+  DeleteUserDialog,
+  SuspendUserDialog,
+} from "./UserActionDialogs";
+
 
 type UserRecord = {
   id: string;
@@ -103,22 +109,19 @@ const STATS = [
   { icon: ShieldCheck, label: "Admins", value: admins.length, color: "text-accent", bg: "bg-accent-subtle" },
 ];
 
-  const inputClass = "w-full bg-card border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium";
-  const labelClass = "text-[11px] font-black uppercase tracking-widest text-muted mb-1.5 block";
-
   return (
     <div className="space-y-6">
       <AnimatePresence>
         {error && (
           <m.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-600 rounded-xl px-5 py-3.5 flex justify-between items-center text-sm font-medium">
+            role="alert" className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-600 rounded-xl px-5 py-3.5 flex justify-between items-center text-sm font-medium">
             <div className="flex items-center gap-2"><AlertTriangle size={15} /> {error}</div>
             <button onClick={() => setError(null)} aria-label="Cerrar"><X size={15} /></button>
           </m.div>
         )}
         {success && (
           <m.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl px-5 py-3.5 text-sm font-bold">
+            role="status" className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl px-5 py-3.5 text-sm font-bold">
             {success}
           </m.div>
         )}
@@ -144,7 +147,7 @@ const STATS = [
         <div className="flex bg-card border border-card-border rounded-xl p-1 gap-0.5 shadow-sm">
           {(["todos", "alumnos", "admins"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
-              className={`relative px-4 py-2 rounded-lg font-bold transition-all text-sm ${
+              className={`relative px-4 py-2 rounded-lg font-bold transition text-sm ${
                 tab === t
                   ? "bg-foreground text-background shadow-sm"
                   : "text-muted hover:text-foreground"
@@ -155,13 +158,15 @@ const STATS = [
         </div>
 
         <div className="relative">
+          <label htmlFor="users-search" className="sr-only">Buscar usuarios por nombre o email</label>
           <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
           <input
+            id="users-search"
             type="text"
             placeholder="Buscar por nombre o email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-card border border-card-border rounded-xl py-2.5 pl-9 pr-4 text-sm font-medium outline-none focus:border-accent transition-all text-foreground placeholder:text-muted w-full sm:w-64 shadow-sm"
+            className="bg-card border border-card-border rounded-xl py-2.5 pl-9 pr-4 text-sm font-medium outline-none focus:border-accent transition text-foreground placeholder:text-muted w-full sm:w-64 shadow-sm"
           />
         </div>
       </div>
@@ -236,14 +241,14 @@ const STATS = [
                           {user.role === "USER" && (
                             user.isActive
                               ? <button onClick={() => setSuspendingUser({ user, isReactivating: false })} title="Suspender" aria-label={`Suspender a ${user.name || user.email}`}
-                                  className="p-2 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition-all"><Lock size={14} /></button>
+                                  className="p-2 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition"><Lock size={14} /></button>
                               : <button onClick={() => setSuspendingUser({ user, isReactivating: true })} title="Reactivar" aria-label={`Reactivar a ${user.name || user.email}`}
-                                  className="p-2 bg-green-50 dark:bg-green-950/20 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-all"><Unlock size={14} /></button>
+                                  className="p-2 bg-green-50 dark:bg-green-950/20 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition"><Unlock size={14} /></button>
                           )}
                           <button onClick={() => openEditModal(user)} title="Editar" aria-label={`Editar usuario ${user.name || user.email}`}
-                            className="p-2 bg-accent-subtle text-accent hover:bg-accent/20 rounded-lg transition-all"><Pencil size={14} /></button>
+                            className="p-2 bg-accent-subtle text-accent hover:bg-accent/20 rounded-lg transition"><Pencil size={14} /></button>
                           <button onClick={() => setDeletingUser(user)} title="Eliminar" aria-label={`Eliminar usuario ${user.name || user.email}`}
-                            className="p-2 bg-red-50 dark:bg-red-950/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 size={14} /></button>
+                            className="p-2 bg-red-50 dark:bg-red-950/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition"><Trash2 size={14} /></button>
                         </div>
                       )}
                     </td>
@@ -263,136 +268,40 @@ const STATS = [
         )}
       </div>
 
-      {/* MODAL: Editar */}
-      <AnimatePresence>
-        {editingUser && (
-          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => { setEditingUser(null); }}>
-            <m.div
-              role="dialog" aria-modal="true" aria-labelledby="edit-user-title"
-              initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: "spring", damping: 22, stiffness: 300 }}
-              className="bg-card rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-card-border"
-              onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-center p-6 border-b border-card-border">
-                <h2 id="edit-user-title" className="text-lg font-black text-foreground">Editar Usuario</h2>
-                <button onClick={() => { setEditingUser(null); }} className="p-1.5 hover:bg-card-hover rounded-lg transition-colors" aria-label="Cerrar"><X size={18} /></button>
-              </div>
+      {editingUser && (
+        <EditUserDialog
+          user={editingUser}
+          error={error}
+          isPending={isPending}
+          onClose={() => setEditingUser(null)}
+          onSubmit={handleEditSubmit}
+        />
+      )}
 
-              <form onSubmit={handleEditSubmit} className="p-6 space-y-5">
-                <div>
-                  <label className={labelClass}>Nombre Completo</label>
-                  <input name="name" defaultValue={editingUser.name || ""} required placeholder="Ej. María González" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Imagen (URL)</label>
-                  <input name="image" defaultValue={editingUser.image || ""} placeholder="https://..." className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Rol</label>
-                  <select name="role" defaultValue={editingUser.role} className={inputClass} disabled>
-                    <option value="USER">Alumno</option>
-                    <option value="ADMIN">Administrador</option>
-                  </select>
-                </div>
+      {deletingUser && (
+        <DeleteUserDialog
+          user={deletingUser}
+          isPending={isPending}
+          onClose={() => setDeletingUser(null)}
+          onConfirm={handleDelete}
+        />
+      )}
 
-                {error && <p className="text-red-500 text-sm font-medium bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 p-3 rounded-xl">{error}</p>}
+      {suspendingUser && (
+        <SuspendUserDialog
+          user={suspendingUser.user}
+          isReactivating={suspendingUser.isReactivating}
+          suspensionReason={suspensionReason}
+          isPending={isPending}
+          onReasonChange={setSuspensionReason}
+          onClose={() => {
+            setSuspendingUser(null);
+            setSuspensionReason("");
+          }}
+          onConfirm={handleToggleStatus}
+        />
+      )}
 
-                <button type="submit" disabled={isPending}
-                  className="w-full bg-accent text-white py-3 rounded-xl font-bold hover:bg-accent-hover shadow-md shadow-accent/20 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
-                  {isPending ? <Loader2 className="animate-spin" size={16} /> : "Guardar Cambios"}
-                </button>
-              </form>
-            </m.div>
-          </m.div>
-        )}
-      </AnimatePresence>
-
-      {/* MODAL: Eliminar */}
-      <AnimatePresence>
-        {deletingUser && (
-          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setDeletingUser(null)}>
-            <m.div
-              role="dialog" aria-modal="true" aria-labelledby="delete-user-title"
-              initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: "spring", damping: 22, stiffness: 300 }}
-              className="bg-card rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center border border-card-border"
-              onClick={(e) => e.stopPropagation()}>
-              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                <Trash2 className="text-red-500" size={24} />
-              </div>
-              <h2 id="delete-user-title" className="text-xl font-black text-foreground mb-1">¿Eliminar usuario?</h2>
-              <p className="text-muted text-sm mb-1">Vas a eliminar a:</p>
-              <p className="font-bold text-foreground mb-0.5">{deletingUser.name || "Sin nombre"}</p>
-              <p className="text-xs text-muted mb-5">{deletingUser.email}</p>
-              <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 mb-6 font-medium">
-                Esta acción es irreversible. Se eliminarán también sus inscripciones.
-              </p>
-              <div className="flex gap-2.5">
-                <button onClick={() => setDeletingUser(null)} className="flex-1 py-3 rounded-xl font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all text-sm">Cancelar</button>
-                <button onClick={handleDelete} disabled={isPending}
-                  className="flex-1 py-3 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-60 flex items-center justify-center gap-2 text-sm">
-                  {isPending ? <Loader2 className="animate-spin" size={16} /> : "Eliminar"}
-                </button>
-              </div>
-            </m.div>
-          </m.div>
-        )}
-      </AnimatePresence>
-
-      {/* MODAL: Suspender/Reactivar */}
-      <AnimatePresence>
-        {suspendingUser && (
-          <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => { setSuspendingUser(null); setSuspensionReason(""); }}>
-            <m.div
-              role="dialog" aria-modal="true" aria-labelledby="suspend-user-title"
-              initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: "spring", damping: 22, stiffness: 300 }}
-              className="bg-card rounded-2xl w-full max-w-md shadow-2xl border border-card-border"
-              onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-center p-6 border-b border-card-border">
-                <h2 id="suspend-user-title" className="text-lg font-black text-foreground">
-                  {suspendingUser.isReactivating ? "Reactivar usuario" : "Suspender usuario"}
-                </h2>
-                <button onClick={() => { setSuspendingUser(null); setSuspensionReason(""); }} className="p-1.5 hover:bg-card-hover rounded-lg transition-colors" aria-label="Cerrar"><X size={18} /></button>
-              </div>
-              <div className="p-6 space-y-5">
-                <p className="text-sm text-muted">
-                  {suspendingUser.isReactivating
-                    ? `Estás a punto de reactivar el acceso de ${suspendingUser.user.name || "este usuario"}.`
-                    : `Selecciona el motivo para suspender a ${suspendingUser.user.name || "este usuario"}.`}
-                </p>
-                {!suspendingUser.isReactivating && (
-                  <div>
-                    <label className={labelClass}>Motivo de Suspensión</label>
-                    <select value={suspensionReason} onChange={(e) => setSuspensionReason(e.target.value)} className={inputClass}>
-                      <option value="" disabled>Selecciona una razón...</option>
-                      <option value="Uso de tarjetas dudosas">Uso de tarjetas dudosas</option>
-                      <option value="Inyección de código">Inyección de código</option>
-                      <option value="Compartir credenciales">Compartir credenciales</option>
-                      <option value="Piratería / Grabación de contenido">Piratería / Grabación de contenido</option>
-                      <option value="Distribución de materiales">Distribución de materiales</option>
-                    </select>
-                  </div>
-                )}
-                <div className="flex gap-2.5 pt-1">
-                  <button onClick={() => { setSuspendingUser(null); setSuspensionReason(""); }}
-                    className="flex-1 py-3 rounded-xl font-bold bg-section-alt text-foreground hover:bg-card-hover transition-all text-sm">Cancelar</button>
-                  <button onClick={handleToggleStatus} disabled={isPending}
-                    className={`flex-1 py-3 rounded-xl font-bold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 text-sm ${suspendingUser.isReactivating ? "bg-green-500 hover:bg-green-600" : "bg-yellow-500 hover:bg-yellow-600"}`}>
-                    {isPending ? <Loader2 className="animate-spin" size={16} /> : (suspendingUser.isReactivating ? "Reactivar" : "Suspender")}
-                  </button>
-                </div>
-              </div>
-            </m.div>
-          </m.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

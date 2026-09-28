@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { sendNewsletter, deleteNewsletterSubscriber } from "@/lib/actions/newsletter";
 import {
-  Send, Loader2, Trash2, CheckCircle2, XCircle,
+  Send, Loader2, Trash2,
   ChevronDown, ChevronUp, Users,
 } from "lucide-react";
+import { NewsletterStats } from "@/components/NewsletterStats";
+import { NewsletterResultBanner } from "@/components/NewsletterResultBanner";
 
 type Subscriber = {
   id: string;
@@ -27,7 +29,7 @@ const TEMPLATES = [
 <p style="margin-top:16px;">Explora nuestros cursos online, únete a las masterclasses en vivo y aprende a elaborar postres irresistibles a tu propio ritmo.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
-    <td style="border-radius:50px;background-color:#D92080;">
+    <td style="border-radius:50px;background-color:#C51E75;">
       <a href="https://anaspastryshop.com/cursos" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Cursos &rarr;</a>
     </td>
   </tr>
@@ -42,7 +44,7 @@ const TEMPLATES = [
     content: `<p>Hemos añadido nuevas formaciones a la plataforma. Entra ahora y descubre técnicas avanzadas, recetas explicadas al detalle y secretos de vitrina.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:28px auto;">
   <tr>
-    <td style="border-radius:50px;background-color:#D92080;">
+    <td style="border-radius:50px;background-color:#C51E75;">
       <a href="https://anaspastryshop.com/dashboard" style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:50px;">Ver Novedades &rarr;</a>
     </td>
   </tr>
@@ -76,42 +78,34 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
     if (!subject.trim() || !title.trim() || !content.trim()) return;
     setSending(true);
     setResult(null);
-    const res = await sendNewsletter(subject, title, preheader, content);
-    setSending(false);
-    if (res.error) setResult({ error: res.error });
-    else setResult({ sent: res.sent, failed: res.failed });
+    try {
+      const res = await sendNewsletter(subject, title, preheader, content);
+      if (res.error) setResult({ error: res.error });
+      else setResult({ sent: res.sent, failed: res.failed });
+    } finally {
+      setSending(false);
+    }
   }
 
   async function handleDelete(id: string) {
     setDeletingId(id);
-    await deleteNewsletterSubscriber(id);
-    setDeletingId(null);
-    router.refresh();
+    try {
+      await deleteNewsletterSubscriber(id);
+      router.refresh();
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   const activeCount = subscribers.filter((s) => s.isActive).length;
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Total</p>
-          <p className="text-3xl font-black text-foreground">{subscribers.length}</p>
-          <p className="text-xs text-muted font-medium mt-1">suscriptores registrados</p>
-        </div>
-        <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Activos</p>
-          <p className="text-3xl font-black text-accent">{activeCount}</p>
-          <p className="text-xs text-muted font-medium mt-1">recibirán el próximo envío</p>
-        </div>
-        <div className="bg-card rounded-xl p-5 border border-card-border shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-1">Inactivos</p>
-          <p className="text-3xl font-black text-foreground">
-            {subscribers.filter((s) => !s.isActive).length}
-          </p>
-          <p className="text-xs text-muted font-medium mt-1">cancelaron suscripción</p>
-        </div>
-      </div>
+      <NewsletterStats
+        total={subscribers.length}
+        active={activeCount}
+        inactive={subscribers.filter((s) => !s.isActive).length}
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl border border-card-border shadow-sm p-6">
@@ -126,7 +120,7 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
                 <button
                   key={t.id}
                   onClick={() => applyTemplate(t.id)}
-                  className="px-3 py-1.5 text-xs font-bold bg-section-alt hover:bg-accent hover:text-white text-foreground rounded-md transition-all border border-card-border"
+                  className="px-3 py-1.5 text-xs font-bold bg-section-alt hover:bg-accent-solid hover:text-white text-foreground rounded-md transition border border-card-border"
                 >
                   {t.label}
                 </button>
@@ -136,10 +130,11 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
 
           <div className="space-y-3">
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
+              <label htmlFor="nl-subject" className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
                 Asunto *
               </label>
               <input
+                id="nl-subject"
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
@@ -148,10 +143,11 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
               />
             </div>
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
+              <label htmlFor="nl-title" className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
                 Título Principal *
               </label>
               <input
+                id="nl-title"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -160,10 +156,11 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
               />
             </div>
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
+              <label htmlFor="nl-preheader" className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
                 Texto de Previsualización
               </label>
               <input
+                id="nl-preheader"
                 type="text"
                 value={preheader}
                 onChange={(e) => setPreheader(e.target.value)}
@@ -172,10 +169,11 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
               />
             </div>
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
+              <label htmlFor="nl-content" className="block text-[11px] font-black uppercase tracking-widest text-muted mb-1.5">
                 Contenido HTML *
               </label>
               <textarea
+                id="nl-content"
                 rows={8}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -185,34 +183,12 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
             </div>
           </div>
 
-          {result && (
-            <div
-              className={`mt-4 rounded-lg p-3 flex items-start gap-3 ${
-                result.error
-                  ? "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
-                  : "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
-              }`}
-            >
-              {result.error ? (
-                <>
-                  <XCircle size={15} className="text-red-500 mt-0.5 shrink-0" />
-                  <p className="text-sm font-bold text-red-600 dark:text-red-400">{result.error}</p>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 size={15} className="text-green-500 mt-0.5 shrink-0" />
-                  <p className="text-sm font-bold text-green-700 dark:text-green-400">
-                    Enviado: {result.sent} exitosos, {result.failed} fallidos.
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+          <NewsletterResultBanner result={result} />
 
           <button
             onClick={handleSend}
             disabled={sending || !subject.trim() || !title.trim() || !content.trim()}
-            className="mt-4 w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-black py-3 px-6 rounded-lg transition-all shadow-md shadow-pink-600/20"
+            className="mt-4 w-full flex items-center justify-center gap-2 bg-accent-solid hover:bg-accent-solid-hover disabled:opacity-50 text-white font-black py-3 px-6 rounded-lg transition shadow-md shadow-accent-solid/20"
           >
             {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
             {sending
@@ -269,7 +245,8 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
                     <button
                       onClick={() => handleDelete(s.id)}
                       disabled={deletingId === s.id}
-                      className="ml-4 p-1.5 text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-all disabled:opacity-50"
+                      aria-label={`Eliminar suscripción de ${s.email}`}
+                      className="ml-4 p-1.5 text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition disabled:opacity-50"
                     >
                       {deletingId === s.id ? (
                         <Loader2 size={13} className="animate-spin" />

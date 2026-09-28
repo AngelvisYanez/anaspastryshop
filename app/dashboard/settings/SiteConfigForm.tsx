@@ -21,16 +21,22 @@ interface SiteConfigData {
 export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteConfigData }) {
   const [tab, setTab] = useState<"general" | "header" | "social">("general");
   const [config, setConfig] = useState<SiteConfigData>(initialConfig);
+  // Stable client-only row keys, kept out of `config` so they never reach the saved payload.
+  const [navKeys, setNavKeys] = useState<string[]>(() =>
+    initialConfig.navItems.map(() => crypto.randomUUID())
+  );
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function addNavItem() {
     setConfig((c) => ({ ...c, navItems: [...c.navItems, { label: "", href: "" }] }));
+    setNavKeys((k) => [...k, crypto.randomUUID()]);
   }
 
   function removeNavItem(i: number) {
     setConfig((c) => ({ ...c, navItems: c.navItems.filter((_, idx) => idx !== i) }));
+    setNavKeys((k) => k.filter((_, idx) => idx !== i));
   }
 
   function updateNavItem(i: number, field: keyof NavItem, value: string) {
@@ -64,7 +70,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
     setLoading(false);
   }
 
-  const inputClass = "w-full bg-background border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm font-medium";
+  const inputClass = "w-full bg-background border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm font-medium";
   const labelClass = "text-[11px] font-black uppercase tracking-widest text-muted mb-1.5 block ml-1";
 
   const TABS = [
@@ -85,7 +91,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition ${
               tab === id
                 ? "bg-card text-foreground shadow-sm border border-card-border"
                 : "text-muted hover:text-foreground"
@@ -99,8 +105,9 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
       {tab === "general" && (
         <div className="space-y-6">
           <div>
-            <label className={labelClass}>Nombre del Sitio</label>
+            <label htmlFor="site-name" className={labelClass}>Nombre del Sitio</label>
             <input
+              id="site-name"
               className={inputClass}
               value={config.siteName}
               onChange={(e) => setConfig((c) => ({ ...c, siteName: e.target.value }))}
@@ -108,8 +115,9 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
             />
           </div>
           <div>
-            <label className={labelClass}>Logo URL (opcional)</label>
+            <label htmlFor="site-logo-url" className={labelClass}>Logo URL (opcional)</label>
             <input
+              id="site-logo-url"
               className={inputClass}
               value={config.logoUrl ?? ""}
               onChange={(e) => setConfig((c) => ({ ...c, logoUrl: e.target.value || null }))}
@@ -123,8 +131,9 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Texto del Botón CTA</label>
+              <label htmlFor="site-cta-text" className={labelClass}>Texto del Botón CTA</label>
               <input
+                id="site-cta-text"
                 className={inputClass}
                 value={config.ctaText}
                 onChange={(e) => setConfig((c) => ({ ...c, ctaText: e.target.value }))}
@@ -132,8 +141,9 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
               />
             </div>
             <div>
-              <label className={labelClass}>Enlace del Botón CTA</label>
+              <label htmlFor="site-cta-url" className={labelClass}>Enlace del Botón CTA</label>
               <input
+                id="site-cta-url"
                 className={inputClass}
                 value={config.ctaUrl}
                 onChange={(e) => setConfig((c) => ({ ...c, ctaUrl: e.target.value }))}
@@ -164,14 +174,22 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
             ) : (
               <div className="space-y-2">
                 {config.navItems.map((item, i) => (
-                  <div key={i} className="flex gap-2 items-center">
+                  <div key={navKeys[i]} className="flex gap-2 items-center">
+                    <label htmlFor={`nav-label-${navKeys[i]}`} className="sr-only">
+                      Texto del enlace {i + 1}
+                    </label>
                     <input
+                      id={`nav-label-${navKeys[i]}`}
                       className={`${inputClass} flex-1`}
                       value={item.label}
                       onChange={(e) => updateNavItem(i, "label", e.target.value)}
                       placeholder="Texto del enlace (ej. Blog)"
                     />
+                    <label htmlFor={`nav-href-${navKeys[i]}`} className="sr-only">
+                      URL del enlace {i + 1}
+                    </label>
                     <input
+                      id={`nav-href-${navKeys[i]}`}
                       className={`${inputClass} flex-1`}
                       value={item.href}
                       onChange={(e) => updateNavItem(i, "href", e.target.value)}
@@ -182,6 +200,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
                       onClick={() => removeNavItem(i)}
                       className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors"
                       title="Eliminar"
+                      aria-label={`Eliminar enlace ${item.label || i + 1}`}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -196,10 +215,11 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
       {tab === "social" && (
         <div className="space-y-6">
           <div>
-            <label className={labelClass}>Instagram URL</label>
+            <label htmlFor="site-instagram" className={labelClass}>Instagram URL</label>
             <div className="relative">
               <Instagram size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
+                id="site-instagram"
                 className={`${inputClass} pl-11`}
                 value={config.instagramUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, instagramUrl: e.target.value || null }))}
@@ -208,8 +228,9 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
             </div>
           </div>
           <div>
-            <label className={labelClass}>TikTok URL</label>
+            <label htmlFor="site-tiktok" className={labelClass}>TikTok URL</label>
             <input
+              id="site-tiktok"
               className={inputClass}
               value={config.tiktokUrl ?? ""}
               onChange={(e) => setConfig((c) => ({ ...c, tiktokUrl: e.target.value || null }))}
@@ -217,10 +238,11 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
             />
           </div>
           <div>
-            <label className={labelClass}>LinkedIn URL (opcional)</label>
+            <label htmlFor="site-linkedin" className={labelClass}>LinkedIn URL (opcional)</label>
             <div className="relative">
               <Linkedin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
+                id="site-linkedin"
                 className={`${inputClass} pl-11`}
                 value={config.linkedinUrl ?? ""}
                 onChange={(e) => setConfig((c) => ({ ...c, linkedinUrl: e.target.value || null }))}
@@ -235,7 +257,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
         <div>
           {error && <p className="text-xs text-red-500 font-bold">{error}</p>}
           {success && (
-            <p className="text-xs text-green-600 font-bold flex items-center gap-1.5">
+            <p role="status" className="text-xs text-green-600 dark:text-green-400 font-bold flex items-center gap-1.5">
               <CheckCircle size={14} /> Guardado exitosamente
             </p>
           )}
@@ -243,7 +265,7 @@ export default function SiteConfigForm({ initialConfig }: { initialConfig: SiteC
         <button
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-colors disabled:opacity-50 shadow-md shadow-pink-600/20"
+          className="flex items-center gap-2 px-6 py-3 bg-accent-solid text-white rounded-xl text-sm font-bold hover:bg-accent-solid-hover transition-colors disabled:opacity-50 shadow-md shadow-accent-solid/20"
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
           Guardar Cambios

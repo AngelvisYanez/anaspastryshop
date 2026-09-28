@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type PaymentMethod =
   | "ZELLE"
@@ -110,6 +111,14 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
     return { error: "Debes iniciar sesión o registrarte para registrar tu pago de pastelería" };
   }
 
+  const throttle = rateLimit(`pastry-payment:${session.user.id}`, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!throttle.allowed) {
+    return { error: "Demasiados envíos. Intenta de nuevo más tarde." };
+  }
+
   try {
     const refFormatted = data.serviceDescription?.trim()
       ? `[Servicio: ${data.serviceDescription.trim()}] ${data.reference ? data.reference.trim() : ""}`.trim()
@@ -171,43 +180,59 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
     return { error: "Debes iniciar sesión para inscribirte en las formaciones" };
   }
 
+  const userId = session.user.id;
+
   if (!data.items?.length) {
     return { error: "No hay formaciones en la bolsa para inscribir" };
   }
 
-  const created: string[] = [];
+  const requestedCourseIds = [
+    ...new Set(
+      data.items
+        .map((item) => item.cursoId)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+
+  // One query for the whole bag instead of a lookup per course.
+  const existingInscriptions = await prisma.inscription.findMany({
+    where: {
+      userId,
+      cursoId: { in: requestedCourseIds },
+      status: { in: ["PENDING", "APPROVED"] },
+    },
+    select: { cursoId: true },
+  });
+  const alreadyEnrolledSet = new Set(existingInscriptions.map((i) => i.cursoId));
+
   const alreadyEnrolled: string[] = [];
+  const pending: typeof data.items = [];
 
   for (const item of data.items) {
     if (!item.cursoId) continue;
-
-    const existing = await prisma.inscription.findFirst({
-      where: {
-        userId: session.user.id,
-        cursoId: item.cursoId,
-        status: { in: ["PENDING", "APPROVED"] },
-      },
-    });
-
-    if (existing) {
+    if (alreadyEnrolledSet.has(item.cursoId)) {
       alreadyEnrolled.push(item.cursoId);
-      continue;
+    } else {
+      pending.push(item);
     }
+  }
 
-    await prisma.inscription.create({
-      data: {
+  const created: string[] = [];
+
+  if (pending.length) {
+    await prisma.inscription.createMany({
+      data: pending.map((item) => ({
         method: data.method,
         reference: data.reference || null,
         phoneNumber: data.phoneNumber || null,
         amountPaid: item.amountPaid,
         receiptImage: data.receiptImage || null,
-        cursoId: item.cursoId,
-        userId: session.user.id,
-        status: "PENDING",
-      },
+        cursoId: item.cursoId as string,
+        userId,
+        status: "PENDING" as const,
+      })),
     });
-
-    created.push(item.cursoId);
+    created.push(...pending.map((item) => item.cursoId as string));
   }
 
   if (!created.length) {
@@ -238,33 +263,4 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
   revalidatePath("/dashboard/mis-cursos");
 
   return { success: true, inscriptionIds: created, alreadyEnrolled };
-}
-
-// Retrocompatibilidad con nombres anteriores
-export async function createInscription(data: {
-  cursoId?: string;
-  method: PaymentMethod;
-  reference?: string;
-  phoneNumber?: string;
-  amountPaid: number;
-  receiptImage?: string;
-}) {
-  if (data.cursoId) {
-    return createCourseInscription({
-      cursoId: data.cursoId,
-      method: data.method,
-      reference: data.reference,
-      phoneNumber: data.phoneNumber,
-      amountPaid: data.amountPaid,
-      receiptImage: data.receiptImage,
-    });
-  }
-  return createPastryServicePayment({
-    serviceDescription: "Servicio de Pastelería",
-    method: data.method,
-    reference: data.reference,
-    phoneNumber: data.phoneNumber,
-    amountPaid: data.amountPaid,
-    receiptImage: data.receiptImage,
-  });
 }

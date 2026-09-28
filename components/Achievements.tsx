@@ -37,50 +37,42 @@ const ACHIEVEMENTS = [
 
 export default function Achievements() {
   return (
-    <section className="w-full relative overflow-hidden bg-gradient-to-b from-brand-purple-deep via-brand-purple-mid to-brand-purple py-24 border-t border-white/10">
-      <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-      <div className="absolute -top-20 right-1/4 w-96 h-96 bg-purple-500/20 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-10 w-80 h-80 bg-pink-500/20 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10">
+    <section className="w-full relative overflow-hidden bg-background py-20 md:py-24 border-t border-card-border">
+      <div className="page-container relative z-10">
         <m.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl mb-12 md:mb-16"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-black text-on-purple tracking-tight mb-4">
+          <h2 className="font-display text-3xl md:text-5xl font-black text-foreground tracking-tight mb-4">
             Lo que serás capaz de lograr al{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-pink-200 to-purple-300">
-              finalizar tu capacitación
-            </span>
+            <span className="text-accent">finalizar tu capacitación</span>
           </h2>
-          <p className="text-on-purple-soft text-base font-medium">
+          <p className="text-muted text-base font-medium">
             Cada técnica y método está diseñado para que termines el taller con resultados reales y aplicables desde el primer día.
           </p>
         </m.div>
 
-        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
           {ACHIEVEMENTS.map((item, i) => (
             <m.div
               key={item.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`w-[85vw] max-w-md shrink-0 sm:w-auto bg-glass border border-glass-border rounded-2xl p-6 flex items-start gap-4 shadow-lg shadow-black/20 hover:border-white/30 hover:shadow-xl transition-all ${
-                i === ACHIEVEMENTS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""
-              }`}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="flex items-start gap-4"
             >
-              <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-on-purple-accent flex items-center justify-center shrink-0">
-                <item.icon size={20} />
+              <div className="w-10 h-10 rounded-xl bg-accent-subtle text-accent flex items-center justify-center shrink-0">
+                <item.icon size={18} />
               </div>
               <div>
-                <h3 className="font-display text-lg font-bold text-on-purple mb-1.5 leading-snug">
+                <h3 className="font-display text-lg font-bold text-foreground mb-1 leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-sm text-on-purple-soft leading-relaxed">{item.text}</p>
+                <p className="text-sm text-muted leading-relaxed">{item.text}</p>
               </div>
             </m.div>
           ))}

@@ -73,20 +73,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 
+  const value = useMemo(
+    () => ({
+      items,
+      isOpen,
+      total,
+      isInCart,
+      addItem,
+      removeItem,
+      clearBag,
+      openCart,
+      closeCart,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handlers are stable for the lifetime of the provider
+    [items, isOpen, total],
+  );
+
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        isOpen,
-        total,
-        isInCart,
-        addItem,
-        removeItem,
-        clearBag,
-        openCart,
-        closeCart,
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

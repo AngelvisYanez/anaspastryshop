@@ -3,17 +3,31 @@
 import { m } from "framer-motion";
 import { ArrowRight, Cake } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 
-const TRUST_STATS = [
-  { value: "6+", label: "Años Formando" },
-  { value: "100%", label: "Práctico Desde Cero" },
-  { value: "Calidad", label: "Y Experiencia Garantizada" },
-];
+// Art direction real: la foto cambia por viewport (16:9 escritorio / 9:16 móvil), así que
+// usamos <picture> en vez de dos <Image priority>, que precargaban ambas imágenes en cada
+// visita (~3.3 MB). El optimizador de Next ahora sirve WebP/AVIF (~150 KB en vez de 2.2 MB).
+const { props: heroMobileProps } = getImageProps({
+  alt: "",
+  src: "/hero-movil.png",
+  width: 1080,
+  height: 1920,
+  sizes: "100vw",
+  quality: 80,
+});
+
+const { props: heroDesktopProps } = getImageProps({
+  alt: "",
+  src: "/hero.png",
+  width: 1366,
+  height: 768,
+  sizes: "100vw",
+  quality: 80,
+});
 
 export default function Hero({
   isLoggedIn = false,
-  userName,
 }: {
   isLoggedIn?: boolean;
   userName?: string | null;
@@ -22,81 +36,49 @@ export default function Hero({
   const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Workshops & Cursos";
 
   return (
-    <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-section-alt text-foreground pt-32 pb-16">
-      {/* Background radial effects */}
-      <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-pink-400/25 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-80 h-80 bg-purple-400/25 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-300/20 blur-[130px] rounded-full pointer-events-none" />
+    <section className="relative min-h-svh flex items-end lg:items-center overflow-hidden bg-section-alt text-foreground pb-10 lg:pt-32 lg:pb-16">
+      <picture className="absolute inset-0">
+        <source media="(min-width: 1024px)" srcSet={heroDesktopProps.srcSet} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          {...heroMobileProps}
+          alt=""
+          className="h-full w-full object-cover object-center lg:object-[center_10%]"
+          fetchPriority="high"
+        />
+      </picture>
+      {/* Lectura del texto sobre la foto sin blobs ni glow */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/45 to-background/20 lg:bg-gradient-to-r lg:from-background/85 lg:via-background/50 lg:to-transparent pointer-events-none" />
 
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <div className="page-container w-full relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <m.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="lg:col-span-7 flex flex-col justify-center"
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-7 flex flex-col justify-center items-center text-center lg:items-start lg:text-left pt-24 pb-6 lg:py-0"
           >
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-foreground">
-              ¿Quieres formarte en la{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-[#C51E75] to-purple-500">
-                pastelería profesional?
-              </span>
+            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-3 lg:mb-4 text-foreground">
+              ¿Quieres formarte en{" "}
+              <span className="text-accent">la pastelería profesional?</span>
             </h1>
-
-            <p className="text-base sm:text-lg text-muted leading-relaxed mb-8 max-w-xl font-normal">
-              Workshops presenciales y cursos online diseñados desde cero para enseñarte cada técnica, receta y método paso a paso, sin secretos. Para emprender o perfeccionar tu pasión.
+            <p className="text-sm sm:text-base text-muted leading-relaxed mb-6 lg:mb-8 max-w-xl">
+              Workshops presenciales y cursos online diseñados desde cero: cada técnica, receta y método paso a paso, sin secretos.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 mb-10">
-              <Link href={ctaUrl}>
-                <button className="bg-accent text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-accent-hover hover:scale-[1.03] transition-all shadow-xl shadow-pink-600/30 text-sm md:text-base">
-                  {ctaText} <ArrowRight size={18} />
-                </button>
+            <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start lg:gap-4">
+              <Link
+                href={ctaUrl}
+                className="bg-accent-solid text-white px-5 py-3 lg:px-8 lg:py-4 rounded-xl font-bold inline-flex items-center gap-2.5 hover:bg-accent-solid-hover transition-colors shadow-lg shadow-accent-solid/25 text-sm md:text-base"
+              >
+                {ctaText} <ArrowRight size={18} />
               </Link>
-              <Link href="/pasteleria">
-                <button className="bg-white/70 border border-card-border text-foreground px-8 py-4 rounded-xl font-bold flex items-center gap-2.5 hover:bg-white hover:scale-[1.03] transition-all backdrop-blur-sm text-sm md:text-base">
-                  Tortas y Pastelería <Cake size={18} />
-                </button>
+              <Link
+                href="/pasteleria"
+                className="bg-white/80 border border-card-border text-foreground px-5 py-3 lg:px-8 lg:py-4 rounded-xl font-bold inline-flex items-center gap-2.5 hover:bg-white transition-colors text-sm md:text-base"
+              >
+                Tortas y Pastelería <Cake size={18} />
               </Link>
-            </div>
-
-            <div className="pt-8 border-t border-card-border flex items-center gap-8 md:gap-12 flex-wrap">
-              {TRUST_STATS.map((stat) => (
-                <div key={stat.label}>
-                  <p className="font-display text-2xl md:text-3xl font-black text-accent leading-none">
-                    {stat.value}
-                  </p>
-                  <p className="text-[11px] text-muted font-bold uppercase tracking-widest mt-1.5">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </m.div>
-
-          <m.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="lg:col-span-5 relative"
-          >
-            <div className="relative mx-auto max-w-md lg:max-w-none">
-              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border-2 border-accent/30 shadow-xl shadow-accent/20 group">
-                <Image
-                  src="/foto-1.webp"
-                  alt="Anais Flores impartiendo workshop de pastelería y decoración"
-                  fill
-                  priority
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-purple/80 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <p className="font-display text-lg font-bold text-white leading-tight">
-                    Clases prácticas 100% desde cero
-                  </p>
-                </div>
-              </div>
             </div>
           </m.div>
         </div>

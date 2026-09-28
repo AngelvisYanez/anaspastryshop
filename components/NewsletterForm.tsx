@@ -16,15 +16,18 @@ export default function NewsletterForm({ className }: { className?: string }) {
     setLoading(true);
     setError(null);
 
-    const result = await subscribeToNewsletter(email, name || undefined);
-    setLoading(false);
+    try {
+      const result = await subscribeToNewsletter(email, name || undefined);
 
-    if (result.error) {
-      setError(result.error);
-    } else {
-      setSuccess(true);
-      setEmail("");
-      setName("");
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSuccess(true);
+        setEmail("");
+        setName("");
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -42,7 +45,9 @@ export default function NewsletterForm({ className }: { className?: string }) {
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-3 ${className}`}>
+      <label htmlFor="newsletter-name" className="sr-only">Tu nombre (opcional)</label>
       <input
+        id="newsletter-name"
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -50,7 +55,9 @@ export default function NewsletterForm({ className }: { className?: string }) {
         className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-sm font-medium text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
       />
       <div className="flex gap-2">
+        <label htmlFor="newsletter-email" className="sr-only">Tu email</label>
         <input
+          id="newsletter-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -61,14 +68,15 @@ export default function NewsletterForm({ className }: { className?: string }) {
         <button
           type="submit"
           disabled={loading || !email}
-          className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-black px-4 py-2.5 rounded-lg transition-all shrink-0 text-sm shadow-md shadow-pink-600/30 disabled:cursor-not-allowed"
+          aria-busy={loading}
+          className="flex items-center gap-2 bg-accent-solid hover:bg-accent-solid-hover text-white font-black px-4 py-2.5 rounded-lg transition shrink-0 text-sm shadow-md shadow-accent-solid/30 disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-          {loading ? "" : "Suscribirse"}
+          <span>Suscribirse</span>
         </button>
       </div>
       {error && (
-        <p className="text-xs font-bold text-red-400">{error}</p>
+        <p role="alert" className="text-xs font-bold text-red-400">{error}</p>
       )}
       <p className="text-[11px] text-white/40 font-medium">
         Puedes cancelar tu suscripción en cualquier momento.

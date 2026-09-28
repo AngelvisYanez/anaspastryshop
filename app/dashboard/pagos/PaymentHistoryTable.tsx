@@ -202,7 +202,7 @@ export default function PaymentHistoryTable({
                   href={pageHref(p as number)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                     p === page
-                      ? "bg-accent text-white"
+                      ? "bg-accent-solid text-white"
                       : "border border-card-border hover:bg-card-hover text-muted hover:text-foreground"
                   }`}
                 >

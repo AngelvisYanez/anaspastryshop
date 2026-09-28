@@ -103,6 +103,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
         <div className="relative w-full rounded-xl overflow-hidden bg-black aspect-video border border-card-border">
           <iframe
             src={uploadedUrl}
+            title="Vista previa del video subido"
             className="absolute inset-0 w-full h-full"
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
@@ -139,7 +140,7 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
         </div>
         <div className="w-full bg-section-alt rounded-full h-2 border border-card-border overflow-hidden">
           <div
-            className="bg-accent h-2 rounded-full transition-all duration-300"
+            className="bg-accent h-2 rounded-full transition duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -151,24 +152,30 @@ export default function CloudflareVideoUploader({ onUpload, currentUrl }: Props)
   return (
     <div className="space-y-3">
       {error && (
-        <p className="text-xs text-red-500 font-bold bg-red-50 dark:bg-red-950/20 p-2 rounded-lg border border-red-200 dark:border-red-800">{error}</p>
+        <p role="alert" className="text-xs text-red-500 font-bold bg-red-50 dark:bg-red-950/20 p-2 rounded-lg border border-red-200 dark:border-red-800">{error}</p>
       )}
 
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => fileRef.current?.click()}
         className={`
-          relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all select-none
+          relative border-2 border-dashed rounded-xl p-6 text-center select-none
           ${dragging
             ? "border-accent bg-accent/5 scale-[1.01]"
             : "border-card-border hover:border-accent/50 hover:bg-section-alt/50"
           }
         `}
       >
-        <div className="flex flex-col items-center gap-3">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${dragging ? "bg-accent text-white" : "bg-section-alt text-muted"}`}>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          aria-label="Seleccionar video para subir"
+          className="absolute inset-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
+        />
+        <div className="flex flex-col items-center gap-3 pointer-events-none">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${dragging ? "bg-accent-solid text-white" : "bg-section-alt text-muted"}`}>
             {dragging ? <Film size={22} /> : <Upload size={22} />}
           </div>
           <div>

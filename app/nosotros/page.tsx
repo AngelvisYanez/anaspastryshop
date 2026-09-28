@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import ScrollIndicator from "@/components/ScrollIndicator";
 
 const PILLARS = [
   {
@@ -45,39 +44,31 @@ export default function NosotrosPage() {
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Nosotros */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-36 pb-28 text-white rounded-b-3xl">
-        <div className="absolute inset-0 opacity-[0.03] noise-bg pointer-events-none" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-pink-600/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full blur-[140px] pointer-events-none" />
-
-        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10 text-center">
+      <section className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 text-white">
+        <div className="page-container relative z-10 max-w-3xl mx-auto text-center">
           <m.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] mb-6"
+            transition={{ duration: 0.5 }}
+            className="font-display text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] mb-5"
           >
             El arte de la técnica, la{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-pink-300 to-cyan-300 italic">
-              pasión de la pastelería.
-            </span>
+            <span className="text-on-purple-accent">pasión de la pastelería.</span>
           </m.h1>
 
           <m.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg text-white/75 max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.08 }}
+            className="text-sm sm:text-lg text-white/85 leading-relaxed"
           >
-            Conoce la historia, filosofía y método formativo liderado por Anais Flores, diseñado para enseñarte pastelería profesional desde cero.
+            Conoce la historia, filosofía y método formativo de Anais Flores: pastelería profesional desde cero.
           </m.p>
         </div>
-        <ScrollIndicator />
       </section>
 
       {/* Main Bio Section */}
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-20">
+      <div className="page-container py-20">
         <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr] gap-12 lg:gap-16 items-center mb-24">
           <m.div
             initial={{ opacity: 0, x: -25 }}
@@ -90,6 +81,7 @@ export default function NosotrosPage() {
                 src="/foto-2.webp"
                 alt="Anais Flores impartiendo workshop"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
                 className="object-cover"
               />
@@ -135,14 +127,15 @@ export default function NosotrosPage() {
                 href="https://wa.me/?text=Hola%20Anais!%20He%20le%C3%ADdo%20sobre%20tus%20talleres%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-accent text-white px-7 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-accent-hover transition-all shadow-md shadow-pink-600/20"
+                className="bg-accent-solid text-white px-7 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-accent-solid-hover transition shadow-md shadow-accent-solid/20"
               >
                 <MessageCircle size={16} /> ¡Escríbeme para Capacitarte!
               </a>
-              <Link href="/cursos">
-                <button className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold text-sm transition-all">
-                  Ver Catálogo de Workshops
-                </button>
+              <Link
+                href="/cursos"
+                className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold text-sm transition"
+              >
+                Ver Catálogo de Workshops
               </Link>
             </div>
           </m.div>
@@ -166,7 +159,7 @@ export default function NosotrosPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="bg-card border border-card-border rounded-2xl p-6 shadow-sm hover:border-accent/30 transition-all flex flex-col justify-between"
+                  className="bg-card border border-card-border rounded-2xl p-6 shadow-sm hover:border-accent/30 transition flex flex-col justify-between"
                 >
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center shrink-0 border border-accent/20">

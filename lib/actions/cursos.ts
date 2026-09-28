@@ -2,9 +2,27 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import type { ActionResult } from "@/lib/types";
 import { serializeWorkshopDetails } from "@/lib/utils/workshop";
+import { uniqueSlug } from "@/lib/utils/slug";
+
+const COURSE_CACHE_TAGS = ["cursos", "home-data"];
+
+async function slugTaken(candidate: string, exceptId?: string) {
+  const existing = await prisma.curso.findUnique({
+    where: { slug: candidate },
+    select: { id: true },
+  });
+  return !!existing && existing.id !== exceptId;
+}
+
+// Server-Action-only API: expires the tagged entries so the next read renders
+// fresh. Without this the `"use cache"` catalogs in app/page.tsx and
+// app/cursos/page.tsx stay stale until their cacheLife TTL elapses.
+function revalidateCourseCaches() {
+  for (const tag of COURSE_CACHE_TAGS) updateTag(tag);
+}
 
 async function assertAdmin() {
   const session = await auth();
@@ -16,6 +34,8 @@ async function assertAdmin() {
 
 export type CoursePayload = {
   title: string;
+  /** Slug opcional. Si se omite, se genera a partir del título. */
+  slug?: string;
   description: string;
   price: number;
   totalHours: number;
@@ -64,6 +84,7 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
     const curso = await prisma.curso.create({
       data: {
         title: data.title,
+        slug: await uniqueSlug(data.slug || data.title, (c) => slugTaken(c)),
         description: data.description,
         price: data.price,
         totalHours: data.totalHours,
@@ -97,6 +118,7 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
 
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
+    revalidateCourseCaches();
     return { success: true, courseId: curso.id };
   } catch (error: unknown) {
     console.error("Error creating course:", error);
@@ -118,6 +140,7 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
     await prisma.curso.delete({ where: { id: courseId } });
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
+    revalidateCourseCaches();
     return { success: true };
   } catch {
     return { error: "Error al eliminar el curso" };
@@ -146,8 +169,16 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       workshopTime: data.workshopTime,
     });
 
+    // La URL pública depende del slug, así que solo se recalcula si falta o si
+    // se envía uno explícito. Renombrar el título no debe romper enlaces.
+    const nextSlug =
+      data.slug && data.slug !== course.slug
+        ? await uniqueSlug(data.slug, (c) => slugTaken(c, courseId))
+        : course.slug ?? (await uniqueSlug(data.title, (c) => slugTaken(c, courseId)));
+
     const updateData: Parameters<typeof prisma.curso.update>[0]["data"] & { instructorId?: string } = {
       title: data.title,
+      slug: nextSlug,
       description: data.description,
       price: finalPrice,
       totalHours: data.totalHours,
@@ -190,6 +221,8 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     revalidatePath(`/dashboard/cursos/${courseId}`);
     revalidatePath("/cursos");
     revalidatePath(`/cursos/${courseId}`);
+    revalidatePath(`/cursos/${nextSlug}`);
+    revalidateCourseCaches();
     return { success: true };
   } catch (error: unknown) {
     console.error("Error updating course:", error);

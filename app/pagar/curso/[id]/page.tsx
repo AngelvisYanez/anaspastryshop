@@ -6,28 +6,29 @@ import CheckoutCurso from "./CheckoutCurso";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 
 export const metadata = {
-  title: "Inscripción & Pago | Ana's Pastry Shop",
+  title: "Inscripción & Pago",
   description: "Finaliza tu inscripción y compra tu acceso al curso online o taller presencial.",
 };
 
 async function CursoCheckoutContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const session = await auth();
-
-  const course = await prisma.curso.findFirst({
-    where: {
-      OR: [
-        { id },
-        { content: { contains: id } },
-        { title: { contains: id } },
-      ],
-    },
-    include: {
-      instructor: {
-        select: { name: true, image: true },
+  const [session, course] = await Promise.all([
+    auth(),
+    prisma.curso.findFirst({
+      where: {
+        OR: [
+          { id },
+          { content: { contains: id } },
+          { title: { contains: id } },
+        ],
       },
-    },
-  });
+      include: {
+        instructor: {
+          select: { name: true, image: true },
+        },
+      },
+    }),
+  ]);
 
   if (!course) {
     notFound();

@@ -27,8 +27,15 @@ const serifFont = Playfair_Display({
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://anaspastryshop.com";
 
+let metadataBase: URL;
+try {
+  metadataBase = new URL(siteUrl);
+} catch {
+  metadataBase = new URL("https://anaspastryshop.com");
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase,
   title: {
     default: "Ana's Pastry Shop | Workshops de Pastelería & Panadería Profesional",
     template: "%s | Ana's Pastry Shop",
@@ -75,9 +82,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/logo-anas-pastry-shop.png",
-    shortcut: "/logo-anas-pastry-shop.png",
-    apple: "/logo-anas-pastry-shop.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 
@@ -108,7 +115,9 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
+          }}
         />
       </head>
       <body className={`${bodyFont.variable} ${displayFont.variable} ${serifFont.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}>

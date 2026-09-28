@@ -45,6 +45,14 @@ export async function POST(req: NextRequest) {
       }
     );
 
+    if (!response.ok) {
+      console.error("[upload-image] Cloudflare Images HTTP error:", response.status);
+      const buffer = await file.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const dataUrl = `data:${file.type};base64,${base64}`;
+      return NextResponse.json({ url: dataUrl });
+    }
+
     const data = await response.json();
 
     if (!data.success) {

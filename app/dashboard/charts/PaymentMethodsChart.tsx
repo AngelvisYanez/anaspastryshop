@@ -1,4 +1,5 @@
 "use client";
+// react-doctor-disable-next-line react-doctor/prefer-dynamic-import -- this whole module is the dynamic boundary; `AdminCharts` already loads it through `next/dynamic`, so `recharts` is never in the initial bundle
 import {
   PieChart,
   Pie,
@@ -7,15 +8,16 @@ import {
   ResponsiveContainer,
   Legend
 } from "recharts";
+import { useChartTheme } from "./useChartTheme";
 
 type DataPoint = {
   name: string;
   value: number;
 };
 
-const COLORS = ["#D92080", "#8B5CF6", "#EC4899", "#A855F7", "#F43F5E"];
-
 export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
+  const t = useChartTheme();
+
   return (
     <div className="h-[300px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
@@ -30,18 +32,15 @@ export default function PaymentMethodsChart({ data }: { data: DataPoint[] }) {
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+              <Cell key={entry.name} fill={t.palette[index % t.palette.length]} />
             ))}
           </Pie>
-          <Tooltip 
-            contentStyle={{ 
-              borderRadius: "16px", 
-              border: "none", 
-              boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" 
-            }} 
+          <Tooltip
+            contentStyle={t.tooltip}
+            labelStyle={t.tooltipLabelStyle}
             formatter={(value) => [`$${value}`, "Total"]}
           />
-          <Legend verticalAlign="bottom" height={36}/>
+          <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>
     </div>

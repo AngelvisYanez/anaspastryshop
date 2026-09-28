@@ -16,19 +16,19 @@ export interface WorkshopConditionsProps {
   isDecorationWorkshop?: boolean;
 }
 
-export default function WorkshopConditions({
-  showCta = true,
-  workshopTitle,
-  location,
-  workshopDate,
+function buildWorkshopConditions({
   workshopTime,
   price,
-  isDecorationWorkshop = false,
-}: WorkshopConditionsProps) {
+  isDecorationWorkshop,
+}: {
+  workshopTime?: string;
+  price?: number;
+  isDecorationWorkshop: boolean;
+}) {
   const reservationAmount = price ? Math.round(price * 0.5) : null;
   const remainderAmount = price && reservationAmount ? price - reservationAmount : null;
 
-  const conditions = [
+  return [
     {
       icon: Clock,
       tag: "Horarios y Duración",
@@ -45,7 +45,9 @@ export default function WorkshopConditions({
       desc: reservationAmount
         ? `El cupo se reserva formalmente con el 50% ($${reservationAmount} USD). Los $${remainderAmount} USD restantes deben ser cancelados el mismo día del taller al ingresar a clase. Métodos: Pago Móvil (Tasa BCV), Zelle, Binance Pay o Efectivo.`
         : "El cupo se reserva formalmente con el 50% del valor del workshop. El monto restante debe ser cancelado el mismo día del workshop al ingresar a clase. Métodos: Pago Móvil (Tasa BCV), Zelle, Binance Pay o Efectivo.",
-      highlight: reservationAmount ? `Reserva $${reservationAmount} USD · Saldo $${remainderAmount} USD` : "Pago Móvil · Zelle · Binance · Efectivo",
+      highlight: reservationAmount
+        ? `Reserva $${reservationAmount} USD · Saldo $${remainderAmount} USD`
+        : "Pago Móvil · Zelle · Binance · Efectivo",
     },
     {
       icon: AlertTriangle,
@@ -66,10 +68,22 @@ export default function WorkshopConditions({
       highlight: isDecorationWorkshop ? "Traer base giratoria (bailarina)" : "Todos los insumos incluidos",
     },
   ];
+}
+
+export default function WorkshopConditions({
+  showCta = true,
+  workshopTitle,
+  location,
+  workshopDate,
+  workshopTime,
+  price,
+  isDecorationWorkshop = false,
+}: WorkshopConditionsProps) {
+  const conditions = buildWorkshopConditions({ workshopTime, price, isDecorationWorkshop });
 
   return (
     <section id="condiciones-workshop" className="w-full py-16 px-4 md:px-8 my-12">
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="page-container">
         <m.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -123,7 +137,7 @@ export default function WorkshopConditions({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.06 }}
-                className="bg-background border border-card-border rounded-2xl p-6 hover:border-accent/30 transition-all shadow-sm flex flex-col justify-between"
+                className="bg-background border border-card-border rounded-2xl p-6 hover:border-accent/30 transition shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-3">
@@ -172,7 +186,7 @@ export default function WorkshopConditions({
                 href={`https://wa.me/?text=Hola%20Anais!%20He%20le%C3%ADdo%20las%20condiciones%20y%20deseo%20reservar%20mi%20cupo%20para%20el%20workshop:%20${encodeURIComponent(workshopTitle || "Workshop Presencial")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full md:w-auto bg-accent hover:bg-accent-hover text-white px-6 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-pink-600/30 flex items-center justify-center gap-2"
+                className="w-full md:w-auto bg-accent-solid hover:bg-accent-solid-hover text-white px-6 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition shadow-md shadow-accent-solid/30 flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} /> Consultar o Reservar Cupo
               </a>

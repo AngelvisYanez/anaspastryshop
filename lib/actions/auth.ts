@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { logActivity } from "@/lib/logger";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   sendWelcomeEmail,
   sendPasswordResetEmail,
@@ -12,14 +13,26 @@ import {
 
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
 
+// react-doctor-disable-next-line react-doctor/server-auth-actions -- public sign-up by design; role is hardcoded to "USER", input is validated and rate limited
 export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
-  const roleStr = (formData.get("role") as string) || "USER";
 
   if (!name || !email || !password) {
     return { error: "Todos los campos son obligatorios" };
+  }
+
+  if (password.length < 8) {
+    return { error: "La contraseña debe tener al menos 8 caracteres" };
+  }
+
+  const throttle = rateLimit(`register:${email}`, {
+    limit: 5,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (!throttle.allowed) {
+    return { error: "Demasiados intentos. Intenta de nuevo más tarde." };
   }
 
   try {
@@ -38,8 +51,7 @@ export async function registerUser(formData: FormData) {
         name,
         email,
         password: hashedPassword,
-        // @ts-ignore
-        role: roleStr,
+        role: "USER",
       },
     });
 
@@ -88,11 +100,20 @@ export async function checkPreloginStatus(formData: FormData) {
   return { isSuspended: false };
 }
 
+// react-doctor-disable-next-line react-doctor/server-auth-actions -- public password recovery by design; token is emailed to the account owner and the action is rate limited
 export async function requestPasswordReset(formData: FormData) {
   const email = (formData.get("email") as string)?.trim().toLowerCase();
 
   if (!email) {
     return { error: "El correo es obligatorio" };
+  }
+
+  const throttle = rateLimit(`reset:${email}`, {
+    limit: 3,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (!throttle.allowed) {
+    return { error: "Demasiados intentos. Intenta de nuevo más tarde." };
   }
 
   try {
@@ -134,6 +155,14 @@ export async function resetPassword(formData: FormData) {
 
   if (password.length < 8) {
     return { error: "La contraseña debe tener al menos 8 caracteres" };
+  }
+
+  const throttle = rateLimit(`reset-apply:${token}`, {
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!throttle.allowed) {
+    return { error: "Demasiados intentos. Intenta de nuevo más tarde." };
   }
 
   try {

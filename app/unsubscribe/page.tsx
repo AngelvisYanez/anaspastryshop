@@ -21,7 +21,7 @@ async function UnsubscribeContent({
           </p>
           <Link
             href="/"
-            className="inline-block bg-accent hover:bg-accent-hover text-white font-bold px-6 py-3 rounded-full text-sm transition-all shadow-md shadow-pink-600/20"
+            className="inline-block bg-accent-solid hover:bg-accent-solid-hover text-white font-bold px-6 py-3 rounded-full text-sm transition shadow-md shadow-accent-solid/20"
           >
             Ir al inicio
           </Link>
@@ -52,7 +52,7 @@ async function UnsubscribeContent({
         )}
         <Link
           href="/"
-          className="inline-block bg-accent hover:bg-accent-hover text-white font-bold px-6 py-3 rounded-full text-sm transition-all shadow-md shadow-pink-600/20"
+          className="inline-block bg-accent-solid hover:bg-accent-solid-hover text-white font-bold px-6 py-3 rounded-full text-sm transition shadow-md shadow-accent-solid/20"
         >
           Ir al inicio
         </Link>

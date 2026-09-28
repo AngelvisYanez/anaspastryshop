@@ -1,3 +1,5 @@
+import type { FormacionCardData } from "@/components/FormacionCard";
+
 export interface WorkshopItem {
   id: string;
   slug: string;
@@ -77,7 +79,7 @@ export const WORKSHOPS_DATA: WorkshopItem[] = [
     startTime: "9:00 AM",
     schedule: "Día Domingo (Revisar cronograma de talleres)",
     level: "Todos los niveles",
-    image: "/foto-4.webp",
+    image: "/foto-7.webp",
     isDecorationWorkshop: false,
     studentRequirements:
       "El alumno debe traer un envase grande para llevarse todas las preparaciones que realizaremos (son 4 porciones de tortas).",
@@ -239,7 +241,7 @@ export const WORKSHOPS_DATA: WorkshopItem[] = [
     startTime: "2:00 PM",
     schedule: "Se realiza en días de semana (Revisar cronograma de talleres)",
     level: "Todos los niveles",
-    image: "/foto-7.webp",
+    image: "/foto-4.webp",
     isDecorationWorkshop: true,
     studentRequirements: "El alumno debe traer una base giratoria.",
     badge: "Solo 3 Cupos",
@@ -320,7 +322,7 @@ export const WORKSHOPS_DATA: WorkshopItem[] = [
     startTime: "9:00 AM",
     schedule: "Día Domingo (Revisar cronograma de talleres)",
     level: "Desde Cero a Intermedio",
-    image: "/foto-1.webp",
+    image: "/curso-online-merengue-italiano.png",
     isDecorationWorkshop: true,
     studentRequirements:
       "El alumno debe traer una base giratoria (de no tener notificar que disponemos de 3 bases para solventar).",
@@ -372,4 +374,46 @@ export function getWorkshopBySlug(slug: string): WorkshopItem | undefined {
 
 export function getAllWorkshops(): WorkshopItem[] {
   return WORKSHOPS_DATA;
+}
+
+/**
+ * Single source of truth for turning a workshop into the shared card payload,
+ * so every surface (catálogo, home, "otros workshops") renders identical data.
+ */
+export function toFormacionCard(
+  workshop: WorkshopItem,
+  overrides: Partial<FormacionCardData> = {}
+): FormacionCardData {
+  const bagId = workshop.legacySlug ?? workshop.id;
+
+  return {
+    id: bagId,
+    slug: workshop.slug,
+    // `shortTitle` es el nombre limpio; `title` sigue siendo la clave legacy
+    // en MAYÚSCULAS con prefijo "WORKSHOP" que usa el seed para emparejar filas.
+    title: workshop.shortTitle,
+    description: workshop.description,
+    price: workshop.price,
+    image: workshop.image,
+    category: "Workshops Presenciales",
+    level: workshop.level,
+    isWorkshop: true,
+    workshopLocation: "Caracas, Las Mercedes — Sede Ana's Pastry Shop",
+    workshopDate: workshop.schedule,
+    workshopTime: workshop.startTime,
+    hasAccess: false,
+    bagId,
+    ...overrides,
+  };
+}
+
+/** Workshops to feature at the bottom of a detail page, excluding the current one. */
+export function getOtherWorkshops(
+  current: WorkshopItem,
+  limit = 3
+): FormacionCardData[] {
+  return getAllWorkshops()
+    .filter((w) => w.slug !== current.slug && w.legacySlug !== current.slug)
+    .slice(0, limit)
+    .map((workshop) => toFormacionCard(workshop));
 }

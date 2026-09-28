@@ -25,13 +25,16 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
 
   const confirmDelete = async () => {
     setIsDeleting(true);
-    const res = await deleteCourse(courseId);
-    setIsDeleting(false);
-    if (res.error) {
-      setDeleteError(res.error);
-    } else {
-      setShowModal(false);
-      router.refresh();
+    try {
+      const res = await deleteCourse(courseId);
+      if (res.error) {
+        setDeleteError(res.error);
+      } else {
+        setShowModal(false);
+        router.refresh();
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -40,7 +43,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 transition-opacity drop-shadow-md">
         <Link
           href={`/dashboard/cursos/${courseId}/edit`}
-          className="bg-card text-accent hover:bg-accent hover:text-white p-2.5 rounded-xl shadow-lg border border-card-border transition-all hover:scale-105"
+          className="bg-card text-accent hover:bg-accent-solid hover:text-white p-2.5 rounded-xl shadow-lg border border-card-border transition hover:scale-105"
           title="Editar Curso"
         >
           <Edit2 size={16} />
@@ -49,7 +52,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
         <button
           onClick={handleDelete}
           disabled={isDeleting || hasEnrolled}
-          className={`p-2.5 rounded-xl shadow-lg border transition-all hover:scale-105 ${
+          className={`p-2.5 rounded-xl shadow-lg border transition hover:scale-105 ${
             hasEnrolled 
               ? "bg-section-alt text-muted border-card-border cursor-not-allowed group/btn relative" 
               : "bg-card text-red-500 hover:bg-red-50 border-card-border"

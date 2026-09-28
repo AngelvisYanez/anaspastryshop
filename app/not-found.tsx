@@ -37,16 +37,18 @@ export default function NotFound() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/">
-            <button className="bg-foreground text-background px-10 py-5 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg">
-              <Home size={18} /> Volver al Inicio
-            </button>
+          <Link
+            href="/"
+            className="bg-foreground text-background px-10 py-5 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition shadow-lg"
+          >
+            <Home size={18} /> Volver al Inicio
           </Link>
 
-          <Link href="/cursos">
-            <button className="bg-card text-foreground px-10 py-5 rounded-xl font-bold border border-card-border hover:bg-card-hover transition-all flex items-center gap-2">
-              Ver Talleres <ArrowRight size={18} className="text-accent" />
-            </button>
+          <Link
+            href="/cursos"
+            className="bg-card text-foreground px-10 py-5 rounded-xl font-bold border border-card-border hover:bg-card-hover transition flex items-center gap-2"
+          >
+            Ver Talleres <ArrowRight size={18} className="text-accent" />
           </Link>
         </div>
       </m.div>

@@ -98,7 +98,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
             >
               <button
                 type="submit"
-                className="bg-accent text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-accent/20 hover:bg-accent-hover transition-all"
+                className="bg-accent-solid text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-accent/20 hover:bg-accent-solid-hover transition"
               >
                 Cerrar Sesión y Salir
               </button>

@@ -39,7 +39,11 @@ const benefits = [
 function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  // react-doctor-disable-next-line react-doctor/url-prefilled-privileged-action -- `callbackUrl` is validated below: relative paths only, no protocol-relative or absolute URLs
+  const rawCallback = searchParams.get("callbackUrl");
+  const callbackUrl = rawCallback && rawCallback.startsWith("/") && !rawCallback.startsWith("//")
+    ? rawCallback
+    : "/dashboard";
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -56,77 +60,80 @@ function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
     formData.append("email", identifier);
     formData.append("password", password);
 
-    const statusCheck = await checkPreloginStatus(formData);
+    try {
+      const statusCheck = await checkPreloginStatus(formData);
 
-    if (statusCheck.isSuspended) {
+      if (statusCheck.isSuspended) {
+        onSuspended(statusCheck.reason || "Tu cuenta ha sido desactivada por el administrador.");
+        return;
+      }
+
+      const res = await signIn("credentials", {
+        email: identifier,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setError("Credenciales inválidas. Verifica tu correo y contraseña.");
+      } else {
+        router.push(callbackUrl);
+        router.refresh();
+      }
+    } finally {
       setLoading(false);
-      onSuspended(statusCheck.reason || "Tu cuenta ha sido desactivada por el administrador.");
-      return;
-    }
-
-    const res = await signIn("credentials", {
-      email: identifier,
-      password,
-      redirect: false,
-    });
-
-    if (res?.error) {
-      setError("Credenciales inválidas. Verifica tu correo y contraseña.");
-      setLoading(false);
-    } else {
-      router.push(callbackUrl);
-      router.refresh();
     }
   }
 
   return (
     <>
       {error && (
-        <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3.5 rounded-2xl text-xs font-bold text-center border border-red-100 dark:border-red-800 mb-6">
+        <div role="alert" className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3.5 rounded-2xl text-xs font-bold text-center border border-red-100 dark:border-red-800 mb-6">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
+          <label htmlFor="login-identifier" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
             Email o Nombre
           </label>
           <div className="relative">
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
             <input
+              id="login-identifier"
               type="text"
               required
               autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="tu@email.com o tu nombre"
-              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
             />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
+          <label htmlFor="login-password" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1">
             Contraseña
           </label>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
               required
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+              className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
-              tabIndex={-1}
+              className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 grid place-items-center text-muted hover:text-accent transition-colors"
             >
               {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
@@ -140,10 +147,13 @@ function LoginForm({ onSuspended }: { onSuspended: (reason: string) => void }) {
         </div>
 
         <button
+          type="submit"
           disabled={loading}
-          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-2 flex justify-center items-center gap-2 disabled:opacity-50"
+          aria-busy={loading}
+          className="w-full bg-foreground text-background py-4 rounded-2xl font-bold hover:opacity-90 transition-opacity mt-2 flex justify-center items-center gap-2 disabled:opacity-50"
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : "Entrar a mi cuenta"}
+          {loading && <Loader2 size={18} className="animate-spin" />}
+          Entrar a mi cuenta
         </button>
       </form>
     </>
@@ -156,7 +166,7 @@ export default function LoginPage() {
   if (suspendedReason) {
     return (
       <>
-        <Navbar forceSolid />
+        <Navbar />
         <main id="main-content">
           <PageHero
             title={<>Tu cuenta ha sido suspendida</>}
@@ -164,7 +174,7 @@ export default function LoginPage() {
           />
           <section className="bg-background py-16 px-6 relative overflow-hidden">
             <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-red-200/20 blur-[130px] rounded-full pointer-events-none" />
-            <div className="w-full max-w-lg mx-auto relative z-10 bg-card rounded-2xl p-12 shadow-[var(--shadow-card)] text-center border border-card-border">
+            <div className="w-full max-w-lg mx-auto relative z-10 bg-card rounded-2xl p-12 shadow-card text-center border border-card-border">
               <div className="relative w-20 h-20 mx-auto mb-8">
                 <div className="absolute inset-0 bg-red-100 rounded-xl" />
                 <div className="relative w-20 h-20 bg-red-50 rounded-xl flex items-center justify-center">
@@ -188,7 +198,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Navbar forceSolid />
+      <Navbar />
       <main id="main-content">
         <PageHero
           badge={
@@ -209,7 +219,7 @@ export default function LoginPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-card rounded-2xl p-8 md:p-12 shadow-[var(--shadow-card)] border border-card-border"
+              className="bg-card rounded-2xl p-8 md:p-12 shadow-card border border-card-border"
             >
               <div className="text-center mb-6">
                 <Link

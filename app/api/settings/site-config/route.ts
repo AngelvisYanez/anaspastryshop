@@ -18,9 +18,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
-  const body = await req.json();
-
-  const config = await prisma.siteConfig.findFirst();
+  const [body, config] = await Promise.all([req.json(), prisma.siteConfig.findFirst()]);
 
   const data = {
     siteName: body.siteName,

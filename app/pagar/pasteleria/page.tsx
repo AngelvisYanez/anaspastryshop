@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import CheckoutPasteleria from "./CheckoutPasteleria";
 
 export const metadata = {
-  title: "Pago de Servicio de Pastelería | Ana's Pastry Shop",
+  title: "Pago de Servicio de Pastelería",
   description: "Reporta tu comprobante de pago para pedidos y servicios de pastelería personalizada.",
 };
 

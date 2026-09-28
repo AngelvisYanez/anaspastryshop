@@ -42,7 +42,7 @@ export default function ForYou() {
 
   return (
     <section id="para-ti" className="w-full bg-section-alt py-24">
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="page-container">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -80,9 +80,9 @@ export default function ForYou() {
           ref={ref}
           className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4"
         >
-          {SITUATIONS.map((sit, i) => (
+          {SITUATIONS.map((sit) => (
             <div
-              key={i}
+              key={sit}
               className="min-w-[280px] sm:min-w-[340px] max-w-[360px] snap-start bg-card rounded-2xl p-7 border border-card-border flex flex-col justify-between shadow-sm hover:border-accent/40 transition-colors"
             >
               <p className="text-sm text-foreground/80 leading-relaxed font-medium mb-6">

@@ -33,19 +33,23 @@ export default function RegistroPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const result = await registerUser(formData);
 
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
-    } else {
+    try {
+      const result = await registerUser(formData);
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
       router.push("/cursos?bienvenida=true");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
-      <Navbar forceSolid />
+      <Navbar />
       <main id="main-content" className="min-h-screen bg-background overflow-hidden">
         <PageHero
           backHref="/iniciar-sesion"
@@ -62,7 +66,7 @@ export default function RegistroPage() {
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-lg mx-auto bg-card rounded-2xl p-10 md:p-14 shadow-[var(--shadow-card)] z-10 border border-card-border relative"
+          className="w-full max-w-lg mx-auto bg-card rounded-2xl p-10 md:p-14 shadow-card z-10 border border-card-border relative"
         >
           <div className="flex justify-center mb-8">
             <div className="inline-flex p-3 bg-accent-subtle rounded-2xl text-accent">
@@ -72,52 +76,55 @@ export default function RegistroPage() {
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {error && (
-              <div className="md:col-span-2 bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center border border-red-100 dark:border-red-800">
+              <div role="alert" className="md:col-span-2 bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center border border-red-100 dark:border-red-800">
                 {error}
               </div>
             )}
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label htmlFor="reg-name" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Nombre Completo
               </label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="reg-name"
                   type="text"
                   name="name"
                   required
                   autoComplete="name"
                   placeholder="Ej. Ana García"
-                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                 />
               </div>
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label htmlFor="reg-email" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Correo Electrónico
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="reg-email"
                   type="email"
                   name="email"
                   required
                   autoComplete="email"
                   placeholder="tu@email.com"
-                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                 />
               </div>
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label htmlFor="reg-password" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Contraseña
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="reg-password"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
@@ -126,14 +133,13 @@ export default function RegistroPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Mínimo 8 caracteres"
-                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-12 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  tabIndex={-1}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-accent transition-colors"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 min-h-11 min-w-11 grid place-items-center text-muted hover:text-accent transition-colors"
                 >
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
@@ -141,28 +147,32 @@ export default function RegistroPage() {
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
+              <label htmlFor="reg-confirm-password" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">
                 Confirmar Contraseña
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="reg-confirm-password"
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repite tu contraseña"
-                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+                  className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                 />
               </div>
             </div>
 
             <button
+              type="submit"
               disabled={loading}
-              className="md:col-span-2 w-full bg-accent text-white py-5 rounded-xl font-bold hover:bg-accent-hover transition-all mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-50 shadow-lg shadow-pink-600/25"
+              aria-busy={loading}
+              className="md:col-span-2 w-full bg-accent-solid text-white py-5 rounded-xl font-bold hover:bg-accent-solid-hover transition-colors mt-2 text-sm uppercase tracking-widest flex justify-center items-center gap-2 disabled:opacity-50 shadow-lg shadow-accent-solid/25"
             >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : "Empezar ahora"}
+              {loading && <Loader2 size={18} className="animate-spin" />}
+              Empezar ahora
             </button>
           </form>
 

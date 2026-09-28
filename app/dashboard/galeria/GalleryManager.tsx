@@ -110,7 +110,7 @@ export default function GalleryManager({
   return (
     <div className="space-y-8">
       {error && (
-        <p className="text-xs text-red-500 font-bold bg-red-50 dark:bg-red-950/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
+        <p role="alert" className="text-xs text-red-500 font-bold bg-red-50 dark:bg-red-950/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
           {error}
         </p>
       )}
@@ -132,11 +132,11 @@ export default function GalleryManager({
                 alt="Vista previa de la foto"
                 className="w-full max-h-64 object-cover"
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="bg-white text-foreground text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-accent hover:text-white transition-colors"
+                  className="bg-card text-foreground text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-accent-solid hover:text-white transition-colors"
                 >
                   <Link2 size={13} /> Cambiar
                 </button>
@@ -146,16 +146,17 @@ export default function GalleryManager({
                     setImage("");
                     if (fileRef.current) fileRef.current.value = "";
                   }}
-                  className="bg-white text-red-500 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-red-500 hover:text-white transition-colors"
+                  className="bg-card text-red-500 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-red-500 hover:text-white transition-colors"
                 >
                   <X size={13} /> Quitar
                 </button>
               </div>
             </div>
           ) : (
-            <div
+            <button
+              type="button"
               onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-card-border hover:border-accent/50 rounded-xl p-8 flex flex-col items-center gap-3 cursor-pointer transition-all hover:bg-section-alt/50 group"
+              className="w-full border-2 border-dashed border-card-border hover:border-accent/50 rounded-xl p-8 flex flex-col items-center gap-3 cursor-pointer transition-colors hover:bg-section-alt/50 group"
             >
               <div className="w-12 h-12 rounded-xl bg-section-alt group-hover:bg-accent/10 flex items-center justify-center transition-colors">
                 <ImagePlus size={22} className="text-muted group-hover:text-accent transition-colors" />
@@ -164,11 +165,12 @@ export default function GalleryManager({
                 <p className="text-sm font-bold text-foreground">Subir foto de creación</p>
                 <p className="text-xs text-muted mt-1">JPG, PNG, WebP — máx. {MAX_SIZE_MB}MB</p>
               </div>
-            </div>
+            </button>
           )}
 
           <input
             ref={fileRef}
+            id="gallery-file"
             type="file"
             accept="image/*"
             className="hidden"
@@ -179,38 +181,42 @@ export default function GalleryManager({
             }}
           />
 
+          <label htmlFor="gallery-url" className="sr-only">URL de la imagen</label>
           <input
+            id="gallery-url"
             type="url"
             value={image.startsWith("data:") ? "" : image}
             onChange={(e) => setImage(e.target.value)}
             placeholder="O pega una URL de imagen..."
-            className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/70 text-sm"
+            className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition text-foreground placeholder:text-muted/70 text-sm"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">
+            <label htmlFor="gallery-alt" className="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">
               Texto alternativo (SEO)
             </label>
             <input
+              id="gallery-alt"
               type="text"
               value={alt}
               onChange={(e) => setAlt(e.target.value)}
               placeholder="Ej: Torta de boda con flores"
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/70 text-sm"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition text-foreground placeholder:text-muted/70 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">
+            <label htmlFor="gallery-caption" className="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">
               Leyenda (opcional)
             </label>
             <input
+              id="gallery-caption"
               type="text"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               placeholder="Ej: Torta tres leches, evento de XV años"
-              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition-all text-foreground placeholder:text-muted/70 text-sm"
+              className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2.5 outline-none focus:border-accent transition text-foreground placeholder:text-muted/70 text-sm"
             />
           </div>
         </div>
@@ -218,7 +224,7 @@ export default function GalleryManager({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-hover transition-all shadow-md shadow-accent/20 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 bg-accent-solid text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-solid-hover transition shadow-md shadow-accent/20 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isPending ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
           Agregar a la galería
@@ -256,12 +262,12 @@ export default function GalleryManager({
                     alt={item.alt || "Creación de Ana's Pastry Shop"}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     <button
                       type="button"
                       onClick={() => handleDelete(item.id)}
                       disabled={isPending}
-                      className="bg-white text-red-500 rounded-lg p-2 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-60"
+                      className="bg-card text-red-500 rounded-lg p-2 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-60"
                       title="Eliminar"
                       aria-label="Eliminar foto"
                     >
@@ -271,7 +277,7 @@ export default function GalleryManager({
                       type="button"
                       onClick={() => reorder(item.id, -1)}
                       disabled={isPending || idx === 0}
-                      className="bg-white text-foreground rounded-lg p-2 hover:bg-accent hover:text-white transition-colors disabled:opacity-40"
+                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
                       title="Subir"
                       aria-label="Mover hacia arriba"
                     >
@@ -281,7 +287,7 @@ export default function GalleryManager({
                       type="button"
                       onClick={() => reorder(item.id, 1)}
                       disabled={isPending || idx === items.length - 1}
-                      className="bg-white text-foreground rounded-lg p-2 hover:bg-accent hover:text-white transition-colors disabled:opacity-40"
+                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
                       title="Bajar"
                       aria-label="Mover hacia abajo"
                     >

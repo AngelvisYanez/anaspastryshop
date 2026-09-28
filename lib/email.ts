@@ -13,11 +13,13 @@ const BASE_URL = process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
 
 const LOGO_URL = `${BASE_URL}/logo-anas-pastry-shop.png`;
 
-// Ana's Pastry Shop official brand palette
+// Ana's Pastry Shop official brand palette.
+// Debe coincidir con `app/globals.css` (--accent / --accent-hover). Los emails son
+// un medio de color fijo, así que se fija siempre el valor del tema claro.
 const BRAND_DARK = "#2B0938"; // Deep artisanal blackberry / plum
 const BRAND_DARK_LIGHT = "#441154"; // Rich plum accent
-const ACCENT = "#D92080"; // Official raspberry magenta
-const ACCENT_HOVER = "#BF136E";
+const ACCENT = "#C51E75"; // Official raspberry magenta (--accent)
+const ACCENT_HOVER = "#A8185F"; // --accent-hover
 const CREAM = "#FCF8FA"; // Warm confectioner cream
 const CREAM_DARK = "#F3D9E8"; // Delicate pastry rose border
 const WHITE = "#ffffff";

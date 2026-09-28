@@ -44,7 +44,7 @@ export default function DashboardShell({
         relative
         fixed inset-y-0 left-0 z-50 w-64
         ${isCollapsed ? "lg:w-20" : "lg:w-64"}
-        transition-all duration-300 ease-in-out
+        transition duration-300 ease-in-out
         lg:relative lg:flex-shrink-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
@@ -81,7 +81,7 @@ export default function DashboardShell({
               </span>
             </div>
             <Link href="/cursos" className="shrink-0 w-full sm:w-auto">
-              <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-all">
+              <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition">
                 Ver Catálogo <ArrowRight size={12} />
               </span>
             </Link>

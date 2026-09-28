@@ -16,14 +16,6 @@ export default function CoursesGrid({
   const [canNext, setCanNext] = useState(false);
   const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
-  if (!courses.length) {
-    return (
-      <p className="text-sm text-muted font-medium text-center py-12 border border-dashed border-card-border rounded-2xl">
-        Próximamente anunciaremos nuevas formaciones por WhatsApp.
-      </p>
-    );
-  }
-
   const step = () => {
     const el = trackRef.current;
     if (!el) return;
@@ -70,7 +62,6 @@ export default function CoursesGrid({
   }, []);
 
   useEffect(() => {
-    const el = trackRef.current;
     const mq = window.matchMedia("(min-width: 1024px)");
     const update = () => setAutoplayEnabled(mq.matches);
     update();
@@ -97,6 +88,14 @@ export default function CoursesGrid({
 
   const pause = () => setPaused(true);
   const resume = () => setPaused(false);
+
+  if (!courses.length) {
+    return (
+      <p className="text-sm text-muted font-medium text-center py-12 border border-dashed border-card-border rounded-2xl">
+        Próximamente anunciaremos nuevas formaciones por WhatsApp.
+      </p>
+    );
+  }
 
   return (
     <div

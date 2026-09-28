@@ -47,14 +47,15 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
       formData.set("image", previewImage);
     }
 
-    const result = await updateProfile(formData);
+    try {
+      const result = await updateProfile(formData);
 
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
-    } else {
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
       setSuccess(true);
-      setLoading(false);
 
       await update({
         name: formData.get("name"),
@@ -67,6 +68,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
       setTimeout(() => setSuccess(false), 3000);
       window.location.reload();
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -100,7 +103,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 bg-accent text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
+                  className="absolute -bottom-2 -right-2 bg-accent-solid text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
                   aria-label="Subir foto de perfil"
                 >
                   <Camera size={14} />
@@ -113,7 +116,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition-all border border-card-border"
+                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition border border-card-border"
                 >
                   <RefreshCcw size={13} /> Reemplazar
                 </button>
@@ -123,7 +126,7 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
                     setPreviewImage(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition-all border border-red-200 dark:border-red-800"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition border border-red-200 dark:border-red-800"
                 >
                   <Trash2 size={13} /> Eliminar
                 </button>
@@ -145,41 +148,43 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-4 rounded-lg text-sm font-bold flex items-center gap-2">
+            <div role="alert" className="bg-red-50 dark:bg-red-950/20 text-red-500 p-4 rounded-lg text-sm font-bold flex items-center gap-2">
               <AlertCircle size={16} /> {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-50 dark:bg-green-950/20 text-green-600 p-4 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+            <div role="status" className="bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 p-4 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
               <CheckCircle size={16} /> ¡Perfil actualizado con éxito!
             </div>
           )}
 
           <div className="grid grid-cols-1 gap-5">
             <div className="space-y-2">
-              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
+              <label htmlFor="profile-name" className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Nombre Completo
               </label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="profile-name"
                   type="text"
                   name="name"
                   defaultValue={initialUser.name || ""}
                   required
-                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition outline-none font-bold text-foreground"
                 />
               </div>
             </div>
 
             <div className="space-y-2 opacity-60">
-              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
+              <label htmlFor="profile-email" className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Email de Cuenta (No modificable)
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="profile-email"
                   type="email"
                   value={initialUser.email || ""}
                   readOnly
@@ -191,16 +196,17 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             <input type="hidden" name="image" value={previewImage || ""} />
 
             <div className="space-y-2 pt-4 border-t border-card-border">
-              <label className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
+              <label htmlFor="profile-new-password" className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
                 Cambiar Contraseña
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
                 <input
+                  id="profile-new-password"
                   type="password"
                   name="newPassword"
                   placeholder="Nueva contraseña (dejar vacío para no cambiar)"
-                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition-all outline-none font-bold text-foreground"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition outline-none font-bold text-foreground"
                 />
               </div>
               <p className="text-[11px] text-muted font-medium px-1">Solo llena este campo si deseas actualizar tu clave actual.</p>
@@ -208,8 +214,9 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
           </div>
 
           <button
+            type="submit"
             disabled={loading}
-            className="w-full bg-accent text-white py-3 rounded-xl font-black flex items-center justify-center gap-3 hover:bg-accent-hover transition-all shadow-md uppercase tracking-widest text-sm"
+            className="w-full bg-accent-solid text-white py-3 rounded-xl font-black flex items-center justify-center gap-3 hover:bg-accent-solid-hover transition-colors shadow-md uppercase tracking-widest text-sm"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             Guardar Cambios

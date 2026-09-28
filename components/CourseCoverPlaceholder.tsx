@@ -14,7 +14,8 @@ export default function CourseCoverPlaceholder({
     <div
       className={`relative w-full h-full bg-card flex items-center justify-center p-6 select-none border-b border-card-border/50 ${className}`}
     >
-      <div className="relative w-40 sm:w-44 h-14 sm:h-16 transition-transform duration-300 group-hover:scale-105">
+      <div className="relative w-40 sm:w-44 h-14 sm:h-16 transition-transform duration-500 group-hover/cover:scale-105">
+
         <Image
           src="/logo-anas-pastry-shop.png"
           alt="Ana's Pastry Shop"

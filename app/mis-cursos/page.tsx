@@ -7,9 +7,10 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Clock, BarChart2, PlayCircle, ShoppingBag } from "lucide-react";
+import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 
 export const metadata = {
-  title: "Mis Workshops & Cursos | Ana's Pastry Shop",
+  title: "Mis Workshops & Cursos",
   description: "Accede a tus workshops y cursos online adquiridos.",
 };
 
@@ -54,12 +55,20 @@ async function MisCursosContent() {
     if (i.curso && i.cursoId) courseMap.set(i.cursoId, i.curso);
   }
 
-  const courses = Array.from(courseMap.values());
+  const courses = Array.from(courseMap.values()).map((curso: any) => ({
+    ...curso,
+    image: resolveCourseCover({
+      title: curso.title,
+      slug: curso.slug ?? undefined,
+      image: curso.image,
+      isWorkshop: Boolean(curso.isLive),
+    }),
+  }));
 
   if (courses.length === 0) redirect("/cursos");
 
   return (
-    <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+    <div className="page-container pb-16 sm:pb-20">
       <div className="flex flex-col items-center text-center gap-4 mb-10">
         <div>
           <p className="text-[11px] font-black uppercase tracking-widest text-accent mb-1">
@@ -80,8 +89,8 @@ async function MisCursosContent() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {courses.map((curso: any) => (
-          <Link key={curso.id} href={`/cursos/${curso.id}`}>
-            <div className="bg-card border border-card-border rounded-xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group flex flex-col h-full">
+          <Link key={curso.id} href={curso.slug ? `/cursos/${curso.slug}` : `/cursos/${curso.id}`}>
+            <div className="bg-card border border-card-border rounded-xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition group flex flex-col h-full">
               {curso.image ? (
                 <div className="relative w-full h-40 bg-section-alt overflow-hidden">
                   <Image
@@ -129,9 +138,9 @@ async function MisCursosContent() {
 
 export default function MisCursosPage() {
   return (
-    <main className="min-h-screen bg-background pt-36 pb-20">
+    <main className="min-h-screen bg-background pt-36">
       <Navbar />
-      <Suspense fallback={<div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-20" />}>
+      <Suspense fallback={<div className="page-container py-20" />}>
         <MisCursosContent />
       </Suspense>
       <Footer />

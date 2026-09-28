@@ -6,7 +6,7 @@ export default function PagarLayout({ children }: { children: React.ReactNode })
   return (
     <>
       <Suspense fallback={<div className="h-20 bg-background" />}>
-        <Navbar forceSolid />
+        <Navbar />
       </Suspense>
       <Suspense
         fallback={

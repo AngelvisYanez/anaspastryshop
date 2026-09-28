@@ -6,7 +6,7 @@ import CheckoutBolsa from "./CheckoutBolsa";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 
 export const metadata = {
-  title: "Pago de tu Bolsa | Ana's Pastry Shop",
+  title: "Pago de tu Bolsa",
   description: "Finaliza el pago de todos los cursos online y workshops presenciales de tu bolsa.",
 };
 

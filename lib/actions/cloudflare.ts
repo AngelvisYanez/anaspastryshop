@@ -31,6 +31,11 @@ export async function getDirectUploadUrl(maxDurationSeconds = 21600) {
       }
     );
 
+    if (!response.ok) {
+      console.error("[Cloudflare Stream] HTTP error:", response.status);
+      return { error: "Error de conexión con Cloudflare." };
+    }
+
     const data = await response.json();
 
     if (!data.success) {

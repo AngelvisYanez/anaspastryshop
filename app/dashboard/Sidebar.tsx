@@ -44,7 +44,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed md:sticky top-0 h-screen z-40 flex flex-col justify-between border-r border-card-border bg-card transition-all duration-300 ${
+      className={`fixed md:sticky top-0 h-screen z-40 flex flex-col justify-between border-r border-card-border bg-card transition duration-300 ${
         isCollapsed ? "lg:w-20 w-64" : "w-64"
       }`}
     >
@@ -102,9 +102,9 @@ export default function Sidebar({
                 key={item.href}
                 href={item.href}
                 onClick={onMenuClick}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs transition ${
                   active
-                    ? "bg-accent text-white shadow-md shadow-accent/20"
+                    ? "bg-accent-solid text-white shadow-md shadow-accent/20"
                     : "text-muted hover:text-foreground hover:bg-card-hover"
                 }`}
                 title={isCollapsed ? item.name : undefined}
@@ -121,7 +121,7 @@ export default function Sidebar({
       <div className="p-3 border-t border-card-border space-y-2">
         {!isCollapsed && user && (
           <div className="px-3 py-2 rounded-xl bg-section-alt flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center text-xs font-black shrink-0 overflow-hidden">
+            <div className="w-8 h-8 rounded-lg bg-accent-solid text-white flex items-center justify-center text-xs font-black shrink-0 overflow-hidden">
               {user.image ? (
                 <img src={user.image} alt="" className="w-full h-full object-cover" />
               ) : (

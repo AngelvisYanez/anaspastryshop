@@ -17,6 +17,20 @@ const nextConfig: NextConfig = {
       { source: "/auth/forgot-password", destination: "/olvide-mi-contrasena", permanent: true },
       { source: "/auth/reset-password", destination: "/restablecer-contrasena", permanent: true },
       { source: "/checkout/success", destination: "/pagar/confirmacion", permanent: true },
+
+      // Ruta canónica de un workshop: /workshop/<slug>. El plural queda como alias.
+      { source: "/workshops/:slug", destination: "/workshop/:slug", permanent: true },
+
+      // "lesson" -> "leccion" (antes las clases vivían bajo /cursos/<id>/lesson/<lessonId>)
+      { source: "/cursos/:course/lesson/:lesson", destination: "/cursos/:course/leccion/:lesson", permanent: true },
+
+      // La clase por título crudo se résuelve ahora por slug de curso y slug de módulo.
+      { source: "/clases/:course/:module", destination: "/cursos/:course", permanent: true },
+
+      // Inglés -> español
+      { source: "/courses", destination: "/cursos", permanent: true },
+      { source: "/workshop", destination: "/workshops", permanent: true },
+      { source: "/lessons/:path*", destination: "/cursos", permanent: false },
     ];
   },
   images: {
@@ -29,6 +43,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'api.dicebear.com',
+        pathname: '**',
+      },
+      // Imágenes de la galería y de Cloudflare Images (app/api/cloudflare/upload-image).
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+        pathname: '**',
+      },
+      // Avatares de cuentas de Google (NextAuth Google provider).
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
         pathname: '**',
       },
     ],

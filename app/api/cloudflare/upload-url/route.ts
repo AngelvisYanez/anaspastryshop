@@ -25,6 +25,14 @@ export async function POST() {
     }
   );
 
+  if (!response.ok) {
+    console.error("[upload-url] Cloudflare HTTP error:", response.status);
+    return NextResponse.json(
+      { error: "Error al obtener URL de subida de Cloudflare" },
+      { status: 500 }
+    );
+  }
+
   const data = await response.json();
 
   if (!data.success) {

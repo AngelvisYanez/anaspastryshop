@@ -1,11 +1,12 @@
 "use client";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const AUTOPLAY_MS = 5000;
 
 export function useMobileCarousel<T extends HTMLElement>() {
   const trackRef = useRef<T | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   const scrollByStep = useCallback((dir: 1 | -1) => {
     const track = trackRef.current;
@@ -37,24 +38,52 @@ export function useMobileCarousel<T extends HTMLElement>() {
     };
     const start = () => {
       stop();
+      if (reducedMotion) return;
       id = setInterval(next, AUTOPLAY_MS);
     };
     const onTouchStart = () => stop();
     const onPointerEnter = () => stop();
     const onPointerLeave = () => start();
+    const onFocusIn = () => stop();
+    const onFocusOut = (e: FocusEvent) => {
+      if (!track.contains(e.relatedTarget as Node | null)) start();
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Tab") stop();
+    };
     start();
     track.addEventListener("pointerenter", onPointerEnter);
     track.addEventListener("pointerleave", onPointerLeave);
     track.addEventListener("touchstart", onTouchStart, { passive: true });
+    track.addEventListener("focusin", onFocusIn);
+    track.addEventListener("focusout", onFocusOut);
+    track.addEventListener("keydown", onKeyDown);
     return () => {
       stop();
       track.removeEventListener("pointerenter", onPointerEnter);
       track.removeEventListener("pointerleave", onPointerLeave);
       track.removeEventListener("touchstart", onTouchStart);
+      track.removeEventListener("focusin", onFocusIn);
+      track.removeEventListener("focusout", onFocusOut);
+      track.removeEventListener("keydown", onKeyDown);
     };
-  }, [next]);
+  }, [next, reducedMotion]);
 
   return { trackRef, next, prev };
+}
+
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return reduced;
 }
 
 export function CarouselArrows({
@@ -78,7 +107,7 @@ export function CarouselArrows({
         type="button"
         onClick={next}
         aria-label="Siguiente"
-        className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center shadow-lg shadow-pink-600/25 transition hover:brightness-110 active:scale-95"
+        className="w-10 h-10 rounded-full bg-accent-solid text-white flex items-center justify-center shadow-lg shadow-accent-solid/25 transition hover:brightness-110 active:scale-95"
       >
         <ChevronRight size={18} strokeWidth={2.5} />
       </button>

@@ -21,7 +21,7 @@ export default function DashboardError({
         <p className="text-sm sm:text-base text-muted mb-6 sm:mb-8">No pudimos cargar esta sección del panel. Intenta de nuevo.</p>
         <button
           onClick={reset}
-          className="bg-foreground text-background w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-all"
+          className="bg-foreground text-background w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition"
         >
           Intentar de nuevo
         </button>

@@ -65,15 +65,18 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
   async function handleSave() {
     setSaving(true);
     setError(null);
-    const result = await saveApiConfig(def.provider, def.label, form);
-    setSaving(false);
-    if (result.error) { setError(result.error); return; }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const result = await saveApiConfig(def.provider, def.label, form);
+      if (result.error) { setError(result.error); return; }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
-    <div className={`bg-card rounded-xl border shadow-sm overflow-hidden transition-all ${hasValues ? "border-card-border" : "border-card-border"}`}>
+    <div className={`bg-card rounded-xl border shadow-sm overflow-hidden transition ${hasValues ? "border-card-border" : "border-card-border"}`}>
       <button
         type="button"
         className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-card-hover transition-colors w-full text-left"
@@ -104,22 +107,24 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
 
           {def.fields.map((field) => (
             <div key={field.key}>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label htmlFor={`api-field-${field.key}`} className="block text-xs font-bold text-foreground mb-1.5">
                 {field.label}
                 {field.hint && <span className="text-muted font-medium ml-2">— {field.hint}</span>}
               </label>
               <div className="flex gap-2">
                 <input
+                  id={`api-field-${field.key}`}
                   type={field.secret && !showSecrets[field.key] ? "password" : "text"}
                   value={form[field.key]}
                   onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
-                  className="flex-1 bg-card border border-card-border rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all font-mono text-foreground placeholder:font-sans placeholder:text-muted"
+                  className="flex-1 bg-card border border-card-border rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition font-mono text-foreground placeholder:font-sans placeholder:text-muted"
                 />
                 {field.secret && (
                   <button
                     type="button"
                     onClick={() => setShowSecrets((s) => ({ ...s, [field.key]: !s[field.key] }))}
+                    aria-label={showSecrets[field.key] ? `Ocultar ${field.label}` : `Mostrar ${field.label}`}
                     className="px-4 bg-card border border-card-border rounded-xl text-muted hover:text-accent transition-colors"
                   >
                     {showSecrets[field.key] ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -131,14 +136,14 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
 
           <div className="flex items-center justify-between pt-2">
             {saved ? (
-              <span className="flex items-center gap-2 text-green-600 text-xs font-bold">
+              <span role="status" className="flex items-center gap-2 text-green-600 dark:text-green-400 text-xs font-bold">
                 <CheckCircle size={14} /> Guardado correctamente
               </span>
             ) : <span />}
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent-hover shadow-md shadow-accent/20 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-accent-solid text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent-solid-hover shadow-md shadow-accent/20 transition disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {saving ? "Guardando..." : "Guardar"}

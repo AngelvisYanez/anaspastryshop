@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://anaspastryshop.com";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://anaspastryshop.com").replace(/\/$/, "");
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,11 +9,17 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/dashboard/",
           "/api/",
-          "/auth/",
+          "/dashboard/",
+          "/pagar/",
           "/checkout/",
-          "/admin/",
+          "/mis-cursos",
+          "/unsubscribe",
+          "/iniciar-sesion",
+          "/registro",
+          "/olvide-mi-contrasena",
+          "/restablecer-contrasena",
+          "/cursos/*/leccion/",
         ],
       },
     ],

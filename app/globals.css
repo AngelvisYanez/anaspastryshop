@@ -12,6 +12,12 @@
   --accent: #C51E75;
   --accent-hover: #A8185F;
   --accent-subtle: rgba(217, 32, 128, 0.10);
+  /* Superficie sólida de acento: siempre lleva texto blanco encima.
+     Separate de --accent porque un mismo valor no puede cumplir ambos roles
+     (texto de acento sobre fondo oscuro + fondo de acento con texto blanco).
+     Light #C51E75 = 5.59:1 contra blanco. */
+  --accent-solid: #C51E75;
+  --accent-solid-hover: #A8185F;
   --cyan-accent: #06B6D4;
   --cyan-hover: #0891B2;
   --cyan-subtle: rgba(6, 182, 212, 0.12);
@@ -51,6 +57,11 @@
   --accent: #E82D8A;
   --accent-hover: #F4499E;
   --accent-subtle: rgba(232, 45, 138, 0.18);
+  /* Dark #CE2278 = 5.09:1 contra blanco, 3.20:1 contra la card (#E82D8A sólo llega a
+     4.06:1). El hover va algo más oscuro, nunca más claro: en dark un hover más claro
+     empeoraría el contraste del texto blanco. */
+  --accent-solid: #CE2278;
+  --accent-solid-hover: #C41E70;
   --cyan-accent: #22D3EE;
   --cyan-hover: #06B6D4;
   --cyan-subtle: rgba(34, 211, 238, 0.15);
@@ -79,6 +90,8 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-subtle: var(--accent-subtle);
+  --color-accent-solid: var(--accent-solid);
+  --color-accent-solid-hover: var(--accent-solid-hover);
   --color-cyan-accent: var(--cyan-accent);
   --color-cyan-hover: var(--cyan-hover);
   --color-cyan-subtle: var(--cyan-subtle);
@@ -100,6 +113,9 @@
   --color-glass: var(--glass);
   --color-glass-hover: var(--glass-hover);
   --color-glass-border: var(--glass-border);
+  --radius-card: var(--border-radius);
+  --shadow-card: var(--shadow-card);
+  --shadow-glow: var(--shadow-glow);
 }
 
 body {
@@ -188,6 +204,75 @@ a[disabled],
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Shared public-site layout rhythm */
+@utility page-container {
+  @apply mx-auto w-full max-w-7xl 2xl:max-w-[1440px] px-4 sm:px-6 lg:px-10;
+}
+
+@utility page-section {
+  @apply py-14 sm:py-16 md:py-20 lg:py-24;
+}
+
+@utility page-hero {
+  @apply pt-28 pb-20 sm:pt-32 sm:pb-24 md:pt-36 md:pb-28;
+}
+
+@utility page-grid {
+  @apply gap-5 sm:gap-6 lg:gap-8;
+}
+
+@utility page-content {
+  @apply pb-14 sm:pb-16 md:pb-20;
+}
+
+/* Entrance animations for menus, modals and toasts.
+   These class names follow the `tailwindcss-animate` convention, but that plugin is not
+   installed, so every one of them was a no-op and the dropdowns popped in with no
+   transition at all. Variants compose through custom properties, so `fade-in` and
+   `zoom-in-95` (or `slide-in-from-*`) can be combined on the same element. */
+@utility animate-in {
+  animation-name: aps-enter;
+  animation-duration: 200ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility fade-in {
+  --aps-fade-from: 0;
+  --aps-fade-to: 1;
+}
+
+@utility zoom-in {
+  --aps-transform-from: scale(0.9);
+  --aps-transform-to: scale(1);
+}
+
+@utility zoom-in-95 {
+  --aps-transform-from: scale(0.95);
+  --aps-transform-to: scale(1);
+}
+
+@utility slide-in-from-top-2 {
+  --aps-transform-from: translateY(-0.5rem);
+  --aps-transform-to: translateY(0);
+}
+
+@utility slide-in-from-bottom-3 {
+  --aps-transform-from: translateY(0.75rem);
+  --aps-transform-to: translateY(0);
+}
+
+@keyframes aps-enter {
+  from {
+    opacity: var(--aps-fade-from, 1);
+    transform: var(--aps-transform-from, none);
+  }
+  to {
+    opacity: var(--aps-fade-to, 1);
+    transform: var(--aps-transform-to, none);
   }
 }
 

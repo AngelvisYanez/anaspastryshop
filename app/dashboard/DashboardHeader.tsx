@@ -53,7 +53,6 @@ export default function DashboardHeader({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -80,6 +79,7 @@ export default function DashboardHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [notifOpen]);
 
+  // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- the notification list only exists for the signed-in client, and is refetched when the panel opens; there is no server render to move this into
   useEffect(() => {
     if (!notifOpen) return;
     setLoading(true);
@@ -93,15 +93,12 @@ export default function DashboardHeader({
       .finally(() => setLoading(false));
   }, [notifOpen]);
 
+  // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- the unread badge is per-session client state that must stay fresh after mutations, so it is fetched on mount
   useEffect(() => {
     fetch("/api/notifications/count")
       .then((r) => (r.ok ? r.json() : { count: 0 }))
       .then((d) => setUnreadCount(d.count ?? 0))
       .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -115,9 +112,16 @@ export default function DashboardHeader({
   }, [profileOpen]);
 
   const markAllAsRead = async () => {
-    await fetch("/api/notifications", { method: "PATCH" });
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    setUnreadCount(0);
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/notifications", { method: "PATCH" });
+      if (!res.ok) return;
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const notifIcon = (type: Notification["type"]) => {
@@ -212,15 +216,15 @@ export default function DashboardHeader({
         </div>
 
         {/* Dark / Light Toggle */}
-        {mounted && (
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg transition-colors"
-            aria-label="Cambiar tema"
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg transition-colors"
+          aria-label="Cambiar tema"
+        >
+          <Sun size={18} className="dark:hidden" />
+          <Moon size={18} className="hidden dark:block" />
+        </button>
 
         <div className="h-5 w-px bg-card-border mx-1" />
 
@@ -231,7 +235,7 @@ export default function DashboardHeader({
             className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-card-hover transition-colors"
             aria-label="Menú de usuario"
           >
-            <div className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-black shadow-sm overflow-hidden shrink-0">
+            <div className="w-7 h-7 rounded-full bg-accent-solid text-white flex items-center justify-center text-xs font-black shadow-sm overflow-hidden shrink-0">
               {user.image ? (
                 <img src={user.image} alt="" className="w-full h-full object-cover" />
               ) : (

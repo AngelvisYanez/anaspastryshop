@@ -40,9 +40,11 @@ export default function CartDrawer() {
         className={`fixed right-0 top-0 bottom-0 z-[80] w-full max-w-md bg-card border-l border-card-border shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        // react-doctor-disable-next-line react-doctor/prefer-html-dialog -- a sliding drawer, not a modal: it must stay in the DOM to animate out, and its scrim sits outside the panel
         role="dialog"
         aria-modal="true"
         aria-label="Bolsa de compras"
+        inert={!isOpen}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-card-border">
@@ -83,7 +85,7 @@ export default function CartDrawer() {
             <Link
               href="/cursos"
               onClick={closeCart}
-              className="mt-2 bg-accent hover:bg-accent-hover text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-pink-600/20"
+              className="mt-2 bg-accent-solid hover:bg-accent-solid-hover text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md shadow-accent-solid/20"
             >
               Explorar Formaciones
             </Link>
@@ -100,6 +102,7 @@ export default function CartDrawer() {
                     src={item.image || "/foto-1.webp"}
                     alt={item.title}
                     fill
+                    sizes="64px"
                     className="object-cover"
                   />
                 </div>
@@ -149,7 +152,7 @@ export default function CartDrawer() {
             <Link
               href={`/pagar/bolsa?items=${encodeURIComponent(itemsQuery)}`}
               onClick={closeCart}
-              className="w-full bg-accent hover:bg-accent-hover text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-pink-600/25 transition-all hover:shadow-pink-600/40"
+              className="w-full bg-accent-solid hover:bg-accent-solid-hover text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-accent-solid/25 transition hover:shadow-accent-solid/40"
             >
               Finalizar Compra <ArrowRight size={16} />
             </Link>

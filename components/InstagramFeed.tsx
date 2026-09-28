@@ -29,7 +29,7 @@ function ProfileCTA() {
         href={IG_PROFILE_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-lg shadow-pink-500/25"
+        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition shadow-lg shadow-accent/25"
       >
         <InstagramIcon className="w-5 h-5" />
         Seguinos en @anaspastryshopve
@@ -43,7 +43,7 @@ export default async function InstagramFeed() {
 
   return (
     <section className="py-24 px-6 bg-section-alt border-y border-card-border">
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="page-container">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
             Nuestro trabajo habla por nosotros
@@ -62,7 +62,7 @@ export default async function InstagramFeed() {
                   href={IG_PROFILE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative aspect-square rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.03] border border-card-border"
+                  className="group relative aspect-square rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-xl transition duration-300 hover:scale-[1.03] border border-card-border"
                 >
                   <img
                     src={item.imageUrl}
@@ -77,7 +77,7 @@ export default async function InstagramFeed() {
                       </p>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300 flex items-center justify-center">
                     <span className="text-white font-bold text-xs sm:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-4 py-2 rounded-full backdrop-blur-sm">
                       Ver en Instagram
                     </span>
@@ -125,7 +125,7 @@ export default async function InstagramFeed() {
                 href={IG_PROFILE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-lg shadow-pink-500/25"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition shadow-lg shadow-accent/25"
               >
                 <InstagramIcon className="w-5 h-5" />
                 Seguinos en @anaspastryshopve

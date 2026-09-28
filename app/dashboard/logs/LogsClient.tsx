@@ -132,28 +132,32 @@ export default function LogsClient({
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-sm">
           <div className="relative flex-1">
+            <label htmlFor="logs-search" className="sr-only">Buscar usuario en los logs</label>
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <input
+              id="logs-search"
               name="search"
               defaultValue={search}
               placeholder="Buscar usuario..."
-              className="w-full bg-card border border-card-border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-accent transition-all text-foreground placeholder:text-muted"
+              className="w-full bg-card border border-card-border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-accent transition text-foreground placeholder:text-muted"
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2.5 bg-card border border-card-border rounded-xl text-sm font-bold text-muted hover:text-accent hover:border-accent transition-all"
+            className="px-4 py-2.5 bg-card border border-card-border rounded-xl text-sm font-bold text-muted hover:text-accent hover:border-accent transition"
           >
             Buscar
           </button>
         </form>
 
         <div className="flex items-center gap-2">
+          <label htmlFor="logs-action" className="sr-only">Filtrar por acción</label>
           <Filter size={14} className="text-muted shrink-0" />
           <select
+            id="logs-action"
             value={action}
             onChange={(e) => updateParams({ action: e.target.value, page: "1" })}
-            className="bg-card border border-card-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:border-accent transition-all"
+            className="bg-card border border-card-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:border-accent transition"
           >
             {ALL_ACTIONS.map((a) => (
               <option key={a.value} value={a.value}>{a.label}</option>
@@ -256,7 +260,7 @@ export default function LogsClient({
           <button
             onClick={() => updateParams({ page: String(page - 1) })}
             disabled={page <= 1 || isPending}
-            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition-all"
+            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition"
             aria-label="Página anterior"
           >
             <ChevronLeft size={16} />
@@ -267,7 +271,7 @@ export default function LogsClient({
           <button
             onClick={() => updateParams({ page: String(page + 1) })}
             disabled={page >= totalPages || isPending}
-            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition-all"
+            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition"
             aria-label="Página siguiente"
           >
             <ChevronRight size={16} />

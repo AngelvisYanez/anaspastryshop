@@ -19,20 +19,23 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const result = await requestPasswordReset(formData);
 
-    setLoading(false);
+    try {
+      const result = await requestPasswordReset(formData);
 
-    if (result.error) {
-      setError(result.error);
-    } else {
-      setSent(true);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSent(true);
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
-      <Navbar forceSolid />
+      <Navbar />
       <main id="main-content">
         <PageHero
           backHref="/iniciar-sesion"
@@ -49,7 +52,7 @@ export default function ForgotPasswordPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-card rounded-xl p-10 shadow-[var(--shadow-card)] border border-card-border"
+              className="bg-card rounded-xl p-10 shadow-card border border-card-border"
             >
               {sent ? (
                 <div className="text-center">
@@ -72,7 +75,7 @@ export default function ForgotPasswordPage() {
               ) : (
                 <>
                   {error && (
-                    <div className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
+                    <div role="alert" className="bg-red-50 dark:bg-red-950/20 text-red-500 p-3 rounded-xl text-sm font-bold text-center mb-6 border border-red-100 dark:border-red-800">
                       {error}
                     </div>
                   )}
@@ -90,16 +93,19 @@ export default function ForgotPasswordPage() {
                           name="email"
                           required
                           placeholder="tu@email.com"
-                          className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition-all text-foreground placeholder:text-muted text-sm"
+                          className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                         />
                       </div>
                     </div>
 
                     <button
+                      type="submit"
                       disabled={loading}
-                      className="w-full bg-foreground text-background py-4 px-4 rounded-2xl font-bold hover:opacity-90 transition-all mt-4 flex justify-center items-center gap-2 disabled:opacity-70"
+                      aria-busy={loading}
+                      className="w-full bg-foreground text-background py-4 px-4 rounded-2xl font-bold hover:opacity-90 transition-opacity mt-4 flex justify-center items-center gap-2 disabled:opacity-70"
                     >
-                      {loading ? <Loader2 size={18} className="animate-spin" /> : "Enviar enlace de restablecimiento"}
+                      {loading && <Loader2 size={18} className="animate-spin" />}
+                      Enviar enlace de restablecimiento
                     </button>
                   </form>
 

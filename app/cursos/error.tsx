@@ -25,11 +25,11 @@ export default function CursosError({
         <div className="flex gap-3 justify-center">
           <button
             onClick={reset}
-            className="bg-foreground text-background px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-all"
+            className="bg-foreground text-background px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition"
           >
             Intentar de nuevo
           </button>
-          <Link href="/" className="bg-card border border-card-border px-6 py-3 rounded-xl font-bold text-sm text-foreground hover:bg-card-hover transition-all">
+          <Link href="/" className="bg-card border border-card-border px-6 py-3 rounded-xl font-bold text-sm text-foreground hover:bg-card-hover transition">
             Ir al inicio
           </Link>
         </div>

@@ -319,6 +319,7 @@ async function main() {
       incluye: w.incluye,
     })
 
+    // react-doctor-disable-next-line react-doctor/async-await-in-loop -- one-off seed script: a readable per-row read-then-write is preferred over a bulk query
     const existing = await prisma.curso.findFirst({
       where: {
         OR: [
@@ -367,32 +368,35 @@ async function main() {
   // Cursos online base
   const onlineCourses = [
     {
-      title: 'Curso Online: Repostería & Pastelería Desde Cero',
-      description: 'Formación 100% online con acceso de por vida. Aprende desde el batido y horneado perfecto de bizcochos hasta formulación de cremas estables y decoraciones modernas a tu propio ritmo.',
+      title: 'Cake de Piña',
+      description: 'Curso online 100% práctico para elaborar un cake de piña desde cero: bizcocho esponjoso, relleno y glaseado con técnica profesional, paso a paso en video.',
       price: 45,
       totalHours: 12,
       totalClasses: 18,
       level: 'Desde Cero',
       category: 'Cursos Online',
-      image: '/foto-4.webp',
+      slug: 'cake-de-pina',
+      image: '/curso-online-cake-de-pina.png',
       isLive: false,
       content: JSON.stringify({ isWorkshop: false }),
     },
     {
-      title: 'Masterclass Online: Técnicas de Bizcochos & Rellenos Gourmet Estables',
-      description: 'Comprende el porqué de cada ingrediente y paso. Formulaciones exactas de bizcochos que no se hunden, cremas estables al clima y acabados de alta pastelería en video HD.',
+      title: 'Merengue Italiano',
+      description: 'Masterclass online de merengue italiano: Merckert, punto de merengue, estabilidad del batido y su uso en rellenos y acabados de alta pastelería.',
       price: 35,
       totalHours: 8,
       totalClasses: 10,
       level: 'Todos los niveles',
       category: 'Cursos Online',
-      image: '/foto-6.webp',
+      slug: 'merengue-italiano',
+      image: '/curso-online-merengue-italiano.png',
       isLive: false,
       content: JSON.stringify({ isWorkshop: false }),
     },
   ]
 
   for (const oc of onlineCourses) {
+    // react-doctor-disable-next-line react-doctor/async-await-in-loop -- one-off seed script: a readable per-row read-then-write is preferred over a bulk query
     const existing = await prisma.curso.findFirst({
       where: { title: oc.title },
     })
@@ -403,6 +407,12 @@ async function main() {
           ...oc,
           instructorId: admin.id,
         },
+      })
+    } else if (!existing.slug) {
+      // Filas creadas antes de que `Curso.slug` existiera.
+      await prisma.curso.update({
+        where: { id: existing.id },
+        data: { slug: oc.slug, image: oc.image },
       })
     }
   }

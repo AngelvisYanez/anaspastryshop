@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FormacionCard, { type FormacionCardData } from "@/components/FormacionCard";
 import * as m from "framer-motion/m";
-import ScrollIndicator from "@/components/ScrollIndicator";
 
 export interface Course extends FormacionCardData {}
 
@@ -31,30 +30,22 @@ export default function PublicCoursesClient({
   }, [initialCourses, searchQuery]);
 
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Header */}
-      <div className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep pt-36 pb-28 rounded-b-3xl mb-12 text-white">
-        <div className="absolute inset-0 opacity-[0.035] noise-bg pointer-events-none" />
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-pink-600/15 blur-[140px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-5%] right-[0%] w-[35%] h-[35%] bg-purple-600/25 blur-[110px] rounded-full pointer-events-none" />
-
-        <div className="relative z-10 max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 text-center">
-          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6 leading-[1.15]">
+      <div className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 mb-10 text-white">
+        <div className="relative z-10 page-container text-center max-w-3xl mx-auto">
+          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4 leading-[1.12]">
             Cursos Online de{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-pink-300 to-cyan-300">
-              Pastelería Profesional.
-            </span>
+            <span className="text-on-purple-accent">Pastelería Profesional</span>
           </h1>
-          <p className="text-base md:text-lg text-white/75 max-w-prose mx-auto leading-relaxed">
-            Modalidad 100% online organizada por módulos en video, dictada por la Chef Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones técnicas paso a paso.
+          <p className="text-sm sm:text-base md:text-lg text-white/85 leading-relaxed">
+            Modalidad 100% online por módulos en video, con Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones paso a paso.
           </p>
         </div>
-        <ScrollIndicator />
       </div>
 
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="page-container pb-16 sm:pb-20">
         {/* Search + Counter */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8 bg-card border border-card-border p-4 rounded-3xl shadow-sm">
           <div className="flex items-center gap-2 text-xs text-muted px-2">
@@ -69,16 +60,19 @@ export default function PublicCoursesClient({
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-muted"
             />
+            <label htmlFor="public-courses-search" className="sr-only">Buscar cursos por técnica, torta o ingrediente</label>
             <input
+              id="public-courses-search"
               type="text"
               placeholder="Buscar por técnica, torta o ingrediente..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-section-alt border border-card-border rounded-2xl text-xs font-semibold text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-all"
+              className="w-full pl-11 pr-4 py-2.5 bg-section-alt border border-card-border rounded-2xl text-xs font-semibold text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
+                aria-label="Limpiar búsqueda de cursos"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground text-xs"
               >
                 ✕
@@ -94,12 +88,12 @@ export default function PublicCoursesClient({
             <h3 className="font-display text-xl font-bold text-foreground mb-2">
               No se encontraron cursos online
             </h3>
-            <p className="text-muted text-xs max-w-sm mx-auto mb-6">
+            <p className="text-muted text-xs max-w-sm mx-auto mb-4 sm:mb-6">
               No encontramos resultados que coincidan con tu búsqueda. Intenta con otros términos.
             </p>
             <button
               onClick={() => setSearchQuery("")}
-              className="bg-accent text-white px-5 py-2.5 rounded-xl text-xs font-bold"
+              className="bg-accent-solid text-white px-5 py-2.5 rounded-xl text-xs font-bold"
             >
               Restablecer Búsqueda
             </button>

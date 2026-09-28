@@ -69,7 +69,7 @@ export default async function MisCursosPage() {
         </div>
         <Link
           href="/cursos"
-          className="bg-accent text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-hover transition-colors flex items-center gap-1.5 shadow-sm"
+          className="bg-accent-solid text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-solid-hover transition-colors flex items-center gap-1.5 shadow-sm"
         >
           Explorar Más Formaciones <ArrowRight size={14} />
         </Link>
@@ -86,7 +86,7 @@ export default async function MisCursosPage() {
           </p>
           <Link
             href="/cursos"
-            className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-hover transition-colors shadow-md"
+            className="inline-flex items-center gap-2 bg-accent-solid text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-solid-hover transition-colors shadow-md"
           >
             Ver Catálogo Completo <ArrowRight size={14} />
           </Link>
@@ -99,7 +99,7 @@ export default async function MisCursosPage() {
 
             return (
               <Link key={curso.id} href={`/dashboard/cursos/${curso.id}`}>
-                <div className="bg-card border border-card-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all group flex flex-col h-full">
+                <div className="bg-card border border-card-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition group flex flex-col h-full">
                   {curso.image ? (
                     <div className="relative w-full h-44 bg-section-alt overflow-hidden">
                       <Image
@@ -112,7 +112,7 @@ export default async function MisCursosPage() {
                       <div className="absolute top-3 left-3">
                         <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg backdrop-blur-md shadow-sm ${
                           isWorkshop
-                            ? "bg-accent text-white shadow-sm"
+                            ? "bg-accent-solid text-white shadow-sm"
                             : "bg-black/70 text-white border border-white/20"
                         }`}>
                           {isWorkshop ? "Workshop Presencial" : "Curso Online"}

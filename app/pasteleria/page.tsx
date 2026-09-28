@@ -4,11 +4,10 @@ import InstagramFeed from "@/components/InstagramFeed";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Cake, Candy, Gift, Building2 } from "lucide-react";
-import ScrollIndicator from "@/components/ScrollIndicator";
 
 
 export const metadata = {
-  title: "Servicios de Pastelería & Eventos | Ana's Pastry Shop",
+  title: "Servicios de Pastelería & Eventos",
   description: "Tortas de diseño, mesas dulces y repostería artesanal de alta gama con Anais Flores.",
 };
 
@@ -44,27 +43,27 @@ export default function PasteleriaPage() {
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center pt-36 pb-28 overflow-hidden bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white">
-        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10 text-center">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] max-w-4xl mx-auto mb-6">
+      <section className="relative min-h-[52svh] sm:min-h-[48svh] flex items-end overflow-hidden text-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/foto-5.webp"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-purple via-brand-purple/75 to-brand-purple/35" />
+        <div className="page-container relative z-10 pt-28 pb-12 xl:pt-36 xl:pb-14">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] max-w-3xl mb-4">
             Momentos dulces creados con{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-200 to-pink-400">
-              arte y técnica profesional
-            </span>
+            <span className="text-on-purple-accent">arte y técnica profesional</span>
           </h1>
-
-          <p className="text-base sm:text-lg text-white/85 max-w-prose mx-auto mb-10 leading-relaxed font-medium">
-            Tortas de diseño para bodas y eventos, mesas de postres gourmet y repostería exclusiva elaborada por la chef pastelera Anais Flores.
+          <p className="text-sm sm:text-lg text-white/90 max-w-prose leading-relaxed font-medium">
+            Tortas de diseño para bodas y eventos, mesas de postres gourmet y repostería exclusiva elaborada por Anais Flores.
           </p>
-
-
         </div>
-        <ScrollIndicator />
       </section>
 
       {/* Services Grid */}
-      <section className="py-24 max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <section className="py-24 page-container">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
             Diseñamos experiencias dulces a tu medida
@@ -78,7 +77,7 @@ export default function PasteleriaPage() {
           {SERVICES.map((serv) => (
             <div
               key={serv.title}
-              className="bg-card border border-card-border rounded-3xl p-6 hover:shadow-xl hover:border-accent/40 transition-all group flex flex-col justify-between"
+              className="bg-card border border-card-border rounded-3xl p-6 hover:shadow-xl hover:border-accent/40 transition group flex flex-col justify-between"
             >
               <div>
                 <div className="w-12 h-12 bg-pink-100 dark:bg-pink-950/40 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-accent/10 transition-colors">
@@ -168,7 +167,7 @@ export default function PasteleriaPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/pagar/pasteleria"
-              className="bg-accent text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-hover transition-all shadow-md shadow-pink-600/20"
+              className="bg-accent-solid text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-accent-solid-hover transition shadow-md shadow-accent-solid/20"
             >
               Reportar Pago Realizado
             </Link>
@@ -176,7 +175,7 @@ export default function PasteleriaPage() {
               href="https://wa.me/?text=Hola%20Anais!%20Tengo%20una%20duda%20sobre%20los%20m%C3%A9todos%20de%20pago%20de%20pasteler%C3%ADa"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-section-alt hover:bg-card-hover border border-card-border text-foreground px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all"
+              className="bg-section-alt hover:bg-card-hover border border-card-border text-foreground px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition"
             >
               Consultar con Anais
             </a>

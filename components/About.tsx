@@ -13,7 +13,7 @@ const STATS = [
 export default function About() {
   return (
     <section id="sobre-anais" className="w-full bg-section-alt py-24 scroll-mt-20">
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10">
+      <div className="page-container">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -37,6 +37,7 @@ export default function About() {
                 src="/foto-2.webp"
                 alt="Anais Flores impartiendo workshop"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-brand-purple/90 via-brand-purple/40 to-transparent p-6 flex flex-col justify-end">
@@ -92,22 +93,24 @@ export default function About() {
                 href="https://wa.me/?text=Hola%20Anais!%20He%20le%C3%ADdo%20sobre%20tus%20workshops%20y%20quiero%20capacitarme"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-pink-600/20"
+                className="inline-flex items-center gap-2 bg-accent-solid hover:bg-accent-solid-hover text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md shadow-accent-solid/20"
               >
                 <MessageCircle size={14} /> ¡Escríbeme para capacitarte!
               </a>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/cursos">
-                <button className="w-full sm:w-auto bg-accent text-white px-8 py-3.5 rounded-xl font-bold hover:bg-accent-hover transition-all text-sm shadow-md shadow-pink-600/20">
-                  Ver Próximos Workshops
-                </button>
+              <Link
+                href="/cursos"
+                className="w-full sm:w-auto bg-accent-solid text-white px-8 py-3.5 rounded-xl font-bold hover:bg-accent-solid-hover transition text-sm shadow-md shadow-accent-solid/20"
+              >
+                Ver Próximos Workshops
               </Link>
-              <Link href="/nosotros">
-                <button className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold transition-all text-sm">
-                  Conocer Historia Completa
-                </button>
+              <Link
+                href="/nosotros"
+                className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold transition text-sm"
+              >
+                Conocer Historia Completa
               </Link>
             </div>
           </m.div>

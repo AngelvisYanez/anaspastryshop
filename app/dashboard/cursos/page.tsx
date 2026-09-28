@@ -56,7 +56,7 @@ export default async function CursosDashboardPage() {
         </div>
         <Link
           href="/dashboard/cursos/create"
-          className="bg-accent text-white px-5 py-2.5 rounded-xl inline-flex items-center gap-2 font-bold shadow-md hover:bg-accent-hover transition-colors text-xs uppercase tracking-wider"
+          className="bg-accent-solid text-white px-5 py-2.5 rounded-xl inline-flex items-center gap-2 font-bold shadow-md hover:bg-accent-solid-hover transition-colors text-xs uppercase tracking-wider"
         >
           <PlusCircle size={16} />
           Crear Formación
@@ -74,7 +74,7 @@ export default async function CursosDashboardPage() {
           </p>
           <Link
             href="/dashboard/cursos/create"
-            className="bg-accent text-white px-6 py-3 rounded-xl text-xs uppercase tracking-wider font-bold shadow-md hover:bg-accent-hover transition-colors"
+            className="bg-accent-solid text-white px-6 py-3 rounded-xl text-xs uppercase tracking-wider font-bold shadow-md hover:bg-accent-solid-hover transition-colors"
           >
             Publicar Ahora
           </Link>
@@ -86,7 +86,7 @@ export default async function CursosDashboardPage() {
             const isWorkshop = workshop.isWorkshop;
 
             return (
-              <div key={c.id} className="relative bg-card rounded-2xl border border-card-border p-5 flex flex-col hover:shadow-lg transition-all h-full group">
+              <div key={c.id} className="relative bg-card rounded-2xl border border-card-border p-5 flex flex-col hover:shadow-lg transition h-full group">
                 <CourseActions courseId={c.id} hasEnrolled={c._count.inscritos > 0} />
                 
                 <Link href={`/dashboard/cursos/${c.id}`} className="block">
@@ -109,7 +109,7 @@ export default async function CursosDashboardPage() {
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md ${
                       isWorkshop
-                        ? "bg-accent text-white"
+                        ? "bg-accent-solid text-white"
                         : "bg-accent-subtle text-accent border border-accent/20"
                     }`}>
                       {isWorkshop ? "Workshop Presencial" : "Curso Online"}

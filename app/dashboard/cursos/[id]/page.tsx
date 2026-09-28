@@ -21,36 +21,37 @@ export default async function DashboardCoursePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await auth();
+  const [session, course] = await Promise.all([
+    auth(),
+    prisma.curso.findUnique({
+      where: { id },
+      include: {
+        instructor: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        courseModules: {
+          orderBy: { order: "asc" },
+          include: {
+            lessons: {
+              orderBy: { order: "asc" },
+            },
+          },
+        },
+        _count: {
+          select: {
+            inscritos: true,
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!session?.user) {
     redirect("/iniciar-sesion");
   }
-
-  const course = await prisma.curso.findUnique({
-    where: { id },
-    include: {
-      instructor: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-      courseModules: {
-        orderBy: { order: "asc" },
-        include: {
-          lessons: {
-            orderBy: { order: "asc" },
-          },
-        },
-      },
-      _count: {
-        select: {
-          inscritos: true,
-        },
-      },
-    },
-  });
 
   if (!course) {
     notFound();
