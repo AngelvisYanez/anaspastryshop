@@ -30,7 +30,8 @@ export default function DashboardShell({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="h-dvh max-h-dvh bg-background flex overflow-hidden">
+    <div className="relative h-dvh max-h-dvh bg-background overflow-hidden">
+      {/* Backdrop móvil */}
       {isSidebarOpen && (
         <button
           type="button"
@@ -40,62 +41,72 @@ export default function DashboardShell({
         />
       )}
 
-      {/* Sidebar: overlay en móvil, columna en desktop — sin fixed anidado */}
+      {/* Sidebar móvil: fixed overlay, NUNCA participa del flex */}
       <div
-        className={`
-          z-50 flex flex-col border-r border-card-border bg-card
-          fixed inset-y-0 left-0 w-64
-          transition-transform duration-300 ease-in-out
-          lg:static lg:translate-x-0 lg:flex-shrink-0 lg:h-full
-          ${isCollapsed ? "lg:w-20" : "lg:w-64"}
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
+        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-card-border bg-card transition-transform duration-300 ease-in-out lg:hidden ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <Sidebar
           user={user}
           onMenuClick={() => setIsSidebarOpen(false)}
-          isCollapsed={isCollapsed}
+          isCollapsed={false}
         />
-
-        <button
-          onClick={() => setIsCollapsed((c) => !c)}
-          className="hidden lg:flex absolute right-0 top-8 translate-x-1/2 -translate-y-1/2 z-50 w-7 h-7 items-center justify-center bg-card border border-card-border rounded-full text-foreground ring-2 ring-background hover:bg-card-hover transition-colors shadow-md cursor-pointer"
-          title={isCollapsed ? "Expandir" : "Colapsar"}
-          aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-        >
-          {isCollapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
-        </button>
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden w-full">
-        <DashboardHeader
-          user={user}
-          onMenuClick={() => setIsSidebarOpen(true)}
-        />
+      <div className="flex h-full min-h-0 w-full">
+        {/* Sidebar desktop: columna del flex */}
+        <div
+          className={`relative hidden lg:flex flex-col flex-shrink-0 h-full border-r border-card-border bg-card transition-[width] duration-300 ${
+            isCollapsed ? "w-20" : "w-64"
+          }`}
+        >
+          <Sidebar user={user} isCollapsed={isCollapsed} />
+          <button
+            onClick={() => setIsCollapsed((c) => !c)}
+            className="absolute right-0 top-8 translate-x-1/2 -translate-y-1/2 z-50 w-7 h-7 flex items-center justify-center bg-card border border-card-border rounded-full text-foreground ring-2 ring-background hover:bg-card-hover transition-colors shadow-md cursor-pointer"
+            title={isCollapsed ? "Expandir" : "Colapsar"}
+            aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+          >
+            {isCollapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
+          </button>
+        </div>
 
-        {user?.role === "USER" && (
-          <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-3 sm:px-5 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 text-xs font-medium text-pink-100 min-w-0">
-              <span className="inline-flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30 w-fit shrink-0">
-                <Tag size={10} /> Cupón
-              </span>
-              <span className="leading-snug break-words">
-                Código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> · 40% OFF en ambos cursos online.
-              </span>
+        {/* Contenido: siempre ancho completo en móvil */}
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden w-full">
+          <DashboardHeader
+            user={user}
+            onMenuClick={() => setIsSidebarOpen(true)}
+          />
+
+          {user?.role === "USER" && (
+            <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-3 sm:px-5 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 text-xs font-medium text-pink-100 min-w-0">
+                <span className="inline-flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30 w-fit shrink-0">
+                  <Tag size={10} /> Cupón
+                </span>
+                <span className="leading-snug break-words">
+                  Código{" "}
+                  <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">
+                    TODOSLOSCURSOS
+                  </strong>{" "}
+                  · 40% OFF en ambos cursos online.
+                </span>
+              </div>
+              <Link href="/cursos" className="shrink-0 w-full sm:w-auto">
+                <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1 transition w-full sm:w-auto min-h-9">
+                  Ver Catálogo <ArrowRight size={12} />
+                </span>
+              </Link>
             </div>
-            <Link href="/cursos" className="shrink-0 w-full sm:w-auto">
-              <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1 transition w-full sm:w-auto min-h-9">
-                Ver Catálogo <ArrowRight size={12} />
-              </span>
-            </Link>
-          </div>
-        )}
+          )}
 
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full overscroll-contain bg-background">
-          <div className="w-full max-w-full p-4 sm:p-5 md:p-6 lg:p-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
-            {children}
-          </div>
-        </main>
+          <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full overscroll-contain bg-background">
+            <div className="w-full max-w-full p-4 sm:p-5 md:p-6 lg:p-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );
