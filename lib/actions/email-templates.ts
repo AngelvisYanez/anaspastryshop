@@ -13,6 +13,7 @@ import {
   sendPaymentRejectedEmail,
   sendCoursePurchaseEmail,
   sendAdminNewUserEmail,
+  getEmailTemplatePreview,
 } from "@/lib/email";
 
 const TEST_EMAIL = "angelviselyanez@gmail.com";
@@ -144,5 +145,22 @@ export async function sendTestEmail(
   } catch (err) {
     console.error("[sendTestEmail]", err);
     return { error: "No se pudo enviar el email de prueba." };
+  }
+}
+
+export async function previewEmailTemplate(
+  type: string,
+): Promise<{ subject: string; html: string } | { error: string }> {
+  await assertAdmin();
+
+  try {
+    const preview = await getEmailTemplatePreview(type);
+    if (!preview) {
+      return { error: "No se pudo generar la previsualización." };
+    }
+    return preview;
+  } catch (err) {
+    console.error("[previewEmailTemplate]", err);
+    return { error: "No se pudo generar la previsualización." };
   }
 }

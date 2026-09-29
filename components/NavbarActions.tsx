@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, Instagram, ShoppingBag, User, Moon, Sun } from "lucide-react";
+import { Menu, X, Instagram, ShoppingBag, User } from "lucide-react";
 import { NavbarUserMenu } from "@/components/NavbarUserMenu";
-import { useTheme } from "@/components/ThemeProvider";
 
 type SessionLike = {
   user?: {
@@ -40,8 +39,6 @@ export function NavbarActions({
   onOpenCart: () => void;
   onToggleMenu: () => void;
 }) {
-  const { theme, setTheme } = useTheme();
-
   return (
     <div
       className="flex items-center gap-2 sm:gap-3 shrink-0 justify-self-end"
@@ -75,17 +72,6 @@ export function NavbarActions({
           </Link>
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className={`inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border transition-colors active:scale-[0.97] ${iconBtnClass}`}
-        aria-label={theme === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-        title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
-      >
-        <Sun size={18} className="dark:hidden" aria-hidden="true" />
-        <Moon size={18} className="hidden dark:block" aria-hidden="true" />
-      </button>
 
       {!scrolled && (
         <button

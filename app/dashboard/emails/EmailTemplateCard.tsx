@@ -8,9 +8,14 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import { updateEmailTemplate, sendTestEmail } from "@/lib/actions/email-templates";
+import {
+  updateEmailTemplate,
+  sendTestEmail,
+  previewEmailTemplate,
+} from "@/lib/actions/email-templates";
 import type { EmailTemplateData } from "@/lib/email-template-defaults";
 import { TemplateCardEditor } from "./TemplateCardEditor";
+import { EmailPreviewDialog } from "./EmailPreviewDialog";
 
 const RECIPIENT_LABELS: Record<string, string> = {
   USER: "Usuario",
@@ -36,6 +41,11 @@ export function TemplateCard({ template }: { template: EmailTemplateData }) {
   const [saved, setSaved] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "err" | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewSubject, setPreviewSubject] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [syncedAt, setSyncedAt] = useState({
     enabled: template.isEnabled,
     subject: template.subject,
@@ -93,71 +103,106 @@ export function TemplateCard({ template }: { template: EmailTemplateData }) {
     }
   }
 
+  async function handlePreview() {
+    setPreviewOpen(true);
+    setPreviewing(true);
+    setPreviewError(null);
+    setPreviewHtml(null);
+    setPreviewSubject(null);
+    try {
+      const res = await previewEmailTemplate(template.type);
+      if ("error" in res) {
+        setPreviewError(res.error);
+      } else {
+        setPreviewHtml(res.html);
+        setPreviewSubject(res.subject);
+      }
+    } catch {
+      setPreviewError("No se pudo generar la previsualización.");
+    } finally {
+      setPreviewing(false);
+    }
+  }
+
   return (
-    <div
-      className={`bg-card rounded-xl border shadow-sm transition ${
-        enabled ? "border-card-border" : "border-card-border opacity-60"
-      }`}
-    >
-      <div className="flex items-center justify-between px-5 py-4">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="flex items-center gap-3 flex-1 min-w-0 text-left"
-          >
-            <ChevronRight
-              size={14}
-              className={`text-muted shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-sm font-black text-foreground">{template.label}</p>
-                <span
-                  className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                    RECIPIENT_COLORS[template.recipient] ?? "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {RECIPIENT_LABELS[template.recipient] ?? template.recipient}
-                </span>
+    <>
+      <div
+        className={`bg-card rounded-xl border shadow-sm transition ${
+          enabled ? "border-card-border" : "border-card-border opacity-60"
+        }`}
+      >
+        <div className="flex items-center justify-between px-5 py-4">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="flex items-center gap-3 flex-1 min-w-0 text-left"
+            >
+              <ChevronRight
+                size={14}
+                className={`text-muted shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
+              />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-black text-foreground">{template.label}</p>
+                  <span
+                    className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                      RECIPIENT_COLORS[template.recipient] ?? "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {RECIPIENT_LABELS[template.recipient] ?? template.recipient}
+                  </span>
+                </div>
+                <p className="text-xs text-muted font-medium truncate mt-0.5">{subject}</p>
               </div>
-              <p className="text-xs text-muted font-medium truncate mt-0.5">{subject}</p>
-            </div>
+            </button>
+          </div>
+
+          <button
+            onClick={handleToggle}
+            disabled={toggling}
+            className="ml-4 shrink-0 flex items-center gap-1.5 text-xs font-bold transition-colors disabled:opacity-50"
+          >
+            {toggling ? (
+              <Loader2 size={18} className="animate-spin text-muted" />
+            ) : enabled ? (
+              <ToggleRight size={22} className="text-accent" />
+            ) : (
+              <ToggleLeft size={22} className="text-muted" />
+            )}
+            <span className={enabled ? "text-accent" : "text-muted"}>
+              {enabled ? "Activo" : "Inactivo"}
+            </span>
           </button>
         </div>
 
-        <button
-          onClick={handleToggle}
-          disabled={toggling}
-          className="ml-4 shrink-0 flex items-center gap-1.5 text-xs font-bold transition-colors disabled:opacity-50"
-        >
-          {toggling ? (
-            <Loader2 size={18} className="animate-spin text-muted" />
-          ) : enabled ? (
-            <ToggleRight size={22} className="text-accent" />
-          ) : (
-            <ToggleLeft size={22} className="text-muted" />
-          )}
-          <span className={enabled ? "text-accent" : "text-muted"}>
-            {enabled ? "Activo" : "Inactivo"}
-          </span>
-        </button>
+        {expanded && (
+          <TemplateCardEditor
+            templateId={template.id}
+            subject={subject}
+            preheader={preheader}
+            saving={saving}
+            saved={saved}
+            testing={testing}
+            testResult={testResult}
+            previewing={previewing}
+            onSubjectChange={setSubject}
+            onPreheaderChange={setPreheader}
+            onPreview={handlePreview}
+            onTest={handleTest}
+            onSave={handleSave}
+          />
+        )}
       </div>
 
-      {expanded && (
-        <TemplateCardEditor
-          templateId={template.id}
-          subject={subject}
-          preheader={preheader}
-          saving={saving}
-          saved={saved}
-          testing={testing}
-          testResult={testResult}
-          onSubjectChange={setSubject}
-          onPreheaderChange={setPreheader}
-          onTest={handleTest}
-          onSave={handleSave}
-        />
-      )}
-    </div>
+      <EmailPreviewDialog
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        loading={previewing}
+        subject={previewSubject}
+        html={previewHtml}
+        error={previewError}
+        templateLabel={template.label}
+      />
+    </>
   );
 }

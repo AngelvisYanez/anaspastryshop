@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useLayoutEffect, useMemo, useState } from "react";
+import { createContext, useContext, useLayoutEffect, useMemo } from "react";
 
 type Theme = "light" | "dark";
 
@@ -11,35 +11,28 @@ interface ThemeContextValue {
 
 const STORAGE_KEY = "theme";
 
-function getStoredTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === "dark" ? "dark" : "light";
-  } catch {
-    return "light";
-  }
-}
-
 const ThemeContext = createContext<ThemeContextValue>({
   theme: "light",
   setTheme: () => {},
 });
 
+/** Dark mode deshabilitado: siempre light. setTheme queda como no-op. */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => getStoredTheme());
-
   useLayoutEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle("dark", theme === "dark");
-    root.style.colorScheme = theme;
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
     try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
+      window.localStorage.setItem(STORAGE_KEY, "light");
     } catch {
-      // storage unavailable (private mode): theme still applies for this session
+      // storage unavailable (private mode)
     }
-  }, [theme]);
+  }, []);
 
-  const value = useMemo(() => ({ theme, setTheme }), [theme]);
+  const value = useMemo<ThemeContextValue>(
+    () => ({ theme: "light", setTheme: () => {} }),
+    [],
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

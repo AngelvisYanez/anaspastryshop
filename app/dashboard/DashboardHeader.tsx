@@ -4,9 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTheme } from "@/components/ThemeProvider";
 import {
-  Menu, Bell, Moon, Sun, User, Settings, LogOut,
+  Menu, Bell, User, Settings, LogOut,
   ChevronDown, CheckCircle2, AlertTriangle, Info,
 } from "lucide-react";
 
@@ -56,7 +55,6 @@ export default function DashboardHeader({
   const [profileOpen, setProfileOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
 
   const getPageTitle = (path: string) => {
     if (PAGE_TITLES[path]) return PAGE_TITLES[path];
@@ -214,17 +212,6 @@ export default function DashboardHeader({
             </div>
           )}
         </div>
-
-        {/* Dark / Light Toggle */}
-        <button
-          type="button"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg transition-colors"
-          aria-label="Cambiar tema"
-        >
-          <Sun size={18} className="dark:hidden" />
-          <Moon size={18} className="hidden dark:block" />
-        </button>
 
         <div className="h-5 w-px bg-card-border mx-1" />
 

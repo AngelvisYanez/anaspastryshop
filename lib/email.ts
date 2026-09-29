@@ -223,9 +223,13 @@ async function getTemplateConfig(type: string) {
   }
 }
 
-export async function sendWelcomeEmail(email: string, name: string | null) {
+export async function sendWelcomeEmail(
+  email: string,
+  name: string | null,
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("WELCOME");
-  if (!config.isEnabled) return;
+  if (!config.isEnabled && !options?.dryRun) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -293,18 +297,22 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
     </table>
   `;
 
+  const subject =
+    config.subject || `¡Bienvenido a Ana's Pastry Shop, ${firstName}!`;
+  const html = buildEmail(
+    config.preheader ||
+      `Bienvenido ${firstName}, tu cuenta en Ana's Pastry Shop está lista. Empieza hoy.`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
   try {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject:
-        config.subject ||
-        `¡Bienvenido a Ana's Pastry Shop, ${firstName}!`,
-      html: buildEmail(
-        config.preheader ||
-          `Bienvenido ${firstName}, tu cuenta en Ana's Pastry Shop está lista. Empieza hoy.`,
-        body,
-      ),
+      subject,
+      html,
     });
   } catch (err) {
     console.error("[Resend] sendWelcomeEmail error:", err);
@@ -314,9 +322,10 @@ export async function sendWelcomeEmail(email: string, name: string | null) {
 export async function sendAccountApprovedEmail(
   email: string,
   name: string | null,
-) {
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("ACCOUNT_APPROVED");
-  if (!config.isEnabled) return;
+  if (!config.isEnabled && !options?.dryRun) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -372,17 +381,22 @@ export async function sendAccountApprovedEmail(
     </table>
   `;
 
+  const subject =
+    config.subject || `¡Tu cuenta ha sido aprobada! — Ana's Pastry Shop`;
+  const html = buildEmail(
+    config.preheader ||
+      `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
   try {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject:
-        config.subject || `¡Tu cuenta ha sido aprobada! — Ana's Pastry Shop`,
-      html: buildEmail(
-        config.preheader ||
-          `${firstName}, tu cuenta fue aprobada. Ya puedes acceder a la plataforma.`,
-        body,
-      ),
+      subject,
+      html,
     });
   } catch (err) {
     console.error("[Resend] sendAccountApprovedEmail error:", err);
@@ -393,9 +407,10 @@ export async function sendPaymentRejectedEmail(
   email: string,
   name: string | null,
   reason?: string,
-) {
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("PAYMENT_REJECTED");
-  if (!config.isEnabled) return;
+  if (!config.isEnabled && !options?.dryRun) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -466,16 +481,21 @@ export async function sendPaymentRejectedEmail(
     </table>
   `;
 
+  const subject = config.subject || `Pago no validado — Ana's Pastry Shop`;
+  const html = buildEmail(
+    config.preheader ||
+      `${firstName}, no pudimos verificar tu comprobante de pago. Tienes opciones para resolverlo.`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
   try {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject: config.subject || `Pago no validado — Ana's Pastry Shop`,
-      html: buildEmail(
-        config.preheader ||
-          `${firstName}, no pudimos verificar tu comprobante de pago. Tienes opciones para resolverlo.`,
-        body,
-      ),
+      subject,
+      html,
     });
   } catch (err) {
     console.error("[Resend] sendPaymentRejectedEmail error:", err);
@@ -631,9 +651,10 @@ export async function sendCoursePurchaseEmail(
   email: string,
   name: string | null,
   courseTitle: string,
-) {
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("COURSE_PURCHASE");
-  if (!config.isEnabled) return;
+  if (!config.isEnabled && !options?.dryRun) return;
   const firstName = name?.split(" ")[0] ?? "allí";
 
   const body = `
@@ -722,18 +743,22 @@ export async function sendCoursePurchaseEmail(
     </table>
   `;
 
+  const subject =
+    config.subject || `Acceso activado: ${courseTitle} — Ana's Pastry Shop`;
+  const html = buildEmail(
+    config.preheader ||
+      `${firstName}, tu acceso a "${courseTitle}" está listo. ¡Empieza ahora!`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
   try {
     await getResend().emails.send({
       from: FROM,
       to: email,
-      subject:
-        config.subject ||
-        `Acceso activado: ${courseTitle} — Ana's Pastry Shop`,
-      html: buildEmail(
-        config.preheader ||
-          `${firstName}, tu acceso a "${courseTitle}" está listo. ¡Empieza ahora!`,
-        body,
-      ),
+      subject,
+      html,
     });
   } catch (err) {
     console.error("[Resend] sendCoursePurchaseEmail error:", err);
@@ -744,16 +769,10 @@ export async function sendAdminNewUserEmail(
   userName: string,
   userEmail: string,
   role: string,
-) {
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("ADMIN_NEW_USER");
-  if (!config.isEnabled) return;
-
-  const admins = await (prisma as any).user.findMany({
-    where: { role: "ADMIN" },
-    select: { email: true },
-  });
-  const adminEmails = admins.map((a: any) => a.email).filter(Boolean);
-  if (adminEmails.length === 0) return;
+  if (!config.isEnabled && !options?.dryRun) return;
 
   const body = `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -772,20 +791,80 @@ export async function sendAdminNewUserEmail(
     </table>
   `;
 
+  const subject =
+    config.subject || "Notificación: Nuevo Registro en Ana's Pastry Shop";
+  const html = buildEmail(
+    config.preheader || `Nuevo usuario registrado: ${userName}`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
+  const admins = await (prisma as any).user.findMany({
+    where: { role: "ADMIN" },
+    select: { email: true },
+  });
+  const adminEmails = admins.map((a: any) => a.email).filter(Boolean);
+  if (adminEmails.length === 0) return;
+
   try {
     await getResend().emails.send({
       from: FROM,
       to: adminEmails,
-      subject:
-        config.subject ||
-        "Notificación: Nuevo Registro en Ana's Pastry Shop",
-      html: buildEmail(
-        config.preheader || `Nuevo usuario registrado: ${userName}`,
-        body,
-      ),
+      subject,
+      html,
     });
   } catch (err) {
     console.error("[Resend] sendAdminNewUserEmail error:", err);
+  }
+}
+
+export async function getEmailTemplatePreview(
+  type: string,
+): Promise<{ subject: string; html: string } | null> {
+  const dryRun = { dryRun: true as const };
+  const sampleName = "Anais Flores";
+  const sampleEmail = "preview@anaspastryshop.com";
+
+  switch (type) {
+    case "WELCOME":
+      return (
+        (await sendWelcomeEmail(sampleEmail, sampleName, dryRun)) ?? null
+      );
+    case "ACCOUNT_APPROVED":
+      return (
+        (await sendAccountApprovedEmail(sampleEmail, sampleName, dryRun)) ??
+        null
+      );
+    case "PAYMENT_REJECTED":
+      return (
+        (await sendPaymentRejectedEmail(
+          sampleEmail,
+          sampleName,
+          "El comprobante de pago no coincide con el monto indicado.",
+          dryRun,
+        )) ?? null
+      );
+    case "COURSE_PURCHASE":
+      return (
+        (await sendCoursePurchaseEmail(
+          sampleEmail,
+          sampleName,
+          "Fundamentos Digitales",
+          dryRun,
+        )) ?? null
+      );
+    case "ADMIN_NEW_USER":
+      return (
+        (await sendAdminNewUserEmail(
+          "Usuario Prueba",
+          "prueba@ejemplo.com",
+          "USER",
+          dryRun,
+        )) ?? null
+      );
+    default:
+      return null;
   }
 }
 

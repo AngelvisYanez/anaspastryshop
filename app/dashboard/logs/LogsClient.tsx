@@ -21,23 +21,37 @@ const ACTION_STYLES: Record<string, string> = {
   REVOKE: "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800",
   REGISTER: "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800",
   APPROVE_PAYMENT: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
+  APPROVE_PASTRY_PAYMENT: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
+  APPROVE_COURSE_PAYMENT: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
+  REJECT_PAYMENT: "bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800",
+  COURSE_PAYMENT_SUBMITTED: "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800",
+  PASTRY_SERVICE_PAYMENT_SUBMITTED: "bg-pink-50 dark:bg-pink-950/20 text-pink-700 dark:text-pink-400 border border-pink-200 dark:border-pink-800",
+  REACTIVATE: "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
+  SUSPEND: "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800",
 };
 
 const ACTION_LABELS: Record<string, string> = {
-  CREATE: "Crear",
-  UPDATE: "Editar",
-  DELETE: "Eliminar",
-  APPROVE: "Aprobar",
-  REVOKE: "Revocar",
-  REGISTER: "Registro",
-  APPROVE_PAYMENT: "Pago aprobado",
+  CREATE: "Creó",
+  UPDATE: "Editó",
+  DELETE: "Eliminó",
+  APPROVE: "Aprobó",
+  REVOKE: "Revocó",
+  REGISTER: "Nuevo registro",
+  APPROVE_PAYMENT: "Aprobó un pago",
+  APPROVE_PASTRY_PAYMENT: "Aprobó pago de pastelería",
+  APPROVE_COURSE_PAYMENT: "Aprobó pago de formación",
+  REJECT_PAYMENT: "Rechazó un pago",
+  COURSE_PAYMENT_SUBMITTED: "Envió comprobante de formación",
+  PASTRY_SERVICE_PAYMENT_SUBMITTED: "Envió comprobante de pastelería",
+  REACTIVATE: "Reactivó cuenta",
+  SUSPEND: "Suspendió cuenta",
 };
 
 const ENTITY_LABELS: Record<string, string> = {
   USER: "Usuario",
   CURSO: "Curso / Workshop",
   CATEGORY: "Categoría",
-  INSCRIPTION: "Inscripción",
+  INSCRIPTION: "Pago / Inscripción",
 };
 
 const ENTITY_COLORS: Record<string, string> = {
@@ -47,26 +61,128 @@ const ENTITY_COLORS: Record<string, string> = {
   INSCRIPTION: "text-accent",
 };
 
+const DETAIL_KEY_LABELS: Record<string, string> = {
+  title: "Título",
+  name: "Nombre",
+  email: "Correo",
+  role: "Rol",
+  message: "Mensaje",
+  status: "Estado",
+  type: "Tipo",
+  method: "Método de pago",
+  amount: "Monto",
+  reason: "Motivo",
+  description: "Descripción",
+  cursoId: "Curso",
+  targetId: "Curso",
+  targetIds: "Formaciones en la bolsa",
+};
+
+const DETAIL_VALUE_LABELS: Record<string, Record<string, string>> = {
+  role: {
+    USER: "Alumno",
+    ADMIN: "Administrador",
+  },
+  status: {
+    APPROVED: "Aprobado",
+    REJECTED: "Rechazado",
+    PENDING: "Pendiente",
+    COMPLETED: "Completado",
+  },
+  type: {
+    CURSO: "Curso / Workshop",
+    PASTRY_SERVICE: "Servicio de pastelería",
+    BAG: "Bolsa de compras",
+  },
+  method: {
+    BANK_TRANSFER: "Transferencia bancaria",
+    TRANSFERENCIA: "Transferencia",
+    ZELLE: "Zelle",
+    PAGO_MOVIL: "Pago móvil",
+    BINANCE: "Binance Pay",
+    USDT: "USDT",
+    STRIPE: "Stripe",
+  },
+};
+
+const HIDDEN_DETAIL_KEYS = new Set(["entityId", "userId", "id"]);
+
+function humanizeKey(key: string): string {
+  if (DETAIL_KEY_LABELS[key]) return DETAIL_KEY_LABELS[key];
+  return key
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
+    .replace(/\bid\b/gi, "")
+    .trim()
+    .replace(/^\w/, (c) => c.toUpperCase());
+}
+
+function formatDetailValue(key: string, value: unknown): string | null {
+  if (value === null || value === undefined || value === "") return null;
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed.toUpperCase() === "N/A") return null;
+    const mapped = DETAIL_VALUE_LABELS[key]?.[trimmed];
+    if (mapped) return mapped;
+    if (key === "amount" && !Number.isNaN(Number(trimmed))) {
+      return `$${Number(trimmed).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })} USD`;
+    }
+    return trimmed;
+  }
+
+  if (typeof value === "number") {
+    if (key === "amount") {
+      return `$${value.toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })} USD`;
+    }
+    return String(value);
+  }
+
+  if (typeof value === "boolean") {
+    return value ? "Sí" : "No";
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return null;
+    if (key === "targetIds") {
+      return `${value.length} formación${value.length === 1 ? "" : "es"}`;
+    }
+    return value.map(String).join(", ");
+  }
+
+  return String(value);
+}
+
 function formatDetails(raw: string | null): string {
-  if (!raw) return "—";
+  if (!raw) return "Sin información adicional";
   try {
     const obj = JSON.parse(raw);
-    const labels: Record<string, string> = {
-      title: "Título", name: "Nombre", email: "Email",
-      role: "Rol", message: "Mensaje", status: "Estado",
-      type: "Tipo", method: "Método",
-    };
-    const roleNames: Record<string, string> = {
-      USER: "Alumno", ADMIN: "Administrador",
-    };
+    if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+      return raw;
+    }
+
     const parts = Object.entries(obj)
-      .filter(([, v]) => v !== null && v !== undefined && v !== "")
+      .filter(([k]) => !HIDDEN_DETAIL_KEYS.has(k))
       .map(([k, v]) => {
-        const label = labels[k] || k;
-        const value = k === "role" ? (roleNames[v as string] ?? v) : String(v);
-        return `${label}: ${value}`;
-      });
-    return parts.length > 0 ? parts.join(" · ") : "Sin detalles";
+        const formatted = formatDetailValue(k, v);
+        if (!formatted) return null;
+        if (
+          (k === "cursoId" || k === "targetId") &&
+          /^[a-z0-9_-]{16,}$/i.test(formatted)
+        ) {
+          return null;
+        }
+        return `${humanizeKey(k)}: ${formatted}`;
+      })
+      .filter(Boolean) as string[];
+
+    return parts.length > 0 ? parts.join(" · ") : "Sin información adicional";
   } catch {
     return raw;
   }
@@ -74,13 +190,19 @@ function formatDetails(raw: string | null): string {
 
 const ALL_ACTIONS = [
   { value: "", label: "Todas las acciones" },
-  { value: "CREATE", label: "Crear" },
-  { value: "UPDATE", label: "Editar" },
-  { value: "DELETE", label: "Eliminar" },
-  { value: "APPROVE", label: "Aprobar" },
-  { value: "REVOKE", label: "Revocar" },
-  { value: "REGISTER", label: "Registro" },
-  { value: "APPROVE_PAYMENT", label: "Pago aprobado" },
+  { value: "REGISTER", label: "Nuevo registro" },
+  { value: "COURSE_PAYMENT_SUBMITTED", label: "Comprobante de formación" },
+  { value: "PASTRY_SERVICE_PAYMENT_SUBMITTED", label: "Comprobante de pastelería" },
+  { value: "APPROVE_COURSE_PAYMENT", label: "Pago de formación aprobado" },
+  { value: "APPROVE_PASTRY_PAYMENT", label: "Pago de pastelería aprobado" },
+  { value: "REJECT_PAYMENT", label: "Pago rechazado" },
+  { value: "UPDATE", label: "Edición" },
+  { value: "DELETE", label: "Eliminación" },
+  { value: "SUSPEND", label: "Suspensión de cuenta" },
+  { value: "REACTIVATE", label: "Reactivación de cuenta" },
+  { value: "CREATE", label: "Creación" },
+  { value: "APPROVE", label: "Aprobación" },
+  { value: "REVOKE", label: "Revocación" },
 ];
 
 const PAGE_SIZE = 20;
@@ -157,7 +279,7 @@ export default function LogsClient({
             id="logs-action"
             value={action}
             onChange={(e) => updateParams({ action: e.target.value, page: "1" })}
-            className="bg-card border border-card-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:border-accent transition"
+            className="bg-card border border-card-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:border-accent transition max-w-[240px]"
           >
             {ALL_ACTIONS.map((a) => (
               <option key={a.value} value={a.value}>{a.label}</option>
@@ -180,10 +302,10 @@ export default function LogsClient({
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-card-border bg-section-alt/60">
-                  <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted w-36">#&nbsp;&nbsp;Fecha</th>
-                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Usuario</th>
-                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Acción</th>
-                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Entidad</th>
+                  <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted w-36">Fecha</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Quién lo hizo</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Qué ocurrió</th>
+                  <th className="py-3 px-3 text-[11px] font-black uppercase tracking-widest text-muted">Sobre qué</th>
                   <th className="py-3 pl-3 pr-5 text-[11px] font-black uppercase tracking-widest text-muted">Detalles</th>
                 </tr>
               </thead>
@@ -222,7 +344,7 @@ export default function LogsClient({
                     </td>
 
                     <td className="py-4 px-3">
-                      <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black tracking-widest inline-block whitespace-nowrap ${
+                      <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black tracking-wide inline-block whitespace-nowrap ${
                         ACTION_STYLES[log.action] ?? "bg-section-alt text-muted border border-card-border"
                       }`}>
                         {ACTION_LABELS[log.action] ?? log.action}
@@ -238,8 +360,8 @@ export default function LogsClient({
                       </div>
                     </td>
 
-                    <td className="py-4 pl-3 pr-5 text-xs text-muted font-medium max-w-xs">
-                      <span className="line-clamp-2">{formatDetails(log.details)}</span>
+                    <td className="py-4 pl-3 pr-5 text-xs text-muted font-medium max-w-sm">
+                      <span className="line-clamp-3 leading-relaxed">{formatDetails(log.details)}</span>
                     </td>
                   </tr>
                 ))}
