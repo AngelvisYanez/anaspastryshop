@@ -25,11 +25,8 @@ vi.mock("next/cache", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import {
-  createCoupon,
-  matchesCouponScope,
-  validateCoupon,
-} from "@/lib/actions/coupons";
+import { createCoupon, validateCoupon } from "@/lib/actions/coupons";
+import { matchesCouponScope } from "@/lib/coupons/matches-scope";
 
 const mockPrisma = prisma as unknown as {
   coupon: {

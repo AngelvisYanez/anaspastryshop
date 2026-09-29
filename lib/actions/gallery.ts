@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 
 async function requireAdmin() {
   const session = await auth();
@@ -44,6 +44,7 @@ export async function addGalleryItem(formData: FormData) {
     });
     revalidatePath("/pasteleria");
     revalidatePath("/dashboard/galeria");
+    updateTag("gallery");
     return { item };
   } catch (error) {
     return { error: "No se pudo guardar la imagen" };
@@ -56,6 +57,7 @@ export async function deleteGalleryItem(id: string) {
   await prisma.galleryItem.delete({ where: { id } });
   revalidatePath("/pasteleria");
   revalidatePath("/dashboard/galeria");
+  updateTag("gallery");
   return { success: true };
 }
 
@@ -71,5 +73,6 @@ export async function updateGalleryItem(
   });
   revalidatePath("/pasteleria");
   revalidatePath("/dashboard/galeria");
+  updateTag("gallery");
   return { item };
 }

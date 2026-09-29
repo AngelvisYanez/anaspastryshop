@@ -1,8 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { cacheLife, cacheTag } from "next/cache";
 
 const IG_PROFILE_URL = "https://www.instagram.com/anaspastryshopve/";
 
 const INSTAGRAM_POST_SHORTCODES: string[] = [];
+
+type GalleryCard = {
+  id: string;
+  imageUrl: string;
+  alt: string | null;
+  caption: string | null;
+};
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -12,10 +20,20 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-async function getGallery() {
+async function getGallery(): Promise<GalleryCard[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("gallery");
+
   try {
     return await prisma.galleryItem.findMany({
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        imageUrl: true,
+        alt: true,
+        caption: true,
+      },
     });
   } catch {
     return [];
