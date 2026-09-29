@@ -34,6 +34,7 @@ export function AdminDashboardHome({
 }) {
   return (
     <>
+      <div className="space-y-4 sm:space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div className="bg-card p-4 sm:p-6 rounded-2xl border border-card-border shadow-sm">
               <div className="flex justify-between items-start mb-3 sm:mb-4">
@@ -168,6 +169,7 @@ export function AdminDashboardHome({
             </table>
           </div>
         </div>
+      </div>
     </>
   );
 }

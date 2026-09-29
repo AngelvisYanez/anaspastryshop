@@ -9,18 +9,18 @@ import DashboardLoading from "./loading";
 
 function AuthLoading() {
   return (
-    <div className="h-screen bg-background flex overflow-hidden">
-      <div className="w-64 flex-shrink-0 bg-card border-r border-card-border h-screen animate-pulse" />
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        <header className="h-16 flex-shrink-0 bg-card border-b border-card-border flex items-center justify-between px-4 md:px-8 animate-pulse">
+    <div className="h-dvh max-h-dvh bg-background flex overflow-hidden">
+      <div className="hidden lg:block w-64 flex-shrink-0 bg-card border-r border-card-border h-full animate-pulse" />
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+        <header className="h-14 sm:h-16 flex-shrink-0 bg-card border-b border-card-border flex items-center justify-between px-4 md:px-8 animate-pulse">
           <div className="h-5 w-24 bg-section-alt rounded-lg" />
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-section-alt rounded-full" />
             <div className="w-8 h-8 bg-section-alt rounded-full" />
-            <div className="h-8 w-32 bg-section-alt rounded-lg" />
+            <div className="h-8 w-32 bg-section-alt rounded-lg hidden sm:block" />
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8">
           <DashboardLoading />
         </main>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ArrowRight, Sparkles, Tag } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Tag } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
@@ -30,7 +30,7 @@ export default function DashboardShell({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="h-screen bg-background flex overflow-hidden">
+    <div className="h-dvh max-h-dvh bg-background flex overflow-hidden">
       {isSidebarOpen && (
         <button
           type="button"
@@ -40,14 +40,17 @@ export default function DashboardShell({
         />
       )}
 
-      <div className={`
-        relative
-        fixed inset-y-0 left-0 z-50 w-64
-        ${isCollapsed ? "lg:w-20" : "lg:w-64"}
-        transition duration-300 ease-in-out
-        lg:relative lg:flex-shrink-0
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}>
+      {/* Sidebar: overlay en móvil, columna en desktop — sin fixed anidado */}
+      <div
+        className={`
+          z-50 flex flex-col border-r border-card-border bg-card
+          fixed inset-y-0 left-0 w-64
+          transition-transform duration-300 ease-in-out
+          lg:static lg:translate-x-0 lg:flex-shrink-0 lg:h-full
+          ${isCollapsed ? "lg:w-20" : "lg:w-64"}
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
         <Sidebar
           user={user}
           onMenuClick={() => setIsSidebarOpen(false)}
@@ -64,7 +67,7 @@ export default function DashboardShell({
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden w-full">
         <DashboardHeader
           user={user}
           onMenuClick={() => setIsSidebarOpen(true)}
@@ -72,11 +75,11 @@ export default function DashboardShell({
 
         {user?.role === "USER" && (
           <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-3 sm:px-5 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
-            <div className="flex flex-col xs:flex-row sm:flex-row sm:items-center gap-1.5 sm:gap-2 text-xs font-medium text-pink-100 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 text-xs font-medium text-pink-100 min-w-0">
               <span className="inline-flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30 w-fit shrink-0">
                 <Tag size={10} /> Cupón
               </span>
-              <span className="leading-snug">
+              <span className="leading-snug break-words">
                 Código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> · 40% OFF en ambos cursos online.
               </span>
             </div>
@@ -88,8 +91,8 @@ export default function DashboardShell({
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto w-full overscroll-contain bg-background">
-          <div className="w-full min-h-full p-4 sm:p-5 md:p-6 lg:p-8 pb-8 sm:pb-10">
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full overscroll-contain bg-background">
+          <div className="w-full max-w-full p-4 sm:p-5 md:p-6 lg:p-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
             {children}
           </div>
         </main>

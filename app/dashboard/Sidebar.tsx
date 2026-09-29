@@ -45,8 +45,8 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed md:sticky top-0 h-screen z-40 flex flex-col justify-between border-r border-card-border bg-card transition duration-300 ${
-        isCollapsed ? "lg:w-20 w-64" : "w-64"
+      className={`h-full w-full flex flex-col justify-between bg-card transition duration-300 ${
+        isCollapsed ? "lg:w-20" : "w-full"
       }`}
     >
       <div className="flex flex-col flex-1 min-h-0">
@@ -121,7 +121,7 @@ export default function Sidebar({
       </div>
 
       {/* User profile & Logout */}
-      <div className="p-3 border-t border-card-border space-y-2">
+      <div className="p-3 border-t border-card-border space-y-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:pb-3">
         {!isCollapsed && user && (
           <div className="px-3 py-2 rounded-xl bg-section-alt flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-accent-solid text-white flex items-center justify-center text-xs font-black shrink-0 overflow-hidden">
