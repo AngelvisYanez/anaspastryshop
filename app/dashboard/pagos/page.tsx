@@ -2,6 +2,7 @@ import { getPendingPayments, getPaymentHistory, getPaymentStats } from "@/lib/ac
 import PaymentCard from "./PaymentCard";
 import PaymentHistoryTable from "./PaymentHistoryTable";
 import { Clock, CheckCircle2, XCircle, DollarSign } from "lucide-react";
+import { DashboardPage } from "../DashboardPage";
 
 const HISTORY_PAGE_SIZE = 10;
 
@@ -59,29 +60,32 @@ export default async function PagosPage({
   ];
 
   return (
-    <div className="space-y-10">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <DashboardPage
+      title="Pagos"
+      description="Valida comprobantes pendientes y consulta el historial de cobros."
+    >
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map(({ icon: Icon, value, label, bgClass, textClass }) => (
           <div
             key={label}
-            className="bg-card p-5 sm:p-6 rounded-xl border border-card-border shadow-sm flex items-center gap-4"
+            className="bg-card p-3.5 sm:p-5 rounded-xl border border-card-border shadow-sm flex items-center gap-3 sm:gap-4"
           >
-            <div className={`p-3.5 ${bgClass} ${textClass} rounded-xl shrink-0`}>
-              <Icon size={22} />
+            <div className={`p-2.5 sm:p-3.5 ${bgClass} ${textClass} rounded-xl shrink-0`}>
+              <Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
             </div>
             <div className="min-w-0">
-              <p className="text-2xl sm:text-3xl font-black text-foreground leading-none truncate">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground leading-none truncate">
                 {value}
               </p>
-              <p className="text-xs sm:text-sm text-muted font-bold mt-1">{label}</p>
+              <p className="text-[11px] sm:text-xs lg:text-sm text-muted font-bold mt-1">{label}</p>
             </div>
           </div>
         ))}
       </div>
 
       <section>
-        <div className="flex items-center gap-3 mb-5">
-          <h2 className="text-lg font-black text-foreground">Pagos Pendientes</h2>
+        <div className="flex items-center gap-3 mb-4 sm:mb-5">
+          <h2 className="text-base sm:text-lg font-black text-foreground">Pagos Pendientes</h2>
           {inscriptions.length > 0 && (
             <span className="bg-orange-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
               {inscriptions.length}
@@ -90,7 +94,7 @@ export default async function PagosPage({
         </div>
 
         {inscriptions.length === 0 ? (
-          <div className="bg-card rounded-xl p-12 text-center border border-card-border shadow-sm flex flex-col items-center">
+          <div className="bg-card rounded-xl p-8 sm:p-12 text-center border border-card-border shadow-sm flex flex-col items-center">
             <div className="w-14 h-14 bg-green-50 dark:bg-green-950/20 rounded-xl flex items-center justify-center mb-4">
               <CheckCircle2 className="text-green-500" size={28} />
             </div>
@@ -107,8 +111,8 @@ export default async function PagosPage({
       </section>
 
       <section>
-        <div className="flex items-center gap-3 mb-5">
-          <h2 className="text-lg font-black text-foreground">Historial de Pagos</h2>
+        <div className="flex items-center gap-3 mb-4 sm:mb-5">
+          <h2 className="text-base sm:text-lg font-black text-foreground">Historial de Pagos</h2>
           {historyTotal > 0 && (
             <span className="text-sm text-muted font-bold">{historyTotal} registros</span>
           )}
@@ -122,6 +126,6 @@ export default async function PagosPage({
           pageSize={HISTORY_PAGE_SIZE}
         />
       </section>
-    </div>
+    </DashboardPage>
   );
 }

@@ -87,7 +87,7 @@ export default function Sidebar({
           {onMenuClick && (
             <button
               onClick={onMenuClick}
-              className="p-1.5 text-muted hover:text-foreground rounded-lg md:hidden"
+              className="p-1.5 text-muted hover:text-foreground rounded-lg lg:hidden"
               aria-label="Cerrar menú"
             >
               <X size={18} />

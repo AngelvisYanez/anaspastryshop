@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import LogsClient from "./LogsClient";
+import { DashboardPage } from "../DashboardPage";
 
 const PAGE_SIZE = 20;
 
@@ -48,8 +49,10 @@ export default async function LogsPage({
   ]);
 
   return (
-    <div>
-      <p className="text-muted font-medium mb-6">Historial de actividad del sistema. Solo administradores.</p>
+    <DashboardPage
+      title="Registro de Eventos"
+      description="Historial de actividad del sistema. Solo administradores."
+    >
       <Suspense>
         <LogsClient
           logs={logs as any}
@@ -59,6 +62,6 @@ export default async function LogsPage({
           action={action}
         />
       </Suspense>
-    </div>
+    </DashboardPage>
   );
 }

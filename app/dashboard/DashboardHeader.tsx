@@ -21,6 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/modulos": "Módulos",
   "/dashboard/api-config": "Config. APIs",
   "/dashboard/mis-cursos": "Mis Cursos",
+  "/dashboard/galeria": "Galería",
 };
 
 type Notification = {
@@ -129,12 +130,12 @@ export default function DashboardHeader({
   };
 
   return (
-    <header className="h-16 bg-card/80 backdrop-blur-md border-b border-card-border px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-14 sm:h-16 bg-card/80 backdrop-blur-md border-b border-card-border px-3 sm:px-5 md:px-6 flex items-center justify-between sticky top-0 z-30 shrink-0">
       <div className="flex items-center gap-3">
         {onMenuClick && (
           <button
             onClick={onMenuClick}
-            className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg md:hidden transition-colors"
+            className="p-2 text-muted hover:text-foreground hover:bg-card-hover rounded-lg lg:hidden transition-colors"
             aria-label="Abrir menú"
           >
             <Menu size={20} />
@@ -165,7 +166,7 @@ export default function DashboardHeader({
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-100">
+            <div className="absolute right-0 mt-2 w-[min(100vw-1.5rem,24rem)] sm:w-96 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-100">
               <div className="p-4 border-b border-card-border flex items-center justify-between">
                 <div>
                   <p className="font-bold text-sm text-foreground">Notificaciones</p>

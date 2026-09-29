@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import AllUsersView from "./AllUsersView";
+import { DashboardPage } from "../DashboardPage";
 
 export default async function UsuariosPage() {
   const session = await auth();
@@ -27,14 +28,14 @@ export default async function UsuariosPage() {
   });
 
   return (
-    <div>
-      <p className="text-muted font-medium mb-8">
-        Directorio completo de todos los usuarios registrados en la plataforma.
-      </p>
+    <DashboardPage
+      title="Usuarios"
+      description="Directorio de todos los usuarios registrados en la plataforma."
+    >
       <AllUsersView
         allUsers={allUsers as any}
         currentUserId={session.user.id as string}
       />
-    </div>
+    </DashboardPage>
   );
 }

@@ -59,19 +59,19 @@ export default async function MisCursosPage() {
   const courses = Array.from(courseMap.values());
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h2 className="text-2xl font-black text-foreground tracking-tight">Mis Cursos Online & Workshops</h2>
+    <div className="max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">Mis Cursos & Workshops</h2>
           <p className="text-muted font-medium text-sm mt-1">
-            Formaciones individuales con acceso permanente. Haz clic para ver todos los módulos y clases.
+            Acceso permanente a tus formaciones. Entra para ver módulos y clases.
           </p>
         </div>
         <Link
           href="/cursos"
-          className="bg-accent-solid text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-solid-hover transition-colors flex items-center gap-1.5 shadow-sm"
+          className="bg-accent-solid text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-solid-hover transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm w-full sm:w-auto min-h-11"
         >
-          Explorar Más Formaciones <ArrowRight size={14} />
+          Explorar Más <ArrowRight size={14} />
         </Link>
       </div>
 

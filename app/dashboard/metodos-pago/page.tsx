@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getAllGatewayConfigs } from "@/lib/actions/gateway";
 import GatewayManager from "./GatewayManager";
+import { DashboardPage } from "../DashboardPage";
 
 export default async function MetodosPagoPage() {
   const session = await auth();
@@ -12,8 +13,11 @@ export default async function MetodosPagoPage() {
   const configs = await getAllGatewayConfigs();
 
   return (
-    <div>
+    <DashboardPage
+      title="Métodos de Pago"
+      description="Configura las pasarelas y datos de transferencia que ven tus clientes."
+    >
       <GatewayManager configs={configs as any} />
-    </div>
+    </DashboardPage>
   );
 }

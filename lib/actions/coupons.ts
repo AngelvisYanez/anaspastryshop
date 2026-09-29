@@ -152,7 +152,8 @@ function invalidResult(
   };
 }
 
-function matchesCouponScope(
+/** Exported for unit tests — scope rules for ANY/ALL coupons. */
+export function matchesCouponScope(
   coupon: { minItems: number; applyMode: string; cursoIds: string[] },
   cartIds: string[],
   itemCount: number

@@ -46,17 +46,17 @@ export default async function CursosDashboardPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-black text-foreground tracking-tight">Cursos Online & Workshops</h1>
+    <div className="max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">Cursos Online & Workshops</h1>
           <p className="text-muted font-medium text-sm mt-1">
-            Gestiona tus programas educativos: cursos online por módulos y talleres presenciales con logística.
+            Gestiona tus programas: cursos online por módulos y talleres presenciales.
           </p>
         </div>
         <Link
           href="/dashboard/cursos/create"
-          className="bg-accent-solid text-white px-5 py-2.5 rounded-xl inline-flex items-center gap-2 font-bold shadow-md hover:bg-accent-solid-hover transition-colors text-xs uppercase tracking-wider"
+          className="bg-accent-solid text-white px-4 sm:px-5 py-2.5 rounded-xl inline-flex items-center justify-center gap-2 font-bold shadow-md hover:bg-accent-solid-hover transition-colors text-xs uppercase tracking-wider w-full sm:w-auto min-h-11"
         >
           <PlusCircle size={16} />
           Crear Formación

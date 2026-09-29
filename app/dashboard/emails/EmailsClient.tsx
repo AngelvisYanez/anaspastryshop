@@ -307,26 +307,28 @@ export default function EmailsClient({
   const [activeTab, setActiveTab] = useState<"newsletter" | "notificaciones">("newsletter");
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-2 border-b border-card-border pb-4">
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const active = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition ${
-                active
-                  ? "bg-accent-solid text-white shadow-md shadow-accent/20"
-                  : "text-muted hover:text-foreground hover:bg-section-alt"
-              }`}
-            >
-              <Icon size={14} />
-              {tab.label}
-            </button>
-          );
-        })}
+    <div className="space-y-5 sm:space-y-6 max-w-7xl mx-auto w-full">
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div className="flex gap-1.5 sm:gap-2 border-b border-card-border pb-3 sm:pb-4 min-w-0">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3.5 sm:px-5 py-2.5 rounded-xl font-bold text-[11px] sm:text-xs uppercase tracking-wider transition whitespace-nowrap min-h-10 ${
+                  active
+                    ? "bg-accent-solid text-white shadow-md shadow-accent/20"
+                    : "text-muted hover:text-foreground hover:bg-section-alt"
+                }`}
+              >
+                <Icon size={14} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {activeTab === "newsletter" && <NewsletterTab subscribers={subscribers} />}

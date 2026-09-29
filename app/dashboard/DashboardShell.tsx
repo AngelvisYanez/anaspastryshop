@@ -71,25 +71,27 @@ export default function DashboardShell({
         />
 
         {user?.role === "USER" && (
-          <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-4 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
-            <div className="flex items-center gap-2 text-xs font-medium text-pink-100">
-              <span className="flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30">
-                <Tag size={10} /> Cupón Promocional
+          <div className="bg-gradient-to-r from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white px-3 sm:px-5 md:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0 border-b border-pink-900/40">
+            <div className="flex flex-col xs:flex-row sm:flex-row sm:items-center gap-1.5 sm:gap-2 text-xs font-medium text-pink-100 min-w-0">
+              <span className="inline-flex items-center gap-1 bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-full font-black text-[11px] uppercase tracking-wider border border-pink-500/30 w-fit shrink-0">
+                <Tag size={10} /> Cupón
               </span>
-              <span>
-                Usa el código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> al comprar ambos cursos online (40% OFF).
+              <span className="leading-snug">
+                Código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> · 40% OFF en ambos cursos online.
               </span>
             </div>
             <Link href="/cursos" className="shrink-0 w-full sm:w-auto">
-              <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition">
+              <span className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1 transition w-full sm:w-auto min-h-9">
                 Ver Catálogo <ArrowRight size={12} />
               </span>
             </Link>
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto w-full p-3 sm:p-4 md:p-8 bg-background">
-          {children}
+        <main className="flex-1 overflow-y-auto w-full overscroll-contain bg-background">
+          <div className="w-full min-h-full p-4 sm:p-5 md:p-6 lg:p-8 pb-8 sm:pb-10">
+            {children}
+          </div>
         </main>
       </div>
     </div>

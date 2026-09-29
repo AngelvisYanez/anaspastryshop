@@ -140,7 +140,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-5xl mx-auto pb-24 bg-card md:bg-transparent">
+    <div className="max-w-7xl mx-auto pb-24">
       <CourseFormHeader
         title="Crear Curso Online o Workshop Presencial"
         description="Define la modalidad, los módulos con videos y clases, y la logística en caso de taller presencial."
@@ -154,8 +154,8 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* PARTE 1: Información Base */}
-        <div className="bg-card p-8 rounded-2xl border border-card-border shadow-sm">
-          <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+        <div className="bg-card p-5 sm:p-6 lg:p-7 rounded-2xl border border-card-border shadow-sm">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground mb-5 sm:mb-6 flex items-center gap-2">
             <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold">1</span>
             Información de la Formación
           </h2>
@@ -229,7 +229,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
         </div>
 
         {/* PARTE 2: Media y Portada */}
-        <div className="bg-card p-8 rounded-2xl border border-card-border shadow-sm space-y-6">
+        <div className="bg-card p-5 sm:p-6 lg:p-7 rounded-2xl border border-card-border shadow-sm space-y-6">
           <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold">2</span>
             Media & Portada

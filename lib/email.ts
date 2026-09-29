@@ -12,6 +12,7 @@ const FROM =
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
 
 const LOGO_URL = `${BASE_URL}/logo-anas-pastry-shop.png`;
+const LOGO_WHITE_URL = `${BASE_URL}/logo-anas-pastry-shop-white.png`;
 
 // Ana's Pastry Shop official brand palette.
 // Debe coincidir con `app/globals.css` (--accent / --accent-hover). Los emails son
@@ -29,6 +30,67 @@ const MUTED = "#7A5B79"; // Soft warm muted plum
 const NAVY = BRAND_DARK;
 const GOLD = ACCENT;
 const NAVY_LIGHT = BRAND_DARK_LIGHT;
+
+type EmailIconName =
+  | "calendar"
+  | "monitor"
+  | "bag"
+  | "book"
+  | "check"
+  | "utensils"
+  | "card"
+  | "image"
+  | "chat"
+  | "lock"
+  | "list"
+  | "chef"
+  | "alert";
+
+const HERO_WHITE_ICONS = new Set<EmailIconName>([
+  "check",
+  "alert",
+  "lock",
+  "chef",
+]);
+
+function emailIconImg(
+  name: EmailIconName,
+  size = 16,
+  variant: "accent" | "white" = "accent",
+): string {
+  const file =
+    variant === "white" && name === "chef"
+      ? "chef-white.svg"
+      : `${name}.svg`;
+  return `<img src="${BASE_URL}/email-icons/${file}" width="${size}" height="${size}" alt="" style="display:block;border:0;outline:none;" />`;
+}
+
+function heroIcon(name: EmailIconName): string {
+  const icon = emailIconImg(
+    name,
+    28,
+    HERO_WHITE_ICONS.has(name) ? "white" : "accent",
+  );
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 20px;">
+    <tr>
+      <td align="center" valign="middle" style="width:64px;height:64px;background:rgba(197,30,117,0.2);border:2px solid ${ACCENT};border-radius:50%;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="64">
+          <tr>
+            <td align="center" valign="middle" style="height:64px;">${icon}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>`;
+}
+
+function brandLogo(variant: "pink" | "white" = "white", height = 40): string {
+  const src = variant === "white" ? LOGO_WHITE_URL : LOGO_URL;
+  const width = Math.round(height * 4);
+  return `<a href="${BASE_URL}" style="text-decoration:none;">
+    <img src="${src}" alt="Ana's Pastry Shop" width="${width}" height="${height}" style="display:block;height:${height}px;width:auto;max-width:${width}px;border:0;outline:none;" />
+  </a>`;
+}
 
 function buildEmail(preheader: string, body: string): string {
   return `<!DOCTYPE html>
@@ -75,20 +137,11 @@ function buildEmail(preheader: string, body: string): string {
 
           <!-- HEADER: BRAND DARK BACKGROUND -->
           <tr>
-            <td style="background-color:${BRAND_DARK};padding:32px 40px 28px;border-radius:0;">
+            <td style="background-color:${BRAND_DARK};padding:28px 40px 24px;border-radius:0;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
-                  <td>
-                    <!-- Logo brand lockup -->
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                      <tr>
-                        <td style="background-color:${ACCENT};width:3px;border-radius:2px;">&nbsp;</td>
-                        <td style="padding-left:12px;">
-                          <p style="margin:0;font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${ACCENT};line-height:1.2;">Workshops &amp; Formación</p>
-                          <p style="margin:0;font-size:18px;font-weight:900;letter-spacing:-0.02em;color:${WHITE};line-height:1.2;">Ana's Pastry Shop</p>
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="vertical-align:middle;">
+                    ${brandLogo("white", 42)}
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <span style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);">anaspastryshop.com</span>
@@ -192,13 +245,24 @@ function ctaButtonGold(arg1: string, arg2?: string): string {
   </table>`;
 }
 
-function featureRow(icon: string, text: string): string {
+function featureRow(icon: EmailIconName, text: string): string {
+  const iconHtml = emailIconImg(icon, 14, "accent");
   return `<tr>
     <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
         <tr>
-          <td width="28" style="vertical-align:top;padding-top:1px;">
-            <div style="width:20px;height:20px;background-color:rgba(217,32,128,0.12);border-radius:50%;text-align:center;line-height:20px;font-size:11px;">${icon}</div>
+          <td width="32" style="vertical-align:top;padding-top:1px;">
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+              <tr>
+                <td align="center" valign="middle" style="width:28px;height:28px;background-color:rgba(197,30,117,0.12);border-radius:50%;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="28" height="28">
+                    <tr>
+                      <td align="center" valign="middle" style="height:28px;">${iconHtml}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
           </td>
           <td style="font-size:13px;color:#374151;font-weight:500;padding-left:10px;line-height:1.5;">${text}</td>
         </tr>
@@ -237,7 +301,11 @@ export async function sendWelcomeEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;margin:-1px -1px 0;border-radius:0;text-align:center;">
-          <p style="margin:0 0 12px;font-size:36px;">🧁</p>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 20px;">
+            <tr>
+              <td align="center">${brandLogo("white", 48)}</td>
+            </tr>
+          </table>
           <h1 style="margin:0;font-size:28px;font-weight:900;color:${WHITE};letter-spacing:-0.03em;line-height:1.1;">
             ¡Bienvenido, ${firstName}!
           </h1>
@@ -265,10 +333,10 @@ export async function sendWelcomeEmail(
             </tr>
             <tr><td style="padding:0 20px;background-color:${CREAM};">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                ${featureRow("🎂", "Reservar tu cupo en workshops presenciales intensivos")}
-                ${featureRow("💻", "Acceder a cursos online con contenido en video paso a paso")}
-                ${featureRow("📱", "Gestionar tus pedidos de pastelería artesanal y entregas")}
-                ${featureRow("✨", "Descargar guías, recetarios y materiales exclusivos")}
+                ${featureRow("calendar", "Reservar tu cupo en workshops presenciales intensivos")}
+                ${featureRow("monitor", "Acceder a cursos online con contenido en video paso a paso")}
+                ${featureRow("bag", "Gestionar tus pedidos de pastelería artesanal y entregas")}
+                ${featureRow("book", "Descargar guías, recetarios y materiales exclusivos")}
               </table>
             </td></tr>
             <tr><td style="height:16px;background-color:${CREAM};"></td></tr>
@@ -332,7 +400,7 @@ export async function sendAccountApprovedEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;text-align:center;">
-          <div style="width:64px;height:64px;background:rgba(217,32,128,0.2);border:2px solid ${ACCENT};border-radius:50%;margin:0 auto 20px;text-align:center;line-height:60px;font-size:28px;color:${WHITE};">✓</div>
+          ${heroIcon("check")}
           <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">¡Cuenta Aprobada!</h1>
           <p style="margin:0;font-size:13px;color:${ACCENT};font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Acceso Habilitado</p>
         </td>
@@ -350,10 +418,10 @@ export async function sendAccountApprovedEmail(
             <tr><td style="padding:20px 20px 0;">${label("Lo que puedes hacer ahora")}</td></tr>
             <tr><td style="padding:0 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                ${featureRow("🎂", "Inscribirte en workshops presenciales")}
-                ${featureRow("💻", "Acceder a cursos online")}
-                ${featureRow("🍰", "Hacer tus pedidos de pastelería")}
-                ${featureRow("🧁", "Gestionar tus pagos y certificados")}
+                ${featureRow("calendar", "Inscribirte en workshops presenciales")}
+                ${featureRow("monitor", "Acceder a cursos online")}
+                ${featureRow("utensils", "Hacer tus pedidos de pastelería")}
+                ${featureRow("card", "Gestionar tus pagos y certificados")}
               </table>
             </td></tr>
             <tr><td style="height:16px;"></td></tr>
@@ -417,7 +485,7 @@ export async function sendPaymentRejectedEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,#180520 100%);padding:40px;text-align:center;">
-          <p style="margin:0 0 16px;font-size:40px;">⚠️</p>
+          ${heroIcon("alert")}
           <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">Pago No Validado</h1>
           <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.7);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Revisión Pendiente</p>
         </td>
@@ -450,9 +518,9 @@ export async function sendPaymentRejectedEmail(
             <tr><td style="padding:20px 20px 0;">${label("¿Qué puedes hacer?")}</td></tr>
             <tr><td style="padding:0 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                ${featureRow("💳", "Intenta realizar el pago nuevamente con los datos de cuenta actualizados")}
-                ${featureRow("📸", "Asegúrate de que la captura muestre claramente el número de referencia y monto")}
-                ${featureRow("💬", "Escríbenos directamente por WhatsApp si consideras que hubo una confusión")}
+                ${featureRow("card", "Intenta realizar el pago nuevamente con los datos de cuenta actualizados")}
+                ${featureRow("image", "Asegúrate de que la captura muestre claramente el número de referencia y monto")}
+                ${featureRow("chat", "Escríbenos directamente por WhatsApp si consideras que hubo una confusión")}
               </table>
             </td></tr>
             <tr><td style="height:16px;"></td></tr>
@@ -518,7 +586,12 @@ export async function sendNewsletterEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:36px 40px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${ACCENT};">Ana's Pastry Shop &middot; Atelier de Pastelería</p>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 16px;">
+            <tr>
+              <td align="center">${brandLogo("white", 36)}</td>
+            </tr>
+          </table>
+          <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${ACCENT};">Atelier de Pastelería</p>
           <h1 style="margin:8px 0 0;font-size:24px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;line-height:1.2;">${title}</h1>
         </td>
       </tr>
@@ -577,7 +650,7 @@ export async function sendPasswordResetEmail(
       <!-- HERO -->
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;text-align:center;">
-          <p style="margin:0 0 16px;font-size:40px;">🔐</p>
+          ${heroIcon("lock")}
           <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">Restablecer Contraseña</h1>
           <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.7);font-weight:500;">Tu solicitud de seguridad en Ana's Pastry Shop</p>
         </td>
@@ -663,7 +736,7 @@ export async function sendCoursePurchaseEmail(
       <!-- HERO -->
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;text-align:center;">
-          <p style="margin:0 0 16px;font-size:40px;">🧁</p>
+          ${heroIcon("chef")}
           <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">¡Inscripción Confirmada!</h1>
           <p style="margin:0;font-size:13px;color:${ACCENT};font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Acceso Inmediato</p>
         </td>
@@ -711,9 +784,9 @@ export async function sendCoursePurchaseEmail(
             <tr><td style="padding:20px 20px 0;">${label("Recomendaciones para aprovechar tu clase")}</td></tr>
             <tr><td style="padding:0 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                ${featureRow("📝", "Revisa el recetario e insumos con anticipación")}
-                ${featureRow("🥣", "Ten tus ingredientes pesados y organizados (mise en place)")}
-                ${featureRow("💬", "Anota tus dudas para consultarlas en el grupo")}
+                ${featureRow("list", "Revisa el recetario e insumos con anticipación")}
+                ${featureRow("chef", "Ten tus ingredientes pesados y organizados (mise en place)")}
+                ${featureRow("chat", "Anota tus dudas para consultarlas en el grupo")}
               </table>
             </td></tr>
             <tr><td style="height:16px;"></td></tr>

@@ -35,7 +35,7 @@ export default function CourseEditClient({
   const form = useCourseEditForm(course);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-28 bg-card md:bg-transparent">
+    <div className="max-w-7xl mx-auto pb-24">
       <CourseFormHeader
         title="Editar Formación"
         description="Actualiza módulos, videos y detalles de logística para workshops presenciales."

@@ -6,6 +6,7 @@ import SiteConfigForm from "./SiteConfigForm";
 import { getAllApiConfigs } from "@/lib/actions/platformApi";
 import ApiConfigManager from "../api-config/ApiConfigManager";
 import PlatformModuleManager from "../modulos/PlatformModuleManager";
+import { DashboardPage } from "../DashboardPage";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -29,34 +30,50 @@ export default async function SettingsPage() {
   const isAdmin = dbUser.role === "ADMIN";
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10">
-      <p className="text-muted font-medium">Administra tu perfil y la configuración del sitio.</p>
-      <ProfileForm
-        initialUser={{
-          name: dbUser.name,
-          email: dbUser.email,
-          image: dbUser.image,
-        }}
-      />
+    <DashboardPage
+      title="Configuración"
+      description={
+        isAdmin
+          ? "Perfil, sitio público, módulos del panel e integraciones."
+          : "Actualiza tu perfil y la seguridad de tu cuenta."
+      }
+    >
+      <div className={`grid grid-cols-1 gap-5 sm:gap-6 ${isAdmin ? "xl:grid-cols-12" : ""}`}>
+        <div className={isAdmin ? "xl:col-span-5" : "max-w-2xl"}>
+          <ProfileForm
+            initialUser={{
+              name: dbUser.name,
+              email: dbUser.email,
+              image: dbUser.image,
+            }}
+          />
+        </div>
+
+        {isAdmin && (
+          <div className="xl:col-span-7">
+            <SiteConfigForm
+              initialConfig={{
+                siteName: siteConfig?.siteName ?? "Ana's Pastry Shop",
+                logoUrl: siteConfig?.logoUrl ?? null,
+                ctaText: siteConfig?.ctaText ?? "Quiero unirme ahora",
+                ctaUrl: siteConfig?.ctaUrl ?? "/cursos",
+                instagramUrl: siteConfig?.instagramUrl ?? null,
+                linkedinUrl: siteConfig?.linkedinUrl ?? null,
+                tiktokUrl: siteConfig?.tiktokUrl ?? null,
+                navItems: (siteConfig?.navItems as { label: string; href: string }[]) ?? [],
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       {isAdmin && (
-        <SiteConfigForm
-          initialConfig={{
-            siteName: siteConfig?.siteName ?? "Ana's Pastry Shop",
-            logoUrl: siteConfig?.logoUrl ?? null,
-            ctaText: siteConfig?.ctaText ?? "Quiero unirme ahora",
-            ctaUrl: siteConfig?.ctaUrl ?? "/cursos",
-            instagramUrl: siteConfig?.instagramUrl ?? null,
-            linkedinUrl: siteConfig?.linkedinUrl ?? null,
-            tiktokUrl: siteConfig?.tiktokUrl ?? null,
-            navItems: (siteConfig?.navItems as { label: string; href: string }[]) ?? [],
-          }}
-        />
+        <div className="bg-card border border-card-border rounded-2xl p-5 sm:p-6 lg:p-7 shadow-sm">
+          <PlatformModuleManager initialSections={sections} />
+        </div>
       )}
 
-      {isAdmin && <PlatformModuleManager initialSections={sections} />}
-
       {isAdmin && <ApiConfigManager configs={apiConfigs as any} />}
-    </div>
+    </DashboardPage>
   );
 }
