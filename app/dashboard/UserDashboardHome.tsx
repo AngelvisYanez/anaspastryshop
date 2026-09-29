@@ -28,7 +28,7 @@ export function UserDashboardHome({
                   Compra todos los Cursos Online con Descuento
                 </h2>
                 <p className="text-sm text-white/80 leading-relaxed font-medium">
-                  Aplica el cupón <strong className="text-pink-300 bg-white/10 px-2 py-0.5 rounded font-mono text-base">TODOSLOSCURSOS</strong> al pagar y obtén 40% de descuento en todas las formaciones online.
+                  Aplica el cupón <strong className="text-pink-300 bg-white/10 px-2 py-0.5 rounded font-mono text-base">TODOSLOSCURSOS</strong> al pagar ambos cursos online y obtén 40% de descuento.
                 </p>
               </div>
 
@@ -94,7 +94,7 @@ export function UserDashboardHome({
                       href={`/dashboard/cursos/${curso.id}`}
                       className="group bg-card border border-card-border hover:border-accent/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
                     >
-                      <div className="relative h-44 bg-section-alt overflow-hidden">
+                      <div className="relative w-full aspect-square bg-section-alt overflow-hidden">
                         {curso.image ? (
                           <Image
                             src={curso.image}

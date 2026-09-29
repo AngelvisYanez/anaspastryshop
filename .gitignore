@@ -57,3 +57,4 @@ eslint.config.mjs
 # Backups and locks
 *.bak
 skills-lock.json
+.vercel

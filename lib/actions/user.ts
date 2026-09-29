@@ -14,6 +14,19 @@ async function assertAdmin() {
   return session;
 }
 
+function normalizeUserImage(raw: string | null | undefined): string | null {
+  const image = raw?.trim() || null;
+  if (!image) return null;
+  // data: URLs in JWT cookies cause HTTP 431 (Request Header Fields Too Large).
+  if (image.startsWith("data:")) {
+    throw new Error("Usa una URL de imagen (no un archivo embebido en base64).");
+  }
+  if (image.length > 2048) {
+    throw new Error("La URL de imagen es demasiado larga.");
+  }
+  return image;
+}
+
 export async function updateProfile(formData: FormData) {
   const session = await auth();
 
@@ -28,7 +41,7 @@ export async function updateProfile(formData: FormData) {
   try {
     const updateData: any = { 
       name,
-      image: image && image.trim() !== "" ? image : null 
+      image: normalizeUserImage(image),
     };
 
     if (newPassword && newPassword.trim() !== "") {
@@ -45,6 +58,9 @@ export async function updateProfile(formData: FormData) {
     return { success: true };
   } catch (error) {
     console.error("Error updating profile:", error);
+    if (error instanceof Error && (error.message.includes("URL") || error.message.includes("base64"))) {
+      return { error: error.message };
+    }
     return { error: "No se pudo actualizar el perfil" };
   }
 }
@@ -61,11 +77,18 @@ export async function adminEditUser(id: string, formData: FormData) {
   if (!["USER", "ADMIN"].includes(role))
     return { error: "Rol inválido." };
 
+  let safeImage: string | null;
+  try {
+    safeImage = normalizeUserImage(image);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Imagen inválida." };
+  }
+
   await prisma.user.update({
     where: { id },
     data: {
       name: name.trim(),
-      image: image?.trim() || null,
+      image: safeImage,
       role,
     },
   });

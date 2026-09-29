@@ -34,12 +34,12 @@ export default function PublicCoursesClient({
       <Navbar />
 
       <div className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 mb-10 text-white">
-        <div className="relative z-10 page-container text-center max-w-3xl mx-auto">
-          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4 leading-[1.12]">
+        <div className="relative z-10 page-container text-center">
+          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4 leading-[1.12] max-w-4xl mx-auto">
             Cursos Online de{" "}
             <span className="text-on-purple-accent">Pastelería Profesional</span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/85 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/85 leading-relaxed max-w-prose mx-auto">
             Modalidad 100% online por módulos en video, con Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones paso a paso.
           </p>
         </div>

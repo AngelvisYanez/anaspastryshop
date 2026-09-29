@@ -77,7 +77,7 @@ export default function DashboardShell({
                 <Tag size={10} /> Cupón Promocional
               </span>
               <span>
-                Usa el código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> para descuento en todos los cursos online.
+                Usa el código <strong className="text-white bg-white/10 px-1.5 py-0.5 rounded tracking-wider">TODOSLOSCURSOS</strong> al comprar ambos cursos online (40% OFF).
               </span>
             </div>
             <Link href="/cursos" className="shrink-0 w-full sm:w-auto">

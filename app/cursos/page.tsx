@@ -7,16 +7,23 @@ import type { Metadata } from "next";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
+import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
 
-export const metadata: Metadata = {
-  title: "Cursos Online de Pastelería",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Cursos Online de Pastelería — Disponibles en Todo el Mundo",
   description:
-    "Cursos online de pastelería y repostería con módulos en video dictados por Anais Flores. Aprende a tu ritmo, desde cero y con demostraciones paso a paso.",
-  openGraph: {
-    title: "Cursos Online de Pastelería | Ana's Pastry Shop",
-    description: "Cursos online de pastelería con la Chef Anais Flores.",
-  },
-};
+    "Cursos online de pastelería y repostería con Anais Flores. Aprende desde cualquier país, en español, a tu ritmo y desde cero. Acceso global con sede formativa en Venezuela.",
+  path: "/cursos",
+  keywords: [
+    "cursos online pastelería",
+    "cursos de repostería online español",
+    "aprender pastelería online",
+    "cursos pastelería internacionales",
+    "formación pastelería online",
+    "Ana's Pastry Shop cursos",
+  ],
+});
 
 async function getPublicCourses() {
   "use cache";
@@ -125,8 +132,16 @@ async function CursosContent() {
 
 export default function CursosPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
-      <CursosContent />
-    </Suspense>
+    <>
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Cursos Online", path: "/cursos" },
+        ])}
+      />
+      <Suspense fallback={<div className="min-h-screen bg-background" />}>
+        <CursosContent />
+      </Suspense>
+    </>
   );
 }

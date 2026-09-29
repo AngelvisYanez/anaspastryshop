@@ -57,7 +57,9 @@ export default function CheckoutBolsa({
   const [step, setStep] = useState<CheckoutStep>(initialLoggedIn ? 2 : 1);
   const register = useCheckoutRegister(setStep);
   const total = courses.reduce((acc, c) => acc + c.price, 0);
-  const coupon = useCheckoutCoupon(total);
+  const coupon = useCheckoutCoupon(total, {
+    cursoIds: courses.map((c) => c.id),
+  });
   const payments = distributeAmounts(
     courses.map((c) => c.price),
     coupon.effectivePrice,

@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import {
   LayoutDashboard, BookOpen, CreditCard,
   Users, Settings, LogOut, Activity, X,
-  Wallet, Mail, Compass, ChefHat, Images,
+  Wallet, Mail, Compass, Images, Tag,
 } from "lucide-react";
 
 const SYSTEM_ITEMS = [
@@ -17,6 +17,7 @@ const SYSTEM_ITEMS = [
   { name: "Galería & Instagram",        href: "/dashboard/galeria",       icon: Images,          roles: ["ADMIN"] },
   { name: "Usuarios",                   href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN"] },
   { name: "Pagos",                      href: "/dashboard/pagos",         icon: CreditCard,      roles: ["ADMIN"] },
+  { name: "Cupones",                    href: "/dashboard/cupones",       icon: Tag,             roles: ["ADMIN"] },
   { name: "Métodos de Pago",            href: "/dashboard/metodos-pago",  icon: Wallet,          roles: ["ADMIN"] },
   { name: "Emails",                     href: "/dashboard/emails",        icon: Mail,            roles: ["ADMIN"] },
   { name: "Registro de Eventos",        href: "/dashboard/logs",          icon: Activity,        roles: ["ADMIN"] },
@@ -50,35 +51,37 @@ export default function Sidebar({
     >
       <div className="flex flex-col flex-1 min-h-0">
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-card-border">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="relative w-9 h-9 shrink-0 flex items-center justify-center">
+        <div className={`h-16 flex items-center border-b border-card-border px-4 ${
+          isCollapsed ? "justify-between lg:justify-center lg:px-2" : "justify-between"
+        }`}>
+          <Link href="/dashboard" className="flex items-center justify-center" aria-label="Ana's Pastry Shop">
+            <div className={`relative h-9 w-auto flex items-center ${isCollapsed ? "lg:hidden" : ""}`}>
               <Image
                 src="/logo-anas-pastry-shop.png"
                 alt="Ana's Pastry Shop"
-                width={36}
+                width={140}
                 height={36}
-                className="w-9 h-9 object-contain dark:hidden"
+                className="h-9 w-auto object-contain dark:hidden"
                 priority
               />
               <Image
                 src="/logo-anas-pastry-shop-white.png"
                 alt="Ana's Pastry Shop"
-                width={36}
+                width={140}
                 height={36}
-                className="w-9 h-9 object-contain hidden dark:block"
+                className="h-9 w-auto object-contain hidden dark:block"
                 priority
               />
             </div>
-            {!isCollapsed && (
-              <div className="flex flex-col">
-                <span className="font-display font-black text-sm text-foreground leading-none tracking-tight">
-                  Ana&apos;s Pastry
-                </span>
-                <span className="text-[11px] text-accent font-black tracking-widest uppercase mt-0.5">
-                  Shop
-                </span>
-              </div>
+            {isCollapsed && (
+              <Image
+                src="/favicon.png"
+                alt="Ana's Pastry Shop"
+                width={32}
+                height={32}
+                className="hidden lg:block w-8 h-8 object-contain"
+                priority
+              />
             )}
           </Link>
           {onMenuClick && (

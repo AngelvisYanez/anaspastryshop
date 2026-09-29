@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Check, ImageIcon, Loader2, Upload } from "lucide-react";
+import { ReceiptPreviewDialog } from "@/components/ReceiptPreviewDialog";
 
 export function PaymentReceiptField({
   caption,
@@ -19,9 +20,11 @@ export function PaymentReceiptField({
   onUpload: (file: File) => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const resetInput = () => {
     onReceiptChange(null);
+    setPreviewOpen(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -37,14 +40,13 @@ export function PaymentReceiptField({
             <span className="text-sm font-bold">Comprobante adjuntado</span>
           </div>
           <div className="flex items-center gap-3">
-            <a
-              href={receiptImage}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => setPreviewOpen(true)}
               className="text-xs text-accent font-bold hover:underline flex items-center gap-1"
             >
               <ImageIcon size={12} /> Ver
-            </a>
+            </button>
             <button type="button" onClick={resetInput} className="text-xs text-muted hover:text-red-500 font-bold">
               Cambiar
             </button>
@@ -80,6 +82,12 @@ export function PaymentReceiptField({
           />
         </label>
       )}
+
+      <ReceiptPreviewDialog
+        url={receiptImage}
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
     </div>
   );
 }

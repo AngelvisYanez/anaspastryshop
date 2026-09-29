@@ -1,15 +1,26 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFeed from "@/components/InstagramFeed";
+import JsonLd from "@/components/JsonLd";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Cake, Candy, Gift, Building2 } from "lucide-react";
+import { buildBreadcrumbJsonLd, buildPageMetadata, GEO } from "@/lib/seo";
 
-
-export const metadata = {
-  title: "Servicios de Pastelería & Eventos",
-  description: "Tortas de diseño, mesas dulces y repostería artesanal de alta gama con Anais Flores.",
-};
+export const metadata = buildPageMetadata({
+  title: "Pastelería y Tortas de Diseño en Coro, Falcón",
+  description:
+    `Tortas de diseño, mesas dulces y pastelería artesanal en ${GEO.shortAddress}, Venezuela. Pedidos especiales con Anais Flores para bodas, eventos y ocasiones únicas.`,
+  path: "/pasteleria",
+  keywords: [
+    "pastelería Coro Falcón",
+    "tortas de diseño Venezuela",
+    "mesas dulces Coro",
+    "pastelería artesanal Falcón",
+    "tortas bodas Venezuela",
+    "Ana's Pastry Shop pastelería",
+  ],
+});
 
 const SERVICES = [
   {
@@ -41,23 +52,29 @@ const SERVICES = [
 export default function PasteleriaPage() {
   return (
     <main className="min-h-screen bg-background">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Pastelería", path: "/pasteleria" },
+        ])}
+      />
       <Navbar />
 
       <section className="relative min-h-[52svh] sm:min-h-[48svh] flex items-end overflow-hidden text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/foto-5.webp"
-          alt=""
+          alt={`Pastelería artesanal y tortas de diseño — Ana's Pastry Shop en ${GEO.shortAddress}, Venezuela`}
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-purple via-brand-purple/75 to-brand-purple/35" />
         <div className="page-container relative z-10 pt-28 pb-12 xl:pt-36 xl:pb-14">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] max-w-3xl mb-4">
-            Momentos dulces creados con{" "}
-            <span className="text-on-purple-accent">arte y técnica profesional</span>
+            Pastelería profesional en{" "}
+            <span className="text-on-purple-accent">{GEO.shortAddress}, Venezuela</span>
           </h1>
           <p className="text-sm sm:text-lg text-white/90 max-w-prose leading-relaxed font-medium">
-            Tortas de diseño para bodas y eventos, mesas de postres gourmet y repostería exclusiva elaborada por Anais Flores.
+            Tortas de diseño, mesas dulces y repostería exclusiva elaborada por Anais Flores en Coro, Falcón.
           </p>
         </div>
       </section>

@@ -4,7 +4,9 @@ import WhatYouGet from "@/components/WhatYouGet";
 import Testimonials from "@/components/Testimonials";
 import Achievements from "@/components/Achievements";
 import CapacitacionesTabs from "@/components/CapacitacionesTabs";
+import VenezuelaCoverage from "@/components/VenezuelaCoverage";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { prisma } from "@/lib/prisma";
 import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
@@ -14,6 +16,13 @@ import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import type { FormacionCardData } from "@/components/FormacionCard";
 import { WORKSHOPS_DATA, toFormacionCard } from "@/lib/data/workshops";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
+import { buildFaqJsonLd, buildPageMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo";
+
+export const metadata = buildPageMetadata({
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+});
 
 function staticCatalog(): { workshops: FormacionCardData[]; onlineCourses: FormacionCardData[] } {
   return {
@@ -134,6 +143,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background">
+      <JsonLd data={buildFaqJsonLd()} />
       <Navbar />
 
       <Hero />
@@ -144,7 +154,7 @@ export default async function Home() {
             Workshops & Cursos Online
           </h2>
           <p className="text-muted font-medium mt-3 max-w-2xl">
-            Formación práctica desde cero con técnicas profesionales de pastelería y panadería.
+            Talleres presenciales en Coro, Falcón (Venezuela), y cursos online disponibles en cualquier país.
           </p>
         </div>
 
@@ -157,6 +167,8 @@ export default async function Home() {
 
       <Achievements />
 
+      <VenezuelaCoverage />
+
       <section className="py-16 md:py-20 page-container">
         <div className="border-t border-card-border pt-12 md:pt-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-xl">
@@ -164,7 +176,7 @@ export default async function Home() {
               Capacítate hoy
             </h2>
             <p className="text-muted text-sm md:text-base leading-relaxed">
-              Reserva tu cupo y aprende técnicas infalibles con la orientación personalizada de Anais Flores. Workshops diseñados desde cero, insumos incluidos y 8 horas de práctica.
+              Reserva un workshop en Coro o empieza un curso online desde donde estés. Técnicas profesionales con Anais Flores, insumos incluidos en presencial y aprendizaje a tu ritmo en online.
             </p>
           </div>
           <Link

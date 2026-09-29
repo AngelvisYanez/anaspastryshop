@@ -3,6 +3,16 @@ import { prisma } from "@/lib/prisma";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
+/** Avatars as data URLs blow past Node/Next header limits (HTTP 431). Only keep short http(s)/path URLs in the JWT cookie. */
+const MAX_SESSION_IMAGE_LEN = 512;
+
+function sessionSafeImage(image: string | null | undefined): string | null {
+  if (!image) return null;
+  if (image.startsWith("data:")) return null;
+  if (image.length > MAX_SESSION_IMAGE_LEN) return null;
+  return image;
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   session: { strategy: "jwt" },
@@ -38,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: user.role,
             isApproved: user.isApproved,
             isActive: user.isActive,
-            image: user.image,
+            image: sessionSafeImage(user.image),
           };
         } catch (error) {
           console.error("[auth] authorize error:", error);
@@ -54,10 +64,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.isApproved = (user as any).isApproved;
         token.isActive = (user as any).isActive;
+        token.picture = sessionSafeImage(user.image) ?? undefined;
       }
 
       if (trigger === "update" && session) {
         token.name = session.name || token.name;
+        if ("image" in session) {
+          token.picture = sessionSafeImage(session.image as string | null) ?? undefined;
+        }
+      }
+
+      // Drop oversized legacy pictures already sitting in existing cookies.
+      if (typeof token.picture === "string") {
+        token.picture = sessionSafeImage(token.picture) ?? undefined;
       }
 
       return token;
@@ -66,6 +85,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token) {
         session.user.role = token.role as string;
         session.user.id = (token.id || token.sub) as string;
+        session.user.image = sessionSafeImage(token.picture as string | undefined);
         (session.user as any).isApproved = token.isApproved as boolean;
         (session.user as any).isActive = token.isActive as boolean;
         (session.user as any).deactivationReason = token.deactivationReason as string | null;

@@ -62,7 +62,7 @@ export default function NosotrosPage() {
             transition={{ duration: 0.5, delay: 0.08 }}
             className="text-sm sm:text-lg text-white/85 leading-relaxed"
           >
-            Conoce la historia, filosofía y método formativo de Anais Flores: pastelería profesional desde cero.
+            Conoce la historia, filosofía y método formativo de Anais Flores: workshops en Coro, Falcón, y cursos online para todo el mundo.
           </m.p>
         </div>
       </section>

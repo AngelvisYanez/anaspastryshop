@@ -12,13 +12,16 @@ type PageProps = { params: Promise<{ slug: string; lessonId: string }> };
 
 async function resolveCourseId(param: string): Promise<string> {
   const onlineCourse = getOnlineCourseBySlug(param);
-  if (onlineCourse) return onlineCourse.id;
+  const slug = onlineCourse?.slug ?? param;
 
   const bySlug = await prisma.curso.findUnique({
-    where: { slug: param },
+    where: { slug },
     select: { id: true },
   });
-  return bySlug?.id ?? param;
+  if (bySlug) return bySlug.id;
+
+  // Permite abrir por id real (cuid) si el param no es un slug publicado.
+  return param;
 }
 
 async function userHasCourseAccess(

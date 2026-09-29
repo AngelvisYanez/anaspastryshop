@@ -1,4 +1,5 @@
 import type { FormacionCardData } from "@/components/FormacionCard";
+import { WORKSHOP_LOCATION } from "@/lib/utils/workshop";
 
 export interface WorkshopItem {
   id: string;
@@ -307,46 +308,6 @@ export const WORKSHOPS_DATA: WorkshopItem[] = [
       "Caja para traslado de la torta",
     ],
   },
-  {
-    id: "workshop-merengue-italiano",
-    slug: "merengue-italiano",
-    legacySlug: "workshop-merengue-italiano",
-    title: "WORKSHOP MERENGUE ITALIANO",
-    shortTitle: "Merengue Italiano",
-    subtitle: "Punto almíbar exacto, estabilidad, colorimetría, frisado afilado y boquillas",
-    description:
-      "Es un taller dirigido a todas las personas que deseen aprender a decorar tortas desde cero con esta cubierta y también para aquellas que deseen afianzar sus conocimientos.",
-    price: 70,
-    spots: 6,
-    duration: "8 horas aproximadamente (9:00am – 4 a 5 pm)",
-    startTime: "9:00 AM",
-    schedule: "Día Domingo (Revisar cronograma de talleres)",
-    level: "Desde Cero a Intermedio",
-    image: "/curso-online-merengue-italiano.png",
-    isDecorationWorkshop: true,
-    studentRequirements:
-      "El alumno debe traer una base giratoria (de no tener notificar que disponemos de 3 bases para solventar).",
-    badge: "Solo 6 Cupos",
-    realizaremos: [
-      "Receta de torta de vainilla",
-      "Ensamblado en torta real",
-      "Relleno correcto",
-      "Receta de merengue italiano",
-      "Colorimetría",
-      "Frisado de torta con merengue italiano",
-      "Bordes perfectos",
-      "Uso de manga pastelera",
-      "Muchos otros tips",
-    ],
-    incluye: [
-      "Todos los materiales y utensilios",
-      "Almuerzo",
-      "Certificado de asistencia",
-      "Recetario impreso",
-      "Cada participante se lleva su proyecto a casa",
-      "Caja para traslado de la torta",
-    ],
-  },
 ];
 
 export function getWorkshopBySlug(slug: string): WorkshopItem | undefined {
@@ -399,7 +360,7 @@ export function toFormacionCard(
     category: "Workshops Presenciales",
     level: workshop.level,
     isWorkshop: true,
-    workshopLocation: "Caracas, Las Mercedes — Sede Ana's Pastry Shop",
+    workshopLocation: WORKSHOP_LOCATION,
     workshopDate: workshop.schedule,
     workshopTime: workshop.startTime,
     hasAccess: false,

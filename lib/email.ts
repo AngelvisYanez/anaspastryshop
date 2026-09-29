@@ -133,7 +133,7 @@ function buildEmail(preheader: string, body: string): string {
                   <td align="center">
                     <p style="font-size:11px;color:${MUTED};line-height:1.6;margin:0;">
                       &copy; ${new Date().getFullYear()} Ana's Pastry Shop &middot; Chef Anais Flores. Todos los derechos reservados.<br>
-                      Caracas, Venezuela &middot; Estás recibiendo este correo porque tienes una cuenta en nuestra plataforma.
+                      Coro, Falcón, Venezuela &middot; Estás recibiendo este correo porque tienes una cuenta en nuestra plataforma.
                     </p>
                   </td>
                 </tr>

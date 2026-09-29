@@ -33,30 +33,3 @@ export async function saveApiConfig(
     return { error: "Error al guardar la configuración" };
   }
 }
-
-export async function getRtkConfig() {
-  const dbConfig = await prisma.platformApiConfig.findUnique({
-    where: { provider: "CLOUDFLARE_RTK" },
-  });
-
-  const config = dbConfig?.config as Record<string, string> | null;
-
-  return {
-    accountId: config?.accountId || process.env.CLOUDFLARE_ACCOUNT_ID || "",
-    appId: config?.appId || process.env.CLOUDFLARE_RTK_APP_ID || "",
-    apiToken: config?.apiToken || process.env.CLOUDFLARE_API_TOKEN || "",
-  };
-}
-
-export async function getStreamConfig() {
-  const dbConfig = await prisma.platformApiConfig.findUnique({
-    where: { provider: "CLOUDFLARE_STREAM" },
-  });
-
-  const config = dbConfig?.config as Record<string, string> | null;
-
-  return {
-    accountId: config?.accountId || process.env.CLOUDFLARE_ACCOUNT_ID || "",
-    apiToken: config?.apiToken || process.env.CLOUDFLARE_API_TOKEN || "",
-  };
-}

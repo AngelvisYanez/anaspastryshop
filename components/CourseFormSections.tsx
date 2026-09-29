@@ -1,6 +1,10 @@
 "use client";
 
 import { Calendar, Clock, MapPin, Sparkles, Video } from "lucide-react";
+import {
+  formatWorkshopDateLabel,
+  workshopDateToIso,
+} from "@/lib/utils/workshop";
 
 const inputClass =
   "w-full bg-background border border-card-border rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:border-accent";
@@ -61,6 +65,15 @@ export function ModalitySelector({
   );
 }
 
+function openDatePicker(input: HTMLInputElement | null) {
+  if (!input) return;
+  try {
+    input.showPicker?.();
+  } catch {
+    input.focus();
+  }
+}
+
 export function WorkshopLogistics({
   location,
   date,
@@ -76,8 +89,10 @@ export function WorkshopLogistics({
   onDateChange: (value: string) => void;
   onTimeChange: (value: string) => void;
 }) {
+  const isoDate = workshopDateToIso(date);
+
   return (
-    <div className="col-span-1 md:col-span-2 bg-accent-subtle/30 border border-accent/20 rounded-2xl p-6 space-y-4">
+    <div className="col-span-1 md:col-span-2 bg-accent-subtle/30 border border-accent/20 rounded-2xl p-4 sm:p-5 space-y-4">
       <div className="flex items-center gap-2 text-accent font-black text-xs uppercase tracking-wider">
         <Sparkles size={16} /> Logística del Workshop Presencial
       </div>
@@ -92,7 +107,7 @@ export function WorkshopLogistics({
           required
           value={location}
           onChange={(e) => onLocationChange(e.target.value)}
-          placeholder="Ej. Caracas, Las Mercedes — Sede Ana's Pastry Shop"
+          placeholder="Ej. Av. Tirso Salavarria, Frente al museo de la UNEFM. Coro, Falcón, Venezuela"
           className={inputClass}
         />
       </div>
@@ -102,15 +117,43 @@ export function WorkshopLogistics({
           <label htmlFor="course-workshop-date" className={labelClass}>
             <Calendar size={13} className="text-accent" /> Fecha del Workshop
           </label>
-          <input
-            id="course-workshop-date"
-            type="text"
-            required
-            value={date}
-            onChange={(e) => onDateChange(e.target.value)}
-            placeholder="Ej. Sábado 15 de Noviembre, 2025"
-            className={inputClass}
-          />
+          <div className="relative">
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Abrir calendario"
+              onClick={() =>
+                openDatePicker(
+                  document.getElementById("course-workshop-date") as HTMLInputElement | null,
+                )
+              }
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-accent z-10"
+            >
+              <Calendar size={16} />
+            </button>
+            <input
+              id="course-workshop-date"
+              type="date"
+              required={!date}
+              value={isoDate}
+              onChange={(e) => {
+                const nextIso = e.target.value;
+                onDateChange(nextIso ? formatWorkshopDateLabel(nextIso) : "");
+              }}
+              onClick={(e) => openDatePicker(e.currentTarget)}
+              className={`${inputClass} pl-10 cursor-pointer`}
+            />
+          </div>
+          {date && !isoDate && (
+            <p className="mt-1.5 text-[11px] text-muted font-medium">
+              Fecha actual: {date}. Elige una nueva en el calendario.
+            </p>
+          )}
+          {isoDate && (
+            <p className="mt-1.5 text-[11px] text-muted font-medium">
+              Se guardará como: {formatWorkshopDateLabel(isoDate)}
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor="course-workshop-time" className={labelClass}>

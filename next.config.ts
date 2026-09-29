@@ -19,7 +19,13 @@ const nextConfig: NextConfig = {
       { source: "/checkout/success", destination: "/pagar/confirmacion", permanent: true },
 
       // Ruta canónica de un workshop: /workshop/<slug>. El plural queda como alias.
-      { source: "/workshops/:slug", destination: "/workshop/:slug", permanent: true },
+      // Excluye /workshops/calendario (página de cronograma, no un slug de taller).
+      { source: "/workshop/calendario", destination: "/workshops/calendario", permanent: false },
+      {
+        source: "/workshops/:slug((?!calendario$).*)",
+        destination: "/workshop/:slug",
+        permanent: true,
+      },
 
       // "lesson" -> "leccion" (antes las clases vivían bajo /cursos/<id>/lesson/<lessonId>)
       { source: "/cursos/:course/lesson/:lesson", destination: "/cursos/:course/leccion/:lesson", permanent: true },
@@ -43,12 +49,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'api.dicebear.com',
-        pathname: '**',
-      },
-      // Imágenes de la galería y de Cloudflare Images (app/api/cloudflare/upload-image).
-      {
-        protocol: 'https',
-        hostname: 'imagedelivery.net',
         pathname: '**',
       },
       // Avatares de cuentas de Google (NextAuth Google provider).

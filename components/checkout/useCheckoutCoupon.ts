@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { validateCoupon, type CouponResult } from "@/lib/actions/coupons";
 
-export function useCheckoutCoupon(baseAmount: number) {
+export function useCheckoutCoupon(
+  baseAmount: number,
+  options: { cursoIds?: string[] } = {}
+) {
   const [couponInput, setCouponInput] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponResult | null>(null);
@@ -13,6 +16,7 @@ export function useCheckoutCoupon(baseAmount: number) {
   } | null>(null);
 
   const effectivePrice = appliedCoupon ? appliedCoupon.finalAmount : baseAmount;
+  const cursoIds = options.cursoIds ?? [];
 
   async function handleApplyCoupon() {
     if (!couponInput.trim()) return;
@@ -20,7 +24,10 @@ export function useCheckoutCoupon(baseAmount: number) {
     setCouponMessage(null);
     let res: Awaited<ReturnType<typeof validateCoupon>>;
     try {
-      res = await validateCoupon(couponInput.trim(), baseAmount);
+      res = await validateCoupon(couponInput.trim(), baseAmount, {
+        cursoIds,
+        itemCount: Math.max(1, cursoIds.length),
+      });
     } finally {
       setCouponLoading(false);
     }

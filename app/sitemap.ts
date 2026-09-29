@@ -2,30 +2,33 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { getAllWorkshops } from "@/lib/data/workshops";
 import { getAllOnlineCourses } from "@/lib/data/online-courses";
-
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || "https://anaspastryshop.com").replace(/\/$/, "");
+import { getSiteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const siteUrl = getSiteUrl();
+  const now = new Date();
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${siteUrl}/`,             changeFrequency: "daily",   priority: 1.0 },
-    { url: `${siteUrl}/cursos`,       changeFrequency: "daily",   priority: 0.9 },
-    { url: `${siteUrl}/workshops`,    changeFrequency: "weekly",  priority: 0.9 },
-    { url: `${siteUrl}/pasteleria`,   changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/pasantias`,    changeFrequency: "monthly", priority: 0.6 },
-    { url: `${siteUrl}/nosotros`,     changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteUrl}/`, changeFrequency: "daily", priority: 1.0, lastModified: now },
+    { url: `${siteUrl}/cursos`, changeFrequency: "daily", priority: 0.95, lastModified: now },
+    { url: `${siteUrl}/workshops`, changeFrequency: "weekly", priority: 0.95, lastModified: now },
+    { url: `${siteUrl}/workshops/calendario`, changeFrequency: "weekly", priority: 0.85, lastModified: now },
+    { url: `${siteUrl}/pasteleria`, changeFrequency: "monthly", priority: 0.8, lastModified: now },
+    { url: `${siteUrl}/nosotros`, changeFrequency: "monthly", priority: 0.7, lastModified: now },
   ];
 
   const workshopEntries: MetadataRoute.Sitemap = getAllWorkshops().map((w) => ({
     url: `${siteUrl}/workshop/${w.slug}`,
     changeFrequency: "weekly",
-    priority: 0.8,
+    priority: 0.85,
+    lastModified: now,
   }));
 
-  // Los cursos online del catálogo estático siempre son públicos.
   const staticCourseEntries: MetadataRoute.Sitemap = getAllOnlineCourses().map((c) => ({
     url: `${siteUrl}/cursos/${c.slug}`,
     changeFrequency: "monthly",
     priority: 0.8,
+    lastModified: now,
   }));
 
   let courseEntries: MetadataRoute.Sitemap = [];
@@ -36,7 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     const known = new Set(staticCourseEntries.map((e) => e.url));
     courseEntries = courses
-      // Los workshops presenciales se sirven en /workshop/<slug>, no en /cursos/.
       .filter((c) => !c.isLive)
       .map((c) => ({
         url: `${siteUrl}/cursos/${c.slug ?? c.id}`,

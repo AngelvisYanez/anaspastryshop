@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
-import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
+import { ChevronDown, Plus, Trash2, Link2, X } from "lucide-react";
+import { getCourseEmbedUrl } from "@/app/cursos/[slug]/courseEmbed";
 
 export interface CourseTaskForm {
   title: string;
@@ -18,6 +18,7 @@ export function CourseModulesEditor({
   modules,
   sectionTitle,
   sectionDescription,
+  sectionStep = 3,
   openModuleIndex,
   canRemoveModule,
   onAddModule,
@@ -31,6 +32,7 @@ export function CourseModulesEditor({
   modules: CourseModuleForm[];
   sectionTitle: string;
   sectionDescription: string;
+  sectionStep?: number;
   openModuleIndex: number | null;
   canRemoveModule: boolean;
   onAddModule: () => void;
@@ -42,19 +44,21 @@ export function CourseModulesEditor({
   onRemoveTask: (moduleIndex: number, taskIndex: number) => void;
 }) {
   return (
-    <div className="bg-card p-8 rounded-2xl border border-card-border shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold">3</span>
-            {sectionTitle}
+    <div className="bg-card p-5 sm:p-6 lg:p-8 rounded-2xl border border-card-border shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="min-w-0">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+            <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold shrink-0">
+              {sectionStep}
+            </span>
+            <span className="min-w-0">{sectionTitle}</span>
           </h2>
           <p className="text-xs text-muted mt-1 font-medium">{sectionDescription}</p>
         </div>
         <button
           type="button"
           onClick={onAddModule}
-          className="text-xs font-bold text-accent bg-accent/10 hover:bg-accent/20 px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2"
+          className="text-xs font-bold text-accent bg-accent/10 hover:bg-accent/20 px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 shrink-0"
         >
           <Plus size={15} /> Añadir Módulo
         </button>
@@ -63,6 +67,7 @@ export function CourseModulesEditor({
       <div className="space-y-4">
         {modules.map((m, mIndex) => {
           const isOpen = openModuleIndex === mIndex;
+          const moduleEmbedUrl = getCourseEmbedUrl(m.videoUrl);
           return (
             <div key={mIndex} className="bg-card rounded-2xl border border-card-border overflow-hidden shadow-sm transition-colors relative">
               {canRemoveModule && (
@@ -132,20 +137,48 @@ export function CourseModulesEditor({
                       htmlFor={`module-video-${mIndex}`}
                       className="block text-xs font-bold text-foreground mb-1.5"
                     >
-                      Video del Módulo (Video Principal)
+                      Video del Módulo (Google Drive)
                     </label>
-                    <CloudflareVideoUploader
-                      currentUrl={m.videoUrl || undefined}
-                      onUpload={(url) => onModuleChange(mIndex, "videoUrl", url)}
-                    />
-                    <input
-                      id={`module-video-${mIndex}`}
-                      value={m.videoUrl}
-                      onChange={(e) => onModuleChange(mIndex, "videoUrl", e.target.value)}
-                      type="url"
-                      className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-2 mt-2 outline-none focus:border-accent text-foreground text-xs"
-                      placeholder="O ingresa enlace de Cloudflare Stream, Vimeo o YouTube..."
-                    />
+                    {moduleEmbedUrl && (
+                      <div className="mb-2 space-y-2">
+                        <div className="relative w-full rounded-xl overflow-hidden bg-black aspect-video border border-card-border">
+                          <iframe
+                            src={moduleEmbedUrl}
+                            title={`Vista previa — ${m.title || `Módulo ${mIndex + 1}`}`}
+                            className="absolute inset-0 w-full h-full border-0"
+                            allow="autoplay; encrypted-media; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => onModuleChange(mIndex, "videoUrl", "")}
+                            className="flex items-center gap-1 text-[11px] text-muted hover:text-red-500 font-bold transition-colors"
+                          >
+                            <X size={11} /> Quitar video
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    <div className="relative">
+                      <Link2
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                      />
+                      <input
+                        id={`module-video-${mIndex}`}
+                        value={m.videoUrl}
+                        onChange={(e) => onModuleChange(mIndex, "videoUrl", e.target.value)}
+                        type="url"
+                        className="w-full bg-section-alt border border-card-border rounded-xl pl-9 pr-4 py-2.5 outline-none focus:border-accent text-foreground text-xs"
+                        placeholder="Pega el enlace de Google Drive del video..."
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-muted leading-relaxed">
+                      Comparte el archivo en Drive como &quot;Cualquiera con el enlace&quot; (visor)
+                      para que se reproduzca en el curso.
+                    </p>
                   </div>
 
                   <div className="space-y-3">

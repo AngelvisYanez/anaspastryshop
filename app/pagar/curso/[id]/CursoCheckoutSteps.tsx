@@ -82,7 +82,6 @@ export function CursoPaymentStep({
         message={coupon.couponMessage}
         onApply={coupon.handleApplyCoupon}
         onRemove={coupon.handleRemoveCoupon}
-        onUsePromo={() => coupon.setCouponInput("TODOSLOSCURSOS")}
       />
 
       {pay.availableManual.length > 1 && (

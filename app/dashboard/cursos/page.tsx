@@ -91,7 +91,7 @@ export default async function CursosDashboardPage() {
                 
                 <Link href={`/dashboard/cursos/${c.id}`} className="block">
                   {c.image ? (
-                    <div className="relative w-full h-40 bg-card-hover rounded-xl mb-4 overflow-hidden">
+                    <div className="relative w-full aspect-square bg-card-hover rounded-xl mb-4 overflow-hidden">
                       {c.image.startsWith("data:") ? (
                         <img src={c.image} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
@@ -99,7 +99,7 @@ export default async function CursosDashboardPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="w-full h-40 bg-accent-subtle rounded-xl mb-4 flex items-center justify-center">
+                    <div className="w-full aspect-square bg-accent-subtle rounded-xl mb-4 flex items-center justify-center">
                       <Video className="text-accent/40" size={28} />
                     </div>
                   )}

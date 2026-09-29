@@ -249,3 +249,22 @@ model PasswordResetToken {
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+/// Cupones de descuento configurables desde el dashboard admin.
+/// - minItems: cantidad mínima de ítems en el carrito para aplicar.
+/// - applyMode ANY: basta con minItems de las formaciones seleccionadas (o cualquiera si cursoIds vacío).
+/// - applyMode ALL: el carrito debe incluir el conjunto completo de formaciones (cursoIds).
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  description     String?
+  discountPercent Float
+  minItems        Int      @default(1)
+  applyMode       String   @default("ANY")
+  cursoIds        String[]
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isActive])
+}

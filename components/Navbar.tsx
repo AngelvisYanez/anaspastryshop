@@ -37,16 +37,34 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
           <Link href="/" className="flex items-center gap-3 group shrink-0 justify-self-start">
             <div
               className={`relative aspect-[594/368] transition duration-300 w-auto ${
-                nav.scrolled ? "h-14 xl:h-16" : "h-14 xl:h-24"
+                nav.scrolled
+                  ? "h-8 sm:h-10 xl:h-16"
+                  : "h-9 sm:h-11 xl:h-24"
               }`}
             >
+              <Image
+                src={theme.logoSrcMobile}
+                alt="Ana's Pastry Shop"
+                fill
+                priority
+                sizes="80px"
+                className="object-contain object-left transition-transform duration-300 group-hover:scale-105 md:hidden"
+              />
+              <Image
+                src={theme.logoSrcTablet}
+                alt="Ana's Pastry Shop"
+                fill
+                priority
+                sizes="120px"
+                className="object-contain object-left transition-transform duration-300 group-hover:scale-105 hidden md:block xl:hidden"
+              />
               <Image
                 src={theme.logoSrc}
                 alt="Ana's Pastry Shop"
                 fill
                 priority
-                sizes="(max-width: 1279px) 91px, 160px"
-                className="object-contain object-left transition-transform duration-300 group-hover:scale-105"
+                sizes="160px"
+                className="object-contain object-left transition-transform duration-300 group-hover:scale-105 hidden xl:block"
               />
             </div>
           </Link>

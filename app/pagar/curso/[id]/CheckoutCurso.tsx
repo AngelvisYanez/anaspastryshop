@@ -49,7 +49,7 @@ export default function CheckoutCurso({
 }) {
   const [step, setStep] = useState<CheckoutStep>(initialLoggedIn ? 2 : 1);
   const register = useCheckoutRegister(setStep);
-  const coupon = useCheckoutCoupon(course.price);
+  const coupon = useCheckoutCoupon(course.price, { cursoIds: [course.id] });
   const pay = useCheckoutPayment({ amountUsd: coupon.effectivePrice });
 
   const isWorkshop =

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Clock, Calendar, MapPin, Sparkles } from "lucide-react";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
+import { WORKSHOP_LOCATION_SHORT } from "@/lib/utils/workshop";
 
 export function WorkshopDetailHero({
   workshop,
@@ -21,7 +22,7 @@ export function WorkshopDetailHero({
     <section className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
       <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#E82D8A_1px,transparent_1px)] [background-size:24px_24px]" />
 
-      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 relative z-10 w-full">
+      <div className="page-container relative z-10 w-full">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 items-center">
           <div className="xl:col-span-7 space-y-5">
             <div className="relative pt-24 pb-8 flex flex-col justify-center gap-4 xl:block xl:min-h-0 xl:p-0 xl:space-y-5">
@@ -75,7 +76,7 @@ export function WorkshopDetailHero({
                 <MapPin size={18} className="text-pink-300 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-[11px] text-white/85 uppercase">Ubicación</p>
-                  <p className="font-bold truncate">Caracas, Las Mercedes</p>
+                  <p className="font-bold truncate">{WORKSHOP_LOCATION_SHORT}</p>
                 </div>
               </div>
             </div>

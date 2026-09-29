@@ -101,7 +101,7 @@ export default async function MisCursosPage() {
               <Link key={curso.id} href={`/dashboard/cursos/${curso.id}`}>
                 <div className="bg-card border border-card-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition group flex flex-col h-full">
                   {curso.image ? (
-                    <div className="relative w-full h-44 bg-section-alt overflow-hidden">
+                    <div className="relative w-full aspect-square bg-section-alt overflow-hidden">
                       <Image
                         src={curso.image}
                         alt={curso.title}
@@ -120,7 +120,7 @@ export default async function MisCursosPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="h-44 bg-section-alt flex items-center justify-center">
+                    <div className="aspect-square bg-section-alt flex items-center justify-center">
                       <PlayCircle size={36} className="text-muted/30" />
                     </div>
                   )}

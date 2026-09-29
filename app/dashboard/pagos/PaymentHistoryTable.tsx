@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Check, X, FileImage, ChevronLeft, ChevronRight, History, Sparkles, BookOpen } from "lucide-react";
+import { ReceiptPreviewDialog } from "@/components/ReceiptPreviewDialog";
 
 type HistoryInscription = {
   id: string;
@@ -40,6 +42,7 @@ export default function PaymentHistoryTable({
   pageSize: number;
 }) {
   const pathname = usePathname();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   function pageHref(p: number) {
     return `${pathname}?page=${p}`;
@@ -151,14 +154,13 @@ export default function PaymentHistoryTable({
                   </td>
                   <td className="py-3.5 px-5">
                     {ins.receiptImage ? (
-                      <a
-                        href={ins.receiptImage}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => setPreviewUrl(ins.receiptImage)}
                         className="inline-flex items-center gap-1 text-accent text-xs font-bold hover:underline"
                       >
                         <FileImage size={13} /> Ver
-                      </a>
+                      </button>
                     ) : (
                       <span className="text-xs text-muted font-medium">—</span>
                     )}
@@ -226,6 +228,12 @@ export default function PaymentHistoryTable({
           </div>
         </div>
       )}
+
+      <ReceiptPreviewDialog
+        url={previewUrl}
+        open={!!previewUrl}
+        onClose={() => setPreviewUrl(null)}
+      />
     </div>
   );
 }

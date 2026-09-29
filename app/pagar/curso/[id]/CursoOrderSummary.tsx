@@ -2,7 +2,7 @@
 
 import { MapPin, Calendar, Clock } from "lucide-react";
 import type { CouponResult } from "@/lib/actions/coupons";
-import type { WorkshopDetails } from "@/lib/utils/workshop";
+import { WORKSHOP_LOCATION, type WorkshopDetails } from "@/lib/utils/workshop";
 
 export function CursoOrderSummary({
   course,
@@ -39,8 +39,7 @@ export function CursoOrderSummary({
               <div className="flex items-center gap-1.5 text-foreground font-semibold">
                 <MapPin size={13} className="text-accent shrink-0" />
                 <span>
-                  {workshopInfo?.location ||
-                    "Caracas, Las Mercedes — Sede Ana's Pastry Shop"}
+                  {workshopInfo?.location || WORKSHOP_LOCATION}
                 </span>
               </div>
               <div className="flex items-center gap-4 text-[11px] pt-0.5">

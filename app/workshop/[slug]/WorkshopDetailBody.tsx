@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import WorkshopConditions from "@/components/WorkshopConditions";
 import AddToBagButton from "@/components/cart/AddToBagButton";
+import { WORKSHOP_LOCATION } from "@/lib/utils/workshop";
 
 export function WorkshopDetailBody({
   workshop,
@@ -33,7 +34,7 @@ export function WorkshopDetailBody({
   waUrl: string;
 }) {
   return (
-      <section className="py-14 sm:py-20 max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 w-full">
+      <section className="py-14 sm:py-20 page-container w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Left Column: Workshop Program & Details */}
           <div className="lg:col-span-8 space-y-12">
@@ -119,7 +120,7 @@ export function WorkshopDetailBody({
             <div className="pt-2">
               <WorkshopConditions
                 workshopTitle={workshop.shortTitle}
-                location="Caracas, Las Mercedes — Sede Ana's Pastry Shop"
+                location={WORKSHOP_LOCATION}
                 workshopDate={workshop.schedule}
                 workshopTime={workshop.duration}
                 price={workshop.price}
@@ -173,7 +174,7 @@ export function WorkshopDetailBody({
                     id: workshop.legacySlug ?? workshop.id,
                     title: workshop.shortTitle,
                     price: workshop.price,
-                    image: workshop.image ?? null,
+                    image: null,
                     isWorkshop: true,
                   }}
                   variant="solid"

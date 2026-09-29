@@ -3,10 +3,20 @@ import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import RelatedFormaciones from "@/components/RelatedFormaciones";
 import { getWorkshopBySlug, getAllWorkshops, getOtherWorkshops } from "@/lib/data/workshops";
+import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { WorkshopDetailHero } from "./WorkshopDetailHero";
 import { WorkshopDetailBody } from "./WorkshopDetailBody";
+import {
+  buildBreadcrumbJsonLd,
+  buildCourseJsonLd,
+  buildPageMetadata,
+  GEO,
+  getSiteUrl,
+  SITE_WHATSAPP,
+} from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -22,28 +32,31 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const workshop = getWorkshopBySlug(slug);
 
   if (!workshop) {
-    return {
-      title: "Workshop No Encontrado",
-    };
+    return { title: "Workshop No Encontrado" };
   }
 
-  return {
-    title: `${workshop.shortTitle} — Workshop Presencial`,
-    description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Caracas (Las Mercedes). Cupo reducido de ${workshop.spots} personas. Inversión: $${workshop.price} USD.`,
-    alternates: { canonical: `/workshop/${workshop.slug}` },
-    openGraph: {
-      title: `${workshop.shortTitle} — Ana's Pastry Shop`,
-      description: workshop.subtitle,
-      images: [{ url: workshop.image, width: 1200, height: 630, alt: workshop.shortTitle }],
-    },
-  };
+  return buildPageMetadata({
+    title: `${workshop.shortTitle} — Workshop Presencial en ${GEO.shortAddress}`,
+    description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Coro, Falcón, Venezuela. Cupo de ${workshop.spots} personas. Inversión: $${workshop.price} USD.`,
+    path: `/workshop/${workshop.slug}`,
+    images: [{ url: workshop.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }],
+    keywords: [
+      `${workshop.shortTitle} Coro`,
+      "workshop pastelería Venezuela",
+      "taller presencial Falcón",
+      workshop.title,
+    ],
+  });
 }
 
 async function WorkshopDetailContent({ params }: PageProps) {
   const { slug } = await params;
   const workshop = getWorkshopBySlug(slug);
 
+  // Slugs que antes eran workshop y ahora son solo curso online (p. ej. Merengue Italiano).
   if (!workshop) {
+    const online = getOnlineCourseBySlug(slug.replace(/^workshop-/, ""));
+    if (online) permanentRedirect(`/cursos/${online.slug}`);
     notFound();
   }
 
@@ -56,12 +69,30 @@ async function WorkshopDetailContent({ params }: PageProps) {
   const waText = encodeURIComponent(
     `¡Hola Chef Anais! Me interesa información e inscripción para el taller presencial: "${workshop.title}" ($${workshop.price} USD). ¿Cuáles son las próximas fechas disponibles?`,
   );
-  const waUrl = `https://wa.me/584120000000?text=${waText}`;
+  const waUrl = `https://wa.me/${SITE_WHATSAPP}?text=${waText}`;
   const courseId =
-    (workshop as any).courseId || workshop.legacySlug || workshop.id || `ws-${workshop.slug}`;
+    (workshop as { courseId?: string }).courseId || workshop.legacySlug || workshop.id || `ws-${workshop.slug}`;
+  const siteUrl = getSiteUrl();
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Workshops", path: "/workshops" },
+          { name: workshop.shortTitle, path: `/workshop/${workshop.slug}` },
+        ])}
+      />
+      <JsonLd
+        data={buildCourseJsonLd({
+          name: workshop.title,
+          description: workshop.subtitle,
+          url: `${siteUrl}/workshop/${workshop.slug}`,
+          image: workshop.image,
+          price: workshop.price,
+          isOnline: false,
+        })}
+      />
       <Navbar />
       <WorkshopDetailHero workshop={workshop} depositAmount={depositAmount} />
       <WorkshopDetailBody
@@ -74,7 +105,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
       <RelatedFormaciones
         eyebrow="Sigue Capacitándote"
         title="Otros Workshops Presenciales"
-        subtitle="Talleres intensivos de 8 horas en Caracas (Las Mercedes) con grupos reducidos y todos los insumos incluidos."
+        subtitle="Talleres intensivos de 8 horas en Coro, Falcón con grupos reducidos y todos los insumos incluidos."
         items={getOtherWorkshops(workshop, 3)}
         href="/workshops"
         ctaLabel="Ver Catálogo Completo"

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { FileImage, AlertTriangle, Phone, Sparkles, BookOpen } from "lucide-react";
+import { ReceiptPreviewDialog } from "@/components/ReceiptPreviewDialog";
 
 export type PaymentInscription = {
   id: string;
@@ -39,6 +41,8 @@ export function PaymentCardDetails({
   expectedPrice: number;
   amountMismatch: boolean;
 }) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   return (
     <div className="flex-1">
       <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -75,53 +79,73 @@ export function PaymentCardDetails({
         <span className="text-accent font-bold">{itemTitle}</span>
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-section-alt p-4 rounded-lg">
-        <div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 bg-section-alt p-3 sm:p-4 rounded-xl">
+        <div className="min-w-0">
           <p className="text-[11px] font-black uppercase text-muted mb-0.5">Método</p>
-          <p className="text-sm font-bold text-foreground">
+          <p className="text-sm font-bold text-foreground truncate">
             {METHOD_LABELS[inscription.method] ?? inscription.method}
           </p>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[11px] font-black uppercase text-muted mb-0.5">
             {inscription.phoneNumber ? "Teléfono / Ref" : "Referencia"}
           </p>
-          <p className="text-sm font-bold text-foreground flex items-center gap-1">
+          <p className="text-sm font-bold text-foreground flex items-center gap-1 min-w-0">
             {inscription.phoneNumber ? (
               <>
                 <Phone size={12} className="text-muted shrink-0" />
-                {inscription.phoneNumber}
+                <span className="truncate">{inscription.phoneNumber}</span>
               </>
             ) : (
-              inscription.reference || "N/A"
+              <span className="truncate">{inscription.reference || "N/A"}</span>
             )}
           </p>
           {inscription.phoneNumber && inscription.reference && (
             <p className="text-xs text-muted mt-0.5 break-all">Ref: {inscription.reference}</p>
           )}
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[11px] font-black uppercase text-muted mb-0.5">Monto Reportado</p>
           <p className={`text-sm font-bold ${amountMismatch ? "text-red-500" : "text-foreground"}`}>
             ${inscription.amountPaid} {isPastryService ? "USD" : `/ $${expectedPrice}`}
           </p>
         </div>
-        <div>
-          <p className="text-[11px] font-black uppercase text-muted mb-0.5">Captura</p>
+        <div className="min-w-0 col-span-2 lg:col-span-1">
+          <p className="text-[11px] font-black uppercase text-muted mb-1.5">Captura</p>
           {inscription.receiptImage ? (
-            <a
-              href={inscription.receiptImage}
-              target="_blank"
-              rel="noreferrer"
-              className="text-accent text-sm font-bold flex items-center gap-1 hover:underline"
+            <button
+              type="button"
+              onClick={() => setPreviewOpen(true)}
+              className="group flex items-center gap-3 w-full rounded-xl border border-card-border bg-card p-2 pr-3 text-left hover:border-accent/50 hover:bg-card-hover transition-colors"
             >
-              <FileImage size={14} /> Ver comprobante
-            </a>
+              <span className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-section-alt shrink-0 border border-card-border">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={inscription.receiptImage}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="text-accent text-sm font-bold flex items-center gap-1.5 group-hover:underline">
+                  <FileImage size={14} className="shrink-0" /> Ver comprobante
+                </span>
+                <span className="block text-[11px] text-muted font-medium mt-0.5">
+                  Toca para ampliar
+                </span>
+              </span>
+            </button>
           ) : (
             <p className="text-sm font-bold text-muted">Sin imagen</p>
           )}
         </div>
       </div>
+
+      <ReceiptPreviewDialog
+        url={inscription.receiptImage}
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
     </div>
   );
 }

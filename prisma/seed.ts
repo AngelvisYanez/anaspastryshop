@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { WORKSHOP_LOCATION } from '../lib/utils/workshop'
 
 const prisma = new PrismaClient()
 
@@ -243,40 +244,6 @@ const WORKSHOPS_SEED = [
       'Caja para traslado de la torta',
     ],
   },
-  {
-    slug: 'workshop-merengue-italiano',
-    title: 'WORKSHOP MERENGUE ITALIANO',
-    description: 'Es un taller dirigido a todas las personas que deseen aprender a decorar tortas desde cero con esta cubierta y también para aquellas que deseen afianzar sus conocimientos. Solo 6 cupos.',
-    price: 70,
-    spots: 6,
-    duration: '8 horas aproximadamente (9:00am – 4 a 5 pm)',
-    startTime: '9:00 AM',
-    schedule: 'Día Domingo (Revisar cronograma de talleres)',
-    level: 'Desde Cero a Intermedio',
-    image: '/foto-1.webp',
-    isDecorationWorkshop: true,
-    studentRequirements: 'El alumno debe traer una base giratoria (de no tener, notificar previamente que disponemos de 3 bases para solventar).',
-    realizaremos: [
-      'Receta de torta de vainilla',
-      'Ensamblado en torta real',
-      'Relleno correcto',
-      'Receta de merengue italiano',
-      'Colorimetría',
-      'Frisado de torta con merengue italiano',
-      'Bordes perfectos',
-      'Uso de manga pastelera',
-      'Muchos otros tips',
-    ],
-    incluye: [
-      'Todos los materiales y utensilios',
-      'Torta real individual de trabajo',
-      'Almuerzo completo',
-      'Certificado de asistencia',
-      'Recetario impreso',
-      'Cada participante se lleva su proyecto a casa',
-      'Caja para traslado de la torta',
-    ],
-  },
 ]
 
 async function main() {
@@ -303,12 +270,12 @@ async function main() {
     },
   })
 
-  // Upsert the 8 in-person workshops
+  // Upsert in-person workshops
   for (const w of WORKSHOPS_SEED) {
     const contentPayload = JSON.stringify({
       isWorkshop: true,
       slug: w.slug,
-      location: "Caracas, Las Mercedes — Sede Ana's Pastry Shop",
+      location: WORKSHOP_LOCATION,
       workshopDate: w.schedule,
       workshopTime: w.startTime + ' — ' + (w.spots === 3 ? '6:00 PM' : '5:00 PM'),
       spots: w.spots,
@@ -417,7 +384,7 @@ async function main() {
     }
   }
 
-  console.log('Seed completed successfully: 8 workshops and online courses registered!')
+  console.log('Seed completed successfully: workshops and online courses registered!')
 }
 
 main()

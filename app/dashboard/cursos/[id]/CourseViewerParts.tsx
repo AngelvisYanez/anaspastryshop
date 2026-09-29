@@ -12,16 +12,8 @@ import {
   Video,
   AlertCircle,
 } from "lucide-react";
-import type { WorkshopDetails } from "@/lib/utils/workshop";
-
-function getEmbedUrl(rawUrl: string | null | undefined): string | null {
-  if (!rawUrl) return null;
-  const ytMatch = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
-  if (ytMatch) return `https://www.youtube-nocookie.com/embed/${ytMatch[1]}`;
-  const vimeoMatch = rawUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-  return rawUrl;
-}
+import { WORKSHOP_LOCATION, type WorkshopDetails } from "@/lib/utils/workshop";
+import { getCourseEmbedUrl } from "@/app/cursos/[slug]/courseEmbed";
 
 type Lesson = {
   id: string;
@@ -71,7 +63,7 @@ export function WorkshopLogisticsBanner({
               <MapPin size={15} /> Ubicación
             </div>
             <p className="text-sm font-black text-white">
-              {workshopInfo.location || "Caracas, Las Mercedes — Sede Ana's Pastry Shop"}
+              {workshopInfo.location || WORKSHOP_LOCATION}
             </p>
             <p className="text-[11px] text-white/60 mt-1">Punto de encuentro exclusivo</p>
           </div>
@@ -140,7 +132,7 @@ export function CourseModulesPanel({
 }) {
   const activeModule = course.courseModules[selectedModuleIndex] || null;
   const currentVideoUrl = activeModule?.videoUrl || course.videoUrl || null;
-  const embedUrl = getEmbedUrl(currentVideoUrl);
+  const embedUrl = getCourseEmbedUrl(currentVideoUrl);
   const totalLessonsCount = course.courseModules.reduce(
     (acc, m) => acc + (m.lessons?.length || 0),
     0,

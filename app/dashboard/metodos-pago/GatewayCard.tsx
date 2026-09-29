@@ -72,19 +72,23 @@ export function GatewayCard({
     setUploadingField(fieldKey);
     setError(null);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/cloudflare/upload-image", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Error al subir la imagen");
-      } else if (data.url) {
-        setField(fieldKey, data.url, true);
-      } else {
-        setError(data.error || "Error al subir la imagen");
+      if (!file.type.startsWith("image/")) {
+        setError("Solo se aceptan imágenes.");
+        return;
       }
+      if (file.size > 2 * 1024 * 1024) {
+        setError("La imagen no puede superar 2MB.");
+        return;
+      }
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+        reader.readAsDataURL(file);
+      });
+      setField(fieldKey, dataUrl, true);
     } catch {
-      setError("Error al subir la imagen. Intenta de nuevo.");
+      setError("Error al leer la imagen. Intenta de nuevo.");
     } finally {
       setUploadingField(null);
     }

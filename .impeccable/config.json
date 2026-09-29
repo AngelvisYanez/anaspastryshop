@@ -1,0 +1,98 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "app/cursos/PublicCoursesClient.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.614Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "app/nosotros/page.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.641Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "app/pasteleria/page.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.653Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "app/workshops/page.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.669Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "components/Hero.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.690Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "components/WhatYouGet.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.711Z",
+        "reason": "Brand gradient text (pink/cyan) - intentional identity of Ana's Pastry Shop"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "app/clases/[courseTitle]/[moduleTitle]/page.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.834Z",
+        "reason": "Loading spinner (circular border), not a rounded card"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "components/Hero.tsx"
+        ],
+        "createdAt": "2026-09-07T13:51:33.852Z",
+        "reason": "Classic blockquote with left border, not an AI side-tab"
+      },
+      {
+        "rule": "text-occlusion",
+        "value": "*",
+        "files": [
+          "components/Hero.tsx"
+        ],
+        "createdAt": "2026-09-07T14:01:20.857Z",
+        "reason": "False positive: badge inner <p> lines are in-flow siblings, cannot overlap"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "components/About.tsx"
+        ],
+        "createdAt": "2026-09-07T14:01:20.871Z",
+        "reason": "Intentional decorative crop of oversized quote glyph at card corner"
+      }
+    ]
+  }
+}

@@ -72,6 +72,13 @@ export function NavbarMobileDrawer({
               >
                 &rarr; Ver Cartelera Completa de Workshops
               </Link>
+              <Link
+                href="/workshops/calendario"
+                onClick={onClose}
+                className="block p-2 rounded-lg text-xs font-bold text-foreground hover:bg-card-hover"
+              >
+                &rarr; Calendario de fechas
+              </Link>
               {WORKSHOPS_DATA.map((w) => (
                 <Link
                   key={w.slug}
@@ -189,30 +196,30 @@ export function NavbarMobileDrawer({
         )}
       </div>
 
-      <div className="pt-4 border-t border-card-border space-y-3">
+      <div className="pt-4 border-t border-card-border flex flex-col items-stretch gap-3">
         {hasSession ? (
           <button
             onClick={() => {
               onClose();
               signOut();
             }}
-            className="w-full bg-red-500/10 text-red-500 py-3 rounded-xl font-bold text-xs hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+            className="w-full min-h-12 bg-red-500/10 text-red-500 py-3.5 px-4 rounded-xl font-bold text-sm hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
           >
-            <LogOut size={16} /> Cerrar Sesión
+            <LogOut size={18} /> Cerrar Sesión
           </button>
         ) : (
           <>
             <Link
               href="/iniciar-sesion"
               onClick={onClose}
-              className="w-full bg-card border border-card-border text-foreground py-3 rounded-xl font-bold text-xs hover:bg-card-hover transition-colors"
+              className="flex w-full min-h-12 items-center justify-center bg-card border border-card-border text-foreground py-3.5 px-4 rounded-xl font-bold text-sm text-center hover:bg-card-hover transition-colors"
             >
               Iniciar Sesión
             </Link>
             <Link
               href="/registro"
               onClick={onClose}
-              className="w-full bg-brand-purple text-white py-3 rounded-xl font-bold text-xs hover:bg-brand-purple-deep active:bg-brand-purple-deep transition-colors shadow-md shadow-brand-purple/30"
+              className="flex w-full min-h-12 items-center justify-center bg-brand-purple text-white py-3.5 px-4 rounded-xl font-bold text-sm text-center hover:bg-brand-purple-deep active:bg-brand-purple-deep transition-colors shadow-md shadow-brand-purple/30"
             >
               Registrarse
             </Link>

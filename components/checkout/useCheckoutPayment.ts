@@ -108,24 +108,25 @@ export function useCheckoutPayment({
 
   async function handleReceiptUpload(file: File, onError: (msg: string) => void) {
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      onError("Solo se aceptan imágenes.");
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       onError("El archivo no debe superar 5MB.");
       return;
     }
     setUploadingReceipt(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/cloudflare/upload-image", { method: "POST", body: fd });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        onError(data.error || "Error al subir el comprobante.");
-        return;
-      }
-      const data = await res.json();
-      setReceiptImage(data.url);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+        reader.readAsDataURL(file);
+      });
+      setReceiptImage(dataUrl);
     } catch {
-      onError("Error de red al subir el comprobante.");
+      onError("Error al leer el comprobante.");
     } finally {
       setUploadingReceipt(false);
     }

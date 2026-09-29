@@ -15,3 +15,30 @@ export const MANUAL_PROVIDERS: {
 export const MANUAL_PROVIDER_KEYS = new Set(MANUAL_PROVIDERS.map((p) => p.key));
 
 export const PROVIDER_ORDER = ["PAGO_MOVIL", "ZELLE", "BINANCE", "BANK_TRANSFER"] as const;
+
+/** Etiquetas públicas para listar solo los métodos realmente habilitados. */
+const PAYMENT_DISPLAY_LABELS: Record<string, string> = {
+  PAGO_MOVIL: "Pago Móvil BCV",
+  ZELLE: "Zelle QR",
+  BINANCE: "Binance Pay",
+  BANK_TRANSFER: "Transferencia",
+  STRIPE: "Tarjeta (Stripe)",
+  PAYPAL: "PayPal",
+};
+
+const PAYMENT_DISPLAY_ORDER = [
+  "PAGO_MOVIL",
+  "ZELLE",
+  "BINANCE",
+  "BANK_TRANSFER",
+  "STRIPE",
+  "PAYPAL",
+] as const;
+
+export function labelsForEnabledProviders(providers: string[]): string[] {
+  const enabled = new Set(providers);
+  return PAYMENT_DISPLAY_ORDER.filter((key) => enabled.has(key)).map(
+    (key) => PAYMENT_DISPLAY_LABELS[key]
+  );
+}
+

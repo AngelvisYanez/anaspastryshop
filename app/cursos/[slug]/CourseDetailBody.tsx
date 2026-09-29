@@ -9,7 +9,7 @@ import {
 import WorkshopConditions from "@/components/WorkshopConditions";
 import Link from "next/link";
 import type { WorkshopDetails } from "@/lib/utils/workshop";
-import { COURSE_FAQS } from "./courseFaqs";
+import { COURSE_FAQS, ONLINE_COURSE_FAQS } from "./courseFaqs";
 
 export function CourseDetailBody({
   course,
@@ -29,7 +29,7 @@ export function CourseDetailBody({
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
 
   return (
-      <section className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 md:px-10 py-16">
+      <section className="page-container py-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
             <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
@@ -105,7 +105,9 @@ export function CourseDetailBody({
                           <div className="flex items-center gap-2.5 px-6 py-3 border-b border-card-border">
                             <LockIcon size={14} className="text-accent shrink-0" />
                             <p className="text-xs font-semibold text-foreground">
-                              Reserva tu cupo para desbloquear el material completo de este módulo.
+                              {isWorkshop
+                                ? "Reserva tu cupo para desbloquear el material completo de este módulo."
+                                : "Compra el curso para desbloquear el material completo de este módulo."}
                             </p>
                           </div>
                         )}
@@ -157,7 +159,7 @@ export function CourseDetailBody({
               <div>
                 <h3 className="text-2xl font-black text-foreground mb-6">Preguntas Frecuentes</h3>
                 <div className="space-y-4">
-                  {COURSE_FAQS.map((faq) => (
+                  {(isWorkshop ? COURSE_FAQS : ONLINE_COURSE_FAQS).map((faq) => (
                     <div key={faq.q} className="bg-card border border-card-border rounded-2xl p-5 shadow-sm">
                       <h4 className="font-bold text-sm text-foreground mb-2">{faq.q}</h4>
                       <p className="text-sm text-muted leading-relaxed font-medium max-w-md">{faq.a}</p>

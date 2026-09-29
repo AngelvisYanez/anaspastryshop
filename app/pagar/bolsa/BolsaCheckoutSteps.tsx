@@ -80,7 +80,11 @@ export function BolsaPaymentStep({
         message={coupon.couponMessage}
         onApply={coupon.handleApplyCoupon}
         onRemove={coupon.handleRemoveCoupon}
-        onUsePromo={() => coupon.setCouponInput("TODOSLOSCURSOS")}
+        onUsePromo={
+          courses.length >= 2
+            ? () => coupon.setCouponInput("TODOSLOSCURSOS")
+            : undefined
+        }
       />
 
       {pay.availableManual.length > 1 && (

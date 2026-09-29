@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateCourse } from "@/lib/actions/cursos";
-import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { parseWorkshopDetails, WORKSHOP_LOCATION } from "@/lib/utils/workshop";
 
 export interface TaskForm {
   title: string;
@@ -33,7 +33,7 @@ export function useCourseEditForm(course: any) {
   const [isLive, setIsLive] = useState(course.isLive || initialWorkshop.isWorkshop);
   const [liveUrl] = useState(course.liveUrl || "");
   const [location, setLocation] = useState(
-    initialWorkshop.location || "Caracas, Las Mercedes — Sede Ana's Pastry Shop",
+    initialWorkshop.location || WORKSHOP_LOCATION,
   );
   const [workshopDate, setWorkshopDate] = useState(initialWorkshop.workshopDate || "");
   const [workshopTime, setWorkshopTime] = useState(

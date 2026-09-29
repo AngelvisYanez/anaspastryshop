@@ -1,32 +1,50 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FormacionCard from "@/components/FormacionCard";
+import JsonLd from "@/components/JsonLd";
 import { WORKSHOPS_DATA, toFormacionCard } from "@/lib/data/workshops";
-import { Clock, Users, MapPin, CheckCircle2 } from "lucide-react";
+import { Clock, Users, MapPin, CheckCircle2, CalendarDays } from "lucide-react";
+import { buildBreadcrumbJsonLd, buildPageMetadata, GEO } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Workshops Presenciales de Pastelería & Panadería",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Workshops Presenciales de Pastelería en Coro, Falcón",
   description:
-    "Descubre los talleres presenciales intensivos de 8 horas en Caracas (Las Mercedes). Cupos reducidos, 100% prácticos con todos los insumos incluidos y dictados por la Chef Anais Flores.",
-};
+    "Talleres presenciales intensivos de 8 horas en Coro, Falcón, Venezuela. Cupos reducidos, 100% prácticos con insumos incluidos. Alumnas de todo el país con la Chef Anais Flores.",
+  path: "/workshops",
+  keywords: [
+    "workshops pastelería Coro",
+    "talleres presenciales pastelería Falcón",
+    "talleres de repostería Venezuela",
+    "curso pastelería presencial Coro",
+    "Ana's Pastry Shop workshops",
+  ],
+});
 
 export default function WorkshopsPage() {
   const workshops = WORKSHOPS_DATA;
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Workshops Presenciales", path: "/workshops" },
+        ])}
+      />
       <Navbar />
 
       <section className="relative flex flex-col justify-center pt-28 pb-14 xl:pt-36 xl:pb-16 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
         <div className="page-container relative z-10 text-center">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight text-white max-w-4xl mx-auto leading-[1.15]">
             Workshops Presenciales de{" "}
-            <span className="text-on-purple-accent">Pastelería & Alta Repostería</span>
+            <span className="text-on-purple-accent">Pastelería en Venezuela</span>
           </h1>
 
           <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-white/85 max-w-prose mx-auto font-medium leading-relaxed">
-            Diseñados desde cero con metodología 100% práctica. Aprende las técnicas, recetas y secretos de la mano de la Chef Anais Flores en grupos reducidos de 3 a 8 personas.
+            Talleres intensivos en {GEO.shortAddress}. Metodología 100% práctica con la Chef Anais Flores.
+            Recibimos alumnas de Caracas, Maracaibo, Valencia y todo el país.
           </p>
         </div>
       </section>
@@ -47,7 +65,7 @@ export default function WorkshopsPage() {
           </div>
           <div className="flex items-center gap-2.5 border border-card-border rounded-xl px-3 py-3 bg-card">
             <MapPin size={16} className="text-accent shrink-0" />
-            <span className="text-xs sm:text-sm">Las Mercedes, Caracas</span>
+            <span className="text-xs sm:text-sm">Coro, Falcón</span>
           </div>
         </div>
 
@@ -57,9 +75,18 @@ export default function WorkshopsPage() {
               Elige tu próximo workshop
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-muted font-medium max-w-md">
-            Reserva con el <strong>50% de anticipo</strong> para congelar tu puesto y cancela el 50% restante el día del taller al ingresar.
-          </p>
+          <div className="flex flex-col sm:items-end gap-2">
+            <Link
+              href="/workshops/calendario"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-accent-solid hover:bg-accent-solid-hover text-white text-xs font-bold transition shadow-md shadow-accent-solid/20"
+            >
+              <CalendarDays size={15} />
+              Ver calendario de fechas
+            </Link>
+            <p className="text-xs sm:text-sm text-muted font-medium max-w-md sm:text-right">
+              Reserva con el <strong>50% de anticipo</strong> para congelar tu puesto y cancela el 50% restante el día del taller al ingresar.
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">

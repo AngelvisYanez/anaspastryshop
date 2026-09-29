@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Save, Loader2, CheckCircle, ChevronDown, Cloud, Zap } from "lucide-react";
+import { Eye, EyeOff, Save, Loader2, CheckCircle, ChevronDown } from "lucide-react";
 import { saveApiConfig } from "@/lib/actions/platformApi";
 
 type ApiConfigRecord = { provider: string; label: string; config: Record<string, string> };
@@ -12,36 +12,12 @@ type ApiDef = {
   provider: string;
   label: string;
   description: string;
-  Icon: React.ElementType;
   color: string;
   fields: FieldDef[];
 };
 
-const API_PROVIDERS: ApiDef[] = [
-  {
-    provider: "CLOUDFLARE_RTK",
-    label: "Cloudflare RealtimeKit",
-    description: "Credenciales para salas de video en tiempo real.",
-    Icon: Cloud,
-    color: "orange",
-    fields: [
-      { key: "accountId", label: "Account ID", placeholder: "54c446e340ef..." },
-      { key: "appId", label: "App ID", placeholder: "af37bcfa-5205-..." },
-      { key: "apiToken", label: "API Token", placeholder: "cfut_...", secret: true, hint: "Requiere permiso Realtime → Admin" },
-    ],
-  },
-  {
-    provider: "CLOUDFLARE_STREAM",
-    label: "Cloudflare Stream",
-    description: "Credenciales para transmisiones de video (streaming).",
-    Icon: Zap,
-    color: "blue",
-    fields: [
-      { key: "accountId", label: "Account ID", placeholder: "54c446e340ef..." },
-      { key: "apiToken", label: "API Token", placeholder: "cfut_...", secret: true },
-    ],
-  },
-];
+/** Sin proveedores externos de media por ahora (Cloudflare eliminado). */
+const API_PROVIDERS: ApiDef[] = [];
 
 const COLOR_MAP: Record<string, string> = {
   orange: "bg-orange-50 text-orange-600 border-orange-100",
@@ -58,7 +34,6 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { Icon } = def;
   const colorClass = COLOR_MAP[def.color] ?? COLOR_MAP.orange;
   const hasValues = def.fields.some((f) => form[f.key]);
 
@@ -79,74 +54,73 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
     <div className={`bg-card rounded-xl border shadow-sm overflow-hidden transition ${hasValues ? "border-card-border" : "border-card-border"}`}>
       <button
         type="button"
-        className="flex items-center justify-between px-8 py-5 cursor-pointer hover:bg-card-hover transition-colors w-full text-left"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center gap-4 p-5 text-left hover:bg-card-hover transition"
       >
-        <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${colorClass}`}>
-            <Icon size={18} />
-          </div>
-          <div>
-            <div className="flex items-center gap-3">
-              <p className="font-bold text-foreground">{def.label}</p>
-              {hasValues && (
-                <span className="text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-green-50 text-green-600">
-                  Configurado
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted font-medium mt-0.5">{def.description}</p>
-          </div>
+        <div className={`w-10 h-10 rounded-lg border flex items-center justify-center ${colorClass}`}>
+          <span className="text-xs font-black">{def.label.slice(0, 2).toUpperCase()}</span>
         </div>
-        <ChevronDown size={18} className={`text-muted transition-transform ${open ? "rotate-180" : ""}`} />
+        <div className="flex-1 min-w-0">
+          <p className="font-black text-foreground text-sm">{def.label}</p>
+          <p className="text-xs text-muted truncate">{def.description}</p>
+        </div>
+        <ChevronDown size={18} className={`text-muted transition ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="px-8 pb-8 border-t border-card-border pt-6 bg-section-alt/30 space-y-4">
-          {error && <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold">{error}</div>}
-
-          {def.fields.map((field) => (
-            <div key={field.key}>
-              <label htmlFor={`api-field-${field.key}`} className="block text-xs font-bold text-foreground mb-1.5">
-                {field.label}
-                {field.hint && <span className="text-muted font-medium ml-2">— {field.hint}</span>}
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id={`api-field-${field.key}`}
-                  type={field.secret && !showSecrets[field.key] ? "password" : "text"}
-                  value={form[field.key]}
-                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  className="flex-1 bg-card border border-card-border rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition font-mono text-foreground placeholder:font-sans placeholder:text-muted"
-                />
-                {field.secret && (
-                  <button
-                    type="button"
-                    onClick={() => setShowSecrets((s) => ({ ...s, [field.key]: !s[field.key] }))}
-                    aria-label={showSecrets[field.key] ? `Ocultar ${field.label}` : `Mostrar ${field.label}`}
-                    className="px-4 bg-card border border-card-border rounded-xl text-muted hover:text-accent transition-colors"
-                  >
-                    {showSecrets[field.key] ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                )}
+        <div className="px-5 pb-5 space-y-4 border-t border-card-border pt-4">
+          {def.fields.map((field) => {
+            const visible = showSecrets[field.key];
+            return (
+              <div key={field.key} className="space-y-1.5">
+                <label htmlFor={`api-${def.provider}-${field.key}`} className="block text-xs font-bold text-foreground">
+                  {field.label}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id={`api-${def.provider}-${field.key}`}
+                    type={field.secret && !visible ? "password" : "text"}
+                    value={form[field.key] ?? ""}
+                    onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+                    placeholder={field.placeholder}
+                    className="flex-1 bg-card border border-card-border rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition font-mono text-foreground placeholder:font-sans placeholder:text-muted"
+                  />
+                  {field.secret && (
+                    <button
+                      type="button"
+                      onClick={() => setShowSecrets((s) => ({ ...s, [field.key]: !s[field.key] }))}
+                      aria-label={visible ? `Ocultar ${field.label}` : `Mostrar ${field.label}`}
+                      className="px-4 bg-card border border-card-border rounded-xl text-muted hover:text-accent transition-colors"
+                    >
+                      {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  )}
+                </div>
+                {field.hint && <p className="text-[11px] text-muted">{field.hint}</p>}
               </div>
-            </div>
-          ))}
+            );
+          })}
+
+          {error && (
+            <p role="alert" className="text-red-500 text-sm font-medium">{error}</p>
+          )}
 
           <div className="flex items-center justify-between pt-2">
             {saved ? (
-              <span role="status" className="flex items-center gap-2 text-green-600 dark:text-green-400 text-xs font-bold">
-                <CheckCircle size={14} /> Guardado correctamente
+              <span role="status" className="flex items-center gap-2 text-emerald-600 text-xs font-bold">
+                <CheckCircle size={15} /> Guardado
               </span>
-            ) : <span />}
+            ) : (
+              <span />
+            )}
             <button
+              type="button"
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-accent-solid text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-accent-solid-hover shadow-md shadow-accent/20 transition disabled:opacity-50"
+              className="flex items-center gap-2 bg-accent-solid text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-accent-solid-hover transition disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-              {saving ? "Guardando..." : "Guardar"}
+              Guardar
             </button>
           </div>
         </div>
@@ -156,23 +130,30 @@ function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
 }
 
 export default function ApiConfigManager({ configs }: { configs: ApiConfigRecord[] }) {
-  const configMap = Object.fromEntries(configs.map((c) => [c.provider, c]));
-
-  return (
-    <div className="max-w-3xl">
-      <p className="text-muted font-medium mb-8">Gestiona las credenciales de los servicios externos de la plataforma. Los valores guardados aquí tienen prioridad sobre las variables de entorno.</p>
-      <div className="space-y-4">
-        {API_PROVIDERS.map((def) => (
-          <ApiCard key={def.provider} def={def} initial={configMap[def.provider]} />
-        ))}
-      </div>
-
-      <div className="mt-8 bg-accent-subtle rounded-xl p-6 border border-accent/20">
-        <p className="text-xs font-black uppercase tracking-widest text-accent mb-2">Nota de seguridad</p>
-        <p className="text-sm text-foreground/80 font-medium leading-relaxed">
-          Las credenciales se almacenan cifradas en la base de datos. Nunca se exponen al cliente. Para mayor seguridad en producción, usa variables de entorno en el servidor.
+  if (API_PROVIDERS.length === 0) {
+    return (
+      <div className="bg-card border border-card-border rounded-xl p-8 text-center space-y-2">
+        <h1 className="text-xl font-black text-foreground">APIs de plataforma</h1>
+        <p className="text-sm text-muted max-w-md mx-auto">
+          No hay integraciones de media configuradas. Las credenciales de Cloudflare fueron eliminadas del proyecto.
         </p>
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-black text-foreground">APIs de plataforma</h1>
+        <p className="text-sm text-muted mt-1">Credenciales de servicios externos.</p>
+      </div>
+      {API_PROVIDERS.map((def) => (
+        <ApiCard
+          key={def.provider}
+          def={def}
+          initial={configs.find((c) => c.provider === def.provider)}
+        />
+      ))}
     </div>
   );
 }

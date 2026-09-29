@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { Video, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { createCourse } from "@/lib/actions/cursos";
-import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
 import ImageUploader from "@/components/ImageUploader";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
 import { CourseModulesEditor } from "@/components/CourseModulesEditor";
+import { WORKSHOP_LOCATION } from "@/lib/utils/workshop";
 
 interface TaskForm {
   title: string;
@@ -41,7 +41,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
   const [liveUrl, setLiveUrl] = useState("");
 
   // Workshop Logistics
-  const [location, setLocation] = useState("Caracas, Las Mercedes — Sede Ana's Pastry Shop");
+  const [location, setLocation] = useState(WORKSHOP_LOCATION);
   const [workshopDate, setWorkshopDate] = useState("");
   const [workshopTime, setWorkshopTime] = useState("09:00 AM — 05:00 PM");
 
@@ -238,20 +238,14 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="course-intro-video" className="block text-sm font-bold text-foreground mb-2">Video de Introducción o Trailer</label>
-              <div className="space-y-3">
-                <CloudflareVideoUploader
-                  currentUrl={introVideo || undefined}
-                  onUpload={(url) => setIntroVideo(url)}
-                />
-                <input
-                  id="course-intro-video"
-                  value={introVideo}
-                  onChange={e => setIntroVideo(e.target.value)}
-                  type="url"
-                  className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
-                  placeholder="O pega el link directo (YouTube, Vimeo...)..."
-                />
-              </div>
+              <input
+                id="course-intro-video"
+                value={introVideo}
+                onChange={e => setIntroVideo(e.target.value)}
+                type="url"
+                className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
+                placeholder="Pega el link (YouTube, Vimeo...)"
+              />
             </div>
 
             <div>
@@ -263,8 +257,16 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
 
         <CourseModulesEditor
           modules={modules}
-          sectionTitle="Módulos del Curso Online / Temario"
-          sectionDescription="Cada módulo se cargará de forma interactiva en el panel del alumno con su video correspondiente."
+          sectionTitle={
+            isLive
+              ? "Módulos o Contenido del Workshop"
+              : "Módulos del Curso Online / Temario"
+          }
+          sectionDescription={
+            isLive
+              ? "Define el temario o contenido del workshop presencial que verá el alumno."
+              : "Cada módulo se cargará de forma interactiva en el panel del alumno con su video correspondiente."
+          }
           openModuleIndex={openModuleIndex}
           canRemoveModule={modules.length > 1}
           onAddModule={handleAddModule}

@@ -2,12 +2,28 @@
 
 import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import CloudflareVideoUploader from "@/components/CloudflareVideoUploader";
 import ImageUploader from "@/components/ImageUploader";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
 import { CourseModulesEditor } from "@/components/CourseModulesEditor";
 import { useCourseEditForm } from "./useCourseEditForm";
+
+const fieldClass =
+  "w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground";
+const labelClass = "block text-sm font-bold text-foreground mb-2";
+const cardClass =
+  "bg-card p-5 sm:p-6 rounded-2xl border border-card-border shadow-sm";
+
+function SectionTitle({ step, children }: { step: number; children: React.ReactNode }) {
+  return (
+    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-5 flex items-center gap-2">
+      <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold shrink-0">
+        {step}
+      </span>
+      {children}
+    </h2>
+  );
+}
 
 export default function CourseEditClient({
   course,
@@ -19,7 +35,7 @@ export default function CourseEditClient({
   const form = useCourseEditForm(course);
 
   return (
-    <div className="p-4 sm:p-8 max-w-5xl mx-auto pb-24 bg-card md:bg-transparent">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-28 bg-card md:bg-transparent">
       <CourseFormHeader
         title="Editar Formación"
         description="Actualiza módulos, videos y detalles de logística para workshops presenciales."
@@ -43,123 +59,127 @@ export default function CourseEditClient({
         </div>
       )}
 
-      <form onSubmit={form.handleSubmit} className="space-y-8">
-        <div className="bg-card p-8 rounded-2xl border border-card-border shadow-sm">
-          <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold">
-              1
-            </span>
-            Información de la Formación
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="col-span-1 md:col-span-2">
-              <label htmlFor="course-title" className="block text-sm font-bold text-foreground mb-2">
-                Título
-              </label>
-              <input
-                id="course-title"
-                required
-                value={form.title}
-                onChange={(e) => form.setTitle(e.target.value)}
-                type="text"
-                className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground"
-              />
-            </div>
+      <form onSubmit={form.handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+          {/* Columna principal: información + logística */}
+          <div className="xl:col-span-7 space-y-6 min-w-0">
+            <section className={cardClass}>
+              <SectionTitle step={1}>Información de la Formación</SectionTitle>
 
-            <div className="col-span-1 md:col-span-2">
-              <label
-                htmlFor="course-description"
-                className="block text-sm font-bold text-foreground mb-2"
-              >
-                Descripción
-              </label>
-              <textarea
-                id="course-description"
-                required
-                value={form.description}
-                onChange={(e) => form.setDescription(e.target.value)}
-                className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition min-h-[100px] text-foreground"
-              />
-            </div>
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="course-title" className={labelClass}>
+                    Título
+                  </label>
+                  <input
+                    id="course-title"
+                    required
+                    value={form.title}
+                    onChange={(e) => form.setTitle(e.target.value)}
+                    type="text"
+                    className={fieldClass}
+                  />
+                </div>
 
-            <ModalitySelector
-              isLive={form.isLive}
-              onChange={form.setIsLive}
-              onlineDescription="Contenido grabado por módulos y lecciones en video."
-              workshopDescription="Taller presencial con ubicación física, fecha y horario."
-            />
+                <div>
+                  <label htmlFor="course-description" className={labelClass}>
+                    Descripción
+                  </label>
+                  <textarea
+                    id="course-description"
+                    required
+                    value={form.description}
+                    onChange={(e) => form.setDescription(e.target.value)}
+                    className={`${fieldClass} min-h-[110px] resize-y`}
+                  />
+                </div>
 
-            {form.isLive && (
-              <WorkshopLogistics
-                location={form.location}
-                date={form.workshopDate}
-                time={form.workshopTime}
-                onLocationChange={form.setLocation}
-                onDateChange={form.setWorkshopDate}
-                onTimeChange={form.setWorkshopTime}
-              />
-            )}
-
-            <div className="col-span-1 md:col-span-2">
-              <label htmlFor="course-price" className="block text-sm font-bold text-foreground mb-2">
-                Precio Individual (USD)
-              </label>
-              <input
-                id="course-price"
-                required
-                value={form.price}
-                onChange={(e) => form.setPrice(e.target.value)}
-                type="number"
-                min="0"
-                step="0.01"
-                className="w-48 bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground font-mono font-bold text-lg"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card p-8 rounded-2xl border border-card-border shadow-sm space-y-6">
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <span className="bg-accent-solid text-white w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold">
-              2
-            </span>
-            Media & Portada
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                htmlFor="course-intro-video"
-                className="block text-sm font-bold text-foreground mb-2"
-              >
-                Video de Introducción
-              </label>
-              <div className="space-y-3">
-                <CloudflareVideoUploader
-                  currentUrl={form.introVideo || undefined}
-                  onUpload={(url) => form.setIntroVideo(url)}
-                />
-                <input
-                  id="course-intro-video"
-                  value={form.introVideo}
-                  onChange={(e) => form.setIntroVideo(e.target.value)}
-                  type="url"
-                  className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
-                  placeholder="O pega el link directo..."
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="course-price" className={labelClass}>
+                      Precio Individual (USD)
+                    </label>
+                    <input
+                      id="course-price"
+                      required
+                      value={form.price}
+                      onChange={(e) => form.setPrice(e.target.value)}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className={`${fieldClass} font-mono font-bold text-lg max-w-[12rem]`}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            </section>
 
-            <div>
-              <div className="block text-sm font-bold text-foreground mb-2">Imagen de Portada</div>
-              <ImageUploader value={form.coverImage} onChange={form.setCoverImage} />
-            </div>
+            <section className={cardClass}>
+              <SectionTitle step={2}>Modalidad</SectionTitle>
+              <div className="grid grid-cols-1 gap-5">
+                <ModalitySelector
+                  isLive={form.isLive}
+                  onChange={form.setIsLive}
+                  onlineDescription="Contenido grabado por módulos y lecciones en video."
+                  workshopDescription="Taller presencial con ubicación física, fecha y horario."
+                />
+
+                {form.isLive && (
+                  <WorkshopLogistics
+                    location={form.location}
+                    date={form.workshopDate}
+                    time={form.workshopTime}
+                    onLocationChange={form.setLocation}
+                    onDateChange={form.setWorkshopDate}
+                    onTimeChange={form.setWorkshopTime}
+                  />
+                )}
+              </div>
+            </section>
           </div>
+
+          {/* Columna lateral: media (sticky en desktop) */}
+          <aside className="xl:col-span-5 xl:sticky xl:top-6 space-y-6 min-w-0">
+            <section className={cardClass}>
+              <SectionTitle step={3}>Media & Portada</SectionTitle>
+              <div className="space-y-6">
+                <div>
+                  <div className={labelClass}>Imagen de Portada</div>
+                  <ImageUploader value={form.coverImage} onChange={form.setCoverImage} />
+                </div>
+
+                <div>
+                  <label htmlFor="course-intro-video" className={labelClass}>
+                    Video de Introducción
+                  </label>
+                  <input
+                    id="course-intro-video"
+                    value={form.introVideo}
+                    onChange={(e) => form.setIntroVideo(e.target.value)}
+                    type="url"
+                    className={`${fieldClass} placeholder:text-muted text-sm`}
+                    placeholder="Pega el link (YouTube, Vimeo...)"
+                  />
+                </div>
+              </div>
+            </section>
+          </aside>
         </div>
 
+        {/* Módulos a ancho completo */}
         <CourseModulesEditor
           modules={form.modules}
-          sectionTitle={`Módulos del Curso Online (${form.modules.length})`}
-          sectionDescription="Cada módulo cuenta con su video explicativo y se carga en el panel de alumno."
+          sectionStep={4}
+          sectionTitle={
+            form.isLive
+              ? `Módulos o Contenido del Workshop (${form.modules.length})`
+              : `Módulos del Curso Online (${form.modules.length})`
+          }
+          sectionDescription={
+            form.isLive
+              ? "Define el temario o contenido del workshop presencial que verá el alumno."
+              : "Cada módulo cuenta con su video explicativo y se carga en el panel de alumno."
+          }
           openModuleIndex={form.openModuleIndex}
           canRemoveModule={form.modules.length > 1}
           onAddModule={form.handleAddModule}
@@ -173,10 +193,10 @@ export default function CourseEditClient({
           onRemoveTask={form.handleRemoveTask}
         />
 
-        <div className="flex justify-end gap-4">
+        <div className="sticky bottom-4 z-20 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-2xl border border-card-border bg-card/95 backdrop-blur-md p-3 sm:p-4 shadow-lg">
           <Link
             href="/dashboard/cursos"
-            className="px-6 py-3 rounded-xl text-xs font-bold text-muted hover:text-foreground border border-card-border"
+            className="px-6 py-3 rounded-xl text-xs font-bold text-center text-muted hover:text-foreground border border-card-border"
           >
             Cancelar
           </Link>
@@ -184,7 +204,7 @@ export default function CourseEditClient({
             type="submit"
             disabled={form.loading}
             aria-busy={form.loading}
-            className="px-8 py-3 bg-accent-solid text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-solid-hover transition disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-accent-solid/20"
+            className="px-8 py-3 bg-accent-solid text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-accent-solid-hover transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent-solid/20"
           >
             {form.loading && <Loader2 size={16} className="animate-spin" />}
             Actualizar Formación

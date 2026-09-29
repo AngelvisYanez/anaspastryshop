@@ -101,7 +101,7 @@ export function NavbarDesktopNav({
                 <p className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
                   <Sparkles size={13} /> Workshops Presenciales
                 </p>
-                <p className="text-[11px] text-muted">Caracas, Las Mercedes · Práctica 100% en vivo</p>
+                <p className="text-[11px] text-muted">Coro, Falcón · Práctica 100% en vivo</p>
               </div>
               <Link
                 href="/workshops"
@@ -109,6 +109,19 @@ export function NavbarDesktopNav({
                 className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
               >
                 Ver Cartelera &rarr;
+              </Link>
+            </div>
+
+            <div className="px-3 pb-2">
+              <Link
+                href="/workshops/calendario"
+                onClick={onCloseWorkshops}
+                className="flex items-center justify-between w-full rounded-2xl border border-accent/20 bg-accent/5 hover:bg-accent/10 px-3 py-2 transition-colors"
+              >
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Clock size={13} className="text-accent" /> Calendario de fechas
+                </span>
+                <span className="text-[11px] font-bold text-accent">Abrir →</span>
               </Link>
             </div>
 
@@ -241,7 +254,7 @@ export function NavbarDesktopNav({
                     <Sparkles size={13} className="text-accent" /> Promoción Cupón Especial
                   </p>
                   <p className="text-[11px] text-muted mt-0.5">
-                    Aplica el cupón <strong className="text-accent">TODOSLOSCURSOS</strong> al inscribirte
+                    Aplica el cupón <strong className="text-accent">TODOSLOSCURSOS</strong> al comprar ambos cursos online
                   </p>
                 </div>
                 <span className="text-[11px] font-bold text-accent group-hover:underline">

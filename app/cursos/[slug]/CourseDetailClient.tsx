@@ -10,19 +10,22 @@ export default function CourseDetailClient({
   course,
   hasPaid,
   workshopInfo,
+  paymentMethods = [],
   children,
 }: {
   course: any;
   hasPaid: boolean;
   workshopInfo?: WorkshopDetails;
+  paymentMethods?: string[];
   children?: ReactNode;
 }) {
   const isWorkshop =
     workshopInfo?.isWorkshop ??
     (course.isLive || /workshop|taller|presencial/i.test(course.title));
   const isDecoration = /decoraci|alisad|torta|pastel/i.test(course.title);
-  const reservationFee = Math.round(course.price * 0.5);
-  const remainderFee = course.price - reservationFee;
+  // Solo workshops reservan con el 50%. Los cursos online se pagan completos.
+  const reservationFee = isWorkshop ? Math.round(course.price * 0.5) : 0;
+  const remainderFee = isWorkshop ? course.price - reservationFee : 0;
 
   return (
     <main className="min-h-screen bg-background">
@@ -34,6 +37,7 @@ export default function CourseDetailClient({
         isWorkshop={isWorkshop}
         reservationFee={reservationFee}
         remainderFee={remainderFee}
+        paymentMethods={paymentMethods}
       />
       <CourseDetailBody
         course={course}

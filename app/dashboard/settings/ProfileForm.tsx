@@ -1,7 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
-import { m } from "framer-motion";
-import { User, Mail, Lock, Camera, Loader2, Save, CheckCircle, AlertCircle, Trash2, RefreshCcw } from "lucide-react";
+import { useState } from "react";
+import { User, Mail, Lock, Loader2, Save, CheckCircle, AlertCircle, Link2 } from "lucide-react";
 import { updateProfile } from "@/lib/actions/user";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -12,28 +11,21 @@ interface UserProfile {
   image: string | null;
 }
 
+function isSafeImageUrl(value: string | null | undefined): value is string {
+  if (!value) return false;
+  if (value.startsWith("data:")) return false;
+  if (value.length > 2048) return false;
+  return value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/");
+}
+
 export default function ProfileForm({ initialUser }: { initialUser: UserProfile }) {
-  const { update, data: session } = useSession();
+  const { update } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(initialUser.image);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        setError("La imagen es muy pesada (máx 2MB)");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const [imageUrl, setImageUrl] = useState(
+    isSafeImageUrl(initialUser.image) ? initialUser.image : ""
+  );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,10 +34,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     setSuccess(false);
 
     const formData = new FormData(e.currentTarget);
-
-    if (previewImage) {
-      formData.set("image", previewImage);
-    }
+    const trimmed = imageUrl.trim();
+    formData.set("image", trimmed);
 
     try {
       const result = await updateProfile(formData);
@@ -59,12 +49,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
       await update({
         name: formData.get("name"),
-        image: previewImage
+        image: isSafeImageUrl(trimmed) ? trimmed : null,
       });
-
-      if (previewImage && session?.user?.id) {
-        localStorage.setItem(`user-img-${session.user.id}`, previewImage);
-      }
 
       setTimeout(() => setSuccess(false), 3000);
       window.location.reload();
@@ -73,6 +59,8 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
     }
   }
 
+  const preview = isSafeImageUrl(imageUrl.trim()) ? imageUrl.trim() : null;
+
   return (
     <div className="max-w-2xl mx-auto py-10">
       <div className="bg-card rounded-xl p-8 md:p-12 shadow-md border border-card-border relative overflow-hidden">
@@ -80,70 +68,16 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
 
         <div className="mb-8 text-center">
           <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="relative inline-block group">
-              <div className="w-24 h-24 bg-accent-subtle rounded-lg flex items-center justify-center font-black text-accent text-3xl overflow-hidden border-2 border-card-border shadow-md relative group">
-                {previewImage ? (
-                  <Image src={previewImage} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
-                ) : (
-                  initialUser.name?.substring(0, 2).toUpperCase() || "??"
-                )}
-                {!previewImage && (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-                    aria-label="Subir foto de perfil"
-                  >
-                    <Camera size={24} className="text-white" />
-                  </button>
-                )}
-              </div>
-
-              {!previewImage && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 bg-accent-solid text-white p-2.5 rounded-lg shadow-md hover:scale-110 transition-transform"
-                  aria-label="Subir foto de perfil"
-                >
-                  <Camera size={14} />
-                </button>
+            <div className="w-24 h-24 bg-accent-subtle rounded-lg flex items-center justify-center font-black text-accent text-3xl overflow-hidden border-2 border-card-border shadow-md relative">
+              {preview ? (
+                <Image src={preview} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
+              ) : (
+                initialUser.name?.substring(0, 2).toUpperCase() || "??"
               )}
             </div>
-
-            {previewImage && (
-              <div className="flex items-center gap-2 bg-section-alt p-1.5 rounded-lg border border-card-border shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-card text-foreground text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-card-hover transition border border-card-border"
-                >
-                  <RefreshCcw size={13} /> Reemplazar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPreviewImage(null);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950/20 text-red-500 text-[11px] font-black uppercase tracking-widest rounded-md hover:bg-red-100 transition border border-red-200 dark:border-red-800"
-                >
-                  <Trash2 size={13} /> Eliminar
-                </button>
-              </div>
-            )}
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-              aria-label="Seleccionar imagen de perfil"
-            />
           </div>
           <h1 className="text-2xl font-black text-foreground">Ajustes de Perfil</h1>
-          <p className="text-muted font-medium">Actualiza tu información personal en Ana's Pastry Shop</p>
+          <p className="text-muted font-medium">Actualiza tu información personal en Ana&apos;s Pastry Shop</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -193,7 +127,26 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
               </div>
             </div>
 
-            <input type="hidden" name="image" value={previewImage || ""} />
+            <div className="space-y-2">
+              <label htmlFor="profile-image" className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">
+                Foto de perfil (URL)
+              </label>
+              <div className="relative">
+                <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
+                <input
+                  id="profile-image"
+                  type="url"
+                  name="image"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://… o /ruta-local.webp"
+                  className="w-full bg-section-alt border border-card-border rounded-lg py-3 pl-11 pr-4 focus:ring-2 focus:ring-accent transition outline-none font-bold text-foreground"
+                />
+              </div>
+              <p className="text-[11px] text-muted font-medium px-1">
+                Solo URLs cortas. No subas archivos embebidos: hinchan la sesión y provocan error 431.
+              </p>
+            </div>
 
             <div className="space-y-2 pt-4 border-t border-card-border">
               <label htmlFor="profile-new-password" className="text-[11px] font-black uppercase tracking-widest text-muted ml-1">

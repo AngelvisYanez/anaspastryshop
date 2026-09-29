@@ -40,7 +40,7 @@ export default function PaymentCard({ inscription }: { inscription: PaymentInscr
 
   return (
     <>
-      <div className="bg-card rounded-xl p-6 border border-card-border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-card rounded-xl p-4 sm:p-6 border border-card-border shadow-sm flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 sm:gap-6">
         <PaymentCardDetails
           inscription={inscription}
           isPastryService={isPastryService}
@@ -49,11 +49,11 @@ export default function PaymentCard({ inscription }: { inscription: PaymentInscr
           amountMismatch={amountMismatch}
         />
 
-        <div className="flex w-full md:w-auto flex-row md:flex-col gap-3">
+        <div className="flex w-full lg:w-auto flex-row lg:flex-col gap-2.5 sm:gap-3 shrink-0">
           <button
             onClick={() => setShowApproveConfirm(true)}
             disabled={loading !== null}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-5 rounded-lg transition shadow-sm disabled:opacity-50"
+            className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-5 rounded-lg transition shadow-sm disabled:opacity-50 min-h-11"
           >
             {loading === "approve" ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
             Aprobar
@@ -61,7 +61,7 @@ export default function PaymentCard({ inscription }: { inscription: PaymentInscr
           <button
             onClick={() => setShowRejectDialog(true)}
             disabled={loading !== null}
-            className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 text-red-500 font-bold py-2.5 px-5 rounded-lg transition border border-red-200 dark:border-red-800 disabled:opacity-50"
+            className="flex-1 lg:flex-none flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 text-red-500 font-bold py-2.5 px-5 rounded-lg transition border border-red-200 dark:border-red-800 disabled:opacity-50 min-h-11"
           >
             {loading === "reject" ? <Loader2 size={16} className="animate-spin" /> : <X size={16} />}
             Rechazar

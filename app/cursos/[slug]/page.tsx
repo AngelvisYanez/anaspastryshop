@@ -6,10 +6,17 @@ import { auth } from "@/lib/auth";
 import { notFound, permanentRedirect } from "next/navigation";
 import CourseDetailClient from "./CourseDetailClient";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { getWorkshopBySlug } from "@/lib/data/workshops";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { checkUserCourseAccess } from "./checkUserCourseAccess";
+import { labelsForEnabledProviders } from "@/components/checkout/manualProviders";
+import {
+  buildBreadcrumbJsonLd,
+  buildCourseJsonLd,
+  buildPageMetadata,
+} from "@/lib/seo";
 
 const COURSE_INCLUDE = {
   instructor: true,
@@ -23,25 +30,36 @@ type PageProps = { params: Promise<{ slug: string }> };
 
 type ResolvedCourse =
   | { kind: "redirect"; to: string }
-  | { kind: "course"; course: Prisma.CursoGetPayload<{ include: typeof COURSE_INCLUDE }>; canonicalSlug: string | null };
+  | {
+      kind: "course";
+      course: Prisma.CursoGetPayload<{ include: typeof COURSE_INCLUDE }>;
+      canonicalSlug: string | null;
+      /** Catálogo online estático: nunca es reserva de cupo. */
+      isOnlineCatalog: boolean;
+    };
 
 /**
- * Resuelve el parámetro de la URL contra las tres fuentes de verdad que conviven
- * hoy: slug de workshop, catálogo online estático y `Curso.slug` en la BD.
+ * Resuelve el parámetro de la URL contra catálogo online estático y `Curso.slug` en la BD.
  * Devuelve el curso junto con el slug canónico que debe vivir en la URL.
  */
 async function resolveCourse(param: string): Promise<ResolvedCourse | null> {
-  const workshop = getWorkshopBySlug(param);
-  if (workshop) return { kind: "redirect", to: `/workshop/${workshop.slug}` };
-
+  // Catálogo online primero: evita confundir un curso online con un taller
+  // presencial que pudiera compartir nombre o slug histórico.
   const onlineCourse = getOnlineCourseBySlug(param);
+
+  if (!onlineCourse) {
+    const workshop = getWorkshopBySlug(param);
+    if (workshop) return { kind: "redirect", to: `/workshop/${workshop.slug}` };
+  }
 
   const course = await prisma.curso.findFirst({
     where: {
       OR: [
         { slug: param },
         { id: param },
-        ...(onlineCourse ? [{ id: onlineCourse.id }, { title: { contains: onlineCourse.shortTitle } }] : []),
+        ...(onlineCourse
+          ? [{ slug: onlineCourse.slug }, { id: onlineCourse.id }]
+          : []),
       ],
     },
     include: COURSE_INCLUDE,
@@ -49,15 +67,27 @@ async function resolveCourse(param: string): Promise<ResolvedCourse | null> {
 
   if (!course) return null;
 
-  // Los workshops presenciales tienen su propia ruta canónica.
-  const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
-  const workshopSlug = workshopInfo.slug;
-  if (workshopInfo.isWorkshop && workshopSlug) {
-    const matched = getWorkshopBySlug(workshopSlug);
-    return { kind: "redirect", to: `/workshop/${matched?.slug ?? workshopSlug}` };
+  const isOnlineCatalog = Boolean(
+    onlineCourse || (course.slug && getOnlineCourseBySlug(course.slug))
+  );
+
+  // Solo redirigir a /workshop si el registro de BD es realmente un taller
+  // presencial (no un curso online con nombre parecido).
+  if (!isOnlineCatalog) {
+    const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
+    const workshopSlug = workshopInfo.slug;
+    if (workshopInfo.isWorkshop && workshopSlug) {
+      const matched = getWorkshopBySlug(workshopSlug);
+      return { kind: "redirect", to: `/workshop/${matched?.slug ?? workshopSlug}` };
+    }
   }
 
-  return { kind: "course", course, canonicalSlug: course.slug ?? onlineCourse?.slug ?? null };
+  return {
+    kind: "course",
+    course,
+    canonicalSlug: course.slug ?? onlineCourse?.slug ?? null,
+    isOnlineCatalog,
+  };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -70,16 +100,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { course } = resolved;
 
-  return {
-    title: course.title,
-    description: course.description?.slice(0, 160) || undefined,
-    alternates: { canonical: `/cursos/${resolved.canonicalSlug ?? slug}` },
-    openGraph: {
-      title: `${course.title} | Ana's Pastry Shop`,
-      description: course.description?.slice(0, 200) || undefined,
-      ...(course.image ? { images: [{ url: course.image, alt: course.title }] } : {}),
-    },
-  };
+  return buildPageMetadata({
+    title: `${course.title} — Curso Online Disponible Globalmente`,
+    description:
+      course.description?.slice(0, 155) ||
+      `Curso online de pastelería: ${course.title}. Aprende con Anais Flores desde cualquier país, en español y a tu ritmo.`,
+    path: `/cursos/${resolved.canonicalSlug ?? slug}`,
+    images: course.image
+      ? [{ url: course.image, alt: `${course.title} — Ana's Pastry Shop (online global)` }]
+      : undefined,
+    keywords: [
+      course.title,
+      "curso online pastelería",
+      "repostería online español",
+      "Ana's Pastry Shop",
+    ],
+  });
 }
 
 async function CourseContent({ params }: PageProps) {
@@ -112,12 +148,51 @@ async function CourseContent({ params }: PageProps) {
     instructorId: course.instructorId,
   });
 
-  const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
+  const parsed = parseWorkshopDetails(course.content, course.isLive, course.title);
+  // Los cursos del catálogo online se compran (pago completo), nunca se reservan.
+  const workshopInfo = resolved.isOnlineCatalog
+    ? { ...parsed, isWorkshop: false }
+    : parsed;
+
+  let paymentMethods: string[] = [];
+  try {
+    const enabledGateways = await prisma.paymentGatewayConfig.findMany({
+      where: { isEnabled: true },
+      select: { provider: true },
+    });
+    paymentMethods = labelsForEnabledProviders(enabledGateways.map((g) => g.provider));
+  } catch (err) {
+    console.error("[cursos/[slug]] gateways unavailable:", err);
+  }
 
   return (
-    <CourseDetailClient course={course} hasPaid={hasPaid} workshopInfo={workshopInfo}>
-      <Footer />
-    </CourseDetailClient>
+    <>
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Cursos Online", path: "/cursos" },
+          { name: course.title, path: `/cursos/${canonicalSlug ?? slug}` },
+        ])}
+      />
+      <JsonLd
+        data={buildCourseJsonLd({
+          name: course.title,
+          description: course.description || course.title,
+          url: `/cursos/${canonicalSlug ?? slug}`,
+          image: course.image,
+          price: course.price,
+          isOnline: true,
+        })}
+      />
+      <CourseDetailClient
+        course={course}
+        hasPaid={hasPaid}
+        workshopInfo={workshopInfo}
+        paymentMethods={paymentMethods}
+      >
+        <Footer />
+      </CourseDetailClient>
+    </>
   );
 }
 
