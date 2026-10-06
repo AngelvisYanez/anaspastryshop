@@ -246,7 +246,7 @@ export default function GalleryManager({
             </div>
             <p className="font-bold text-foreground">Aún no hay fotos</p>
             <p className="text-xs text-muted mt-1">
-              Mientras la galería esté vacía, la página de Pastelería muestra embeds oficiales de Instagram.
+              Si guardas el token de Instagram en Configuración, la página de Pastelería muestra el feed de la cuenta.
             </p>
           </div>
         ) : (

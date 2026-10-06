@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import JsonLd from "@/components/JsonLd";
+import { MetaPixelSlot } from "@/components/MetaPixel";
 import {
   buildOrganizationJsonLd,
   buildPageMetadata,
@@ -91,6 +93,9 @@ export default function RootLayout({
         <JsonLd data={buildOrganizationJsonLd()} />
       </head>
       <body className={`${bodyFont.variable} ${displayFont.variable} ${serifFont.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}>
+        <Suspense fallback={null}>
+          <MetaPixelSlot />
+        </Suspense>
         <Providers>{children}</Providers>
       </body>
     </html>

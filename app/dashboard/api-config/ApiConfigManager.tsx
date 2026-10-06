@@ -16,12 +16,42 @@ type ApiDef = {
   fields: FieldDef[];
 };
 
-/** Sin proveedores externos de media por ahora (Cloudflare eliminado). */
-const API_PROVIDERS: ApiDef[] = [];
+const API_PROVIDERS: ApiDef[] = [
+  {
+    provider: "instagram",
+    label: "Instagram",
+    description: "Muestra las publicaciones de la cuenta en la galería de Pastelería",
+    color: "pink",
+    fields: [
+      {
+        key: "accessToken",
+        label: "Token de acceso",
+        placeholder: "IGA...",
+        secret: true,
+        hint: "Token de la API de Instagram con el permiso instagram_business_basic. La cuenta tiene que ser profesional (Empresa o Creador). Al guardarlo, la sección de galería carga las últimas publicaciones.",
+      },
+    ],
+  },
+  {
+    provider: "meta",
+    label: "Meta",
+    description: "Seguimiento de visitas desde campañas de Meta",
+    color: "blue",
+    fields: [
+      {
+        key: "pixelId",
+        label: "ID de la API de conversiones",
+        placeholder: "123456789012345",
+        hint: "ID numérico del píxel, el mismo del conjunto de datos de la API de conversiones. Si lo guardas, la página registra las visitas para atribuir las campañas.",
+      },
+    ],
+  },
+];
 
 const COLOR_MAP: Record<string, string> = {
   orange: "bg-orange-50 text-orange-600 border-orange-100",
   blue: "bg-blue-50 text-blue-600 border-blue-100",
+  pink: "bg-pink-50 text-pink-600 border-pink-100 dark:bg-pink-950/40 dark:text-pink-300 dark:border-pink-900",
 };
 
 function ApiCard({ def, initial }: { def: ApiDef; initial?: ApiConfigRecord }) {
@@ -144,8 +174,10 @@ export default function ApiConfigManager({ configs }: { configs: ApiConfigRecord
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-black text-foreground">APIs de plataforma</h1>
-        <p className="text-sm text-muted mt-1">Credenciales de servicios externos.</p>
+        <h2 className="text-2xl font-black text-foreground">Integraciones</h2>
+        <p className="text-sm text-muted mt-1">
+          Token de Instagram para el feed y el ID de conversiones de Meta.
+        </p>
       </div>
       {API_PROVIDERS.map((def) => (
         <ApiCard

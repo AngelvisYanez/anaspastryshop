@@ -15,19 +15,19 @@ export default async function SettingsPage() {
     redirect("/iniciar-sesion");
   }
 
-  const [dbUser, siteConfig, apiConfigs, sections] = await Promise.all([
+  const [dbUser, siteConfig, sections] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { name: true, email: true, image: true, role: true },
     }),
     prisma.siteConfig.findFirst().catch(() => null),
-    getAllApiConfigs(),
     prisma.platformSection.findMany({ orderBy: { order: "asc" } }),
   ]);
 
   if (!dbUser) redirect("/dashboard");
 
   const isAdmin = dbUser.role === "ADMIN";
+  const apiConfigs = isAdmin ? await getAllApiConfigs() : [];
 
   return (
     <DashboardPage

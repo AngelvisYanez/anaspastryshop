@@ -1,16 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { cacheLife, cacheTag } from "next/cache";
-
-const IG_PROFILE_URL = "https://www.instagram.com/anaspastryshopve/";
-
-const INSTAGRAM_POST_SHORTCODES: string[] = [];
-
-type GalleryCard = {
-  id: string;
-  imageUrl: string;
-  alt: string | null;
-  caption: string | null;
-};
+import { GalleryGrid, type GalleryCard } from "@/components/GalleryGrid";
+import { getInstagramPosts, type InstagramPost } from "@/lib/instagram-feed";
+import { SITE_INSTAGRAM, SITE_INSTAGRAM_HANDLE } from "@/lib/seo";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -44,20 +36,63 @@ function ProfileCTA() {
   return (
     <div className="text-center mt-10">
       <a
-        href={IG_PROFILE_URL}
+        href={SITE_INSTAGRAM}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition shadow-lg shadow-accent/25"
       >
         <InstagramIcon className="w-5 h-5" />
-        Seguinos en @anaspastryshopve
+        Seguinos en {SITE_INSTAGRAM_HANDLE}
       </a>
     </div>
   );
 }
 
+function InstagramPostGrid({ posts }: { posts: InstagramPost[] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+      {posts.map((post) => {
+        const label = post.caption || "Creación de Ana's Pastry Shop";
+        return (
+          <a
+            key={post.id}
+            href={post.permalink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative aspect-square rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-xl transition duration-300 hover:scale-[1.03] border border-card-border"
+            aria-label={`Ver en Instagram: ${label}`}
+          >
+            <img
+              src={post.imageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            {post.caption && (
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-10">
+                <p className="text-white text-xs font-bold leading-snug line-clamp-2">
+                  {post.caption}
+                </p>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 group-focus-visible:bg-black/30 transition duration-300 flex items-center justify-center">
+              <span className="text-white font-bold text-xs sm:text-sm opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 bg-black/60 px-4 py-2 rounded-full backdrop-blur-sm">
+                Ver en Instagram
+              </span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 export default async function InstagramFeed() {
-  const galleryItems = await getGallery();
+  const [galleryItems, instagramPosts] = await Promise.all([
+    getGallery(),
+    getInstagramPosts(),
+  ]);
+  const hasContent = galleryItems.length > 0 || instagramPosts.length > 0;
 
   return (
     <section className="py-24 px-6 bg-section-alt border-y border-card-border">
@@ -71,85 +106,51 @@ export default async function InstagramFeed() {
           </p>
         </div>
 
-        {galleryItems.length > 0 ? (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-              {galleryItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={IG_PROFILE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative aspect-square rounded-2xl overflow-hidden bg-card shadow-md hover:shadow-xl transition duration-300 hover:scale-[1.03] border border-card-border"
-                >
-                  <img
-                    src={item.imageUrl}
-                    alt={item.alt || "Creación de Ana's Pastry Shop"}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  {item.caption && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-10">
-                      <p className="text-white text-xs font-bold leading-snug line-clamp-2">
-                        {item.caption}
-                      </p>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300 flex items-center justify-center">
-                    <span className="text-white font-bold text-xs sm:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 px-4 py-2 rounded-full backdrop-blur-sm">
-                      Ver en Instagram
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
-            <ProfileCTA />
-          </>
-        ) : INSTAGRAM_POST_SHORTCODES.length > 0 ? (
-          <>
-            <style>{`
-              .ig-grid { column-count: 3; column-gap: 1rem; }
-              .ig-grid .instagram-media { width: 100% !important; min-width: 162px !important; max-width: 100% !important; margin: 0 0 1rem !important; }
-              @media (max-width: 900px) { .ig-grid { column-count: 2; } }
-              @media (max-width: 560px) { .ig-grid { column-count: 1; } }
-            `}</style>
-            <div className="ig-grid max-w-3xl mx-auto">
-              {INSTAGRAM_POST_SHORTCODES.map((shortcode) => (
-                <blockquote
-                  key={shortcode}
-                  className="instagram-media"
-                  data-instgrm-captioned
-                  data-instgrm-permalink={`https://www.instagram.com/p/${shortcode}/?utm_source=ig_embed&utm_campaign=loading`}
-                  data-instgrm-version="14"
-                />
-              ))}
-            </div>
-            <ProfileCTA />
-            <script async src="https://www.instagram.com/embed.js" />
-          </>
-        ) : (
-          <>
-            <div className="max-w-lg mx-auto bg-card border border-card-border rounded-3xl p-10 text-center shadow-sm">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100 dark:from-purple-950/40 dark:via-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
-                <InstagramIcon className="w-8 h-8 text-accent" />
+        {hasContent ? (
+          <div className="space-y-10">
+            {instagramPosts.length > 0 && (
+              <div>
+                {galleryItems.length > 0 && (
+                  <h3 className="text-sm font-black uppercase tracking-wider text-muted mb-4">
+                    Desde Instagram
+                  </h3>
+                )}
+                <InstagramPostGrid posts={instagramPosts} />
               </div>
-              <h3 className="text-xl font-black text-foreground mb-2">
-                Conocé nuestras creaciones en Instagram
-              </h3>
-              <p className="text-sm text-muted font-medium leading-relaxed mb-8">
-                Pronto podrás ver aquí la galería completa de tortas y mesas dulces. Mientras tanto, te invitamos a descubrir todo nuestro trabajo en el perfil oficial de Anais Flores.
-              </p>
-              <a
-                href={IG_PROFILE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition shadow-lg shadow-accent/25"
-              >
-                <InstagramIcon className="w-5 h-5" />
-                Seguinos en @anaspastryshopve
-              </a>
+            )}
+            {galleryItems.length > 0 && (
+              <div>
+                {instagramPosts.length > 0 && (
+                  <h3 className="text-sm font-black uppercase tracking-wider text-muted mb-4">
+                    Galería
+                  </h3>
+                )}
+                <GalleryGrid items={galleryItems} />
+              </div>
+            )}
+            <ProfileCTA />
+          </div>
+        ) : (
+          <div className="max-w-lg mx-auto bg-card border border-card-border rounded-3xl p-10 text-center shadow-sm">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100 dark:from-purple-950/40 dark:via-pink-950/40 dark:to-orange-950/40 flex items-center justify-center">
+              <InstagramIcon className="w-8 h-8 text-accent" />
             </div>
-          </>
+            <h3 className="text-xl font-black text-foreground mb-2">
+              Conocé nuestras creaciones en Instagram
+            </h3>
+            <p className="text-sm text-muted font-medium leading-relaxed mb-8">
+              Pronto podrás ver aquí la galería completa de tortas y mesas dulces. Mientras tanto, te invitamos a descubrir todo nuestro trabajo en el perfil oficial de Anais Flores.
+            </p>
+            <a
+              href={SITE_INSTAGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:scale-105 transition shadow-lg shadow-accent/25"
+            >
+              <InstagramIcon className="w-5 h-5" />
+              Seguinos en {SITE_INSTAGRAM_HANDLE}
+            </a>
+          </div>
         )}
       </div>
     </section>
