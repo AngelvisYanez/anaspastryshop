@@ -336,10 +336,10 @@ async function main() {
   const onlineCourses = [
     {
       title: 'Cake de Piña',
-      description: 'Curso online 100% práctico para elaborar un cake de piña desde cero: bizcocho esponjoso, relleno y glaseado con técnica profesional, paso a paso en video.',
+      description: 'Aprende a preparar desde cero una clásica y deliciosa torta de piña esponjosa y su variación de quesipiña con un caramelo brillante en su punto exacto y una presentación de pastelería profesional.',
       price: 45,
       totalHours: 12,
-      totalClasses: 18,
+      totalClasses: 12,
       level: 'Desde Cero',
       category: 'Cursos Online',
       slug: 'cake-de-pina',
@@ -349,10 +349,10 @@ async function main() {
     },
     {
       title: 'Merengue Italiano',
-      description: 'Masterclass online de merengue italiano: Merckert, punto de merengue, estabilidad del batido y su uso en rellenos y acabados de alta pastelería.',
+      description: "Te enseñamos el método infalible de Ana's Pastry Shop para dominar la técnica exacta del merengue italiano. Aprende a conseguir esa textura sedosa, brillante y con la estabilidad ideal para decorar tortas impecables y llevar tus postres al siguiente nivel.",
       price: 35,
       totalHours: 8,
-      totalClasses: 10,
+      totalClasses: 8,
       level: 'Todos los niveles',
       category: 'Cursos Online',
       slug: 'merengue-italiano',
@@ -375,11 +375,15 @@ async function main() {
           instructorId: admin.id,
         },
       })
-    } else if (!existing.slug) {
-      // Filas creadas antes de que `Curso.slug` existiera.
+    } else {
       await prisma.curso.update({
         where: { id: existing.id },
-        data: { slug: oc.slug, image: oc.image },
+        data: {
+          description: oc.description,
+          totalClasses: oc.totalClasses,
+          slug: existing.slug ?? oc.slug,
+          image: existing.image ?? oc.image,
+        },
       })
     }
   }
