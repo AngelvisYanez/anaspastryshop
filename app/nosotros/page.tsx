@@ -1,42 +1,64 @@
-"use client";
-
-import { m } from "framer-motion";
-import { ArrowRight, Award, CheckCircle2, Clock, Heart, MessageCircle, Sparkles, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
+import { SITE_WHATSAPP } from "@/lib/seo";
 
-const PILLARS = [
+const WHATSAPP_HREF = `https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent(
+  "Hola Anais! He leído tu página y quiero más información sobre los talleres."
+)}`;
+
+const PRINCIPLES = [
   {
-    icon: Sparkles,
-    title: "Técnica y Precisión Profesional",
-    desc: "Comprender el funcionamiento de cada ingrediente, punto de batido y temperatura de horneado permite obtener recetas estables y resultados impecables siempre.",
+    title: "Técnica que se puede repetir",
+    desc: "Cada clase explica el comportamiento de los ingredientes, el punto de batido y la temperatura de horneado, para que la receta se sostenga y el resultado no dependa de la suerte.",
   },
   {
-    icon: Award,
-    title: "Más de 6 Años de Experiencia",
-    desc: "Una trayectoria consolidada en la pastelería profesional y en la formación de cientos de apasionados y emprendedores a lo largo de este tiempo.",
+    title: "Desde cero, sin experiencia previa",
+    desc: "Los talleres están pensados para quien empieza. En la sesión se enseñan las técnicas, las recetas y el método para trabajar con soltura y seguridad.",
   },
   {
-    icon: UtensilsCrossed,
-    title: "Desarrollados Desde Cero",
-    desc: "No necesitas experiencia previa. Cada taller está concebido pedagógicamente para guiarte paso a paso con comodidad, soltura y total seguridad.",
+    title: "El porqué de cada paso",
+    desc: "El conocimiento nos hace responsables. Enseñar el motivo de cada proceso es lo que permite decidir con criterio, no solo copiar una receta.",
   },
   {
-    icon: Heart,
-    title: "El Conocimiento Nos Hace Responsables",
-    desc: "Formamos con honestidad, enseñando el porqué detrás de cada proceso para que adquieras criterio propio y seguridad en cada preparación.",
+    title: "Más de seis años de oficio",
+    desc: "Una trayectoria en pastelería profesional y en la formación de personas que quieren emprender o afinar su técnica.",
   },
 ];
 
 const GALLERY = [
-  { src: "/foto-1.webp", alt: "Taller presencial de alisado y decoración de pasteles" },
-  { src: "/foto-2.webp", alt: "Anais Flores explicando técnicas de pastelería" },
-  { src: "/foto-3.webp", alt: "Alumnas trabajando en clase práctica" },
-  { src: "/foto-4.webp", alt: "Preparación de rellenos y cremas" },
-  { src: "/foto-5.webp", alt: "Detalle de decoración y acabados" },
-  { src: "/foto-6.webp", alt: "Panadería artesanal y masas fermentadas" },
+  {
+    src: "/foto-4.webp",
+    alt: "Anais Flores de pie detrás de la mesa, con la torta decorada y tres bizcochos",
+    caption: "Anais con la mesa completa",
+  },
+  {
+    src: "/foto-1.webp",
+    alt: "Anais Flores sonriendo junto a la torta de cerezas y los bizcochos del frente",
+    caption: "Retrato junto a la torta",
+  },
+  {
+    src: "/foto-2.webp",
+    alt: "Torta decorada en verde, rosa y amarillo, coronada con tres cerezas",
+    caption: "Torta decorada",
+  },
+  {
+    src: "/foto-7.webp",
+    alt: "Bizcocho con glaseado blanco y ralladura de limón, con la torta al fondo",
+    caption: "Bizcocho de limón",
+  },
+  {
+    src: "/foto-5.webp",
+    alt: "Bizcocho marmoleado con cobertura de chocolate, nueces y perlas de cacao",
+    caption: "Chocolate y nueces",
+  },
+  {
+    src: "/foto-6.webp",
+    alt: "Bizcocho de chocolate con hilos de ganache y perlas de azúcar rosa y blanca",
+    caption: "Bizcocho de chocolate",
+  },
 ];
 
 export default function NosotrosPage() {
@@ -46,174 +68,136 @@ export default function NosotrosPage() {
 
       <section className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 text-white">
         <div className="page-container relative z-10 max-w-3xl mx-auto text-center">
-          <m.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="font-display text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] mb-5"
-          >
+          <h1 className="font-display text-3xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] mb-5 text-balance">
             El arte de la técnica, la{" "}
             <span className="text-on-purple-accent">pasión de la pastelería.</span>
-          </m.h1>
-
-          <m.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08 }}
-            className="text-sm sm:text-lg text-white/85 leading-relaxed"
-          >
-            Conoce la historia, filosofía y método formativo de Anais Flores: workshops en Coro, Falcón, y cursos online para todo el mundo.
-          </m.p>
+          </h1>
+          <p className="text-sm sm:text-lg text-white/85 leading-relaxed text-pretty">
+            La historia, el método y la mesa de Anais Flores. Workshops en Coro, Falcón, y cursos online para estudiar desde cualquier país.
+          </p>
         </div>
       </section>
 
-      {/* Main Bio Section */}
-      <div className="page-container py-20">
-        <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.4fr] gap-12 lg:gap-16 items-center mb-24">
-          <m.div
-            initial={{ opacity: 0, x: -25 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border-2 border-pink-500/20 shadow-2xl">
+      <div className="page-container page-section">
+        <section className="mx-auto max-w-2xl">
+          <figure className="mx-auto mb-8 w-full max-w-sm">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-card-border shadow-[0_18px_40px_-24px_rgba(40,16,48,0.55)]">
               <Image
-                src="/foto-2.webp"
-                alt="Anais Flores impartiendo workshop"
+                src="/foto-3.webp"
+                alt="Retrato de Anais Flores, chef pastelera, con su torta decorada y dos bizcochos"
                 fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
-                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 384px"
+                className="object-cover object-[center_18%]"
               />
             </div>
-          </m.div>
+          </figure>
 
-          <m.div
-            initial={{ opacity: 0, x: 25 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="space-y-6"
-          >
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
-              ¡Hola! Soy Anais Flores
-            </h2>
-            <div className="flex items-center gap-2 text-xs font-semibold text-accent uppercase tracking-wider flex-wrap">
-              <span>Ingeniero Químico</span>
-              <span>•</span>
-              <span className="normal-case tracking-normal">Panadero y Pastelera Profesional</span>
-              <span>•</span>
-              <span>6+ Años de Trayectoria</span>
-            </div>
+          <h2 className="font-display text-3xl sm:text-5xl font-black text-foreground tracking-tight leading-tight text-balance">
+            ¡Hola! Soy Anais Flores
+          </h2>
+          <p className="mt-4 text-sm font-semibold text-accent">
+            Ingeniera química, panadera y pastelera profesional
+          </p>
 
-            <p className="text-base text-foreground/85 leading-relaxed max-w-prose">
-              ¡Hola! Soy <strong>Anais Flores</strong>, ingeniero químico, panadero y pastelera profesional. Cuento con más de 6 años en el mundo de la pastelería y con una amplia experiencia dictando talleres a lo largo de este tiempo.
+          <div className="mt-6 space-y-4 text-base leading-relaxed text-foreground/85 max-w-prose">
+            <p>
+              Llevo más de seis años en la pastelería y dictando talleres. En Ana&apos;s Pastry Shop formo con workshops presenciales en Coro, Falcón, y con cursos online para quien estudia desde cualquier país.
             </p>
-
-            <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm">
-              <p className="text-base md:text-lg font-display font-black text-accent mb-2 italic">
-                &ldquo;El conocimiento nos hace responsables. Invertir en conocimientos produce siempre los mejores beneficios.&rdquo;
-              </p>
-              <p className="text-sm text-muted leading-relaxed">
-                Hemos adaptado nuestros talleres para que te sientas plenamente cómodo a la hora de realizarlos. Están desarrollados <strong>desde cero</strong>, es decir, no es necesario tener ningún conocimiento previo ya que en ellos nos encargamos de enseñarte todas las técnicas, recetas y métodos necesarios para que te desenvuelvas de la mejor manera posible.
-              </p>
-            </div>
-
-            <p className="text-sm text-muted leading-relaxed">
-              Por favor, lee detalladamente toda la información que te presento en cada workshop para que resolvamos todas tus dudas, y si decides capacitarte... ¡escríbeme!
+            <p>
+              Los talleres están desarrollados desde cero. No hace falta conocimiento previo: en cada sesión enseño las técnicas, las recetas y los métodos para que puedas desenvolverte con seguridad.
             </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
-              <a
-                href="https://wa.me/?text=Hola%20Anais!%20He%20le%C3%ADdo%20sobre%20tus%20talleres%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-accent-solid text-white px-7 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-accent-solid-hover transition shadow-md shadow-accent-solid/20"
-              >
-                <MessageCircle size={16} /> ¡Escríbeme para Capacitarte!
-              </a>
-              <Link
-                href="/cursos"
-                className="w-full sm:w-auto bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold text-sm transition"
-              >
-                Ver Catálogo de Workshops
-              </Link>
-            </div>
-          </m.div>
-        </section>
-
-        {/* 4 Pillars Section */}
-        <section className="mb-24">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="font-display text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-              Los 4 Pilares de Nuestra Enseñanza
-            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PILLARS.map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <m.div
-                  key={p.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="bg-card border border-card-border rounded-2xl p-6 shadow-sm hover:border-accent/30 transition flex flex-col justify-between"
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center shrink-0 border border-accent/20">
-                      <Icon size={20} />
-                    </div>
-                    <h3 className="font-display text-lg font-bold text-foreground leading-snug pt-1">
-                      {p.title}
-                    </h3>
-                  </div>
-                  <p className="text-xs text-muted leading-relaxed">
-                      {p.desc}
-                    </p>
-                </m.div>
-              );
-            })}
+          <blockquote className="mt-8 border-t border-card-border pt-6">
+            <p className="font-display text-xl sm:text-2xl font-bold leading-snug text-foreground text-balance">
+              &ldquo;El conocimiento nos hace responsables. Invertir en conocimientos produce siempre los mejores beneficios.&rdquo;
+            </p>
+          </blockquote>
+
+          <p className="mt-6 text-sm leading-relaxed text-muted max-w-prose">
+            Lee con calma la información de cada workshop. Si decides capacitarte, escríbeme y resolvemos las dudas que queden.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+            <a
+              href={WHATSAPP_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-accent-solid text-white px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-accent-solid-hover transition shadow-[0_10px_24px_-16px_rgba(40,16,48,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              Escribir a Anais
+            </a>
+            <Link
+              href="/workshops"
+              className="inline-flex items-center justify-center bg-card border border-card-border hover:bg-card-hover text-foreground px-6 py-3.5 rounded-xl font-bold text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              Ver workshops
+            </Link>
+            <Link
+              href="/cursos"
+              className="inline-flex items-center justify-center text-accent px-2 py-3.5 font-bold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-xl"
+            >
+              Cursos online
+            </Link>
           </div>
         </section>
 
-        {/* Workshop Moments Gallery */}
-        <section className="mb-20">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
-            <div>
-              <h2 className="font-display text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-                Momentos en Nuestros Workshops
+        <section className="mx-auto mt-20 max-w-4xl border-t border-card-border pt-16">
+          <h2 className="font-display text-3xl sm:text-4xl font-black text-foreground tracking-tight text-balance max-w-xl">
+            Cómo está pensada la formación
+          </h2>
+          <dl className="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
+            {PRINCIPLES.map((item) => (
+              <div key={item.title}>
+                <dt className="font-display text-lg font-bold text-foreground leading-snug">
+                  {item.title}
+                </dt>
+                <dd className="mt-2 text-sm leading-relaxed text-muted">
+                  {item.desc}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="mt-20 border-t border-card-border pt-16">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+            <div className="max-w-xl">
+              <h2 className="font-display text-3xl sm:text-4xl font-black text-foreground tracking-tight text-balance">
+                Retratos y pastelería
               </h2>
             </div>
             <Link
-              href="/cursos"
-              className="text-accent text-xs font-bold uppercase tracking-wider hover:underline flex items-center gap-1"
+              href="/pasteleria"
+              className="text-accent text-sm font-bold hover:underline inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
             >
-              Ver próximas fechas <ArrowRight size={14} />
+              Ver pastelería
+              <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {GALLERY.map((photo, i) => (
-              <m.div
-                key={photo.src}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="relative aspect-square rounded-2xl overflow-hidden border border-card-border shadow-sm group"
-              >
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </m.div>
+          <ul className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
+            {GALLERY.map((photo) => (
+              <li key={photo.src}>
+                <figure>
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-card-border bg-card">
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-2 text-sm text-muted">
+                    {photo.caption}
+                  </figcaption>
+                </figure>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       </div>
 
