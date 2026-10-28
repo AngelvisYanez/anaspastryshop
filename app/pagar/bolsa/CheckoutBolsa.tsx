@@ -20,6 +20,7 @@ import { CheckoutErrorBanner } from "@/components/checkout/CheckoutErrorBanner";
 import { validateManualPayment } from "@/components/checkout/validateManualPayment";
 import { type BagCourse } from "./BolsaOrderSummary";
 import { BolsaPaymentStep, BolsaSuccessStep } from "./BolsaCheckoutSteps";
+import { useCart } from "@/components/cart/CartContext";
 
 export type { BagCourse };
 
@@ -55,6 +56,7 @@ export default function CheckoutBolsa({
   initialLoggedIn?: boolean;
 }) {
   const [step, setStep] = useState<CheckoutStep>(initialLoggedIn ? 2 : 1);
+  const { clearBag } = useCart();
   const register = useCheckoutRegister(setStep);
   const total = courses.reduce((acc, c) => acc + c.price, 0);
   const coupon = useCheckoutCoupon(total, {
@@ -102,6 +104,7 @@ export default function CheckoutBolsa({
         register.setError(result.error);
         return;
       }
+      clearBag();
       setStep(3);
     } finally {
       register.setLoading(false);

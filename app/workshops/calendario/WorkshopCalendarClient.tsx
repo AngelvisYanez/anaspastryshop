@@ -179,9 +179,7 @@ export default function WorkshopCalendarClient({
   const labelId = useId();
   const [month, setMonth] = useState(() => {
     const first = events[0];
-    return first
-      ? startOfMonth(parseLocalDate(first.session.date))
-      : startOfMonth(parseLocalDate("2026-10-01"));
+    return startOfMonth(parseLocalDate(first?.session.date ?? "2000-01-01"));
   });
   const [todayKey, setTodayKey] = useState<string | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
@@ -197,6 +195,8 @@ export default function WorkshopCalendarClient({
     const upcoming = events.find((e) => parseLocalDate(e.session.date) >= start);
     if (upcoming) {
       setMonth(startOfMonth(parseLocalDate(upcoming.session.date)));
+    } else {
+      setMonth(start);
     }
   }, [events]);
 
@@ -239,6 +239,13 @@ export default function WorkshopCalendarClient({
     : null;
 
   const selectedEvents = selectedDay ? eventsByDate[toDateKey(selectedDay)] ?? [] : [];
+  const upcomingEvents = todayKey
+    ? events.filter((event) => parseLocalDate(event.session.date) >= startOfMonth(parseLocalDate(todayKey)))
+    : [];
+
+  if (!todayKey && events.length === 0) {
+    return <div className="min-h-64" aria-hidden="true" />;
+  }
 
   return (
     <div className="w-full">
@@ -400,7 +407,7 @@ export default function WorkshopCalendarClient({
                           onFocus={(e) => showTooltip(event.session.id, e.currentTarget)}
                           onBlur={scheduleHide}
                           onClick={() => {
-                            router.push(`/workshop/${event.workshop.slug}`);
+                            router.push(event.href);
                           }}
                         >
                           <span className="block text-[10px] font-black leading-tight line-clamp-2">
@@ -427,18 +434,16 @@ export default function WorkshopCalendarClient({
       {monthEvents.length === 0 && (
         <p className="mt-6 text-center text-sm text-muted font-medium">
           No hay workshops programados este mes.{" "}
-          <button
+          {upcomingEvents.length > 0 && <button
             type="button"
             className="text-accent font-bold hover:underline"
             onClick={() => {
-              const next = events.find(
-                (e) => parseLocalDate(e.session.date) >= startOfMonth(new Date())
-              );
+              const next = upcomingEvents[0];
               if (next) setMonth(startOfMonth(parseLocalDate(next.session.date)));
             }}
           >
             Ir al próximo disponible
-          </button>
+          </button>}
         </p>
       )}
 
@@ -457,7 +462,7 @@ export default function WorkshopCalendarClient({
             {monthEvents.map((event) => (
               <li key={event.session.id}>
                 <Link
-                  href={`/workshop/${event.workshop.slug}`}
+                  href={event.href}
                   className="flex gap-3 p-3 rounded-2xl border border-card-border bg-card hover:border-accent/40 hover:bg-card-hover transition group h-full"
                   onMouseEnter={(e) => {
                     if (!isCoarsePointer.current) {

@@ -78,7 +78,7 @@ async function resolveCourse(param: string): Promise<ResolvedCourse | null> {
     const workshopSlug = workshopInfo.slug;
     if (workshopInfo.isWorkshop && workshopSlug) {
       const matched = getWorkshopBySlug(workshopSlug);
-      return { kind: "redirect", to: `/workshop/${matched?.slug ?? workshopSlug}` };
+      if (matched) return { kind: "redirect", to: `/workshop/${matched.slug}` };
     }
   }
 

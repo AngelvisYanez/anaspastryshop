@@ -103,6 +103,8 @@ describe("workshopDateToIso", () => {
     expect(workshopDateToIso("")).toBe("");
     expect(workshopDateToIso("próximo sábado")).toBe("");
     expect(workshopDateToIso("99 de octubre de 2026")).toBe("");
+    expect(workshopDateToIso("2026-02-31")).toBe("");
+    expect(workshopDateToIso("31 de febrero de 2026")).toBe("");
   });
 });
 

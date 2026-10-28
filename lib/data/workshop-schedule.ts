@@ -1,10 +1,7 @@
-import { WORKSHOPS_DATA, toFormacionCard, type WorkshopItem } from "@/lib/data/workshops";
+import { WORKSHOPS_DATA, getWorkshopBySlug, toFormacionCard } from "@/lib/data/workshops";
 import type { FormacionCardData } from "@/components/FormacionCard";
+import { formatWorkshopDateLabel, parseWorkshopDetails, workshopDateToIso } from "@/lib/utils/workshop";
 
-/**
- * Fechas confirmadas del cronograma presencial.
- * `date` es YYYY-MM-DD en zona local (Venezuela).
- */
 export interface WorkshopSession {
   id: string;
   workshopSlug: string;
@@ -12,87 +9,83 @@ export interface WorkshopSession {
   time?: string;
 }
 
-export const WORKSHOP_SESSIONS: WorkshopSession[] = [
-  { id: "ses-2026-10-04-tortas-basicas", workshopSlug: "tortas-basicas", date: "2026-10-04" },
-  { id: "ses-2026-10-11-tortas-especiales", workshopSlug: "tortas-especiales", date: "2026-10-11" },
-  { id: "ses-2026-10-18-candy-bar", workshopSlug: "candy-bar", date: "2026-10-18" },
-  {
-    id: "ses-2026-10-22-fondant",
-    workshopSlug: "fondant-basico",
-    date: "2026-10-22",
-    time: "2:00 PM",
-  },
-  {
-    id: "ses-2026-10-25-buttercream",
-    workshopSlug: "buttercream-de-chocolate-blanco",
-    date: "2026-10-25",
-  },
-  {
-    id: "ses-2026-11-01-buttercream-adv",
-    workshopSlug: "buttercream-de-chocolate-blanco-avanzado",
-    date: "2026-11-01",
-  },
-  { id: "ses-2026-11-08-ganache", workshopSlug: "ganache-de-chocolate", date: "2026-11-08" },
-  { id: "ses-2026-11-22-tortas-basicas", workshopSlug: "tortas-basicas", date: "2026-11-22" },
-  { id: "ses-2026-11-29-candy-bar", workshopSlug: "candy-bar", date: "2026-11-29" },
-  {
-    id: "ses-2026-12-03-fondant",
-    workshopSlug: "fondant-basico",
-    date: "2026-12-03",
-    time: "2:00 PM",
-  },
-  { id: "ses-2026-12-06-tortas-especiales", workshopSlug: "tortas-especiales", date: "2026-12-06" },
-  {
-    id: "ses-2026-12-13-buttercream",
-    workshopSlug: "buttercream-de-chocolate-blanco",
-    date: "2026-12-13",
-  },
-  { id: "ses-2026-12-20-ganache", workshopSlug: "ganache-de-chocolate", date: "2026-12-20" },
-  { id: "ses-2027-01-17-tortas-basicas", workshopSlug: "tortas-basicas", date: "2027-01-17" },
-  {
-    id: "ses-2027-01-21-fondant",
-    workshopSlug: "fondant-basico",
-    date: "2027-01-21",
-    time: "2:00 PM",
-  },
-  {
-    id: "ses-2027-01-24-buttercream-adv",
-    workshopSlug: "buttercream-de-chocolate-blanco-avanzado",
-    date: "2027-01-24",
-  },
-  { id: "ses-2027-01-31-candy-bar", workshopSlug: "candy-bar", date: "2027-01-31" },
-  { id: "ses-2027-02-07-tortas-especiales", workshopSlug: "tortas-especiales", date: "2027-02-07" },
-];
+export interface PublishedWorkshopRow {
+  id: string;
+  slug: string | null;
+  title: string;
+  description: string | null;
+  price: number;
+  image: string | null;
+  content: string | null;
+  isLive: boolean;
+  level: string | null;
+  createdAt?: Date;
+}
 
 export interface CalendarWorkshopEvent {
   session: WorkshopSession;
-  workshop: WorkshopItem;
+  workshop: { slug: string; shortTitle: string; startTime: string; price: number };
   card: FormacionCardData;
+  href: string;
 }
 
-function workshopBySlug(slug: string): WorkshopItem | undefined {
-  return WORKSHOPS_DATA.find((w) => w.slug === slug);
+/** Build one current event per published course. Undated legacy rows are not confirmed sessions. */
+export function dedupeWorkshopRows(rows: PublishedWorkshopRow[]): PublishedWorkshopRow[] {
+  const seen = new Set<string>();
+  return [...rows]
+    .sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0))
+    .filter((row) => {
+      const details = parseWorkshopDetails(row.content, row.isLive, row.title);
+      const catalog = getWorkshopBySlug(details.slug ?? row.slug ?? "")
+        ?? WORKSHOPS_DATA.find((item) => item.title.toLocaleLowerCase("es") === row.title.toLocaleLowerCase("es"));
+      const key = catalog?.slug ?? details.slug ?? row.slug ?? row.title.toLocaleLowerCase("es");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
-export function getCalendarEvents(): CalendarWorkshopEvent[] {
-  return WORKSHOP_SESSIONS.flatMap((session) => {
-    const workshop = workshopBySlug(session.workshopSlug);
-    if (!workshop) return [];
+export function getCalendarEvents(rows: PublishedWorkshopRow[]): CalendarWorkshopEvent[] {
+  return dedupeWorkshopRows(rows).flatMap((row) => {
+    const details = parseWorkshopDetails(row.content, row.isLive, row.title);
+    if (!details.isWorkshop) return [];
+    const date = workshopDateToIso(details.workshopDate);
+    if (!date) return [];
 
-    const dateLabel = formatSessionDateLabel(session.date);
-    const time = session.time ?? workshop.startTime;
+    const catalog = getWorkshopBySlug(details.slug ?? row.slug ?? "")
+      ?? WORKSHOPS_DATA.find((item) => item.title.toLocaleLowerCase("es") === row.title.toLocaleLowerCase("es"));
+    const slug = catalog?.slug ?? row.slug ?? row.id;
+    const href = catalog ? `/workshop/${catalog.slug}` : `/cursos/${slug}`;
+    const shortTitle = catalog?.shortTitle ?? row.title;
+    const startTime = details.workshopTime ?? catalog?.startTime ?? "";
+    const session: WorkshopSession = { id: row.id, workshopSlug: slug, date, time: startTime };
+    const card: FormacionCardData = catalog
+      ? toFormacionCard(catalog, {
+          id: row.id,
+          bagId: row.id,
+          price: row.price,
+          workshopDate: formatWorkshopDateLabel(date),
+          workshopTime: startTime,
+        })
+      : {
+          id: row.id,
+          bagId: row.id,
+          slug,
+          detailHref: href,
+          title: shortTitle,
+          description: row.description,
+          price: row.price,
+          image: row.image,
+          level: row.level,
+          category: "Workshops Presenciales",
+          isWorkshop: true,
+          workshopDate: formatWorkshopDateLabel(date),
+          workshopTime: startTime,
+          workshopLocation: details.location,
+        };
 
-    return [
-      {
-        session,
-        workshop,
-        card: toFormacionCard(workshop, {
-          workshopDate: dateLabel,
-          workshopTime: time,
-        }),
-      },
-    ];
-  });
+    return [{ session, workshop: { slug, shortTitle, startTime, price: row.price }, card, href }];
+  }).sort((a, b) => a.session.date.localeCompare(b.session.date) || a.workshop.shortTitle.localeCompare(b.workshop.shortTitle));
 }
 
 export function getEventsByDateKey(
@@ -106,7 +99,7 @@ export function getEventsByDateKey(
   }, {});
 }
 
-/** Fecha local sin desfase UTC: "2026-10-04" → Date a medianoche local. */
+/** Local date without a UTC offset. */
 export function parseLocalDate(isoDate: string): Date {
   const [y, m, d] = isoDate.split("-").map(Number);
   return new Date(y, m - 1, d);
@@ -117,14 +110,4 @@ export function toDateKey(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
-}
-
-function formatSessionDateLabel(isoDate: string): string {
-  const date = parseLocalDate(isoDate);
-  return new Intl.DateTimeFormat("es-VE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
 }

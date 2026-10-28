@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    $transaction: vi.fn(),
     inscription: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
@@ -34,6 +35,7 @@ vi.mock("@/lib/rate-limit", () => ({
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { Prisma } from "@prisma/client";
 import {
   createBulkCourseInscriptions,
   createCourseInscription,
@@ -41,6 +43,7 @@ import {
 } from "@/lib/actions/inscription";
 
 const mockPrisma = prisma as unknown as {
+  $transaction: ReturnType<typeof vi.fn>;
   inscription: {
     findFirst: ReturnType<typeof vi.fn>;
     findMany: ReturnType<typeof vi.fn>;
@@ -52,6 +55,7 @@ const mockPrisma = prisma as unknown as {
 describe("createCourseInscription", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.$transaction.mockImplementation((operation) => operation(mockPrisma));
     vi.mocked(auth).mockResolvedValue({
       user: { id: "user-1", role: "USER" },
     } as never);
@@ -129,11 +133,33 @@ describe("createCourseInscription", () => {
       }),
     );
   });
+
+  it("reintenta una transacción en conflicto antes de crear el pago", async () => {
+    mockPrisma.inscription.findFirst.mockResolvedValue(null);
+    mockPrisma.inscription.create.mockResolvedValue({ id: "ins-retry" });
+    mockPrisma.$transaction
+      .mockRejectedValueOnce(new Prisma.PrismaClientKnownRequestError("conflict", {
+        code: "P2034",
+        clientVersion: "6.19.3",
+      }))
+      .mockImplementation((operation) => operation(mockPrisma));
+
+    const result = await createCourseInscription({
+      cursoId: "c1",
+      method: "ZELLE",
+      amountPaid: 45,
+    });
+
+    expect(result).toEqual({ success: true, inscriptionId: "ins-retry" });
+    expect(mockPrisma.$transaction).toHaveBeenCalledTimes(2);
+    expect(mockPrisma.inscription.create).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("createPastryServicePayment", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.$transaction.mockImplementation((operation) => operation(mockPrisma));
     vi.mocked(auth).mockResolvedValue({
       user: { id: "user-1", role: "USER" },
     } as never);
@@ -186,6 +212,7 @@ describe("createPastryServicePayment", () => {
 describe("createBulkCourseInscriptions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.$transaction.mockImplementation((operation) => operation(mockPrisma));
     vi.mocked(auth).mockResolvedValue({
       user: { id: "user-1", role: "USER" },
     } as never);
@@ -249,5 +276,24 @@ describe("createBulkCourseInscriptions", () => {
       alreadyEnrolled: ["c1", "c2"],
     });
     expect(mockPrisma.inscription.createMany).not.toHaveBeenCalled();
+  });
+
+  it("crea una sola inscripción si el mismo curso llega repetido", async () => {
+    mockPrisma.inscription.findMany.mockResolvedValue([]);
+    mockPrisma.inscription.createMany.mockResolvedValue({ count: 1 });
+
+    const result = await createBulkCourseInscriptions({
+      items: [
+        { cursoId: "c1", amountPaid: 45 },
+        { cursoId: "c1", amountPaid: 45 },
+      ],
+      method: "ZELLE",
+      reference: "BAG-2",
+    });
+
+    expect(result).toMatchObject({ success: true, inscriptionIds: ["c1"] });
+    expect(mockPrisma.inscription.createMany).toHaveBeenCalledWith({
+      data: [expect.objectContaining({ cursoId: "c1", amountPaid: 45 })],
+    });
   });
 });

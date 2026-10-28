@@ -14,7 +14,7 @@ import { ArrowRight } from "lucide-react";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import type { FormacionCardData } from "@/components/FormacionCard";
-import { WORKSHOPS_DATA, toFormacionCard } from "@/lib/data/workshops";
+import { getWorkshopBySlug } from "@/lib/data/workshops";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
 import { buildFaqJsonLd, buildPageMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo";
 
@@ -26,7 +26,7 @@ export const metadata = buildPageMetadata({
 
 function staticCatalog(): { workshops: FormacionCardData[]; onlineCourses: FormacionCardData[] } {
   return {
-    workshops: WORKSHOPS_DATA.map((w) => toFormacionCard(w)),
+    workshops: [],
     onlineCourses: ONLINE_COURSES_DATA.map((c) => toOnlineFormacionCard(c)),
   };
 }
@@ -58,6 +58,9 @@ async function getData() {
     return {
       id: c.id,
       slug,
+      detailHref: w.isWorkshop && !getWorkshopBySlug(w.slug ?? slug ?? "")
+        ? `/cursos/${c.slug ?? c.id}`
+        : undefined,
       title: c.title,
       description: c.description,
       price: c.price,
@@ -84,7 +87,13 @@ async function getData() {
     const [workshops, onlineCourses] = await Promise.all([
       prisma.curso
         .findMany({
-          where: { category: "Workshops Presenciales" },
+          where: {
+            category: "Workshops Presenciales",
+            OR: [
+              { status: "PUBLISHED" },
+              { status: "SCHEDULED", publishedAt: { lte: new Date() } },
+            ],
+          },
           select: {
             id: true,
             slug: true,
@@ -106,7 +115,13 @@ async function getData() {
         .then((rows) => (rows as CourseRow[]).map(toCard)),
       prisma.curso
         .findMany({
-          where: { category: "Cursos Online" },
+          where: {
+            category: "Cursos Online",
+            OR: [
+              { status: "PUBLISHED" },
+              { status: "SCHEDULED", publishedAt: { lte: new Date() } },
+            ],
+          },
           select: {
             id: true,
             slug: true,

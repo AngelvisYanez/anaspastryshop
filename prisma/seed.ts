@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { WORKSHOP_LOCATION } from '../lib/utils/workshop'
+import { parseWorkshopDetails, workshopDateToIso } from '../lib/utils/workshop'
 
 const prisma = new PrismaClient()
 
@@ -309,7 +310,9 @@ async function main() {
           category: 'Workshops Presenciales',
           image: w.image,
           isLive: true,
-          content: contentPayload,
+          content: workshopDateToIso(parseWorkshopDetails(existing.content, existing.isLive, existing.title).workshopDate)
+            ? existing.content
+            : contentPayload,
           instructorId: admin.id,
         },
       })
@@ -346,6 +349,7 @@ async function main() {
       image: '/curso-online-cake-de-pina.png',
       isLive: false,
       content: JSON.stringify({ isWorkshop: false }),
+      modules: [] as string[],
     },
     {
       title: 'Merengue Italiano',
@@ -359,32 +363,111 @@ async function main() {
       image: '/curso-online-merengue-italiano.png',
       isLive: false,
       content: JSON.stringify({ isWorkshop: false }),
+      modules: [] as string[],
+    },
+    {
+      title: 'Tortas Básicas',
+      description:
+        'Domina las preparaciones más solicitadas: la torta de vainilla, la marmoleada y la de chocolate. Incluye la crema chantilly, sus variaciones de sabor y las técnicas de decoración para dejar los postres listos.',
+      price: 45,
+      totalHours: 9,
+      totalClasses: 9,
+      level: 'Desde Cero',
+      category: 'Cursos Online',
+      slug: 'tortas-basicas-online',
+      image: null as string | null,
+      isLive: false,
+      content: JSON.stringify({ isWorkshop: false, slug: 'tortas-basicas-online' }),
+      modules: [
+        'Recetario digital',
+        'Preparación de torta de vainilla',
+        'Preparación de torta marmoleada',
+        'Preparación de torta de chocolate',
+        'Preparación de ganache de chocolate',
+        'Preparación de glaseado cítrico',
+        'Receta de crema chantilly',
+        'Variaciones de sabores de crema chantilly',
+        'Relleno, decoración con crema chantilly, colorimetría y mangueado',
+      ],
+    },
+    {
+      title: 'Pan de Jamón',
+      description:
+        'Aprende a hacer un pan de jamón esponjoso, con el relleno ideal y el sabor tradicional de la mesa navideña. El curso va paso a paso para lograr un resultado de panadería profesional desde casa, aunque empieces de cero.',
+      price: 35,
+      totalHours: 10,
+      totalClasses: 10,
+      level: 'Desde Cero',
+      category: 'Cursos Online',
+      slug: 'pan-de-jamon',
+      image: null as string | null,
+      isLive: false,
+      content: JSON.stringify({ isWorkshop: false, slug: 'pan-de-jamon' }),
+      modules: [
+        'Recetario digital',
+        'Recomendación de ingredientes',
+        'Preparación de la masa',
+        'Amasado',
+        'Armado del pan de jamón',
+        'Armado del pan de jamón con queso crema',
+        'Recomendaciones de cantidades',
+        'Armado de rolls de jamón',
+        'Levado y barnizado del pan',
+        'Horneado y resultado final',
+      ],
     },
   ]
 
   for (const oc of onlineCourses) {
+    const { modules, ...courseData } = oc
     // react-doctor-disable-next-line react-doctor/async-await-in-loop -- one-off seed script: a readable per-row read-then-write is preferred over a bulk query
     const existing = await prisma.curso.findFirst({
-      where: { title: oc.title },
+      where: {
+        OR: [
+          { slug: oc.slug },
+          { title: oc.title, category: 'Cursos Online' },
+        ],
+      },
     })
 
-    if (!existing) {
-      await prisma.curso.create({
-        data: {
-          ...oc,
-          instructorId: admin.id,
-        },
-      })
-    } else {
-      await prisma.curso.update({
-        where: { id: existing.id },
-        data: {
-          description: oc.description,
-          totalClasses: oc.totalClasses,
-          slug: existing.slug ?? oc.slug,
-          image: existing.image ?? oc.image,
-        },
-      })
+    const course = existing
+      ? await prisma.curso.update({
+          where: { id: existing.id },
+          data: {
+            description: oc.description,
+            totalClasses: oc.totalClasses,
+            slug: existing.slug ?? oc.slug,
+            image: existing.image ?? oc.image,
+            ...(modules.length > 0
+              ? {
+                  totalHours: oc.totalHours,
+                  price: oc.price,
+                  level: oc.level,
+                  content: oc.content,
+                  category: 'Cursos Online',
+                  isLive: false,
+                }
+              : {}),
+          },
+        })
+      : await prisma.curso.create({
+          data: {
+            ...courseData,
+            instructorId: admin.id,
+          },
+        })
+
+    if (modules.length > 0) {
+      const moduleCount = await prisma.courseModule.count({ where: { cursoId: course.id } })
+      if (moduleCount === 0) {
+        await prisma.courseModule.createMany({
+          data: modules.map((title, order) => ({
+            title,
+            order,
+            cursoId: course.id,
+          })),
+        })
+      }
     }
   }
 

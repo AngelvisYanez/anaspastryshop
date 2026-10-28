@@ -144,4 +144,41 @@ describe("cursos admin flows", () => {
       }),
     );
   });
+
+  it("al cambiar la fecha conserva el slug y los datos del workshop", async () => {
+    mockPrisma.curso.findUnique.mockResolvedValue({
+      id: "c1",
+      slug: null,
+      title: "WORKSHOP TORTAS BÁSICAS",
+      price: 70,
+      content: JSON.stringify({
+        isWorkshop: true,
+        slug: "workshop-tortas-basicas",
+        workshopDate: "2026-10-04",
+        realizaremos: ["Torta de vainilla"],
+      }),
+      _count: { inscritos: 0 },
+    });
+    mockPrisma.curso.update.mockResolvedValue({});
+    mockPrisma.courseModule.deleteMany.mockResolvedValue({ count: 0 });
+    mockPrisma.$transaction.mockImplementation(async (ops: unknown[]) => {
+      await Promise.all(ops as Promise<unknown>[]);
+      return ops;
+    });
+
+    expect(await updateCourse("c1", { ...basePayload, workshopDate: "2026-11-22" }))
+      .toEqual({ success: true });
+    const update = mockPrisma.curso.update.mock.calls[0][0];
+    const content = JSON.parse(update.data.content);
+    expect(content.workshopDate).toBe("2026-11-22");
+    expect(content.slug).toBe("workshop-tortas-basicas");
+    expect(content.realizaremos).toEqual(["Torta de vainilla"]);
+    expect(update.data.category).toBe("Workshops Presenciales");
+  });
+
+  it("rechaza una fecha imposible", async () => {
+    expect(await createCourse({ ...basePayload, workshopDate: "2026-02-31" }))
+      .toEqual({ error: "Selecciona una fecha válida para el workshop." });
+    expect(mockPrisma.curso.create).not.toHaveBeenCalled();
+  });
 });

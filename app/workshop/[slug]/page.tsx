@@ -5,8 +5,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import RelatedFormaciones from "@/components/RelatedFormaciones";
-import { getWorkshopBySlug, getAllWorkshops, getOtherWorkshops } from "@/lib/data/workshops";
+import { getWorkshopBySlug, getAllWorkshops, toFormacionCard } from "@/lib/data/workshops";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
+import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
+import { parseWorkshopDetails, formatWorkshopDateLabel, workshopDateToIso } from "@/lib/utils/workshop";
 import { WorkshopDetailHero } from "./WorkshopDetailHero";
 import { WorkshopDetailBody } from "./WorkshopDetailBody";
 import {
@@ -51,18 +53,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function WorkshopDetailContent({ params }: PageProps) {
   const { slug } = await params;
-  const workshop = getWorkshopBySlug(slug);
+  const catalogWorkshop = getWorkshopBySlug(slug);
 
   // Slugs que antes eran workshop y ahora son solo curso online (p. ej. Merengue Italiano).
-  if (!workshop) {
+  if (!catalogWorkshop) {
     const online = getOnlineCourseBySlug(slug.replace(/^workshop-/, ""));
     if (online) permanentRedirect(`/cursos/${online.slug}`);
     notFound();
   }
 
-  if (workshop.slug !== slug) {
-    permanentRedirect(`/workshop/${workshop.slug}`);
+  if (catalogWorkshop.slug !== slug) {
+    permanentRedirect(`/workshop/${catalogWorkshop.slug}`);
   }
+
+  const publishedRows = await getPublishedWorkshopRows();
+  const course = publishedRows.find((row) => {
+    const details = parseWorkshopDetails(row.content, row.isLive, row.title);
+    return getWorkshopBySlug(details.slug ?? row.slug ?? "")?.slug === slug
+      || row.title.toLocaleLowerCase("es") === catalogWorkshop.title.toLocaleLowerCase("es");
+  });
+  if (!course) notFound();
+  const details = parseWorkshopDetails(course.content, course.isLive, course.title);
+  const isoDate = workshopDateToIso(details.workshopDate);
+  const workshop = {
+    ...catalogWorkshop,
+    price: course.price,
+    schedule: isoDate ? formatWorkshopDateLabel(isoDate) : "Próximamente",
+    startTime: details.workshopTime ?? catalogWorkshop.startTime,
+  };
 
   const depositAmount = Math.round(workshop.price * 0.5);
   const balanceAmount = workshop.price - depositAmount;
@@ -70,9 +88,25 @@ async function WorkshopDetailContent({ params }: PageProps) {
     `¡Hola Chef Anais! Me interesa información e inscripción para el taller presencial: "${workshop.title}" ($${workshop.price} USD). ¿Cuáles son las próximas fechas disponibles?`,
   );
   const waUrl = `https://wa.me/${SITE_WHATSAPP}?text=${waText}`;
-  const courseId =
-    (workshop as { courseId?: string }).courseId || workshop.legacySlug || workshop.id || `ws-${workshop.slug}`;
+  const courseId = course.id;
   const siteUrl = getSiteUrl();
+  const relatedItems = getAllWorkshops().filter((item) => item.slug !== slug).flatMap((item) => {
+    const row = publishedRows.find((candidate) => {
+      const info = parseWorkshopDetails(candidate.content, candidate.isLive, candidate.title);
+      return getWorkshopBySlug(info.slug ?? candidate.slug ?? "")?.slug === item.slug
+        || candidate.title.toLocaleLowerCase("es") === item.title.toLocaleLowerCase("es");
+    });
+    if (!row) return [];
+    const info = parseWorkshopDetails(row.content, row.isLive, row.title);
+    const date = workshopDateToIso(info.workshopDate);
+    return [toFormacionCard(item, {
+      id: row.id,
+      bagId: row.id,
+      price: row.price,
+      workshopDate: date ? formatWorkshopDateLabel(date) : "Próximamente",
+      workshopTime: info.workshopTime,
+    })];
+  }).slice(0, 3);
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col font-sans">
@@ -106,7 +140,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
         eyebrow="Sigue Capacitándote"
         title="Otros Workshops Presenciales"
         subtitle="Talleres intensivos de 8 horas en Coro, Falcón con grupos reducidos y todos los insumos incluidos."
-        items={getOtherWorkshops(workshop, 3)}
+        items={relatedItems}
         href="/workshops"
         ctaLabel="Ver Catálogo Completo"
         columns={3}

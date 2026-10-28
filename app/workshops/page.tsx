@@ -7,6 +7,10 @@ import JsonLd from "@/components/JsonLd";
 import { WORKSHOPS_DATA, toFormacionCard } from "@/lib/data/workshops";
 import { Clock, Users, MapPin, CheckCircle2, CalendarDays } from "lucide-react";
 import { buildBreadcrumbJsonLd, buildPageMetadata, GEO } from "@/lib/seo";
+import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
+import { getCalendarEvents } from "@/lib/data/workshop-schedule";
+import { parseWorkshopDetails, workshopDateToIso } from "@/lib/utils/workshop";
+import { getWorkshopBySlug } from "@/lib/data/workshops";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Workshops Presenciales de Pastelería en Coro, Falcón",
@@ -22,8 +26,39 @@ export const metadata: Metadata = buildPageMetadata({
   ],
 });
 
-export default function WorkshopsPage() {
-  const workshops = WORKSHOPS_DATA;
+export default async function WorkshopsPage() {
+  const rows = await getPublishedWorkshopRows();
+  const datedCards = new Map(getCalendarEvents(rows).map((event) => [event.session.id, event.card]));
+  const workshops = rows.map((row) => {
+    const dated = datedCards.get(row.id);
+    if (dated) return dated;
+    const details = parseWorkshopDetails(row.content, row.isLive, row.title);
+    const catalog = getWorkshopBySlug(details.slug ?? row.slug ?? "")
+      ?? WORKSHOPS_DATA.find((item) => item.title.toLocaleLowerCase("es") === row.title.toLocaleLowerCase("es"));
+    if (catalog) return toFormacionCard(catalog, {
+      id: row.id,
+      bagId: row.id,
+      price: row.price,
+      workshopDate: "Próximamente",
+      workshopTime: details.workshopTime,
+    });
+    return {
+      id: row.id,
+      bagId: row.id,
+      slug: row.slug ?? row.id,
+      detailHref: `/cursos/${row.slug ?? row.id}`,
+      title: row.title,
+      description: row.description,
+      price: row.price,
+      image: row.image,
+      level: row.level,
+      isWorkshop: true,
+      category: "Workshops Presenciales",
+      workshopDate: workshopDateToIso(details.workshopDate) || "Próximamente",
+      workshopTime: details.workshopTime,
+      workshopLocation: details.location,
+    };
+  });
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col font-sans">
@@ -91,8 +126,8 @@ export default function WorkshopsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {workshops.map((workshop) => (
-            <div key={workshop.slug}>
-              <FormacionCard course={toFormacionCard(workshop)} />
+            <div key={workshop.id}>
+              <FormacionCard course={workshop} />
             </div>
           ))}
         </div>

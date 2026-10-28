@@ -14,7 +14,6 @@ import {
   getEventsByDateKey,
   parseLocalDate,
   toDateKey,
-  WORKSHOP_SESSIONS,
 } from "@/lib/data/workshop-schedule";
 import { getNavbarTheme } from "@/components/getNavbarTheme";
 
@@ -72,12 +71,13 @@ describe("onlineCourseCovers", () => {
 });
 
 describe("online-courses catalog", () => {
-  it("expone ambos cursos online de marketing", () => {
+  it("expone los cursos online de marketing", () => {
     const all = getAllOnlineCourses();
-    expect(all).toHaveLength(2);
     expect(all.map((c) => c.slug)).toEqual([
       "cake-de-pina",
       "merengue-italiano",
+      "tortas-basicas-online",
+      "pan-de-jamon",
     ]);
   });
 
@@ -96,19 +96,51 @@ describe("online-courses catalog", () => {
 });
 
 describe("workshop-schedule", () => {
-  it("todas las sesiones del calendario resuelven a un workshop", () => {
-    const events = getCalendarEvents();
-    expect(events.length).toBe(WORKSHOP_SESSIONS.length);
-    for (const event of events) {
-      expect(event.workshop.slug).toBe(event.session.workshopSlug);
-      expect(event.card.isWorkshop).toBe(true);
-    }
+  const row = (id: string, date: string) => ({
+    id,
+    slug: "tortas-basicas",
+    title: "WORKSHOP TORTAS BÁSICAS",
+    description: "Aprende pastelería",
+    price: 70,
+    image: null,
+    content: JSON.stringify({ isWorkshop: true, slug: "tortas-basicas", workshopDate: date }),
+    isLive: true,
+    level: "Inicial",
   });
 
-  it("agrupa eventos por fecha", () => {
-    const byDate = getEventsByDateKey(getCalendarEvents());
-    expect(byDate["2026-10-04"]).toHaveLength(1);
-    expect(byDate["2026-10-04"][0].workshop.slug).toBe("tortas-basicas");
+  it("usa la fecha vigente de cada workshop y mueve el evento al editarla", () => {
+    const before = getEventsByDateKey(getCalendarEvents([row("course-1", "2026-10-04")]));
+    const after = getEventsByDateKey(getCalendarEvents([row("course-1", "2026-11-22")]));
+    expect(before["2026-10-04"]).toHaveLength(1);
+    expect(after["2026-10-04"]).toBeUndefined();
+    expect(after["2026-11-22"][0].card.bagId).toBe("course-1");
+  });
+
+  it("agrupa fechas coincidentes, ordena y omite fechas sin confirmar", () => {
+    const distinct = (id: string, date: string) => ({
+      ...row(id, date),
+      slug: id,
+      title: id,
+      content: JSON.stringify({ isWorkshop: true, slug: id, workshopDate: date }),
+    });
+    const events = getCalendarEvents([
+      distinct("late", "2026-11-22"),
+      distinct("invalid", "Por confirmar"),
+      distinct("early", "2026-10-04"),
+      distinct("same-day", "2026-10-04"),
+    ]);
+    expect(events.map((event) => event.session.date)).toEqual([
+      "2026-10-04", "2026-10-04", "2026-11-22",
+    ]);
+    expect(getEventsByDateKey(events)["2026-10-04"]).toHaveLength(2);
+  });
+
+  it("muestra solo el registro más reciente si hay duplicados del mismo workshop", () => {
+    const older = { ...row("old", "2026-10-04"), createdAt: new Date("2026-01-01") };
+    const newer = { ...row("new", "2026-11-22"), createdAt: new Date("2026-02-01") };
+    const events = getCalendarEvents([older, newer]);
+    expect(events).toHaveLength(1);
+    expect(events[0].session.id).toBe("new");
   });
 
   it("parseLocalDate / toDateKey son inversos en local", () => {

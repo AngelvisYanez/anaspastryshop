@@ -94,11 +94,19 @@ export function parseWorkshopDetails(
 /**
  * Serializes workshop details to store in the content field.
  */
-export function serializeWorkshopDetails(details: WorkshopDetails): string {
+export function serializeWorkshopDetails(details: WorkshopDetails, existingContent?: string | null): string {
+  let existing: Record<string, unknown> = {};
+  try {
+    const parsed = JSON.parse(existingContent ?? "");
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) existing = parsed;
+  } catch {
+    // Legacy plain-text content has no structured fields to preserve.
+  }
   return JSON.stringify({
+    ...existing,
     isWorkshop: details.isWorkshop,
-    slug: details.slug,
-    spots: details.spots,
+    slug: details.slug ?? existing.slug,
+    spots: details.spots ?? existing.spots,
     location: details.location?.trim() || DEFAULT_WORKSHOP_LOCATION,
     workshopDate: details.workshopDate?.trim() || "",
     workshopTime: details.workshopTime?.trim() || DEFAULT_WORKSHOP_TIME,
@@ -133,7 +141,7 @@ function normalizeMonthToken(value: string): string {
 export function workshopDateToIso(value: string | null | undefined): string {
   const trimmed = value?.trim() || "";
   if (!trimmed) return "";
-  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return isValidWorkshopDate(trimmed) ? trimmed : "";
 
   const match = trimmed.match(
     /(\d{1,2})\s+de\s+([a-záéíóúüñ]+)\s*(?:de|,)?\s*(\d{4})/i,
@@ -143,9 +151,16 @@ export function workshopDateToIso(value: string | null | undefined): string {
   const day = Number(match[1]);
   const month = MONTH_NAME_TO_NUMBER[normalizeMonthToken(match[2])];
   const year = Number(match[3]);
-  if (!month || day < 1 || day > 31 || year < 1900) return "";
+  if (!month || year < 1900) return "";
+  const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return isValidWorkshopDate(iso) ? iso : "";
+}
 
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+function isValidWorkshopDate(isoDate: string): boolean {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
 }
 
 /** Fecha local sin desfase UTC: "2026-10-04" → Date a medianoche local. */

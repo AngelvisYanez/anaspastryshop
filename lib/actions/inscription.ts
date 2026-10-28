@@ -5,6 +5,28 @@ import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
+import { Prisma } from "@prisma/client";
+
+type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+async function withSerializableRetry<T>(
+  operation: (tx: TransactionClient) => Promise<T>,
+): Promise<T> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await prisma.$transaction(operation, {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)
+        || error.code !== "P2034"
+        || attempt === 2) {
+        throw error;
+      }
+    }
+  }
+  throw new Error("No se pudo completar la transacción");
+}
 
 export type PaymentMethod =
   | "ZELLE"
@@ -47,40 +69,46 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
     return { error: "Debe seleccionar un taller o curso válido" };
   }
 
+  const userId = session.user.id;
+
   try {
-    const existing = await prisma.inscription.findFirst({
-      where: {
-        userId: session.user.id,
-        cursoId: data.cursoId,
-        status: { in: ["PENDING", "APPROVED"] },
-      },
+    const result = await withSerializableRetry(async (tx) => {
+      const existing = await tx.inscription.findFirst({
+        where: {
+          userId,
+          cursoId: data.cursoId,
+          status: { in: ["PENDING", "APPROVED"] },
+        },
+      });
+      if (existing) return { kind: "existing" as const, status: existing.status };
+
+      const inscription = await tx.inscription.create({
+        data: {
+          method: data.method,
+          reference: data.reference || null,
+          phoneNumber: data.phoneNumber || null,
+          amountPaid: data.amountPaid,
+          receiptImage: data.receiptImage || null,
+          cursoId: data.cursoId,
+          userId,
+          status: "PENDING",
+        },
+      });
+      return { kind: "created" as const, id: inscription.id };
     });
 
-    if (existing) {
-      if (existing.status === "APPROVED") {
+    if (result.kind === "existing") {
+      if (result.status === "APPROVED") {
         return { error: "Ya tienes acceso activo a este taller" };
       }
       return { error: "Ya tienes un comprobante de pago pendiente de revisión para este taller" };
     }
 
-    const inscription = await prisma.inscription.create({
-      data: {
-        method: data.method,
-        reference: data.reference || null,
-        phoneNumber: data.phoneNumber || null,
-        amountPaid: data.amountPaid,
-        receiptImage: data.receiptImage || null,
-        cursoId: data.cursoId,
-        userId: session.user.id,
-        status: "PENDING",
-      },
-    });
-
     await logActivity({
       userId: session.user.id,
       action: "COURSE_PAYMENT_SUBMITTED",
       entityType: "INSCRIPTION",
-      entityId: inscription.id,
+      entityId: result.id,
       details: {
         type: "CURSO",
         targetId: data.cursoId,
@@ -94,7 +122,7 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
     revalidatePath("/dashboard/mis-cursos");
     revalidatePath(`/cursos/${data.cursoId}`);
 
-    return { success: true, inscriptionId: inscription.id };
+    return { success: true, inscriptionId: result.id };
   } catch (error) {
     console.error("Error creating course inscription:", error);
     return { error: "Ocurrió un error al procesar tu pago. Inténtalo de nuevo." };
@@ -186,54 +214,57 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
     return { error: "No hay formaciones en la bolsa para inscribir" };
   }
 
-  const requestedCourseIds = [
-    ...new Set(
-      data.items
-        .map((item) => item.cursoId)
-        .filter((id): id is string => Boolean(id)),
-    ),
+  const uniqueItems = [
+    ...new Map(data.items.filter((item) => item.cursoId).map((item) => [item.cursoId, item])).values(),
   ];
-
-  // One query for the whole bag instead of a lookup per course.
-  const existingInscriptions = await prisma.inscription.findMany({
-    where: {
-      userId,
-      cursoId: { in: requestedCourseIds },
-      status: { in: ["PENDING", "APPROVED"] },
-    },
-    select: { cursoId: true },
-  });
-  const alreadyEnrolledSet = new Set(existingInscriptions.map((i) => i.cursoId));
-
-  const alreadyEnrolled: string[] = [];
-  const pending: typeof data.items = [];
-
-  for (const item of data.items) {
-    if (!item.cursoId) continue;
-    if (alreadyEnrolledSet.has(item.cursoId)) {
-      alreadyEnrolled.push(item.cursoId);
-    } else {
-      pending.push(item);
-    }
+  if (!uniqueItems.length) {
+    return { error: "No hay formaciones válidas en la bolsa para inscribir" };
   }
 
-  const created: string[] = [];
+  let transactionResult: { created: string[]; alreadyEnrolled: string[] };
+  try {
+    transactionResult = await withSerializableRetry(async (tx) => {
+      const existingInscriptions = await tx.inscription.findMany({
+        where: {
+          userId,
+          cursoId: { in: uniqueItems.map((item) => item.cursoId) },
+          status: { in: ["PENDING", "APPROVED"] },
+        },
+        select: { cursoId: true },
+      });
+      const alreadyEnrolledSet = new Set(existingInscriptions.map((i) => i.cursoId));
+      const alreadyEnrolled: string[] = [];
+      const pending: typeof uniqueItems = [];
 
-  if (pending.length) {
-    await prisma.inscription.createMany({
-      data: pending.map((item) => ({
-        method: data.method,
-        reference: data.reference || null,
-        phoneNumber: data.phoneNumber || null,
-        amountPaid: item.amountPaid,
-        receiptImage: data.receiptImage || null,
-        cursoId: item.cursoId as string,
-        userId,
-        status: "PENDING" as const,
-      })),
+      for (const item of uniqueItems) {
+        if (alreadyEnrolledSet.has(item.cursoId)) {
+          alreadyEnrolled.push(item.cursoId);
+        } else {
+          pending.push(item);
+        }
+      }
+
+      if (pending.length) {
+        await tx.inscription.createMany({
+          data: pending.map((item) => ({
+            method: data.method,
+            reference: data.reference || null,
+            phoneNumber: data.phoneNumber || null,
+            amountPaid: item.amountPaid,
+            receiptImage: data.receiptImage || null,
+            cursoId: item.cursoId,
+            userId,
+            status: "PENDING" as const,
+          })),
+        });
+      }
+      return { created: pending.map((item) => item.cursoId), alreadyEnrolled };
     });
-    created.push(...pending.map((item) => item.cursoId as string));
+  } catch (error) {
+    console.error("Error creating bag inscriptions:", error);
+    return { error: "Ocurrió un error al procesar tu pago. Inténtalo de nuevo." };
   }
+  const { created, alreadyEnrolled } = transactionResult;
 
   if (!created.length) {
     return {
@@ -252,7 +283,7 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
       targetIds: created,
       method: data.method,
       amount: created.reduce(
-        (acc, id) => acc + (data.items.find((i) => i.cursoId === id)?.amountPaid ?? 0),
+        (acc, id) => acc + (uniqueItems.find((i) => i.cursoId === id)?.amountPaid ?? 0),
         0
       ),
     },

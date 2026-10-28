@@ -47,9 +47,6 @@ next-env.d.ts
 .junie/
 .kiro/
 
-# Config files from image
-eslint.config.mjs
-
 # Markdown files (Necessary docs included)
 # *.md
 # !CONTEXTO_IA.md

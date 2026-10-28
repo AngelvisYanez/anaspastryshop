@@ -171,7 +171,7 @@ export function WorkshopDetailBody({
 
                 <AddToBagButton
                   item={{
-                    id: workshop.legacySlug ?? workshop.id,
+                    id: courseId,
                     title: workshop.shortTitle,
                     price: workshop.price,
                     image: null,

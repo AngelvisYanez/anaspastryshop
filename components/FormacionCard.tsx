@@ -8,6 +8,7 @@ import FormacionCover from "@/components/FormacionCover";
 export interface FormacionCardData {
   id: string;
   slug?: string;
+  detailHref?: string;
   title: string;
   description?: string | null;
   price: number;
@@ -26,6 +27,7 @@ export interface FormacionCardData {
 }
 
 function detailHrefFor(course: FormacionCardData) {
+  if (course.detailHref) return course.detailHref;
   if (!course.slug) return `/cursos/${course.id}`;
   return course.isWorkshop ? `/workshop/${course.slug}` : `/cursos/${course.slug}`;
 }

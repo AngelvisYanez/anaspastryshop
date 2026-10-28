@@ -134,7 +134,7 @@ export function WorkshopLogistics({
             <input
               id="course-workshop-date"
               type="date"
-              required={!date}
+              required={!isoDate}
               value={isoDate}
               onChange={(e) => {
                 const nextIso = e.target.value;

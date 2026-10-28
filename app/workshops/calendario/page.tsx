@@ -10,6 +10,7 @@ import {
 } from "@/lib/data/workshop-schedule";
 import { CalendarDays, Clock, Users } from "lucide-react";
 import { buildPageMetadata } from "@/lib/seo";
+import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Calendario de Workshops Presenciales en Coro, Falcón",
@@ -18,8 +19,8 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/workshops/calendario",
 });
 
-export default function WorkshopsCalendarioPage() {
-  const events = getCalendarEvents();
+export default async function WorkshopsCalendarioPage() {
+  const events = getCalendarEvents(await getPublishedWorkshopRows());
   const eventsByDate = getEventsByDateKey(events);
 
   return (

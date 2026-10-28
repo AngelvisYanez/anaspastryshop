@@ -4,10 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath, updateTag } from "next/cache";
 import type { ActionResult } from "@/lib/types";
-import { serializeWorkshopDetails } from "@/lib/utils/workshop";
+import { serializeWorkshopDetails, workshopDateToIso } from "@/lib/utils/workshop";
 import { uniqueSlug } from "@/lib/utils/slug";
 
-const COURSE_CACHE_TAGS = ["cursos", "home-data"];
+const COURSE_CACHE_TAGS = ["cursos", "home-data", "workshop-dates"];
 
 async function slugTaken(candidate: string, exceptId?: string) {
   const existing = await prisma.curso.findUnique({
@@ -67,6 +67,8 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
   const session = await assertAdmin();
 
   try {
+    const workshopDate = data.workshopDate ? workshopDateToIso(data.workshopDate) : "";
+    if (data.isLive && data.workshopDate && !workshopDate) return { error: "Selecciona una fecha válida para el workshop." };
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     let finalInstructorId = session.user.id as string;
@@ -74,19 +76,22 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
       finalInstructorId = data.instructorId;
     }
 
+    const nextSlug = await uniqueSlug(data.slug || data.title, (c) => slugTaken(c));
     const workshopContent = serializeWorkshopDetails({
       isWorkshop: data.isLive,
+      slug: nextSlug,
       location: data.location,
-      workshopDate: data.workshopDate,
+      workshopDate,
       workshopTime: data.workshopTime,
     });
 
     const curso = await prisma.curso.create({
       data: {
         title: data.title,
-        slug: await uniqueSlug(data.slug || data.title, (c) => slugTaken(c)),
+        slug: nextSlug,
         description: data.description,
         price: data.price,
+        category: data.isLive ? "Workshops Presenciales" : "Cursos Online",
         totalHours: data.totalHours,
         totalClasses,
         language: data.language,
@@ -118,6 +123,8 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
 
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
+    revalidatePath("/workshops");
+    revalidatePath("/workshops/calendario");
     revalidateCourseCaches();
     return { success: true, courseId: curso.id };
   } catch (error: unknown) {
@@ -140,6 +147,8 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
     await prisma.curso.delete({ where: { id: courseId } });
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
+    revalidatePath("/workshops");
+    revalidatePath("/workshops/calendario");
     revalidateCourseCaches();
     return { success: true };
   } catch {
@@ -151,6 +160,8 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
   const session = await assertAdmin();
 
   try {
+    const workshopDate = data.workshopDate ? workshopDateToIso(data.workshopDate) : "";
+    if (data.isLive && data.workshopDate && !workshopDate) return { error: "Selecciona una fecha válida para el workshop." };
     const course = await prisma.curso.findUnique({
       where: { id: courseId },
       include: { _count: { select: { inscritos: true } } },
@@ -165,9 +176,9 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     const workshopContent = serializeWorkshopDetails({
       isWorkshop: data.isLive,
       location: data.location,
-      workshopDate: data.workshopDate,
+      workshopDate,
       workshopTime: data.workshopTime,
-    });
+    }, course.content);
 
     // La URL pública depende del slug, así que solo se recalcula si falta o si
     // se envía uno explícito. Renombrar el título no debe romper enlaces.
@@ -181,6 +192,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       slug: nextSlug,
       description: data.description,
       price: finalPrice,
+      category: data.isLive ? "Workshops Presenciales" : "Cursos Online",
       totalHours: data.totalHours,
       totalClasses,
       language: data.language,
@@ -220,6 +232,8 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     revalidatePath("/dashboard/cursos");
     revalidatePath(`/dashboard/cursos/${courseId}`);
     revalidatePath("/cursos");
+    revalidatePath("/workshops");
+    revalidatePath("/workshops/calendario");
     revalidatePath(`/cursos/${courseId}`);
     revalidatePath(`/cursos/${nextSlug}`);
     revalidateCourseCaches();

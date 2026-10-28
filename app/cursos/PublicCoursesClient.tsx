@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import FormacionCard, { type FormacionCardData } from "@/components/FormacionCard";
 import * as m from "framer-motion/m";
 
-export interface Course extends FormacionCardData {}
+export type Course = FormacionCardData;
 
 export default function PublicCoursesClient({
   initialCourses,
