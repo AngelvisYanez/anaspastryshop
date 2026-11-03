@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { paymentApprovedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 import {
   sendCoursePurchaseEmail,
   sendPaymentRejectedEmail,
@@ -45,15 +46,31 @@ export async function approvePayment(inscriptionId: string) {
   try {
     const inscription = await prisma.inscription.findUnique({
       where: { id: inscriptionId },
-      include: { user: { select: { id: true, email: true, name: true } } },
+      include: { user: { select: { id: true, email: true, name: true, whatsappNumber: true } }, curso: { select: { title: true } } },
     });
 
     if (!inscription) return { error: "Inscripción no encontrada" };
 
-    await prisma.inscription.update({
-      where: { id: inscriptionId },
-      data: { status: "APPROVED" },
+    if (inscription.status !== "PENDING") return { error: "Este pago ya fue procesado" };
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const result = await tx.inscription.updateMany({
+        where: { id: inscriptionId, status: "PENDING" },
+        data: { status: "APPROVED" },
+      });
+      if (result.count && inscription.cursoId && inscription.user.whatsappNumber) {
+        await tx.whatsAppNotification.create({ data: {
+          eventKey: `payment-approved:${inscriptionId}`,
+          userId: inscription.user.id,
+          phone: inscription.user.whatsappNumber.replace(/\D/g, ""),
+          text: paymentApprovedText(inscription.curso?.title ?? "Workshop / Curso"),
+          kind: "TRANSACTIONAL",
+        } });
+      }
+      return result;
     });
+    if (updated.count === 0) return { error: "Este pago ya fue procesado" };
+    await wakeWhatsAppBridge();
 
     if (!inscription.cursoId) {
       // Servicio de Pastelería / Pedido Especial
@@ -195,10 +212,13 @@ export async function rejectPayment(inscriptionId: string, reason?: string) {
 
     if (!inscription) return { error: "Inscripción no encontrada" };
 
-    await prisma.inscription.update({
-      where: { id: inscriptionId },
+    if (inscription.status !== "PENDING") return { error: "Este pago ya fue procesado" };
+
+    const updated = await prisma.inscription.updateMany({
+      where: { id: inscriptionId, status: "PENDING" },
       data: { status: "REJECTED" },
     });
+    if (updated.count === 0) return { error: "Este pago ya fue procesado" };
 
     const rejectReason = reason
       ? `${inscription.curso?.title ? `Workshop: ${inscription.curso.title} - ` : "Servicio de Pastelería - "}${reason}`

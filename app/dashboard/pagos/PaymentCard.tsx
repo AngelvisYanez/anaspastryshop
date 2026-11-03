@@ -12,6 +12,7 @@ export default function PaymentCard({ inscription }: { inscription: PaymentInscr
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const isPastryService = !inscription.cursoId;
@@ -24,22 +25,39 @@ export default function PaymentCard({ inscription }: { inscription: PaymentInscr
   async function handleApprove() {
     setLoading("approve");
     setShowApproveConfirm(false);
-    await approvePayment(inscription.id);
-    setLoading(null);
-    router.refresh();
+    setError(null);
+    try {
+      const result = await approvePayment(inscription.id);
+      if (result.error) setError(result.error);
+      else router.refresh();
+    } catch {
+      setError("No se pudo aprobar el pago.");
+    } finally {
+      setLoading(null);
+    }
   }
 
   async function handleReject() {
     setLoading("reject");
     setShowRejectDialog(false);
-    await rejectPayment(inscription.id, rejectionReason.trim() || undefined);
-    setLoading(null);
-    setRejectionReason("");
-    router.refresh();
+    setError(null);
+    try {
+      const result = await rejectPayment(inscription.id, rejectionReason.trim() || undefined);
+      if (result.error) setError(result.error);
+      else {
+        setRejectionReason("");
+        router.refresh();
+      }
+    } catch {
+      setError("No se pudo rechazar el pago.");
+    } finally {
+      setLoading(null);
+    }
   }
 
   return (
     <>
+      {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-600">{error}</p>}
       <div className="bg-card rounded-xl p-4 sm:p-6 border border-card-border shadow-sm flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 sm:gap-6">
         <PaymentCardDetails
           inscription={inscription}

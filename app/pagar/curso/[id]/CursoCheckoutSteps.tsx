@@ -28,6 +28,10 @@ type PaySlice = {
   setReference: (v: string) => void;
   phoneNumber: string;
   setPhoneNumber: (v: string) => void;
+  whatsappNumber: string;
+  setWhatsappNumber: (v: string) => void;
+  whatsappMarketing: boolean;
+  setWhatsappMarketing: (v: boolean) => void;
   receiptImage: string | null;
   setReceiptImage: (v: string | null) => void;
   uploadingReceipt: boolean;
@@ -105,6 +109,10 @@ export function CursoPaymentStep({
           onReference={pay.setReference}
           phoneNumber={pay.phoneNumber}
           onPhoneNumber={pay.setPhoneNumber}
+          whatsappNumber={pay.whatsappNumber}
+          onWhatsappNumber={pay.setWhatsappNumber}
+          whatsappMarketing={pay.whatsappMarketing}
+          onWhatsappMarketing={pay.setWhatsappMarketing}
           receiptImage={pay.receiptImage}
           onReceiptChange={pay.setReceiptImage}
           uploadingReceipt={pay.uploadingReceipt}

@@ -95,6 +95,8 @@ export default function CheckoutPasteleria({
         method: pay.selectedMethod as PaymentMethod,
         reference: pay.reference.trim(),
         phoneNumber: pay.phoneNumber.trim() || undefined,
+        whatsappNumber: pay.whatsappNumber.trim(),
+        whatsappMarketing: pay.whatsappMarketing,
         amountPaid: numAmount,
         receiptImage: pay.receiptImage || undefined,
       });
@@ -171,6 +173,10 @@ export default function CheckoutPasteleria({
                 onReference={pay.setReference}
                 phoneNumber={pay.phoneNumber}
                 onPhoneNumber={pay.setPhoneNumber}
+                whatsappNumber={pay.whatsappNumber}
+                onWhatsappNumber={pay.setWhatsappNumber}
+                whatsappMarketing={pay.whatsappMarketing}
+                onWhatsappMarketing={pay.setWhatsappMarketing}
                 receiptImage={pay.receiptImage}
                 onReceiptChange={pay.setReceiptImage}
                 uploadingReceipt={pay.uploadingReceipt}

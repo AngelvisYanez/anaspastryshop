@@ -6,8 +6,17 @@ import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
 import { Prisma } from "@prisma/client";
+import { paymentSubmittedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 
 type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+function validWhatsapp(number: string | undefined): number is string {
+  return !!number && /^\+[1-9]\d{7,14}$/.test(number.replace(/[\s()-]/g, ""));
+}
+
+function normalizedWhatsapp(number: string) {
+  return number.replace(/[\s()-]/g, "");
+}
 
 async function withSerializableRetry<T>(
   operation: (tx: TransactionClient) => Promise<T>,
@@ -42,6 +51,8 @@ export type CreateCourseInscriptionParams = {
   method: PaymentMethod;
   reference?: string;
   phoneNumber?: string;
+  whatsappNumber: string;
+  whatsappMarketing?: boolean;
   amountPaid: number;
   receiptImage?: string;
 };
@@ -51,6 +62,8 @@ export type CreatePastryServiceParams = {
   method: PaymentMethod;
   reference?: string;
   phoneNumber?: string;
+  whatsappNumber: string;
+  whatsappMarketing?: boolean;
   amountPaid: number;
   receiptImage?: string;
 };
@@ -68,6 +81,7 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
   if (!data.cursoId) {
     return { error: "Debe seleccionar un taller o curso válido" };
   }
+  if (!validWhatsapp(data.whatsappNumber)) return { error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." };
 
   const userId = session.user.id;
 
@@ -94,6 +108,16 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
           status: "PENDING",
         },
       });
+      await tx.user.update({ where: { id: userId }, data: {
+        whatsappNumber: normalizedWhatsapp(data.whatsappNumber),
+        whatsappMarketing: data.whatsappMarketing === true,
+      } });
+      const curso = await tx.curso.findUnique({ where: { id: data.cursoId }, select: { title: true } });
+      await tx.whatsAppNotification.create({ data: {
+        eventKey: `payment-submitted:${inscription.id}`, userId,
+        phone: normalizedWhatsapp(data.whatsappNumber).slice(1),
+        text: paymentSubmittedText([curso?.title ?? "Workshop / Curso"]), kind: "TRANSACTIONAL",
+      } });
       return { kind: "created" as const, id: inscription.id };
     });
 
@@ -121,6 +145,7 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
     revalidatePath("/dashboard/pagos");
     revalidatePath("/dashboard/mis-cursos");
     revalidatePath(`/cursos/${data.cursoId}`);
+    await wakeWhatsAppBridge();
 
     return { success: true, inscriptionId: result.id };
   } catch (error) {
@@ -138,6 +163,7 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
   if (!session?.user?.id) {
     return { error: "Debes iniciar sesión o registrarte para registrar tu pago de pastelería" };
   }
+  if (!validWhatsapp(data.whatsappNumber)) return { error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." };
 
   const throttle = rateLimit(`pastry-payment:${session.user.id}`, {
     limit: 5,
@@ -152,6 +178,11 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
       ? `[Servicio: ${data.serviceDescription.trim()}] ${data.reference ? data.reference.trim() : ""}`.trim()
       : (data.reference || "Servicio de Pastelería");
 
+    await prisma.user.update({ where: { id: session.user.id }, data: {
+      whatsappNumber: normalizedWhatsapp(data.whatsappNumber),
+      whatsappMarketing: data.whatsappMarketing === true,
+    } });
+
     const inscription = await prisma.inscription.create({
       data: {
         method: data.method,
@@ -164,7 +195,6 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
         status: "PENDING",
       },
     });
-
     await logActivity({
       userId: session.user.id,
       action: "PASTRY_SERVICE_PAYMENT_SUBMITTED",
@@ -193,6 +223,8 @@ export type CreateBulkCourseInscriptionsParams = {
   method: PaymentMethod;
   reference?: string;
   phoneNumber?: string;
+  whatsappNumber: string;
+  whatsappMarketing?: boolean;
   receiptImage?: string;
 };
 
@@ -213,6 +245,7 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
   if (!data.items?.length) {
     return { error: "No hay formaciones en la bolsa para inscribir" };
   }
+  if (!validWhatsapp(data.whatsappNumber)) return { error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." };
 
   const uniqueItems = [
     ...new Map(data.items.filter((item) => item.cursoId).map((item) => [item.cursoId, item])).values(),
@@ -257,6 +290,16 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
             status: "PENDING" as const,
           })),
         });
+        await tx.user.update({ where: { id: userId }, data: {
+          whatsappNumber: normalizedWhatsapp(data.whatsappNumber),
+          whatsappMarketing: data.whatsappMarketing === true,
+        } });
+        const cursos = await tx.curso.findMany({ where: { id: { in: pending.map((item) => item.cursoId) } }, select: { title: true } });
+        await tx.whatsAppNotification.create({ data: {
+          eventKey: `payment-submitted-bag:${crypto.randomUUID()}`, userId,
+          phone: normalizedWhatsapp(data.whatsappNumber).slice(1),
+          text: paymentSubmittedText(cursos.map((curso) => curso.title)), kind: "TRANSACTIONAL",
+        } });
       }
       return { created: pending.map((item) => item.cursoId), alreadyEnrolled };
     });
@@ -292,6 +335,7 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/pagos");
   revalidatePath("/dashboard/mis-cursos");
+  await wakeWhatsAppBridge();
 
   return { success: true, inscriptionIds: created, alreadyEnrolled };
 }

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: anaspastryshop-whatsapp-bridge
+    runtime: node
+    plan: free
+    rootDir: whatsapp-bridge
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.21.0
+      - key: DATABASE_URL
+        sync: false
+      - key: BRIDGE_API_KEY
+        sync: false

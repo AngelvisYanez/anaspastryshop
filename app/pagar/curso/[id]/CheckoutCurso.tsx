@@ -85,6 +85,8 @@ export default function CheckoutCurso({
         method: pay.selectedMethod as PaymentMethod,
         reference: pay.reference.trim(),
         phoneNumber: pay.phoneNumber.trim() || undefined,
+        whatsappNumber: pay.whatsappNumber.trim(),
+        whatsappMarketing: pay.whatsappMarketing,
         amountPaid: coupon.effectivePrice,
         receiptImage: pay.receiptImage || undefined,
       });

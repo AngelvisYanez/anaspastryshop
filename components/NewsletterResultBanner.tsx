@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 export type NewsletterSendResult = {
   sent?: number;
   failed?: number;
+  whatsappQueued?: number;
   error?: string;
 };
 
@@ -28,7 +29,7 @@ export function NewsletterResultBanner({ result }: { result: NewsletterSendResul
         <>
           <CheckCircle2 size={15} className="text-green-500 mt-0.5 shrink-0" />
           <p className="text-sm font-bold text-green-700 dark:text-green-400">
-            Enviado: {result.sent} exitosos, {result.failed} fallidos.
+            Email: {result.sent} enviados, {result.failed} fallidos. WhatsApp: {result.whatsappQueued ?? 0} en cola.
           </p>
         </>
       )}

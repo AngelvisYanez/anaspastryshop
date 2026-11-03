@@ -60,7 +60,7 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
   const [preheader, setPreheader] = useState("");
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<{ sent?: number; failed?: number; error?: string } | null>(null);
+  const [result, setResult] = useState<{ sent?: number; failed?: number; whatsappQueued?: number; error?: string } | null>(null);
   const [showSubscribers, setShowSubscribers] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -81,7 +81,7 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
     try {
       const res = await sendNewsletter(subject, title, preheader, content);
       if (res.error) setResult({ error: res.error });
-      else setResult({ sent: res.sent, failed: res.failed });
+      else setResult({ sent: res.sent, failed: res.failed, whatsappQueued: res.whatsappQueued });
     } finally {
       setSending(false);
     }
@@ -193,7 +193,7 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
             {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
             {sending
               ? "Enviando..."
-              : `Enviar a ${activeCount} suscriptor${activeCount !== 1 ? "es" : ""} activo${activeCount !== 1 ? "s" : ""}`}
+              : `Enviar boletín por email y WhatsApp`}
           </button>
         </div>
 

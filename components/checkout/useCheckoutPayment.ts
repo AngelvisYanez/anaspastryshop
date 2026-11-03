@@ -25,6 +25,8 @@ export function useCheckoutPayment({
 
   const [reference, setReference] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [whatsappMarketing, setWhatsappMarketing] = useState(false);
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
 
@@ -141,6 +143,10 @@ export function useCheckoutPayment({
     setReference,
     phoneNumber,
     setPhoneNumber,
+    whatsappNumber,
+    setWhatsappNumber,
+    whatsappMarketing,
+    setWhatsappMarketing,
     receiptImage,
     setReceiptImage,
     uploadingReceipt,

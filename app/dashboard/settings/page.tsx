@@ -7,6 +7,7 @@ import { getAllApiConfigs } from "@/lib/actions/platformApi";
 import ApiConfigManager from "../api-config/ApiConfigManager";
 import PlatformModuleManager from "../modulos/PlatformModuleManager";
 import { DashboardPage } from "../DashboardPage";
+import WhatsAppSettings from "./WhatsAppSettings";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -18,7 +19,7 @@ export default async function SettingsPage() {
   const [dbUser, siteConfig, sections] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { name: true, email: true, image: true, role: true },
+      select: { name: true, email: true, image: true, role: true, whatsappNumber: true, whatsappMarketing: true },
     }),
     prisma.siteConfig.findFirst().catch(() => null),
     prisma.platformSection.findMany({ orderBy: { order: "asc" } }),
@@ -45,6 +46,8 @@ export default async function SettingsPage() {
               name: dbUser.name,
               email: dbUser.email,
               image: dbUser.image,
+              whatsappNumber: dbUser.whatsappNumber,
+              whatsappMarketing: dbUser.whatsappMarketing,
             }}
           />
         </div>
@@ -74,6 +77,7 @@ export default async function SettingsPage() {
       )}
 
       {isAdmin && <ApiConfigManager configs={apiConfigs as any} />}
+      {isAdmin && <WhatsAppSettings />}
     </DashboardPage>
   );
 }

@@ -9,6 +9,8 @@ interface UserProfile {
   name: string | null;
   email: string | null;
   image: string | null;
+  whatsappNumber: string | null;
+  whatsappMarketing: boolean;
 }
 
 function isSafeImageUrl(value: string | null | undefined): value is string {
@@ -153,6 +155,13 @@ export default function ProfileForm({ initialUser }: { initialUser: UserProfile 
             </div>
 
             <div className="space-y-1.5 pt-4 border-t border-card-border">
+              {initialUser.whatsappNumber && <div className="space-y-2">
+                <p className={labelClass}>WhatsApp: {initialUser.whatsappNumber}</p>
+                <label className="flex items-start gap-3 text-sm text-foreground">
+                  <input type="checkbox" name="whatsappMarketing" defaultChecked={initialUser.whatsappMarketing} className="mt-1" />
+                  <span>Quiero recibir novedades y nuevos cursos por WhatsApp. Puedo cancelar estos avisos cuando quiera.</span>
+                </label>
+              </div>}
               <label htmlFor="profile-new-password" className={labelClass}>
                 Nueva contraseña
               </label>

@@ -42,6 +42,7 @@ export async function updateProfile(formData: FormData) {
     const updateData: any = { 
       name,
       image: normalizeUserImage(image),
+      whatsappMarketing: formData.get("whatsappMarketing") === "on",
     };
 
     if (newPassword && newPassword.trim() !== "") {

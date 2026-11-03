@@ -98,6 +98,8 @@ export default function CheckoutBolsa({
         method: pay.selectedMethod as PaymentMethod,
         reference: pay.reference.trim(),
         phoneNumber: pay.phoneNumber.trim() || undefined,
+        whatsappNumber: pay.whatsappNumber.trim(),
+        whatsappMarketing: pay.whatsappMarketing,
         receiptImage: pay.receiptImage || undefined,
       });
       if (result.error) {

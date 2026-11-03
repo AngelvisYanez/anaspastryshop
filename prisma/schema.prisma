@@ -22,6 +22,8 @@ model User {
   isActive           Boolean       @default(true)
   deactivationReason String?
   image              String?
+  whatsappNumber     String?
+  whatsappMarketing  Boolean       @default(false)
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   activities         ActivityLog[]
@@ -239,6 +241,39 @@ model SiteConfig {
   tiktokUrl    String?
   navItems     Json     @default("[]")
   updatedAt    DateTime @updatedAt
+}
+
+model WhatsAppAuthState {
+  instance String
+  key      String
+  payload  Json
+
+  @@id([instance, key])
+}
+
+model WhatsAppConnection {
+  instance String   @id
+  linkedAt DateTime?
+}
+
+model WhatsAppNotification {
+  id          String    @id @default(cuid())
+  eventKey    String    @unique
+  userId      String?
+  phone       String
+  text        String
+  kind        String
+  status      String    @default("pending")
+  attempts    Int       @default(0)
+  availableAt DateTime  @default(now())
+  lockedAt    DateTime?
+  messageId   String?
+  lastError   String?
+  createdAt   DateTime  @default(now())
+  sentAt      DateTime?
+
+  @@index([status, availableAt])
+  @@index([userId, createdAt])
 }
 
 model PasswordResetToken {

@@ -150,6 +150,10 @@ export default function GatewayDetails({
   onReference,
   phoneNumber,
   onPhoneNumber,
+  whatsappNumber,
+  onWhatsappNumber,
+  whatsappMarketing,
+  onWhatsappMarketing,
   receiptImage,
   onReceiptChange,
   uploadingReceipt,
@@ -171,6 +175,10 @@ export default function GatewayDetails({
   onReference: (s: string) => void;
   phoneNumber: string;
   onPhoneNumber: (s: string) => void;
+  whatsappNumber: string;
+  onWhatsappNumber: (s: string) => void;
+  whatsappMarketing: boolean;
+  onWhatsappMarketing: (value: boolean) => void;
   receiptImage: string | null;
   onReceiptChange: (url: string | null) => void;
   uploadingReceipt: boolean;
@@ -221,6 +229,15 @@ export default function GatewayDetails({
       )}
 
       <form onSubmit={onSubmit} className="space-y-4 pt-4 border-t border-card-border">
+        <div>
+          <label htmlFor="checkout-whatsapp" className="text-[11px] font-black uppercase tracking-widest text-muted block mb-2 ml-1">WhatsApp para avisos de tu compra</label>
+          <input id="checkout-whatsapp" type="tel" required autoComplete="tel" placeholder="+58 412 1234567" value={whatsappNumber} onChange={(e) => onWhatsappNumber(e.target.value)} className="w-full bg-background border border-card-border rounded-2xl px-4 py-3 text-foreground" />
+          <p className="text-xs text-muted mt-1">Incluye el código de país. Te avisaremos cuando se confirme tu pago.</p>
+        </div>
+        <label className="flex items-start gap-2 text-xs text-muted">
+          <input type="checkbox" checked={whatsappMarketing} onChange={(e) => onWhatsappMarketing(e.target.checked)} />
+          Quiero recibir por WhatsApp novedades y nuevos cursos. Puedo cancelar estos avisos cuando quiera.
+        </label>
         {selectedMethod === "PAGO_MOVIL" && (
           <div>
             <label

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { sendNewsletterEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
+import { newsletterWhatsAppText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 
 // react-doctor-disable-next-line react-doctor/server-auth-actions -- public newsletter signup by design; only writes its own opt-in row and is rate limited
 export async function subscribeToNewsletter(email: string, name?: string) {
@@ -97,13 +98,29 @@ export async function sendNewsletter(
     return { error: "Asunto, título y contenido son obligatorios." };
   }
 
-  const activeSubscribers = await prisma.newsletterSubscriber.findMany({
-    where: { isActive: true },
-  });
+  const [activeSubscribers, whatsappUsers] = await Promise.all([
+    prisma.newsletterSubscriber.findMany({ where: { isActive: true } }),
+    prisma.user.findMany({
+      where: { whatsappMarketing: true, whatsappNumber: { not: null }, inscripciones: { some: { status: "APPROVED" } } },
+      select: { id: true, whatsappNumber: true },
+    }),
+  ]);
 
-  if (activeSubscribers.length === 0) {
-    return { error: "No hay suscriptores activos." };
+  if (activeSubscribers.length === 0 && whatsappUsers.length === 0) {
+    return { error: "No hay suscriptores activos ni clientes con WhatsApp autorizado." };
   }
+
+  const campaignId = crypto.randomUUID();
+  const whatsappQueued = await prisma.whatsAppNotification.createMany({
+    data: whatsappUsers.filter((user) => user.whatsappNumber && /^\+[1-9]\d{7,14}$/.test(user.whatsappNumber)).map((user) => ({
+      eventKey: `newsletter:${campaignId}:${user.id}`,
+      userId: user.id,
+      phone: user.whatsappNumber!.slice(1),
+      text: newsletterWhatsAppText(title, htmlContent),
+      kind: "MARKETING",
+    })),
+  });
+  if (whatsappQueued.count) await wakeWhatsAppBridge();
 
   let sent = 0;
   let failed = 0;
@@ -127,7 +144,7 @@ export async function sendNewsletter(
   }
 
   revalidatePath("/dashboard/newsletter");
-  return { success: true, sent, failed, total: activeSubscribers.length };
+  return { success: true, sent, failed, total: activeSubscribers.length, whatsappQueued: whatsappQueued.count };
 }
 
 export async function deleteNewsletterSubscriber(id: string) {

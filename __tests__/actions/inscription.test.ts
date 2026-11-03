@@ -9,6 +9,9 @@ vi.mock("@/lib/prisma", () => ({
       create: vi.fn(),
       createMany: vi.fn(),
     },
+    user: { update: vi.fn() },
+    curso: { findUnique: vi.fn(), findMany: vi.fn() },
+    whatsAppNotification: { create: vi.fn() },
   },
 }));
 
@@ -50,12 +53,17 @@ const mockPrisma = prisma as unknown as {
     create: ReturnType<typeof vi.fn>;
     createMany: ReturnType<typeof vi.fn>;
   };
+  user: { update: ReturnType<typeof vi.fn> };
+  curso: { findUnique: ReturnType<typeof vi.fn>; findMany: ReturnType<typeof vi.fn> };
+  whatsAppNotification: { create: ReturnType<typeof vi.fn> };
 };
 
 describe("createCourseInscription", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPrisma.$transaction.mockImplementation((operation) => operation(mockPrisma));
+    mockPrisma.curso.findUnique.mockResolvedValue({ title: "Cake de Piña" });
+    mockPrisma.curso.findMany.mockResolvedValue([{ title: "Cake de Piña" }]);
     vi.mocked(auth).mockResolvedValue({
       user: { id: "user-1", role: "USER" },
     } as never);
@@ -67,6 +75,7 @@ describe("createCourseInscription", () => {
       await createCourseInscription({
         cursoId: "c1",
         method: "ZELLE",
+        whatsappNumber: "+584121234567",
         amountPaid: 45,
       }),
     ).toMatchObject({ error: expect.stringMatching(/iniciar sesión/i) });
@@ -77,6 +86,7 @@ describe("createCourseInscription", () => {
       await createCourseInscription({
         cursoId: "",
         method: "ZELLE",
+        whatsappNumber: "+584121234567",
         amountPaid: 45,
       }),
     ).toMatchObject({ error: expect.stringMatching(/válido/i) });
@@ -91,6 +101,7 @@ describe("createCourseInscription", () => {
       await createCourseInscription({
         cursoId: "c1",
         method: "ZELLE",
+        whatsappNumber: "+584121234567",
         amountPaid: 45,
       }),
     ).toMatchObject({ error: expect.stringMatching(/acceso activo/i) });
@@ -103,6 +114,7 @@ describe("createCourseInscription", () => {
       await createCourseInscription({
         cursoId: "c1",
         method: "PAGO_MOVIL",
+        whatsappNumber: "+584121234567",
         amountPaid: 45,
         phoneNumber: "04121234567",
       }),
@@ -116,12 +128,22 @@ describe("createCourseInscription", () => {
     const result = await createCourseInscription({
       cursoId: "c1",
       method: "ZELLE",
+      whatsappNumber: "+584121234567",
       amountPaid: 45,
       reference: "ABC",
       receiptImage: "data:image/png;base64,x",
     });
 
     expect(result).toEqual({ success: true, inscriptionId: "ins-1" });
+    expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      eventKey: "payment-submitted:ins-1",
+      phone: "584121234567",
+      kind: "TRANSACTIONAL",
+    }) });
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { whatsappNumber: "+584121234567", whatsappMarketing: false },
+    });
     expect(mockPrisma.inscription.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -132,6 +154,16 @@ describe("createCourseInscription", () => {
         }),
       }),
     );
+  });
+
+  it("rechaza un número de WhatsApp sin código de país", async () => {
+    expect(await createCourseInscription({
+      cursoId: "c1",
+      method: "ZELLE",
+      amountPaid: 45,
+      whatsappNumber: "04121234567",
+    })).toEqual({ error: expect.stringContaining("código de país") });
+    expect(mockPrisma.inscription.create).not.toHaveBeenCalled();
   });
 
   it("reintenta una transacción en conflicto antes de crear el pago", async () => {
@@ -147,6 +179,7 @@ describe("createCourseInscription", () => {
     const result = await createCourseInscription({
       cursoId: "c1",
       method: "ZELLE",
+      whatsappNumber: "+584121234567",
       amountPaid: 45,
     });
 
@@ -176,6 +209,7 @@ describe("createPastryServicePayment", () => {
     const result = await createPastryServicePayment({
       serviceDescription: "Torta de boda 3 pisos",
       method: "BINANCE",
+      whatsappNumber: "+584121234567",
       reference: "TX99",
       amountPaid: 200,
       receiptImage: "img",
@@ -203,6 +237,7 @@ describe("createPastryServicePayment", () => {
       await createPastryServicePayment({
         serviceDescription: "Cupcakes",
         method: "ZELLE",
+        whatsappNumber: "+584121234567",
         amountPaid: 50,
       }),
     ).toMatchObject({ error: expect.stringMatching(/Demasiados/i) });
@@ -223,6 +258,7 @@ describe("createBulkCourseInscriptions", () => {
       await createBulkCourseInscriptions({
         items: [],
         method: "ZELLE",
+        whatsappNumber: "+584121234567",
       }),
     ).toMatchObject({ error: expect.stringMatching(/bolsa/i) });
   });
@@ -237,6 +273,7 @@ describe("createBulkCourseInscriptions", () => {
         { cursoId: "c2", amountPaid: 35 },
       ],
       method: "ZELLE",
+      whatsappNumber: "+584121234567",
       reference: "BAG-1",
     });
 
@@ -269,6 +306,7 @@ describe("createBulkCourseInscriptions", () => {
         { cursoId: "c2", amountPaid: 35 },
       ],
       method: "ZELLE",
+      whatsappNumber: "+584121234567",
     });
 
     expect(result).toMatchObject({
@@ -288,6 +326,7 @@ describe("createBulkCourseInscriptions", () => {
         { cursoId: "c1", amountPaid: 45 },
       ],
       method: "ZELLE",
+      whatsappNumber: "+584121234567",
       reference: "BAG-2",
     });
 

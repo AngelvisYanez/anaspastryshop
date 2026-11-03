@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    user: { findMany: vi.fn() },
+    whatsAppNotification: { createMany: vi.fn() },
     newsletterSubscriber: {
       upsert: vi.fn(),
       findUnique: vi.fn(),
@@ -42,6 +44,8 @@ import {
 } from "@/lib/actions/newsletter";
 
 const mockPrisma = prisma as unknown as {
+  user: { findMany: ReturnType<typeof vi.fn> };
+  whatsAppNotification: { createMany: ReturnType<typeof vi.fn> };
   newsletterSubscriber: {
     upsert: ReturnType<typeof vi.fn>;
     findUnique: ReturnType<typeof vi.fn>;
@@ -53,6 +57,8 @@ const mockPrisma = prisma as unknown as {
 describe("subscribeToNewsletter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.user.findMany.mockResolvedValue([]);
+    mockPrisma.whatsAppNotification.createMany.mockResolvedValue({ count: 0 });
     vi.mocked(rateLimit).mockReturnValue({
       allowed: true,
       remaining: 2,
@@ -110,6 +116,8 @@ describe("unsubscribeByToken", () => {
 describe("sendNewsletter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.user.findMany.mockResolvedValue([]);
+    mockPrisma.whatsAppNotification.createMany.mockResolvedValue({ count: 0 });
     vi.mocked(auth).mockResolvedValue({
       user: { id: "admin", role: "ADMIN" },
     } as never);
@@ -123,7 +131,7 @@ describe("sendNewsletter", () => {
     mockPrisma.newsletterSubscriber.findMany.mockResolvedValue([]);
     expect(await sendNewsletter("Asunto", "Título", "", "<p>Hola</p>")).toEqual(
       {
-        error: "No hay suscriptores activos.",
+        error: "No hay suscriptores activos ni clientes con WhatsApp autorizado.",
       },
     );
   });
@@ -136,6 +144,15 @@ describe("sendNewsletter", () => {
 
     expect(
       await sendNewsletter("Promo", "Hola", "pre", "<p>x</p>"),
-    ).toEqual({ success: true, sent: 2, failed: 0, total: 2 });
+    ).toEqual({ success: true, sent: 2, failed: 0, total: 2, whatsappQueued: 0 });
+  });
+  it("encola novedades solo para compradores autorizados", async () => {
+    mockPrisma.newsletterSubscriber.findMany.mockResolvedValue([]);
+    mockPrisma.user.findMany.mockResolvedValue([{ id: "u1", whatsappNumber: "+584121234567" }]);
+    mockPrisma.whatsAppNotification.createMany.mockResolvedValue({ count: 1 });
+    const result = await sendNewsletter("Promo", "Nuevos cursos", "", "<p>Hola</p>");
+    expect(result).toMatchObject({ success: true, whatsappQueued: 1 });
+    expect(mockPrisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ whatsappMarketing: true, inscripciones: { some: { status: "APPROVED" } } }) }));
+    expect(mockPrisma.whatsAppNotification.createMany).toHaveBeenCalledWith({ data: [expect.objectContaining({ phone: "584121234567", kind: "MARKETING" })] });
   });
 });

@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    $transaction: vi.fn(),
+    whatsAppNotification: { create: vi.fn() },
     inscription: {
       findUnique: vi.fn(),
       findMany: vi.fn(),
       findFirst: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
       count: vi.fn(),
       aggregate: vi.fn(),
     },
@@ -48,21 +51,25 @@ import { sendCoursePurchaseEmail, sendPaymentRejectedEmail } from "@/lib/email";
 import { checkUserCourseAccess } from "@/app/cursos/[slug]/checkUserCourseAccess";
 
 const mockPrisma = prisma as unknown as {
+  $transaction: ReturnType<typeof vi.fn>;
   inscription: {
     findUnique: ReturnType<typeof vi.fn>;
     findMany: ReturnType<typeof vi.fn>;
     findFirst: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
+    updateMany: ReturnType<typeof vi.fn>;
     count: ReturnType<typeof vi.fn>;
     aggregate: ReturnType<typeof vi.fn>;
   };
   curso: { findUnique: ReturnType<typeof vi.fn> };
+  whatsAppNotification: { create: ReturnType<typeof vi.fn> };
   coursePurchase: { findFirst: ReturnType<typeof vi.fn> };
 };
 
 describe("payments admin flows", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.$transaction.mockImplementation((operation) => operation(mockPrisma));
     vi.mocked(auth).mockResolvedValue({
       user: { id: "admin-1", role: "ADMIN" },
     } as never);
@@ -87,16 +94,21 @@ describe("payments admin flows", () => {
       id: "i1",
       cursoId: "c1",
       amountPaid: 45,
-      user: { id: "u1", email: "a@test.com", name: "Ana" },
+      status: "PENDING",
+      user: { id: "u1", email: "a@test.com", name: "Ana", whatsappNumber: "+584121234567" },
+      curso: { title: "Cake de Piña" },
     });
-    mockPrisma.inscription.update.mockResolvedValue({});
+    mockPrisma.inscription.updateMany.mockResolvedValue({ count: 1 });
     mockPrisma.curso.findUnique.mockResolvedValue({ title: "Cake de Piña" });
 
     expect(await approvePayment("i1")).toEqual({ success: true });
-    expect(mockPrisma.inscription.update).toHaveBeenCalledWith({
-      where: { id: "i1" },
+    expect(mockPrisma.inscription.updateMany).toHaveBeenCalledWith({
+      where: { id: "i1", status: "PENDING" },
       data: { status: "APPROVED" },
     });
+    expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      eventKey: "payment-approved:i1", phone: "584121234567", kind: "TRANSACTIONAL",
+    }) });
     expect(sendCoursePurchaseEmail).toHaveBeenCalledWith(
       "a@test.com",
       "Ana",
@@ -109,9 +121,10 @@ describe("payments admin flows", () => {
       id: "i2",
       cursoId: null,
       amountPaid: 100,
+      status: "PENDING",
       user: { id: "u1", email: "a@test.com", name: "Ana" },
     });
-    mockPrisma.inscription.update.mockResolvedValue({});
+    mockPrisma.inscription.updateMany.mockResolvedValue({ count: 1 });
 
     expect(await approvePayment("i2")).toEqual({ success: true });
     expect(mockPrisma.curso.findUnique).not.toHaveBeenCalled();
@@ -122,19 +135,31 @@ describe("payments admin flows", () => {
     mockPrisma.inscription.findUnique.mockResolvedValue({
       id: "i3",
       cursoId: "c1",
+      status: "PENDING",
       user: { email: "a@test.com", name: "Ana" },
       curso: { title: "Merengue" },
     });
-    mockPrisma.inscription.update.mockResolvedValue({});
+    mockPrisma.inscription.updateMany.mockResolvedValue({ count: 1 });
 
     expect(await rejectPayment("i3", "Comprobante ilegible")).toEqual({
       success: true,
     });
-    expect(mockPrisma.inscription.update).toHaveBeenCalledWith({
-      where: { id: "i3" },
+    expect(mockPrisma.inscription.updateMany).toHaveBeenCalledWith({
+      where: { id: "i3", status: "PENDING" },
       data: { status: "REJECTED" },
     });
     expect(sendPaymentRejectedEmail).toHaveBeenCalled();
+  });
+
+  it("impide procesar de nuevo un pago", async () => {
+    mockPrisma.inscription.findUnique.mockResolvedValue({
+      id: "i4",
+      status: "APPROVED",
+      user: { email: "a@test.com", name: "Ana" },
+    });
+    expect(await rejectPayment("i4")).toEqual({ error: "Este pago ya fue procesado" });
+    expect(mockPrisma.inscription.updateMany).not.toHaveBeenCalled();
+    expect(sendPaymentRejectedEmail).not.toHaveBeenCalled();
   });
 
   it("getPaymentStats agrega contadores", async () => {
