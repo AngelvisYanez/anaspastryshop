@@ -5,7 +5,7 @@ Este servicio vincula una cuenta de WhatsApp mediante QR y entrega avisos de pag
 ## Render
 
 1. Crea un Blueprint con el `render.yaml` de la raíz del repositorio. Debe crear el servicio `anaspastryshop-whatsapp-bridge` con plan gratuito.
-2. Asigna `DATABASE_URL` con la **cadena directa** `POSTGRES_URL` de Prisma Postgres (`postgres://...@db.prisma.io:5432/...`). No pegues el nombre de la variable ni un `=` delante de la URL.
+2. Asigna `DATABASE_URL` con la **cadena directa** `POSTGRES_URL` de Prisma Postgres (`postgres://...@db.prisma.io:5432/...`). La URL `prisma+postgres://` usada por Vercel no funciona en este puente. Copia solamente el valor de `POSTGRES_URL`, sin el nombre de la variable.
 3. Genera una clave aleatoria para `BRIDGE_API_KEY` y guárdala también en Vercel como `WA_BRIDGE_API_KEY`. Configura en Vercel `WA_BRIDGE_URL` con la URL pública del servicio Render.
 4. En `/dashboard/settings`, como administrador, pulsa **Generar QR** y escanéalo desde WhatsApp > Dispositivos vinculados. El servicio guarda la sesión en PostgreSQL.
 

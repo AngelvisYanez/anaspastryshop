@@ -1,12 +1,14 @@
 import { prismaPostgres, defaultClientConfig } from "@prisma/ppg";
 import { BufferJSON, initAuthCreds, proto } from "@whiskeysockets/baileys";
 
-const raw = process.env.DATABASE_URL?.trim().replace(/^=+(?=postgres(?:ql)?:\/\/)/i, "");
-if (!raw) throw new Error("DATABASE_URL es obligatoria");
+let raw = (process.env.POSTGRES_URL || process.env.DATABASE_URL || '').trim();
+raw = raw.replace(/^(?:DATABASE_URL|POSTGRES_URL)\s*=\s*/i, '').replace(/^=+/, '').trim();
+if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) raw = raw.slice(1, -1).trim();
+if (!raw) throw new Error("Configura DATABASE_URL en Render con el valor de POSTGRES_URL del proyecto");
 try {
   const parsed = new URL(raw);
   if (!['postgres:', 'postgresql:'].includes(parsed.protocol)) throw new Error("protocol");
-} catch { throw new Error("DATABASE_URL debe ser una URL PostgreSQL válida"); }
+} catch { throw new Error("DATABASE_URL de Render debe comenzar con postgres:// (usa POSTGRES_URL, no la URL prisma+postgres de Vercel)"); }
 const db = prismaPostgres(defaultClientConfig(raw));
 export const query = (sql, ...params) => db.query(sql, ...params).collect();
 export const exec = (sql, ...params) => db.exec(sql, ...params);
