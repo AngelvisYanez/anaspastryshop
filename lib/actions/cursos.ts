@@ -169,8 +169,6 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
 
     if (!course) return { error: "Curso no encontrado" };
 
-    const hasEnrolled = course._count.inscritos > 0;
-    const finalPrice = hasEnrolled ? course.price : data.price;
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     const workshopContent = serializeWorkshopDetails({
@@ -191,7 +189,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       title: data.title,
       slug: nextSlug,
       description: data.description,
-      price: finalPrice,
+      price: data.price,
       category: data.isLive ? "Workshops Presenciales" : "Cursos Online",
       totalHours: data.totalHours,
       totalClasses,
@@ -236,6 +234,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     revalidatePath("/workshops/calendario");
     revalidatePath(`/cursos/${courseId}`);
     revalidatePath(`/cursos/${nextSlug}`);
+    if (data.isLive) revalidatePath(`/workshop/${nextSlug}`);
     revalidateCourseCaches();
     return { success: true };
   } catch (error: unknown) {

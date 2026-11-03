@@ -111,7 +111,7 @@ describe("cursos admin flows", () => {
     expect(await deleteCourse("c1")).toEqual({ success: true });
   });
 
-  it("updateCourse no cambia precio si hay inscritos", async () => {
+  it("updateCourse cambia precio aunque haya inscritos", async () => {
     mockPrisma.curso.findUnique
       .mockResolvedValueOnce({
         id: "c1",
@@ -138,7 +138,7 @@ describe("cursos admin flows", () => {
     expect(mockPrisma.curso.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          price: 80,
+          price: 999,
           title: "Taller de Fondant Actualizado",
         }),
       }),

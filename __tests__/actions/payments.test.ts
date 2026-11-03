@@ -122,11 +122,14 @@ describe("payments admin flows", () => {
       cursoId: null,
       amountPaid: 100,
       status: "PENDING",
-      user: { id: "u1", email: "a@test.com", name: "Ana" },
+      user: { id: "u1", email: "a@test.com", name: "Ana", whatsappNumber: "+584121234567" },
     });
     mockPrisma.inscription.updateMany.mockResolvedValue({ count: 1 });
 
     expect(await approvePayment("i2")).toEqual({ success: true });
+    expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      eventKey: "payment-approved:i2", phone: "584121234567", kind: "TRANSACTIONAL",
+    }) });
     expect(mockPrisma.curso.findUnique).not.toHaveBeenCalled();
     expect(sendCoursePurchaseEmail).not.toHaveBeenCalled();
   });

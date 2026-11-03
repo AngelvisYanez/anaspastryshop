@@ -12,6 +12,7 @@ async function requireAdmin() {
 }
 
 export async function getAllGatewayConfigs() {
+  await requireAdmin();
   return prisma.paymentGatewayConfig.findMany();
 }
 

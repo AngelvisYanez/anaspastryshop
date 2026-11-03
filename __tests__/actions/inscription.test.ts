@@ -216,6 +216,13 @@ describe("createPastryServicePayment", () => {
     });
 
     expect(result).toEqual({ success: true, inscriptionId: "p1" });
+    expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        eventKey: "payment-submitted:p1",
+        phone: "584121234567",
+        kind: "TRANSACTIONAL",
+      }),
+    });
     expect(mockPrisma.inscription.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({

@@ -164,8 +164,9 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
     return { error: "Debes iniciar sesión o registrarte para registrar tu pago de pastelería" };
   }
   if (!validWhatsapp(data.whatsappNumber)) return { error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." };
+  const userId = session.user.id;
 
-  const throttle = rateLimit(`pastry-payment:${session.user.id}`, {
+  const throttle = rateLimit(`pastry-payment:${userId}`, {
     limit: 5,
     windowMs: 60 * 60 * 1000,
   });
@@ -178,12 +179,13 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
       ? `[Servicio: ${data.serviceDescription.trim()}] ${data.reference ? data.reference.trim() : ""}`.trim()
       : (data.reference || "Servicio de Pastelería");
 
-    await prisma.user.update({ where: { id: session.user.id }, data: {
-      whatsappNumber: normalizedWhatsapp(data.whatsappNumber),
-      whatsappMarketing: data.whatsappMarketing === true,
-    } });
+    const inscription = await withSerializableRetry(async (tx) => {
+      await tx.user.update({ where: { id: userId }, data: {
+        whatsappNumber: normalizedWhatsapp(data.whatsappNumber),
+        whatsappMarketing: data.whatsappMarketing === true,
+      } });
 
-    const inscription = await prisma.inscription.create({
+      const created = await tx.inscription.create({
       data: {
         method: data.method,
         reference: refFormatted,
@@ -191,9 +193,18 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
         amountPaid: data.amountPaid,
         receiptImage: data.receiptImage || null,
         cursoId: null, // Null identifica pago directo de servicio de pastelería
-        userId: session.user.id,
+        userId,
         status: "PENDING",
       },
+      });
+      await tx.whatsAppNotification.create({ data: {
+      eventKey: `payment-submitted:${created.id}`,
+      userId,
+      phone: normalizedWhatsapp(data.whatsappNumber).slice(1),
+      text: paymentSubmittedText(["Servicio de Pastelería"]),
+      kind: "TRANSACTIONAL",
+      } });
+      return created;
     });
     await logActivity({
       userId: session.user.id,
@@ -210,6 +221,7 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
 
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/pagos");
+    await wakeWhatsAppBridge();
 
     return { success: true, inscriptionId: inscription.id };
   } catch (error) {

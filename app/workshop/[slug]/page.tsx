@@ -37,9 +37,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Workshop No Encontrado" };
   }
 
+  const publishedRows = await getPublishedWorkshopRows();
+  const course = publishedRows.find((row) => {
+    const details = parseWorkshopDetails(row.content, row.isLive, row.title);
+    return getWorkshopBySlug(details.slug ?? row.slug ?? "")?.slug === workshop.slug
+      || row.title.toLocaleLowerCase("es") === workshop.title.toLocaleLowerCase("es");
+  });
+
   return buildPageMetadata({
     title: `${workshop.shortTitle} — Workshop Presencial en ${GEO.shortAddress}`,
-    description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Coro, Falcón, Venezuela. Cupo de ${workshop.spots} personas. Inversión: $${workshop.price} USD.`,
+    description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Coro, Falcón, Venezuela. Cupo de ${workshop.spots} personas. Inversión: $${course?.price ?? workshop.price} USD.`,
     path: `/workshop/${workshop.slug}`,
     images: [{ url: workshop.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }],
     keywords: [

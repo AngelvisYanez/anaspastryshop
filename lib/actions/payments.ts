@@ -58,12 +58,12 @@ export async function approvePayment(inscriptionId: string) {
         where: { id: inscriptionId, status: "PENDING" },
         data: { status: "APPROVED" },
       });
-      if (result.count && inscription.cursoId && inscription.user.whatsappNumber) {
+      if (result.count && inscription.user.whatsappNumber) {
         await tx.whatsAppNotification.create({ data: {
           eventKey: `payment-approved:${inscriptionId}`,
           userId: inscription.user.id,
           phone: inscription.user.whatsappNumber.replace(/\D/g, ""),
-          text: paymentApprovedText(inscription.curso?.title ?? "Workshop / Curso"),
+          text: paymentApprovedText(inscription.curso?.title ?? "Servicio de Pastelería"),
           kind: "TRANSACTIONAL",
         } });
       }
