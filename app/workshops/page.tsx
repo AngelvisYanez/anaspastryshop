@@ -39,6 +39,7 @@ export default async function WorkshopsPage() {
       id: row.id,
       bagId: row.id,
       price: row.price,
+      image: row.image,
       workshopDate: "Próximamente",
       workshopTime: details.workshopTime,
     });

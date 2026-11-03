@@ -85,6 +85,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
   const workshop = {
     ...catalogWorkshop,
     price: course.price,
+    image: course.image || catalogWorkshop.image,
     schedule: isoDate ? formatWorkshopDateLabel(isoDate) : "Próximamente",
     startTime: details.workshopTime ?? catalogWorkshop.startTime,
   };

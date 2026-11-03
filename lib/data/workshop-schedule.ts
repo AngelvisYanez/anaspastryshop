@@ -64,6 +64,7 @@ export function getCalendarEvents(rows: PublishedWorkshopRow[]): CalendarWorksho
           id: row.id,
           bagId: row.id,
           price: row.price,
+          image: row.image,
           workshopDate: formatWorkshopDateLabel(date),
           workshopTime: startTime,
         })

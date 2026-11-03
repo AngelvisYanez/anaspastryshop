@@ -22,7 +22,7 @@ describe("onlineCourseCovers", () => {
     expect(normalize("  Cake de Piña  ")).toBe("cake de pina");
   });
 
-  it("resuelve portada por slug", () => {
+  it("prioriza la portada guardada sobre la portada por slug", () => {
     expect(
       resolveCourseCover({
         title: "Cualquiera",
@@ -30,7 +30,7 @@ describe("onlineCourseCovers", () => {
         image: "/fallback.png",
         isWorkshop: false,
       }),
-    ).toBe("/curso-online-cake-de-pina.png");
+    ).toBe("/fallback.png");
   });
 
   it("resuelve portada por keyword de título", () => {
@@ -44,7 +44,7 @@ describe("onlineCourseCovers", () => {
     ).toBe("/curso-online-merengue-italiano.png");
   });
 
-  it("forza null en workshops", () => {
+  it("usa la portada guardada de workshops", () => {
     expect(
       resolveCourseCover({
         title: "Tortas Básicas",
@@ -52,7 +52,7 @@ describe("onlineCourseCovers", () => {
         image: "/x.png",
         isWorkshop: true,
       }),
-    ).toBeNull();
+    ).toBe("/x.png");
   });
 
   it("withCourseCover muta solo la imagen", () => {
@@ -65,7 +65,7 @@ describe("onlineCourseCovers", () => {
       image: "/old.png",
       isWorkshop: false,
     });
-    expect(card.image).toBe("/curso-online-cake-de-pina.png");
+    expect(card.image).toBe("/old.png");
     expect(card.title).toBe("Cake de Piña");
   });
 });

@@ -3,9 +3,7 @@ import type { FormacionCardData } from "@/components/FormacionCard";
 /**
  * Portadas dedicadas de los cursos online que viven en /public.
  *
- * Son imágenes específicas de cursos online concretos, así que se resuelven por
- * título/slug en lugar de depender del campo `image` de la base de datos.
- * El campo `image` de la BD se sigue usando como fallback.
+ * Son portadas de respaldo para cursos online sin imagen configurada en la BD.
  */
 interface CoverEntry {
   file: string;
@@ -44,7 +42,10 @@ export function normalize(value?: string | null): string {
 export function resolveCourseCover(
   course: Pick<FormacionCardData, "title" | "slug" | "image" | "isWorkshop">
 ): string | null {
-  // Workshops: siempre placeholder de marca (sin foto de producto).
+  const savedImage = course.image?.trim();
+  if (savedImage && savedImage !== "null" && savedImage !== "undefined") return savedImage;
+
+  // Workshops sin imagen configurada usan el placeholder de marca.
   if (course.isWorkshop) return null;
 
   const slug = normalize(course.slug);
@@ -56,13 +57,13 @@ export function resolveCourseCover(
   }
 
   const haystack = normalize(`${course.title} ${course.slug ?? ""}`);
-  if (!haystack) return course.image ?? null;
+  if (!haystack) return null;
 
   const match = ONLINE_COURSE_COVERS.find((entry) =>
     entry.keywords.some((keyword) => haystack.includes(keyword))
   );
 
-  return match ? match.file : course.image ?? null;
+  return match ? match.file : null;
 }
 
 /**

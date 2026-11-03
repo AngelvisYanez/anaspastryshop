@@ -16,8 +16,7 @@ function usableSrc(image?: string | null): string | null {
 
 /**
  * Cover for a workshop/course card.
- * - Workshops → placeholder de marca (logo).
- * - Cursos online → portada dedicada si existe, si no `image`.
+ * Usa la imagen configurada; sin ella muestra la portada de respaldo o el placeholder.
  */
 export default function FormacionCover({
   image,
@@ -40,7 +39,7 @@ export default function FormacionCover({
     isWorkshop,
   });
   const src = usableSrc(resolved);
-  const showImage = !isWorkshop && src !== null && !failed;
+  const showImage = src !== null && !failed;
 
   return (
     <div className="absolute inset-0">
