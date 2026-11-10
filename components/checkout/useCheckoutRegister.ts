@@ -13,7 +13,7 @@ async function signInWithPassword(email: string, password: string) {
   });
 }
 
-export function useCheckoutRegister(setStep: (step: CheckoutStep) => void) {
+export function useCheckoutRegister(setStep: (step: CheckoutStep) => void, onRegisteredWhatsApp?: (number: string) => void) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +26,7 @@ export function useCheckoutRegister(setStep: (step: CheckoutStep) => void) {
     const formData = new FormData(form);
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
+    const whatsappNumber = String(formData.get("whatsappNumber") ?? "").trim();
 
     // Mantener el email normalizado para el server action y el sign-in.
     formData.set("email", email);
@@ -47,6 +48,7 @@ export function useCheckoutRegister(setStep: (step: CheckoutStep) => void) {
           );
           return;
         }
+        onRegisteredWhatsApp?.(whatsappNumber);
         setStep(2);
         return;
       }
@@ -65,6 +67,7 @@ export function useCheckoutRegister(setStep: (step: CheckoutStep) => void) {
         return;
       }
 
+      onRegisteredWhatsApp?.(whatsappNumber);
       setStep(2);
     } catch (err) {
       console.error("[checkout] register/sign-in failed:", err);

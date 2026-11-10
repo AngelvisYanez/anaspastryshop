@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { m } from "framer-motion";
-import { ArrowLeft, Mail, Lock, User, Loader2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Phone, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/actions/auth";
@@ -115,6 +115,15 @@ export default function RegistroPage() {
                   className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
                 />
               </div>
+            </div>
+
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="reg-whatsapp" className="text-[11px] font-bold uppercase tracking-widest text-muted ml-1 block">Número de WhatsApp</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
+                <input id="reg-whatsapp" type="tel" name="whatsappNumber" required autoComplete="tel" placeholder="+58 412 1234567" className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 focus:outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm" />
+              </div>
+              <p className="text-xs text-muted ml-1">Incluye el código de país. Recibirás aquí los avisos sobre tus pagos.</p>
             </div>
 
             <div className="md:col-span-2 space-y-2">

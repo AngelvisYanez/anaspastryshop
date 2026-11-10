@@ -31,7 +31,6 @@ export default function CheckoutPasteleria({
   initialEmail?: string | null;
 }) {
   const [step, setStep] = useState<CheckoutStep>(initialLoggedIn ? 2 : 1);
-  const register = useCheckoutRegister(setStep);
   const [serviceDescription, setServiceDescription] = useState("");
   const [amountPaidStr, setAmountPaidStr] = useState("");
 
@@ -41,6 +40,7 @@ export default function CheckoutPasteleria({
     enabled: step === 2,
     amountUsd,
   });
+  const register = useCheckoutRegister(setStep, pay.setWhatsappNumber);
 
   const heroTitle =
     step === 1

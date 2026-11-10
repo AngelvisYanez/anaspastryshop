@@ -64,6 +64,14 @@ function form(data: Record<string, string>) {
 }
 
 describe("registerUser", () => {
+  it("requires a valid WhatsApp number", async () => {
+    expect(
+      await registerUser(
+        form({ name: "Ana", email: "ana@test.com", password: "password1" }),
+      ),
+    ).toEqual({ error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." });
+    expect(mockPrisma.user.create).not.toHaveBeenCalled();
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(rateLimit).mockReturnValue({
@@ -79,7 +87,7 @@ describe("registerUser", () => {
     });
     expect(
       await registerUser(
-        form({ name: "Ana", email: "ana@test.com", password: "short" }),
+        form({ name: "Ana", email: "ana@test.com", password: "short", whatsappNumber: "+584121234567" }),
       ),
     ).toEqual({ error: "La contraseña debe tener al menos 8 caracteres" });
   });
@@ -92,7 +100,7 @@ describe("registerUser", () => {
     });
     expect(
       await registerUser(
-        form({ name: "Ana", email: "ana@test.com", password: "password1" }),
+        form({ name: "Ana", email: "ana@test.com", password: "password1", whatsappNumber: "+584121234567" }),
       ),
     ).toEqual({ error: "Demasiados intentos. Intenta de nuevo más tarde." });
   });
@@ -101,7 +109,7 @@ describe("registerUser", () => {
     mockPrisma.user.findUnique.mockResolvedValue({ id: "1", email: "ana@test.com" });
     expect(
       await registerUser(
-        form({ name: "Ana", email: "Ana@Test.com", password: "password1" }),
+        form({ name: "Ana", email: "Ana@Test.com", password: "password1", whatsappNumber: "+584121234567" }),
       ),
     ).toEqual({ error: "El correo ya está registrado" });
     expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
@@ -119,7 +127,7 @@ describe("registerUser", () => {
     });
 
     const result = await registerUser(
-      form({ name: "Ana", email: "ana@test.com", password: "password1" }),
+      form({ name: "Ana", email: "ana@test.com", password: "password1", whatsappNumber: "+584121234567" }),
     );
     expect(result).toEqual({ success: true });
     expect(mockPrisma.user.create).toHaveBeenCalledWith(
@@ -127,6 +135,7 @@ describe("registerUser", () => {
         data: expect.objectContaining({
           email: "ana@test.com",
           role: "USER",
+          whatsappNumber: "+584121234567",
         }),
       }),
     );

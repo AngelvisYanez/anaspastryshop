@@ -18,6 +18,7 @@ export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
+  const whatsappNumber = String(formData.get("whatsappNumber") ?? "").replace(/[\s()-]/g, "");
 
   if (!name || !email || !password) {
     return { error: "Todos los campos son obligatorios" };
@@ -25,6 +26,9 @@ export async function registerUser(formData: FormData) {
 
   if (password.length < 8) {
     return { error: "La contraseña debe tener al menos 8 caracteres" };
+  }
+  if (!/^\+[1-9]\d{7,14}$/.test(whatsappNumber)) {
+    return { error: "Ingresa un WhatsApp válido con código de país (ej. +584121234567)." };
   }
 
   const throttle = rateLimit(`register:${email}`, {
@@ -52,6 +56,7 @@ export async function registerUser(formData: FormData) {
         email,
         password: hashedPassword,
         role: "USER",
+        whatsappNumber,
       },
     });
 

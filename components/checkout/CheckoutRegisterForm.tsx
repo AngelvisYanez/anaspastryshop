@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { User, Mail, Lock, Phone, ArrowRight, Loader2 } from "lucide-react";
 
 export function CheckoutRegisterForm({
   idPrefix,
@@ -60,6 +60,15 @@ export function CheckoutRegisterForm({
               className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm font-medium"
             />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor={`${idPrefix}-whatsapp`} className="text-[11px] font-black uppercase tracking-widest text-muted block mb-2 ml-1">WhatsApp para avisos de tu compra</label>
+          <div className="relative">
+            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={16} />
+            <input id={`${idPrefix}-whatsapp`} name="whatsappNumber" type="tel" required autoComplete="tel" placeholder="+58 412 1234567" className="w-full bg-background border border-card-border rounded-2xl py-4 pl-11 pr-4 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm font-medium" />
+          </div>
+          <p className="mt-1 text-xs text-muted">Incluye el código de país. Usaremos este número para avisarte sobre tu pago.</p>
         </div>
 
         <div>

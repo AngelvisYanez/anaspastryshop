@@ -57,7 +57,6 @@ export default function CheckoutBolsa({
 }) {
   const [step, setStep] = useState<CheckoutStep>(initialLoggedIn ? 2 : 1);
   const { clearBag } = useCart();
-  const register = useCheckoutRegister(setStep);
   const total = courses.reduce((acc, c) => acc + c.price, 0);
   const coupon = useCheckoutCoupon(total, {
     cursoIds: courses.map((c) => c.id),
@@ -67,6 +66,7 @@ export default function CheckoutBolsa({
     coupon.effectivePrice,
   );
   const pay = useCheckoutPayment({ amountUsd: coupon.effectivePrice });
+  const register = useCheckoutRegister(setStep, pay.setWhatsappNumber);
 
   const itemsQuery = courses.map((c) => c.id).join(",");
   const submitLabel = `Confirmar Pago${coupon.appliedCoupon ? "" : " de la Bolsa"} ($${coupon.effectivePrice} USD)`;
