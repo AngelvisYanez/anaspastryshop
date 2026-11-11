@@ -3,6 +3,7 @@
 import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
+import IntroVideoField from "@/components/IntroVideoField";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
 import { CourseModulesEditor } from "@/components/CourseModulesEditor";
@@ -152,14 +153,7 @@ export default function CourseEditClient({
                   <label htmlFor="course-intro-video" className={labelClass}>
                     Video de Introducción
                   </label>
-                  <input
-                    id="course-intro-video"
-                    value={form.introVideo}
-                    onChange={(e) => form.setIntroVideo(e.target.value)}
-                    type="url"
-                    className={`${fieldClass} placeholder:text-muted text-sm`}
-                    placeholder="Pega el link (YouTube, Vimeo...)"
-                  />
+                  <IntroVideoField value={form.introVideo} onChange={form.setIntroVideo} className={`${fieldClass} placeholder:text-muted text-sm`} />
                 </div>
               </div>
             </section>

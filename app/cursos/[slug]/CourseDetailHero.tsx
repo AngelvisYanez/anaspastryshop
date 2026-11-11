@@ -126,7 +126,9 @@ export function CourseDetailHero({
               className="bg-white/[0.06] border border-white/15 rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl"
             >
               <div className="relative w-full aspect-square bg-[#120317] overflow-hidden">
-                {embedUrl && embedUrl.includes("http") ? (
+                {embedUrl?.startsWith("/api/intro-videos/") ? (
+                  <video src={embedUrl} controls preload="metadata" className="absolute inset-0 w-full h-full object-contain" />
+                ) : embedUrl && embedUrl.includes("http") ? (
                   <iframe
                     src={embedUrl}
                     title="Vista previa"

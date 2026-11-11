@@ -6,6 +6,7 @@ import { Video, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { createCourse } from "@/lib/actions/cursos";
 import ImageUploader from "@/components/ImageUploader";
+import IntroVideoField from "@/components/IntroVideoField";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
 import { CourseModulesEditor } from "@/components/CourseModulesEditor";
@@ -238,14 +239,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="course-intro-video" className="block text-sm font-bold text-foreground mb-2">Video de Introducción o Trailer</label>
-              <input
-                id="course-intro-video"
-                value={introVideo}
-                onChange={e => setIntroVideo(e.target.value)}
-                type="url"
-                className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm"
-                placeholder="Pega el link (YouTube, Vimeo...)"
-              />
+              <IntroVideoField value={introVideo} onChange={setIntroVideo} className="w-full bg-section-alt border border-card-border rounded-xl px-4 py-3 outline-none focus:border-accent transition text-foreground placeholder:text-muted text-sm" />
             </div>
 
             <div>
