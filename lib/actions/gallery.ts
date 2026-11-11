@@ -21,9 +21,11 @@ export type GalleryItemData = {
 };
 
 export async function getGalleryItems(): Promise<GalleryItemData[]> {
-  return prisma.galleryItem.findMany({
+  const items = await prisma.galleryItem.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    omit: { imageUrl: true },
   });
+  return items.map((item) => ({ ...item, imageUrl: `/api/gallery-image/${item.id}` }));
 }
 
 export async function addGalleryItem(formData: FormData) {
@@ -45,7 +47,7 @@ export async function addGalleryItem(formData: FormData) {
     revalidatePath("/pasteleria");
     revalidatePath("/dashboard/galeria");
     updateTag("gallery");
-    return { item };
+    return { item: { ...item, imageUrl: `/api/gallery-image/${item.id}` } };
   } catch (error) {
     return { error: "No se pudo guardar la imagen" };
   }
@@ -74,5 +76,5 @@ export async function updateGalleryItem(
   revalidatePath("/pasteleria");
   revalidatePath("/dashboard/galeria");
   updateTag("gallery");
-  return { item };
+  return { item: { ...item, imageUrl: `/api/gallery-image/${item.id}` } };
 }

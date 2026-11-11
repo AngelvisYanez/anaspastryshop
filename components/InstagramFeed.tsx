@@ -22,11 +22,11 @@ async function getGallery(): Promise<GalleryCard[]> {
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
       select: {
         id: true,
-        imageUrl: true,
+        imageUrl: false,
         alt: true,
         caption: true,
       },
-    });
+    }).then((rows) => rows.map((row) => ({ ...row, imageUrl: `/api/gallery-image/${row.id}` })));
   } catch {
     return [];
   }
