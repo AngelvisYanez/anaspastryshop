@@ -174,7 +174,7 @@ export function WorkshopDetailBody({
                     id: courseId,
                     title: workshop.shortTitle,
                     price: workshop.price,
-                    image: null,
+                    image: workshop.image ?? null,
                     isWorkshop: true,
                   }}
                   variant="solid"

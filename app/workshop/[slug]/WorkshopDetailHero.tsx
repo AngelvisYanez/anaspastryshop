@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Clock, Calendar, MapPin, Sparkles } from "lucide-react";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
 import { WORKSHOP_LOCATION_SHORT } from "@/lib/utils/workshop";
@@ -15,9 +16,12 @@ export function WorkshopDetailHero({
     level: string;
     duration: string;
     startTime: string;
+    image?: string | null;
   };
   depositAmount: number;
 }) {
+  const coverSrc = workshop.image?.trim() || null;
+
   return (
     <section className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
       <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#E82D8A_1px,transparent_1px)] [background-size:24px_24px]" />
@@ -84,13 +88,24 @@ export function WorkshopDetailHero({
 
           <div className="xl:col-span-5 w-full max-w-md mx-auto xl:max-w-none xl:mx-0">
             <div className="relative w-full aspect-square rounded-3xl overflow-hidden border-2 border-white/15 shadow-2xl bg-[#120317]">
-              <CourseCoverPlaceholder
-                title={workshop.shortTitle}
-                category="Workshops Presenciales"
-                isWorkshop
-                forceWhite
-                className="border-0 bg-transparent"
-              />
+              {coverSrc ? (
+                <Image
+                  src={coverSrc}
+                  alt={workshop.shortTitle}
+                  fill
+                  priority
+                  sizes="(max-width: 1280px) 92vw, 520px"
+                  className="object-cover"
+                />
+              ) : (
+                <CourseCoverPlaceholder
+                  title={workshop.shortTitle}
+                  category="Workshops Presenciales"
+                  isWorkshop
+                  forceWhite
+                  className="border-0 bg-transparent"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">
                 <span className="text-[11px] font-black uppercase tracking-widest text-pink-300 block mb-1">

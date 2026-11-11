@@ -134,7 +134,7 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
                   id: bagId,
                   title: course.title,
                   price: course.price,
-                  image: isWorkshop ? null : (course.image ?? null),
+                  image: course.image ?? null,
                   isWorkshop,
                 }}
               />

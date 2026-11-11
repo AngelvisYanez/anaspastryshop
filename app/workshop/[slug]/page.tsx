@@ -48,7 +48,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${workshop.shortTitle} — Workshop Presencial en ${GEO.shortAddress}`,
     description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Coro, Falcón, Venezuela. Cupo de ${workshop.spots} personas. Inversión: $${course?.price ?? workshop.price} USD.`,
     path: `/workshop/${workshop.slug}`,
-    images: [{ url: course?.image || workshop.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }],
+    images: course?.image
+      ? [{ url: course.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }]
+      : undefined,
     keywords: [
       `${workshop.shortTitle} Coro`,
       "workshop pastelería Venezuela",
@@ -85,7 +87,9 @@ async function WorkshopDetailContent({ params }: PageProps) {
   const workshop = {
     ...catalogWorkshop,
     price: course.price,
-    image: course.image || catalogWorkshop.image,
+    // Prefer the published DB cover (versioned API URL). Do not fall back to
+    // static catalog fotos — those never update when the admin changes the cover.
+    image: course.image ?? null,
     schedule: isoDate ? formatWorkshopDateLabel(isoDate) : "Próximamente",
     startTime: details.workshopTime ?? catalogWorkshop.startTime,
   };
