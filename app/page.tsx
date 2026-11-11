@@ -12,12 +12,16 @@ import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import {
+  parseWorkshopDetails,
+  publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
+} from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import { courseImageUrl } from "@/lib/data/course-image-url";
 import { getCompactCourseImages } from "@/lib/data/compact-course-images";
 import type { FormacionCardData } from "@/components/FormacionCard";
-import { getWorkshopBySlug } from "@/lib/data/workshops";
+import { getAllWorkshops, getWorkshopBySlug, toFormacionCard } from "@/lib/data/workshops";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
 import { buildFaqJsonLd, buildPageMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo";
 
@@ -29,7 +33,12 @@ export const metadata = buildPageMetadata({
 
 function staticCatalog(): { workshops: FormacionCardData[]; onlineCourses: FormacionCardData[] } {
   return {
-    workshops: [],
+    workshops: getAllWorkshops().map((workshop) =>
+      toFormacionCard(workshop, {
+        workshopDate: publicWorkshopDateLabel(workshop.schedule),
+        workshopTime: publicWorkshopTimeLabel(workshop.schedule, workshop.startTime),
+      }),
+    ),
     onlineCourses: ONLINE_COURSES_DATA.map((c) => toOnlineFormacionCard(c)),
   };
 }
@@ -58,18 +67,22 @@ async function getData() {
 
   const toCard = (c: CourseRow): FormacionCardData => {
     const w = parseWorkshopDetails(c.content, c.isLive, c.title);
-    const slug = w.isWorkshop ? w.slug : c.slug ?? undefined;
+    const catalog = w.isWorkshop
+      ? getWorkshopBySlug(w.slug ?? c.slug ?? "")
+      : undefined;
+    const slug = w.isWorkshop ? (catalog?.slug ?? w.slug ?? c.slug ?? undefined) : c.slug ?? undefined;
     return {
       id: c.id,
       slug,
-      detailHref: w.isWorkshop && !getWorkshopBySlug(w.slug ?? slug ?? "")
+      bagId: c.id,
+      detailHref: w.isWorkshop && !catalog
         ? `/cursos/${c.slug ?? c.id}`
         : undefined,
-      title: c.title,
+      title: catalog?.shortTitle ?? c.title,
       description: c.description,
       price: c.price,
       image: resolveCourseCover({
-        title: c.title,
+        title: catalog?.shortTitle ?? c.title,
         slug: slug ?? c.slug ?? undefined,
         image: courseImageUrl(c.id, c.image, c.updatedAt),
         isWorkshop: w.isWorkshop,
@@ -81,8 +94,8 @@ async function getData() {
       modulesCount: c._count.courseModules,
       isWorkshop: w.isWorkshop,
       workshopLocation: w.location,
-      workshopDate: w.workshopDate,
-      workshopTime: w.workshopTime,
+      workshopDate: publicWorkshopDateLabel(w.workshopDate),
+      workshopTime: publicWorkshopTimeLabel(w.workshopDate, w.workshopTime),
       hasAccess: false,
     };
   };
@@ -118,26 +131,23 @@ async function getData() {
   }
 
   try {
-    const [workshops, onlineCourses] = await Promise.all([
-      loadCards({
-        category: "Workshops Presenciales",
-        OR: [
-          { status: "PUBLISHED" },
-          { status: "SCHEDULED", publishedAt: { lte: new Date() } },
-        ],
-      }),
-      loadCards({
-        category: "Cursos Online",
-        OR: [
-          { status: "PUBLISHED" },
-          { status: "SCHEDULED", publishedAt: { lte: new Date() } },
-        ],
-      }),
+    const published = {
+      OR: [
+        { status: "PUBLISHED" as const },
+        { status: "SCHEDULED" as const, publishedAt: { lte: new Date() } },
+      ],
+    };
+
+    // Usar isLive (igual que /workshops): filtrar solo por category deja la home
+    // vacía si hay filas publicadas con categoría distinta o legacy.
+    const [workshopRows, onlineRows] = await Promise.all([
+      loadCards({ isLive: true, ...published }),
+      loadCards({ isLive: false, ...published }),
     ]);
 
-    if (workshops.length === 0 && onlineCourses.length === 0) {
-      return staticCatalog();
-    }
+    const workshops = workshopRows.length > 0 ? workshopRows : staticCatalog().workshops;
+    const onlineCourses =
+      onlineRows.length > 0 ? onlineRows : staticCatalog().onlineCourses;
 
     return { workshops, onlineCourses };
   } catch {

@@ -146,6 +146,7 @@ export async function createCourse(
       });
     }
 
+    revalidatePath("/");
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     revalidatePath("/workshops");
@@ -170,6 +171,7 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
     if (!course) return { error: "Curso no encontrado" };
 
     await prisma.curso.delete({ where: { id: courseId } });
+    revalidatePath("/");
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     revalidatePath("/workshops");
@@ -270,6 +272,7 @@ export async function updateCourse(
       });
     }
 
+    revalidatePath("/");
     revalidatePath("/dashboard/cursos");
     revalidatePath(`/dashboard/cursos/${courseId}`);
     revalidatePath("/cursos");
