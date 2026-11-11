@@ -11,18 +11,29 @@ const logger = Pino({ level: process.env.LOG_LEVEL || 'silent' });
 const app = express();
 app.use(express.json());
 const state = { sock: null, status: 'close', qr: null, starting: false, stopping: false };
+let reconnectTimer = null;
+let sessionGeneration = 0;
+const pendingCredentialWrites = new Set();
 
 async function start() {
-  if (state.starting || state.sock) return;
+  if (state.starting || state.sock || state.stopping) return;
   state.starting = true;
+  const generation = sessionGeneration;
   try {
     const { state: auth, saveCreds } = await usePostgresAuthState('default');
     let version;
     try { version = (await fetchLatestBaileysVersion()).version; } catch { version = undefined; }
+    if (state.stopping || generation !== sessionGeneration) return;
     const sock = makeWASocket({ version, auth, logger, browser: ['Ubuntu', 'Chrome', '120.0.0'], markOnlineOnConnect: false, syncFullHistory: false });
     state.sock = sock;
     state.status = 'connecting';
-    sock.ev.on('creds.update', () => saveCreds().catch((e) => console.error('No se pudo guardar la sesión:', e)));
+    sock.ev.on('creds.update', () => {
+      if (state.sock === sock && !state.stopping) {
+        const write = saveCreds().catch((e) => console.error('No se pudo guardar la sesión:', e));
+        pendingCredentialWrites.add(write);
+        void write.finally(() => pendingCredentialWrites.delete(write));
+      }
+    });
     sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
       if (state.sock !== sock) return;
       if (qr) state.qr = await QRCode.toDataURL(qr);
@@ -36,7 +47,7 @@ async function start() {
         if (state.stopping) return;
         if (lastDisconnect?.error?.output?.statusCode === DisconnectReason.loggedOut) {
           await clearSession('default');
-        } else setTimeout(() => start().catch(console.error), 3000);
+        } else reconnectTimer = setTimeout(() => { reconnectTimer = null; start().catch(console.error); }, 3000);
       }
     });
   } finally { state.starting = false; }
@@ -73,7 +84,7 @@ async function dispatch() {
 
 app.get('/health', (_req, res) => res.json({ ok: true, connected: state.status === 'open' }));
 app.use((req, res, next) => req.get('apikey') === apiKey ? next() : res.status(401).json({ error: 'No autorizado' }));
-app.get('/instance/connectionState/default', (_req, res) => res.json({ instance: { state: state.status } }));
+app.get('/instance/connectionState/default', (_req, res) => res.json({ instance: { state: state.status }, qr: state.qr }));
 app.get('/instance/connect/default', async (_req, res) => {
   try {
     await start();
@@ -83,11 +94,19 @@ app.get('/instance/connect/default', async (_req, res) => {
 });
 app.delete('/instance/logout/default', async (_req, res) => {
   state.stopping = true;
-  try { await state.sock?.logout(); } catch { /* already disconnected */ }
+  sessionGeneration++;
+  if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  const oldSocket = state.sock;
   state.sock = null; state.status = 'close'; state.qr = null;
-  await clearSession('default');
-  state.stopping = false;
-  res.json({ ok: true });
+  try {
+    try { await oldSocket?.logout(); } catch { /* already disconnected */ }
+    oldSocket?.end(undefined);
+    await Promise.allSettled([...pendingCredentialWrites]);
+    await clearSession('default');
+    res.json({ ok: true });
+  } catch {
+    res.status(503).json({ error: 'No se pudo borrar la sesión anterior.' });
+  } finally { state.stopping = false; }
 });
 app.post('/dispatch', async (_req, res) => {
   try { res.json({ sent: await dispatch(), connected: state.status === 'open' }); }

@@ -42,7 +42,7 @@ export function EditUserDialog({ user, error, isPending, onClose, onSubmit }: Ed
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.94, opacity: 0 }}
           transition={{ type: "spring", damping: 22, stiffness: 300 }}
-          className="bg-card rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-card-border"
+          className="bg-card rounded-2xl w-full max-w-md shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto border border-card-border"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center p-6 border-b border-card-border">

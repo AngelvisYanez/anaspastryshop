@@ -72,7 +72,7 @@ export default function CourseActions({ courseId, hasEnrolled }: CourseActionsPr
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-card rounded-xl p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-200">
+          <div className="bg-card rounded-xl p-4 sm:p-8 max-w-sm w-full max-h-[calc(100dvh-2rem)] overflow-y-auto shadow-2xl relative animate-in fade-in zoom-in duration-200">
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle size={32} />
             </div>

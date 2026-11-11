@@ -16,7 +16,7 @@ import {
   getEmailTemplatePreview,
 } from "@/lib/email";
 
-const TEST_EMAIL = "angelviselyanez@gmail.com";
+const TEST_EMAIL = "angelvisyanez7@gmail.com";
 const TEST_NAME = "Angelvis Yanez";
 
 async function assertAdmin() {
@@ -136,6 +136,7 @@ export async function sendTestEmail(
           "Usuario Prueba",
           "prueba@ejemplo.com",
           "USER",
+          "+584121234567",
         );
         break;
       default:

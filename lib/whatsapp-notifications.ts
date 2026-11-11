@@ -8,8 +8,19 @@ export function paymentSubmittedText(titles: string[]): string {
   return `Hola, recibimos tu comprobante de pago para:\n${names}\nTu pago está pendiente de revisión. Te avisaremos cuando sea aprobado. — Ana's Pastry Shop`;
 }
 
-export function paymentApprovedText(title: string): string {
-  return `¡Tu pago de ${title} fue aprobado! Ya puedes acceder desde tu cuenta en https://anaspastryshop.com/dashboard/mis-cursos. — Ana's Pastry Shop`;
+export function paymentApprovedText(title: string, isCourse = true): string {
+  return isCourse
+    ? `¡Tu pago de ${title} fue aprobado! Ya puedes acceder desde tu cuenta en https://anaspastryshop.com/dashboard/mis-cursos. — Ana's Pastry Shop`
+    : `¡Tu pago de ${title} fue aprobado! Nos pondremos en contacto contigo para coordinar tu pedido. — Ana's Pastry Shop`;
+}
+
+export function adminPaymentText(event: "submitted" | "approved", titles: string[], customer: string | null | undefined, amount: number): string {
+  const action = event === "submitted" ? "Nuevo comprobante pendiente de revisión" : "Pago aprobado";
+  return `${action}\nCliente: ${customer || "Sin nombre"}\nConcepto: ${titles.join(", ")}\nMonto registrado: $${amount.toFixed(2)} USD\nRevisa los pagos en https://anaspastryshop.com/dashboard/pagos`;
+}
+
+export function adminWhatsAppNumber(): string | null {
+  return normalizeWhatsAppNumber(process.env.WA_ADMIN_WHATSAPP || "");
 }
 
 export function newsletterWhatsAppText(title: string, html: string): string {

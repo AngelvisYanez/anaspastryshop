@@ -6,9 +6,9 @@ import { updateSection } from "@/lib/actions/platformSections";
 import {
   ICON_OPTIONS,
   ROLES,
-  slugify,
   type PlatformSection,
 } from "./moduleShared";
+import { moduleBySlug } from "@/lib/dashboard-modules";
 
 export function ModuleEditForm({
   section,
@@ -31,6 +31,7 @@ export function ModuleEditForm({
   });
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+  const builtIn = Boolean(moduleBySlug(section.slug));
 
   function toggleRole(role: string) {
     setEditForm((prev) => ({
@@ -48,12 +49,9 @@ export function ModuleEditForm({
 
     try {
       const res = await updateSection(section.id, {
-        name: editForm.name,
-        slug: editForm.slug,
-        icon: editForm.icon,
+        ...(builtIn ? {} : { name: editForm.name, slug: editForm.slug, icon: editForm.icon, roles: editForm.roles }),
         order: editForm.order,
         isActive: editForm.isActive,
-        roles: editForm.roles,
       });
 
       if (res.error) {
@@ -81,6 +79,7 @@ export function ModuleEditForm({
             id={`edit-module-name-${section.id}`}
             type="text"
             required
+            disabled={builtIn}
             value={editForm.name}
             onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
             className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
@@ -92,8 +91,9 @@ export function ModuleEditForm({
             id={`edit-module-slug-${section.id}`}
             type="text"
             required
+            disabled
             value={editForm.slug}
-            onChange={(e) => setEditForm((p) => ({ ...p, slug: slugify(e.target.value) }))}
+            onChange={(e) => setEditForm((p) => ({ ...p, slug: e.target.value }))}
             className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
           />
         </div>
@@ -101,6 +101,7 @@ export function ModuleEditForm({
           <label htmlFor={`edit-module-icon-${section.id}`} className="text-[11px] font-bold uppercase text-muted block mb-1">Ícono</label>
           <select
             id={`edit-module-icon-${section.id}`}
+            disabled={builtIn}
             value={editForm.icon}
             onChange={(e) => setEditForm((p) => ({ ...p, icon: e.target.value }))}
             className="w-full bg-background border border-card-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-accent"
@@ -123,13 +124,14 @@ export function ModuleEditForm({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5" aria-label={builtIn ? 'Roles definidos por el sistema' : undefined}>
           {ROLES.map((r) => {
             const checked = editForm.roles.includes(r.key);
             return (
               <button
                 key={r.key}
                 type="button"
+                disabled
                 onClick={() => toggleRole(r.key)}
                 className={`px-2.5 py-1 rounded-lg border text-[11px] font-bold transition ${
                   checked

@@ -9,7 +9,7 @@ function getResend(): Resend {
 const FROM =
   process.env.RESEND_FROM_EMAIL ??
   "Ana's Pastry Shop <noreply@anaspastryshop.com>";
-const BASE_URL = process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
 
 const LOGO_URL = `${BASE_URL}/logo-anas-pastry-shop.png`;
 const LOGO_WHITE_URL = `${BASE_URL}/logo-anas-pastry-shop-white.png`;
@@ -86,13 +86,18 @@ function heroIcon(name: EmailIconName): string {
 
 function brandLogo(variant: "pink" | "white" = "white", height = 40): string {
   const src = variant === "white" ? LOGO_WHITE_URL : LOGO_URL;
-  const width = Math.round(height * 4);
+  // Both public logo files are 596 × 369; preserve that ratio in email clients.
+  const width = Math.round(height * 596 / 369);
   return `<a href="${BASE_URL}" style="text-decoration:none;">
-    <img src="${src}" alt="Ana's Pastry Shop" width="${width}" height="${height}" style="display:block;height:${height}px;width:auto;max-width:${width}px;border:0;outline:none;" />
+    <img src="${src}" alt="Ana's Pastry Shop" width="${width}" height="${height}" style="display:block;width:${width}px;height:${height}px;border:0;outline:none;" />
   </a>`;
 }
 
-function buildEmail(preheader: string, body: string): string {
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
+}
+
+function buildEmail(preheader: string, body: string, audience: "user" | "admin" = "user"): string {
   return `<!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -121,7 +126,7 @@ function buildEmail(preheader: string, body: string): string {
 </head>
 <body style="margin:0;padding:0;background-color:${CREAM};font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,Arial,sans-serif;">
 
-  <div class="preheader" style="font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${preheader}</div>
+  <div class="preheader" style="font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheader)}</div>
 
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:${CREAM};">
     <tr>
@@ -132,19 +137,19 @@ function buildEmail(preheader: string, body: string): string {
 
           <!-- BRAND ACCENT BAR TOP -->
           <tr>
-            <td style="height:4px;background:linear-gradient(90deg,${ACCENT} 0%,#F4499E 50%,${ACCENT} 100%);border-radius:4px 4px 0 0;"></td>
+            <td style="height:4px;background-color:${ACCENT};"></td>
           </tr>
 
           <!-- HEADER: BRAND DARK BACKGROUND -->
           <tr>
-            <td style="background-color:${BRAND_DARK};padding:28px 40px 24px;border-radius:0;">
+            <td style="background-color:${BRAND_DARK};padding:20px 32px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td style="vertical-align:middle;">
-                    ${brandLogo("white", 42)}
+                    ${brandLogo("white", 68)}
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <span style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);">anaspastryshop.com</span>
+                    <span style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#F9A8D4;">Pastelería &amp; formación</span>
                   </td>
                 </tr>
               </table>
@@ -153,7 +158,7 @@ function buildEmail(preheader: string, body: string): string {
 
           <!-- MAIN CARD -->
           <tr>
-            <td style="background-color:${WHITE};padding:0 40px 40px;border-radius:0 0 24px 24px;border:1px solid ${CREAM_DARK};border-top:none;">
+            <td style="background-color:${WHITE};padding:0 32px 36px;border:1px solid ${CREAM_DARK};border-top:none;">
               ${body}
             </td>
           </tr>
@@ -186,7 +191,7 @@ function buildEmail(preheader: string, body: string): string {
                   <td align="center">
                     <p style="font-size:11px;color:${MUTED};line-height:1.6;margin:0;">
                       &copy; ${new Date().getFullYear()} Ana's Pastry Shop &middot; Chef Anais Flores. Todos los derechos reservados.<br>
-                      Coro, Falcón, Venezuela &middot; Estás recibiendo este correo porque tienes una cuenta en nuestra plataforma.
+                      Coro, Falcón, Venezuela &middot; ${audience === "admin" ? "Aviso administrativo de la plataforma." : "Recibes este correo por tu actividad con Ana's Pastry Shop."}
                     </p>
                   </td>
                 </tr>
@@ -301,11 +306,6 @@ export async function sendWelcomeEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;margin:-1px -1px 0;border-radius:0;text-align:center;">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 20px;">
-            <tr>
-              <td align="center">${brandLogo("white", 48)}</td>
-            </tr>
-          </table>
           <h1 style="margin:0;font-size:28px;font-weight:900;color:${WHITE};letter-spacing:-0.03em;line-height:1.1;">
             ¡Bienvenido, ${firstName}!
           </h1>
@@ -586,11 +586,6 @@ export async function sendNewsletterEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:36px 40px;text-align:center;">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 16px;">
-            <tr>
-              <td align="center">${brandLogo("white", 36)}</td>
-            </tr>
-          </table>
           <p style="margin:0 0 4px;font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:${ACCENT};">Atelier de Pastelería</p>
           <h1 style="margin:8px 0 0;font-size:24px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;line-height:1.2;">${title}</h1>
         </td>
@@ -842,33 +837,42 @@ export async function sendAdminNewUserEmail(
   userName: string,
   userEmail: string,
   role: string,
+  whatsappNumber: string | null,
   options?: { dryRun?: boolean },
 ): Promise<{ subject: string; html: string } | void> {
   const config = await getTemplateConfig("ADMIN_NEW_USER");
   if (!config.isEnabled && !options?.dryRun) return;
 
+  const fullName = userName.trim() || "Sin nombre";
+  const detailRow = (title: string, value: string) => `<tr>
+    <td style="padding:12px 16px;border-bottom:1px solid ${CREAM_DARK};font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:${MUTED};width:120px;">${title}</td>
+    <td style="padding:12px 16px;border-bottom:1px solid ${CREAM_DARK};font-size:14px;font-weight:700;color:${BRAND_DARK};word-break:break-word;">${escapeHtml(value)}</td>
+  </tr>`;
+
   const body = `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-      <tr>
-        <td style="padding:40px;text-align:center;background-color:${WHITE};">
-          <h1 style="margin:0 0 20px;font-size:24px;color:${BRAND_DARK};">${config.title || "Nuevo Usuario Registrado"}</h1>
-          <p style="margin:0 0 30px;font-size:16px;color:${MUTED};">Un nuevo alumno o cliente se ha registrado en Ana's Pastry Shop.</p>
-          <div style="background-color:${CREAM};border:1px solid ${CREAM_DARK};padding:20px;border-radius:12px;text-align:left;margin-bottom:30px;">
-            <p style="margin:0 0 10px;font-size:14px;color:${BRAND_DARK};"><strong>Nombre:</strong> ${userName}</p>
-            <p style="margin:0 0 10px;font-size:14px;color:${BRAND_DARK};"><strong>Email:</strong> ${userEmail}</p>
-            <p style="margin:0;font-size:14px;color:${BRAND_DARK};"><strong>Rol:</strong> ${role}</p>
-          </div>
-          ${ctaButtonGold(`${BASE_URL}/dashboard/usuarios`, "Ver Usuarios")}
-        </td>
-      </tr>
-    </table>
-  `;
+      <tr><td style="padding:36px 0 24px;text-align:center;">
+        ${label("Aviso de registro")}
+        <h1 style="margin:8px 0 12px;font-size:26px;line-height:1.2;color:${BRAND_DARK};">${escapeHtml(config.title || "Nuevo usuario registrado")}</h1>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:${MUTED};">Una persona creó una cuenta en Ana's Pastry Shop.</p>
+      </td></tr>
+      <tr><td style="height:3px;background-color:${ACCENT};"></td></tr>
+      <tr><td style="padding:24px 0;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:${CREAM};border:1px solid ${CREAM_DARK};">
+          ${detailRow("Nombre y apellido", fullName)}
+          ${detailRow("Correo", userEmail)}
+          ${detailRow("WhatsApp", whatsappNumber || "No indicado")}
+        </table>
+      </td></tr>
+      <tr><td align="center" style="padding:0 0 8px;">${ctaButton(`${BASE_URL}/dashboard/usuarios`, "Ver usuarios")}</td></tr>
+    </table>`;
 
   const subject =
     config.subject || "Notificación: Nuevo Registro en Ana's Pastry Shop";
   const html = buildEmail(
     config.preheader || `Nuevo usuario registrado: ${userName}`,
     body,
+    "admin",
   );
 
   if (options?.dryRun) return { subject, html };
@@ -933,6 +937,7 @@ export async function getEmailTemplatePreview(
           "Usuario Prueba",
           "prueba@ejemplo.com",
           "USER",
+          "+584121234567",
           dryRun,
         )) ?? null
       );

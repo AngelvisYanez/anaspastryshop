@@ -5,7 +5,8 @@ import {
   Plus, X, Save, Loader2, AlertCircle,
 } from "lucide-react";
 import { createSection } from "@/lib/actions/platformSections";
-import { ICON_OPTIONS, ROLES, slugify, type PlatformSection } from "./moduleShared";
+import { ICON_OPTIONS, ROLES, type PlatformSection } from "./moduleShared";
+import { EXTRA_MODULE_ROUTES } from "@/lib/dashboard-modules";
 import { DynamicIcon } from "./DynamicIcon";
 
 type CreateFormState = {
@@ -29,18 +30,14 @@ export function ModuleCreateForm({
   const [createError, setCreateError] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState<CreateFormState>({
     name: "",
-    slug: "",
+    slug: "cursos/create",
     icon: "Layers",
     order: nextOrder,
-    roles: ["ADMIN", "USER"],
+    roles: ["ADMIN"],
   });
 
   function handleNameChange(name: string) {
-    setCreateForm((prev) => ({
-      ...prev,
-      name,
-      slug: prev.slug === slugify(prev.name) || !prev.slug ? slugify(name) : prev.slug,
-    }));
+    setCreateForm((prev) => ({ ...prev, name }));
   }
 
   function toggleRole(role: string) {
@@ -121,15 +118,12 @@ export function ModuleCreateForm({
           <label htmlFor="create-module-slug" className="text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">
             Slug (Ruta /dashboard/...)
           </label>
-          <input
+          <select
             id="create-module-slug"
-            type="text"
-            required
             value={createForm.slug}
-            onChange={(e) => setCreateForm((p) => ({ ...p, slug: slugify(e.target.value) }))}
-            placeholder="recetas-vip"
+            onChange={(e) => setCreateForm((p) => ({ ...p, slug: e.target.value }))}
             className="w-full bg-background border border-card-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-accent"
-          />
+          >{EXTRA_MODULE_ROUTES.map((route) => <option key={route} value={route.slice('/dashboard/'.length)}>{route}</option>)}</select>
         </div>
 
         <div>
@@ -179,6 +173,7 @@ export function ModuleCreateForm({
                 <button
                   key={r.key}
                   type="button"
+                disabled
                   onClick={() => toggleRole(r.key)}
                   className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
                     checked

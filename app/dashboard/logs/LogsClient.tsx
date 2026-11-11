@@ -298,8 +298,8 @@ export default function LogsClient({
             <p className="text-xs text-muted/60 mt-1">No se encontraron eventos con los filtros aplicados</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
+          <div className="max-w-full overflow-x-auto">
+            <table className="w-full min-w-[680px] text-left">
               <thead>
                 <tr className="border-b border-card-border bg-section-alt/60">
                   <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted w-36">Fecha</th>

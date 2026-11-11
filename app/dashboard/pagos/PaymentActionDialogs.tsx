@@ -21,7 +21,7 @@ export function PaymentApproveDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-md w-full">
+      <div className="bg-card rounded-xl border border-card-border shadow-xl p-4 sm:p-6 max-w-md w-full max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <h3 className="text-lg font-bold text-foreground mb-1">Confirmar aprobación</h3>
         <p className="text-sm text-muted mb-4">
           ¿Estás seguro de aprobar el pago de{" "}
@@ -73,7 +73,7 @@ export function PaymentRejectDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-card rounded-xl border border-card-border shadow-xl p-6 max-w-md w-full">
+      <div className="bg-card rounded-xl border border-card-border shadow-xl p-4 sm:p-6 max-w-md w-full max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <h3 className="text-lg font-bold text-foreground mb-1">Rechazar pago</h3>
         <p className="text-sm text-muted mb-4">
           ¿Estás seguro de rechazar el pago de{" "}

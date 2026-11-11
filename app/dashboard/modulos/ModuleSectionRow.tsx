@@ -6,6 +6,7 @@ import { deleteSection, updateSection } from "@/lib/actions/platformSections";
 import { ROLES, type PlatformSection } from "./moduleShared";
 import { DynamicIcon } from "./DynamicIcon";
 import { ModuleEditForm } from "./ModuleEditForm";
+import { moduleBySlug } from "@/lib/dashboard-modules";
 
 export function ModuleSectionRow({
   section,
@@ -21,6 +22,7 @@ export function ModuleSectionRow({
   const [isEditing, setIsEditing] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const builtIn = Boolean(moduleBySlug(section.slug));
 
   async function handleToggle() {
     setToggling(true);
@@ -63,8 +65,8 @@ export function ModuleSectionRow({
           onSuccess={onSuccess}
         />
       ) : (
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-4 min-w-0">
+          <div className="flex items-center gap-3 min-w-0 max-w-full">
             <div className="w-10 h-10 rounded-xl bg-section-alt border border-card-border flex items-center justify-center text-accent shrink-0 shadow-sm">
               <DynamicIcon name={section.icon} size={20} />
             </div>
@@ -76,7 +78,7 @@ export function ModuleSectionRow({
                 </span>
               </div>
               <p className="text-[11px] text-muted truncate font-mono">
-                /dashboard/{section.slug}
+                {section.slug === 'inicio' ? '/dashboard' : `/dashboard/${section.slug}`}
               </p>
             </div>
           </div>
@@ -125,14 +127,14 @@ export function ModuleSectionRow({
               <Pencil size={15} />
             </button>
 
-            <button
+            {!builtIn && <button
               onClick={handleDelete}
               disabled={deleting}
               title="Eliminar módulo"
               className="p-2 rounded-xl bg-section-alt border border-card-border text-muted hover:text-red-500 hover:border-red-500/40 transition-colors"
             >
               {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
-            </button>
+            </button>}
           </div>
         </div>
       )}

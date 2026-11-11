@@ -73,8 +73,8 @@ export default function PaymentHistoryTable({
 
   return (
     <div className="bg-card rounded-xl border border-card-border shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
+      <div className="max-w-full overflow-x-auto">
+        <table className="w-full min-w-[700px] text-left">
           <thead>
             <tr className="border-b border-card-border bg-section-alt">
               <th className="py-3.5 px-5 text-[11px] font-black uppercase tracking-widest text-muted whitespace-nowrap">Usuario</th>

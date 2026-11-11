@@ -8,6 +8,7 @@ import ApiConfigManager from "../api-config/ApiConfigManager";
 import PlatformModuleManager from "../modulos/PlatformModuleManager";
 import { DashboardPage } from "../DashboardPage";
 import WhatsAppSettings from "./WhatsAppSettings";
+import { listDashboardModules } from "@/lib/dashboard-module-list";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -39,8 +40,12 @@ export default async function SettingsPage() {
           : "Actualiza tu perfil y la seguridad de tu cuenta."
       }
     >
+      <nav aria-label="Secciones de configuración" className="flex gap-2 overflow-x-auto pb-1 text-xs font-bold sm:text-sm">
+        <a href="#perfil" className="shrink-0 rounded-xl border border-card-border bg-card px-3 py-2.5">Perfil</a>
+        {isAdmin && <><a href="#sitio" className="shrink-0 rounded-xl border border-card-border bg-card px-3 py-2.5">Sitio web</a><a href="#modulos" className="shrink-0 rounded-xl border border-card-border bg-card px-3 py-2.5">Módulos</a><a href="#integraciones" className="shrink-0 rounded-xl border border-card-border bg-card px-3 py-2.5">Integraciones</a></>}
+      </nav>
       <div className={`grid grid-cols-1 gap-5 sm:gap-6 ${isAdmin ? "xl:grid-cols-12" : ""}`}>
-        <div className={isAdmin ? "xl:col-span-5" : "max-w-2xl"}>
+        <div id="perfil" className={`${isAdmin ? "xl:col-span-5" : "max-w-2xl"} min-w-0 scroll-mt-4`}>
           <ProfileForm
             initialUser={{
               name: dbUser.name,
@@ -53,7 +58,7 @@ export default async function SettingsPage() {
         </div>
 
         {isAdmin && (
-          <div className="xl:col-span-7">
+          <div id="sitio" className="min-w-0 scroll-mt-4 xl:col-span-7">
             <SiteConfigForm
               initialConfig={{
                 siteName: siteConfig?.siteName ?? "Ana's Pastry Shop",
@@ -71,13 +76,12 @@ export default async function SettingsPage() {
       </div>
 
       {isAdmin && (
-        <div className="bg-card border border-card-border rounded-2xl p-5 sm:p-6 lg:p-7 shadow-sm">
-          <PlatformModuleManager initialSections={sections} />
+        <div id="modulos" className="min-w-0 scroll-mt-4 bg-card border border-card-border rounded-2xl p-4 sm:p-6 lg:p-7 shadow-sm">
+          <PlatformModuleManager initialSections={listDashboardModules(sections)} />
         </div>
       )}
 
-      {isAdmin && <ApiConfigManager configs={apiConfigs as any} />}
-      {isAdmin && <WhatsAppSettings />}
+      {isAdmin && <div id="integraciones" className="min-w-0 scroll-mt-4 space-y-5 sm:space-y-6"><ApiConfigManager configs={apiConfigs as any} /><WhatsAppSettings /></div>}
     </DashboardPage>
   );
 }

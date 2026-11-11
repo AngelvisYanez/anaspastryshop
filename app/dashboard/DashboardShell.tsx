@@ -4,18 +4,9 @@ import { ChevronLeft, ChevronRight, ArrowRight, Tag } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
+import type { ModuleRecord } from "@/lib/dashboard-module-list";
 
-type PlatformSection = {
-  id: string;
-  name: string;
-  slug: string;
-  icon: string;
-  order: number;
-  isActive: boolean;
-  roles: string[];
-};
-
-const EMPTY_SECTIONS: PlatformSection[] = [];
+const EMPTY_SECTIONS: ModuleRecord[] = [];
 
 export default function DashboardShell({
   user,
@@ -24,7 +15,7 @@ export default function DashboardShell({
 }: {
   user: any;
   children: React.ReactNode;
-  platformSections?: PlatformSection[];
+  platformSections?: ModuleRecord[];
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -49,6 +40,7 @@ export default function DashboardShell({
       >
         <Sidebar
           user={user}
+          platformSections={platformSections}
           onMenuClick={() => setIsSidebarOpen(false)}
           isCollapsed={false}
         />
@@ -61,7 +53,7 @@ export default function DashboardShell({
             isCollapsed ? "w-20" : "w-64"
           }`}
         >
-          <Sidebar user={user} isCollapsed={isCollapsed} />
+          <Sidebar user={user} isCollapsed={isCollapsed} platformSections={platformSections} />
           <button
             onClick={() => setIsCollapsed((c) => !c)}
             className="absolute right-0 top-8 translate-x-1/2 -translate-y-1/2 z-50 w-7 h-7 flex items-center justify-center bg-card border border-card-border rounded-full text-foreground ring-2 ring-background hover:bg-card-hover transition-colors shadow-md cursor-pointer"
@@ -102,7 +94,7 @@ export default function DashboardShell({
           )}
 
           <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full overscroll-contain bg-background">
-            <div className="w-full max-w-full p-4 sm:p-5 md:p-6 lg:p-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
+            <div className="w-full min-w-0 max-w-full p-3 sm:p-5 md:p-6 lg:p-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
               {children}
             </div>
           </main>

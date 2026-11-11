@@ -6,9 +6,18 @@ import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
 import { Prisma } from "@prisma/client";
-import { paymentSubmittedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
+import { adminPaymentText, adminWhatsAppNumber, paymentSubmittedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 
 type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+async function queueAdminNotice(tx: TransactionClient, eventKey: string, titles: string[], customer: string | null | undefined, amount: number) {
+  const phone = adminWhatsAppNumber();
+  if (!phone) return;
+  await tx.whatsAppNotification.create({ data: {
+    eventKey: `admin:${eventKey}`, phone,
+    text: adminPaymentText("submitted", titles, customer, amount), kind: "TRANSACTIONAL",
+  } });
+}
 
 function validWhatsapp(number: string | undefined): number is string {
   return !!number && /^\+[1-9]\d{7,14}$/.test(number.replace(/[\s()-]/g, ""));
@@ -118,6 +127,7 @@ export async function createCourseInscription(data: CreateCourseInscriptionParam
         phone: normalizedWhatsapp(data.whatsappNumber).slice(1),
         text: paymentSubmittedText([curso?.title ?? "Workshop / Curso"]), kind: "TRANSACTIONAL",
       } });
+      await queueAdminNotice(tx, `payment-submitted:${inscription.id}`, [curso?.title ?? "Workshop / Curso"], session.user.name, data.amountPaid);
       return { kind: "created" as const, id: inscription.id };
     });
 
@@ -204,6 +214,7 @@ export async function createPastryServicePayment(data: CreatePastryServiceParams
       text: paymentSubmittedText(["Servicio de Pastelería"]),
       kind: "TRANSACTIONAL",
       } });
+      await queueAdminNotice(tx, `payment-submitted:${created.id}`, ["Servicio de Pastelería"], session.user.name, data.amountPaid);
       return created;
     });
     await logActivity({
@@ -307,11 +318,13 @@ export async function createBulkCourseInscriptions(data: CreateBulkCourseInscrip
           whatsappMarketing: data.whatsappMarketing === true,
         } });
         const cursos = await tx.curso.findMany({ where: { id: { in: pending.map((item) => item.cursoId) } }, select: { title: true } });
+        const bagEventKey = `payment-submitted-bag:${crypto.randomUUID()}`;
         await tx.whatsAppNotification.create({ data: {
-          eventKey: `payment-submitted-bag:${crypto.randomUUID()}`, userId,
+          eventKey: bagEventKey, userId,
           phone: normalizedWhatsapp(data.whatsappNumber).slice(1),
           text: paymentSubmittedText(cursos.map((curso) => curso.title)), kind: "TRANSACTIONAL",
         } });
+        await queueAdminNotice(tx, bagEventKey, cursos.map((curso) => curso.title), session.user.name, pending.reduce((sum, item) => sum + item.amountPaid, 0));
       }
       return { created: pending.map((item) => item.cursoId), alreadyEnrolled };
     });

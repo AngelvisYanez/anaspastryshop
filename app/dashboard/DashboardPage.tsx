@@ -17,7 +17,7 @@ export function DashboardPage({
 }) {
   return (
     <div
-      className={`w-full mx-auto ${wide ? "max-w-7xl" : "max-w-5xl"} space-y-5 sm:space-y-6 lg:space-y-8 ${className}`}
+      className={`w-full min-w-0 mx-auto ${wide ? "max-w-7xl" : "max-w-5xl"} space-y-5 sm:space-y-6 lg:space-y-8 ${className}`}
     >
       {(title || description || actions) && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">

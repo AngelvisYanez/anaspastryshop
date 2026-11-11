@@ -6,6 +6,7 @@ import { Lock } from "lucide-react";
 import RealTimeGuard from "@/components/RealTimeGuard";
 import { prisma } from "@/lib/prisma";
 import DashboardLoading from "./loading";
+import { listDashboardModules } from "@/lib/dashboard-module-list";
 
 function AuthLoading() {
   return (
@@ -129,7 +130,7 @@ async function DashboardContent({ children }: { children: React.ReactNode }) {
         role: dbUser.role,
         image: dbUser.image,
       }}
-      platformSections={platformSections}
+      platformSections={listDashboardModules(platformSections)}
     >
       <RealTimeGuard />
       <Suspense fallback={<DashboardLoading />}>

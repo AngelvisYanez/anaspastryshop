@@ -111,8 +111,8 @@ export function AdminDashboardHome({
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+          <div className="max-w-full overflow-x-auto">
+            <table className="w-full min-w-[640px] text-xs text-left">
               <thead className="bg-section-alt text-muted uppercase tracking-wider font-bold">
                 <tr>
                   <th className="px-4 sm:px-6 py-3">Alumno</th>

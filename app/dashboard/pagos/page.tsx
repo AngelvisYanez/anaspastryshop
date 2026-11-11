@@ -64,7 +64,7 @@ export default async function PagosPage({
       title="Pagos"
       description="Valida comprobantes pendientes y consulta el historial de cobros."
     >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map(({ icon: Icon, value, label, bgClass, textClass }) => (
           <div
             key={label}

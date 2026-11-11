@@ -21,7 +21,7 @@ export default function PlatformModuleManager({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {successMsg && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200">
           <CheckCircle size={18} />
@@ -38,7 +38,7 @@ export default function PlatformModuleManager({
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="inline-flex items-center gap-2 bg-accent-solid hover:bg-accent-solid-hover text-white px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition shadow-md shadow-accent-solid/20"
+          className="inline-flex min-h-11 w-full sm:w-auto justify-center items-center gap-2 bg-accent-solid hover:bg-accent-solid-hover text-white px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition shadow-md shadow-accent-solid/20"
         >
           {showCreate ? <X size={15} /> : <Plus size={15} />}
           {showCreate ? "Cancelar" : "Nuevo Módulo"}
@@ -47,7 +47,7 @@ export default function PlatformModuleManager({
 
       {showCreate && (
         <ModuleCreateForm
-          nextOrder={sections.length + 1}
+          nextOrder={Math.max(0, ...sections.map((section) => section.order)) + 10}
           onCancel={() => setShowCreate(false)}
           onCreated={(section) => {
             setSections((prev) => [...prev, section].sort((a, b) => a.order - b.order));

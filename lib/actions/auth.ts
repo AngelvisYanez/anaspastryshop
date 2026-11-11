@@ -73,6 +73,7 @@ export async function registerUser(formData: FormData) {
       newUser.name ?? "Sin nombre",
       newUser.email,
       newUser.role,
+      newUser.whatsappNumber,
     ).catch(() => {});
 
     return { success: true };

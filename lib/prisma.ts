@@ -4,7 +4,7 @@ const RETRY_ATTEMPTS = 3;
 const RETRY_BASE_DELAY_MS = 300;
 
 const RETRYABLE_ALWAYS = new Set(["P1001", "P1002", "P1008", "P1011"]);
-const RETRYABLE_READ_ONLY = new Set(["P1017"]);
+const RETRYABLE_READ_ONLY = new Set(["P1017", "P5010"]);
 
 const READ_ONLY_OPERATIONS = new Set([
   "findUnique",

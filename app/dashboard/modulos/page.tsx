@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import PlatformModuleManager from "./PlatformModuleManager";
+import { listDashboardModules } from "@/lib/dashboard-module-list";
 
 export default async function ModulosPage() {
   const session = await auth();
@@ -15,7 +16,7 @@ export default async function ModulosPage() {
 
   return (
     <div>
-      <PlatformModuleManager initialSections={sections} />
+      <PlatformModuleManager initialSections={listDashboardModules(sections)} />
     </div>
   );
 }

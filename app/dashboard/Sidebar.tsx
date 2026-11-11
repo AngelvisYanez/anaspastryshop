@@ -3,41 +3,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import {
-  LayoutDashboard, BookOpen, CreditCard,
-  Users, Settings, LogOut, Activity, X,
-  Wallet, Mail, Compass, Images, Tag,
-} from "lucide-react";
-
-const SYSTEM_ITEMS = [
-  { name: "Inicio",                     href: "/dashboard",               icon: LayoutDashboard, roles: ["ADMIN", "USER"] },
-  { name: "Mis Cursos & Workshops",     href: "/dashboard/mis-cursos",    icon: BookOpen,        roles: ["USER"] },
-  { name: "Explorar Formaciones",       href: "/cursos",                  icon: Compass,         roles: ["USER"] },
-  { name: "Cursos & Workshops",         href: "/dashboard/cursos",        icon: BookOpen,        roles: ["ADMIN"] },
-  { name: "Galería & Instagram",        href: "/dashboard/galeria",       icon: Images,          roles: ["ADMIN"] },
-  { name: "Usuarios",                   href: "/dashboard/usuarios",      icon: Users,           roles: ["ADMIN"] },
-  { name: "Pagos",                      href: "/dashboard/pagos",         icon: CreditCard,      roles: ["ADMIN"] },
-  { name: "Cupones",                    href: "/dashboard/cupones",       icon: Tag,             roles: ["ADMIN"] },
-  { name: "Métodos de Pago",            href: "/dashboard/metodos-pago",  icon: Wallet,          roles: ["ADMIN"] },
-  { name: "Emails",                     href: "/dashboard/emails",        icon: Mail,            roles: ["ADMIN"] },
-  { name: "Registro de Eventos",        href: "/dashboard/logs",          icon: Activity,        roles: ["ADMIN"] },
-  { name: "Configuración",              href: "/dashboard/settings",      icon: Settings,        roles: ["ADMIN", "USER"] },
-];
+import { LogOut, X } from "lucide-react";
+import { DynamicIcon } from "./modulos/DynamicIcon";
+import { moduleHref, type ModuleRecord } from "@/lib/dashboard-module-list";
 
 export default function Sidebar({
   user,
   onMenuClick,
   isCollapsed = false,
+  platformSections = [],
 }: {
   user: any;
   onMenuClick?: () => void;
   isCollapsed?: boolean;
+  platformSections?: ModuleRecord[];
 }) {
   const pathname = usePathname();
   const role = user?.role || "USER";
 
-  const systemItems = SYSTEM_ITEMS.filter((item) =>
-    item.roles.includes(role),
+  const systemItems = platformSections.filter((item) =>
+    item.isActive && item.roles.includes(role),
   );
 
   const isActive = (href: string) =>
@@ -98,12 +83,12 @@ export default function Sidebar({
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {systemItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
+            const href = moduleHref(item.slug);
+            const active = isActive(href);
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={item.slug}
+                href={href}
                 onClick={onMenuClick}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs transition ${
                   active
@@ -112,7 +97,7 @@ export default function Sidebar({
                 }`}
                 title={isCollapsed ? item.name : undefined}
               >
-                <Icon size={18} className="shrink-0" />
+                <span className="shrink-0"><DynamicIcon name={item.icon} size={18} /></span>
                 {!isCollapsed && <span className="truncate">{item.name}</span>}
               </Link>
             );

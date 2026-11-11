@@ -90,6 +90,7 @@ describe("payments admin flows", () => {
   });
 
   it("approvePayment aprueba curso y envía email", async () => {
+    process.env.WA_ADMIN_WHATSAPP = "+584121658015";
     mockPrisma.inscription.findUnique.mockResolvedValue({
       id: "i1",
       cursoId: "c1",
@@ -109,6 +110,10 @@ describe("payments admin flows", () => {
     expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
       eventKey: "payment-approved:i1", phone: "584121234567", kind: "TRANSACTIONAL",
     }) });
+    expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      eventKey: "admin:payment-approved:i1", phone: "584121658015", kind: "TRANSACTIONAL",
+    }) });
+    delete process.env.WA_ADMIN_WHATSAPP;
     expect(sendCoursePurchaseEmail).toHaveBeenCalledWith(
       "a@test.com",
       "Ana",

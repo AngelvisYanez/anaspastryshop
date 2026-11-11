@@ -79,7 +79,7 @@ export function PaymentCardDetails({
         <span className="text-accent font-bold">{itemTitle}</span>
       </p>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 bg-section-alt p-3 sm:p-4 rounded-xl">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 bg-section-alt p-3 sm:p-4 rounded-xl">
         <div className="min-w-0">
           <p className="text-[11px] font-black uppercase text-muted mb-0.5">Método</p>
           <p className="text-sm font-bold text-foreground truncate">

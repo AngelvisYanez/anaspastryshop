@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
-import { paymentApprovedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
+import { adminPaymentText, adminWhatsAppNumber, paymentApprovedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 import {
   sendCoursePurchaseEmail,
   sendPaymentRejectedEmail,
@@ -63,7 +63,16 @@ export async function approvePayment(inscriptionId: string) {
           eventKey: `payment-approved:${inscriptionId}`,
           userId: inscription.user.id,
           phone: inscription.user.whatsappNumber.replace(/\D/g, ""),
-          text: paymentApprovedText(inscription.curso?.title ?? "Servicio de Pastelería"),
+          text: paymentApprovedText(inscription.curso?.title ?? "Servicio de Pastelería", Boolean(inscription.cursoId)),
+          kind: "TRANSACTIONAL",
+        } });
+      }
+      const adminPhone = adminWhatsAppNumber();
+      if (result.count && adminPhone) {
+        await tx.whatsAppNotification.create({ data: {
+          eventKey: `admin:payment-approved:${inscriptionId}`,
+          phone: adminPhone,
+          text: adminPaymentText("approved", [inscription.curso?.title ?? "Servicio de Pastelería"], inscription.user.name, inscription.amountPaid),
           kind: "TRANSACTIONAL",
         } });
       }
