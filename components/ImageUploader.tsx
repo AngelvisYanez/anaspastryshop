@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { ImageIcon, X, Upload } from "lucide-react";
 
-const MAX_SIZE_MB = 2;
+const MAX_SIZE_MB = 3;
 
 interface Props {
   value: string;
