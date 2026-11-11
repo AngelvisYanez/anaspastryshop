@@ -29,6 +29,25 @@ export function newsletterWhatsAppText(title: string, html: string): string {
   return `${title.trim()}\n\n${summary}\n\nhttps://anaspastryshop.com/cursos\n\nPara dejar de recibir novedades, desactiva WhatsApp en tu perfil.`;
 }
 
+export function workshopNewDateWhatsAppText(params: {
+  title: string;
+  dateLabel: string;
+  time?: string;
+  location?: string;
+  slug: string;
+  price?: number;
+}): string {
+  const lines = [
+    `Nueva fecha confirmada: ${params.title}`,
+    `📅 ${params.dateLabel}`,
+  ];
+  if (params.time?.trim()) lines.push(`🕐 ${params.time.trim()}`);
+  if (params.location?.trim()) lines.push(`📍 ${params.location.trim()}`);
+  if (typeof params.price === "number") lines.push(`Inversión: $${params.price.toFixed(2)} USD`);
+  lines.push("", `Reserva tu cupo: https://anaspastryshop.com/workshop/${params.slug}`, "", "Para dejar de recibir novedades, desactiva WhatsApp en tu perfil.");
+  return lines.join("\n");
+}
+
 export async function wakeWhatsAppBridge(): Promise<void> {
   const baseUrl = process.env.WA_BRIDGE_URL;
   const apiKey = process.env.WA_BRIDGE_API_KEY;

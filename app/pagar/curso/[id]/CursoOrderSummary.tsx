@@ -2,7 +2,11 @@
 
 import { MapPin, Calendar, Clock } from "lucide-react";
 import type { CouponResult } from "@/lib/actions/coupons";
-import { WORKSHOP_LOCATION, type WorkshopDetails } from "@/lib/utils/workshop";
+import {
+  publicWorkshopDateLabel,
+  WORKSHOP_LOCATION,
+  type WorkshopDetails,
+} from "@/lib/utils/workshop";
 
 export function CursoOrderSummary({
   course,
@@ -45,7 +49,7 @@ export function CursoOrderSummary({
               <div className="flex items-center gap-4 text-[11px] pt-0.5">
                 <span className="flex items-center gap-1">
                   <Calendar size={12} className="text-accent" />
-                  {workshopInfo?.workshopDate || "Próxima fecha"}
+                  {publicWorkshopDateLabel(workshopInfo?.workshopDate)}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock size={12} className="text-accent" />

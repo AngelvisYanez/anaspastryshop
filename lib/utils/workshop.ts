@@ -15,6 +15,9 @@ export const WORKSHOP_LOCATION =
 /** Etiqueta corta para nav, chips y encabezados. */
 export const WORKSHOP_LOCATION_SHORT = "Coro, Falcón";
 
+/** Texto público cuando el workshop aún no tiene fecha fijada. */
+export const WORKSHOP_DATE_PENDING = "Programando Fecha";
+
 const DEFAULT_WORKSHOP_LOCATION = WORKSHOP_LOCATION;
 const DEFAULT_WORKSHOP_TIME = "09:00 AM — 05:00 PM";
 
@@ -54,7 +57,7 @@ export function parseWorkshopDetails(
     return {
       isWorkshop,
       location: resolveWorkshopLocation(undefined, isWorkshop),
-      workshopDate: isWorkshop ? "Sábado próximo — Consultar fecha" : undefined,
+      workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
       workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
     };
   }
@@ -63,12 +66,13 @@ export function parseWorkshopDetails(
     const parsed = JSON.parse(content);
     if (typeof parsed === "object" && parsed !== null) {
       const explicitIsWorkshop = parsed.isWorkshop !== undefined ? Boolean(parsed.isWorkshop) : isWorkshop;
+      const storedDate = typeof parsed.workshopDate === "string" ? parsed.workshopDate.trim() : "";
       return {
         isWorkshop: explicitIsWorkshop,
         slug: parsed.slug,
         spots: parsed.spots,
         location: resolveWorkshopLocation(parsed.location, explicitIsWorkshop),
-        workshopDate: parsed.workshopDate || (explicitIsWorkshop ? "Fecha confirmada al reservar" : undefined),
+        workshopDate: storedDate || (explicitIsWorkshop ? WORKSHOP_DATE_PENDING : undefined),
         workshopTime: parsed.workshopTime || (explicitIsWorkshop ? DEFAULT_WORKSHOP_TIME : undefined),
         notes: parsed.notes,
       };
@@ -78,7 +82,7 @@ export function parseWorkshopDetails(
     return {
       isWorkshop,
       location: resolveWorkshopLocation(content, isWorkshop),
-      workshopDate: isWorkshop ? "Fecha confirmada al reservar" : undefined,
+      workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
       workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
     };
   }
@@ -86,7 +90,7 @@ export function parseWorkshopDetails(
   return {
     isWorkshop,
     location: resolveWorkshopLocation(undefined, isWorkshop),
-    workshopDate: isWorkshop ? "Fecha confirmada al reservar" : undefined,
+    workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
     workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
   };
 }
@@ -179,4 +183,33 @@ export function formatWorkshopDateLabel(isoDate: string): string {
     year: "numeric",
   }).format(parseWorkshopLocalDate(isoDate));
   return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/** Etiqueta pública: fecha fijada o «Programando Fecha» si aún no hay calendario. */
+export function publicWorkshopDateLabel(value: string | null | undefined): string {
+  const iso = workshopDateToIso(value);
+  return iso ? formatWorkshopDateLabel(iso) : WORKSHOP_DATE_PENDING;
+}
+
+/**
+ * Normaliza la fecha del admin al guardar.
+ * Vacío o etiquetas pendientes → ""; fechas inválidas con forma de fecha → error.
+ */
+export function resolveWorkshopDateForSave(
+  value: string | null | undefined,
+): { date: string; error?: string } {
+  const trimmed = value?.trim() || "";
+  if (!trimmed) return { date: "" };
+
+  const iso = workshopDateToIso(trimmed);
+  if (iso) return { date: iso };
+
+  const looksLikeDate =
+    /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ||
+    /\d{1,2}\s+de\s+[a-záéíóúüñ]+/i.test(trimmed);
+  if (looksLikeDate) {
+    return { date: "", error: "Selecciona una fecha válida para el workshop." };
+  }
+
+  return { date: "" };
 }

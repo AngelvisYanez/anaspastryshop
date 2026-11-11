@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateCourse } from "@/lib/actions/cursos";
-import { parseWorkshopDetails, WORKSHOP_LOCATION } from "@/lib/utils/workshop";
+import {
+  formatWorkshopDateLabel,
+  parseWorkshopDetails,
+  workshopDateToIso,
+  WORKSHOP_LOCATION,
+} from "@/lib/utils/workshop";
 
 export interface TaskForm {
   title: string;
@@ -35,10 +40,14 @@ export function useCourseEditForm(course: any) {
   const [location, setLocation] = useState(
     initialWorkshop.location || WORKSHOP_LOCATION,
   );
-  const [workshopDate, setWorkshopDate] = useState(initialWorkshop.workshopDate || "");
+  const [workshopDate, setWorkshopDate] = useState(() => {
+    const iso = workshopDateToIso(initialWorkshop.workshopDate);
+    return iso ? formatWorkshopDateLabel(iso) : "";
+  });
   const [workshopTime, setWorkshopTime] = useState(
     initialWorkshop.workshopTime || "09:00 AM — 05:00 PM",
   );
+  const [notifyClients, setNotifyClients] = useState(false);
   const [status] = useState<"DRAFT" | "PUBLISHED" | "SCHEDULED">(
     (course.status as "DRAFT" | "PUBLISHED" | "SCHEDULED") || "PUBLISHED",
   );
@@ -124,6 +133,7 @@ export function useCourseEditForm(course: any) {
         location: isLive ? location : undefined,
         workshopDate: isLive ? workshopDate : undefined,
         workshopTime: isLive ? workshopTime : undefined,
+        notifyClients: isLive ? notifyClients : false,
         status,
         publishedAt: status === "SCHEDULED" ? publishedAt : undefined,
         modules: modules.map((m) => ({
@@ -167,6 +177,8 @@ export function useCourseEditForm(course: any) {
     setWorkshopDate,
     workshopTime,
     setWorkshopTime,
+    notifyClients,
+    setNotifyClients,
     openModuleIndex,
     setOpenModuleIndex,
     modules,

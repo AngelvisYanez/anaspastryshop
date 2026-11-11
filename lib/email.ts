@@ -896,6 +896,95 @@ export async function sendAdminNewUserEmail(
   }
 }
 
+export async function sendWorkshopNewDateEmail(
+  email: string,
+  name: string | null,
+  workshop: {
+    title: string;
+    dateLabel: string;
+    time?: string;
+    location?: string;
+    slug: string;
+    price?: number;
+  },
+  options?: { dryRun?: boolean },
+): Promise<{ subject: string; html: string } | void> {
+  const config = await getTemplateConfig("WORKSHOP_NEW_DATE");
+  if (!config.isEnabled && !options?.dryRun) return;
+  const firstName = name?.split(" ")[0] ?? "allí";
+  const href = `${BASE_URL}/workshop/${workshop.slug}`;
+  const time = workshop.time?.trim() || "Consultar horario";
+  const location = workshop.location?.trim() || "Coro, Falcón, Venezuela";
+  const priceLabel =
+    typeof workshop.price === "number" ? `$${workshop.price.toFixed(2)} USD` : "Consultar";
+
+  const body = `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background:linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARK_LIGHT} 100%);padding:40px;text-align:center;">
+          ${heroIcon("calendar")}
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:${WHITE};letter-spacing:-0.02em;">${escapeHtml(config.title || "Nueva fecha de workshop")}</h1>
+          <p style="margin:0;font-size:13px;color:${ACCENT};font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Cupos limitados</p>
+        </td>
+      </tr>
+      <tr><td style="height:3px;background:${ACCENT};"></td></tr>
+      <tr>
+        <td style="padding:36px 0 0;">
+          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.7;">
+            Hola ${escapeHtml(firstName)}, abrimos una <strong style="color:${BRAND_DARK};">nueva fecha</strong> para el workshop presencial
+            <strong style="color:${BRAND_DARK};">${escapeHtml(workshop.title)}</strong>.
+          </p>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 28px;background:${CREAM};border:1px solid ${CREAM_DARK};border-radius:16px;">
+            <tr>
+              <td style="padding:20px 22px;">
+                <p style="margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};">Detalles</p>
+                <p style="margin:0 0 8px;font-size:14px;color:#374151;line-height:1.6;"><strong>Fecha:</strong> ${escapeHtml(workshop.dateLabel)}</p>
+                <p style="margin:0 0 8px;font-size:14px;color:#374151;line-height:1.6;"><strong>Horario:</strong> ${escapeHtml(time)}</p>
+                <p style="margin:0 0 8px;font-size:14px;color:#374151;line-height:1.6;"><strong>Lugar:</strong> ${escapeHtml(location)}</p>
+                <p style="margin:0;font-size:14px;color:#374151;line-height:1.6;"><strong>Inversión:</strong> ${escapeHtml(priceLabel)}</p>
+              </td>
+            </tr>
+          </table>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td align="center" style="padding:0 0 8px;">
+                ${ctaButtonGold(href, "Ver workshop y reservar")}
+              </td>
+            </tr>
+          </table>
+          <p style="margin:20px 0 0;font-size:12px;color:${MUTED};line-height:1.6;text-align:center;">
+            Recibes este aviso porque tienes una cuenta en Ana's Pastry Shop.
+            Puedes gestionar WhatsApp en <a href="${BASE_URL}/dashboard/settings" style="color:${MUTED};text-decoration:underline;">tu perfil</a>.
+          </p>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  const subject =
+    config.subject ||
+    `Nueva fecha: ${workshop.title} — ${workshop.dateLabel}`;
+  const html = buildEmail(
+    config.preheader ||
+      `Nueva fecha de ${workshop.title}: ${workshop.dateLabel}. Reserva tu cupo.`,
+    body,
+  );
+
+  if (options?.dryRun) return { subject, html };
+
+  try {
+    await getResend().emails.send({
+      from: FROM,
+      to: email,
+      subject,
+      html,
+    });
+  } catch (err) {
+    console.error("[Resend] sendWorkshopNewDateEmail error:", err);
+    throw err;
+  }
+}
+
 export async function getEmailTemplatePreview(
   type: string,
 ): Promise<{ subject: string; html: string } | null> {
@@ -938,6 +1027,22 @@ export async function getEmailTemplatePreview(
           "prueba@ejemplo.com",
           "USER",
           "+584121234567",
+          dryRun,
+        )) ?? null
+      );
+    case "WORKSHOP_NEW_DATE":
+      return (
+        (await sendWorkshopNewDateEmail(
+          sampleEmail,
+          sampleName,
+          {
+            title: "Tortas Básicas",
+            dateLabel: "Sábado, 15 de noviembre de 2026",
+            time: "09:00 AM — 05:00 PM",
+            location: "Coro, Falcón, Venezuela",
+            slug: "tortas-basicas",
+            price: 45,
+          },
           dryRun,
         )) ?? null
       );

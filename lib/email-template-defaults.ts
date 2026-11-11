@@ -39,6 +39,14 @@ export const DEFAULT_TEMPLATES = [
     title: "Nuevo Usuario Registrado",
     preheader: "Alguien se ha unido a Ana's Pastry Shop.",
   },
+  {
+    type: "WORKSHOP_NEW_DATE",
+    label: "Nueva fecha de workshop",
+    recipient: "USER",
+    subject: "Nueva fecha confirmada — Ana's Pastry Shop",
+    title: "Nueva fecha de workshop",
+    preheader: "Abrimos una nueva fecha presencial. Reserva tu cupo.",
+  },
 ] as const;
 
 export type EmailTemplateData = {

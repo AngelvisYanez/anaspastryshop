@@ -133,6 +133,8 @@ export default function CourseEditClient({
                     onLocationChange={form.setLocation}
                     onDateChange={form.setWorkshopDate}
                     onTimeChange={form.setWorkshopTime}
+                    notifyClients={form.notifyClients}
+                    onNotifyClientsChange={form.setNotifyClients}
                   />
                 )}
               </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 import AddToBagButton from "@/components/cart/AddToBagButton";
 import FormacionCover from "@/components/FormacionCover";
+import { WORKSHOP_DATE_PENDING, workshopDateToIso } from "@/lib/utils/workshop";
 
 export interface FormacionCardData {
   id: string;
@@ -33,13 +34,16 @@ function detailHrefFor(course: FormacionCardData) {
 }
 
 function FormacionCardMeta({ course }: { course: FormacionCardData }) {
+  const dateLabel = course.workshopDate || WORKSHOP_DATE_PENDING;
+  const hasFixedDate = Boolean(workshopDateToIso(course.workshopDate));
+
   return (
     <div className="flex items-center justify-between text-xs text-muted font-medium pt-3 border-t border-card-border/60">
       <span className="flex items-center gap-1.5 text-foreground font-semibold">
         <Calendar size={13} className="text-accent shrink-0" />
-        {course.workshopDate || "Próximamente"}
+        {dateLabel}
       </span>
-      {course.workshopDate && (
+      {hasFixedDate && (
         <span className="flex items-center gap-1.5 text-foreground font-semibold">
           <Clock size={13} className="text-accent shrink-0" />
           {course.workshopTime || "09:00 AM — 05:00 PM"}

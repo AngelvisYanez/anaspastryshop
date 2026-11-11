@@ -1,8 +1,9 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Sparkles, Video } from "lucide-react";
+import { BellRing, Calendar, Clock, MapPin, Sparkles, Video } from "lucide-react";
 import {
   formatWorkshopDateLabel,
+  WORKSHOP_DATE_PENDING,
   workshopDateToIso,
 } from "@/lib/utils/workshop";
 
@@ -81,6 +82,8 @@ export function WorkshopLogistics({
   onLocationChange,
   onDateChange,
   onTimeChange,
+  notifyClients,
+  onNotifyClientsChange,
 }: {
   location: string;
   date: string;
@@ -88,6 +91,8 @@ export function WorkshopLogistics({
   onLocationChange: (value: string) => void;
   onDateChange: (value: string) => void;
   onTimeChange: (value: string) => void;
+  notifyClients?: boolean;
+  onNotifyClientsChange?: (value: boolean) => void;
 }) {
   const isoDate = workshopDateToIso(date);
 
@@ -116,6 +121,7 @@ export function WorkshopLogistics({
         <div>
           <label htmlFor="course-workshop-date" className={labelClass}>
             <Calendar size={13} className="text-accent" /> Fecha del Workshop
+            <span className="font-medium text-muted normal-case">(opcional)</span>
           </label>
           <div className="relative">
             <button
@@ -134,7 +140,6 @@ export function WorkshopLogistics({
             <input
               id="course-workshop-date"
               type="date"
-              required={!isoDate}
               value={isoDate}
               onChange={(e) => {
                 const nextIso = e.target.value;
@@ -146,12 +151,16 @@ export function WorkshopLogistics({
           </div>
           {date && !isoDate && (
             <p className="mt-1.5 text-[11px] text-muted font-medium">
-              Fecha actual: {date}. Elige una nueva en el calendario.
+              Fecha actual: {date}. Elige una nueva en el calendario o déjala vacía.
             </p>
           )}
-          {isoDate && (
+          {isoDate ? (
             <p className="mt-1.5 text-[11px] text-muted font-medium">
               Se guardará como: {formatWorkshopDateLabel(isoDate)}
+            </p>
+          ) : (
+            <p className="mt-1.5 text-[11px] text-muted font-medium">
+              Sin fecha fija, en la página pública se mostrará «{WORKSHOP_DATE_PENDING}».
             </p>
           )}
         </div>
@@ -170,6 +179,30 @@ export function WorkshopLogistics({
           />
         </div>
       </div>
+
+      {onNotifyClientsChange && (
+        <label
+          htmlFor="course-notify-clients"
+          className="flex items-start gap-3 rounded-xl border border-accent/25 bg-card/70 p-3 sm:p-4 cursor-pointer"
+        >
+          <input
+            id="course-notify-clients"
+            type="checkbox"
+            checked={Boolean(notifyClients)}
+            onChange={(e) => onNotifyClientsChange(e.target.checked)}
+            className="mt-1 h-4 w-4 accent-[var(--accent)]"
+          />
+          <span className="min-w-0">
+            <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+              <BellRing size={14} className="text-accent shrink-0" />
+              Avisar nueva fecha a clientes registrados
+            </span>
+            <span className="mt-1 block text-xs text-muted leading-relaxed">
+              Envía email a las cuentas activas y WhatsApp a quienes autorizaron novedades.
+            </span>
+          </span>
+        </label>
+      )}
     </div>
   );
 }

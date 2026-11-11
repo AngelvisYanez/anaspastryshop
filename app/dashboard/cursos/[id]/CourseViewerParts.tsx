@@ -12,7 +12,11 @@ import {
   Video,
   AlertCircle,
 } from "lucide-react";
-import { WORKSHOP_LOCATION, type WorkshopDetails } from "@/lib/utils/workshop";
+import {
+  publicWorkshopDateLabel,
+  WORKSHOP_LOCATION,
+  type WorkshopDetails,
+} from "@/lib/utils/workshop";
 import { getCourseEmbedUrl } from "@/app/cursos/[slug]/courseEmbed";
 
 type Lesson = {
@@ -73,7 +77,7 @@ export function WorkshopLogisticsBanner({
               <Calendar size={15} /> Fecha
             </div>
             <p className="text-sm font-black text-white">
-              {workshopInfo.workshopDate || "Consultar próximas fechas"}
+              {publicWorkshopDateLabel(workshopInfo.workshopDate)}
             </p>
             <p className="text-[11px] text-white/60 mt-1">Jornada intensiva programada</p>
           </div>

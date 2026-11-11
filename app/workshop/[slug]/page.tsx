@@ -8,7 +8,7 @@ import RelatedFormaciones from "@/components/RelatedFormaciones";
 import { getWorkshopBySlug, getAllWorkshops, toFormacionCard } from "@/lib/data/workshops";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
-import { parseWorkshopDetails, formatWorkshopDateLabel, workshopDateToIso } from "@/lib/utils/workshop";
+import { parseWorkshopDetails, publicWorkshopDateLabel } from "@/lib/utils/workshop";
 import { WorkshopDetailHero } from "./WorkshopDetailHero";
 import { WorkshopDetailBody } from "./WorkshopDetailBody";
 import {
@@ -83,14 +83,13 @@ async function WorkshopDetailContent({ params }: PageProps) {
   });
   if (!course) notFound();
   const details = parseWorkshopDetails(course.content, course.isLive, course.title);
-  const isoDate = workshopDateToIso(details.workshopDate);
   const workshop = {
     ...catalogWorkshop,
     price: course.price,
     // Prefer the published DB cover (versioned API URL). Do not fall back to
     // static catalog fotos — those never update when the admin changes the cover.
     image: course.image ?? null,
-    schedule: isoDate ? formatWorkshopDateLabel(isoDate) : "Próximamente",
+    schedule: publicWorkshopDateLabel(details.workshopDate),
     startTime: details.workshopTime ?? catalogWorkshop.startTime,
   };
 
@@ -110,13 +109,12 @@ async function WorkshopDetailContent({ params }: PageProps) {
     });
     if (!row) return [];
     const info = parseWorkshopDetails(row.content, row.isLive, row.title);
-    const date = workshopDateToIso(info.workshopDate);
     return [toFormacionCard(item, {
       id: row.id,
       bagId: row.id,
       price: row.price,
       image: row.image,
-      workshopDate: date ? formatWorkshopDateLabel(date) : "Próximamente",
+      workshopDate: publicWorkshopDateLabel(info.workshopDate),
       workshopTime: info.workshopTime,
     })];
   }).slice(0, 3);

@@ -26,10 +26,17 @@ describe("email templates", () => {
   });
 
   it("renders all dashboard email previews", async () => {
-    for (const type of ["WELCOME", "ACCOUNT_APPROVED", "PAYMENT_REJECTED", "COURSE_PURCHASE", "ADMIN_NEW_USER"]) {
+    for (const type of ["WELCOME", "ACCOUNT_APPROVED", "PAYMENT_REJECTED", "COURSE_PURCHASE", "ADMIN_NEW_USER", "WORKSHOP_NEW_DATE"]) {
       const preview = await getEmailTemplatePreview(type);
       expect(preview?.html).toContain("Ana's Pastry Shop");
       expect(preview?.html).toContain("/logo-anas-pastry-shop-white.png");
     }
+  });
+
+  it("renders workshop new date details in the preview", async () => {
+    const preview = await getEmailTemplatePreview("WORKSHOP_NEW_DATE");
+    expect(preview?.html).toContain("Tortas Básicas");
+    expect(preview?.html).toContain("15 de noviembre de 2026");
+    expect(preview?.html).toContain("/workshop/tortas-basicas");
   });
 });

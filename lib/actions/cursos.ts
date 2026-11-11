@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath, updateTag } from "next/cache";
 import type { ActionResult } from "@/lib/types";
-import { serializeWorkshopDetails, workshopDateToIso } from "@/lib/utils/workshop";
+import { resolveWorkshopDateForSave, serializeWorkshopDetails } from "@/lib/utils/workshop";
 import { uniqueSlug } from "@/lib/utils/slug";
+import { notifyWorkshopNewDate, type WorkshopNotifyResult } from "@/lib/actions/workshop-notifications";
 
 const COURSE_CACHE_TAGS = ["cursos", "home-data", "workshop-dates"];
 
@@ -51,6 +52,8 @@ export type CoursePayload = {
   location?: string;
   workshopDate?: string;
   workshopTime?: string;
+  /** Si es true y hay fecha de workshop publicada, avisa a clientes registrados (email + WhatsApp). */
+  notifyClients?: boolean;
   content?: string;
   modules: {
     title: string;
@@ -63,12 +66,15 @@ export type CoursePayload = {
   instructorId?: string;
 };
 
-export async function createCourse(data: CoursePayload): Promise<ActionResult<{ courseId: string }>> {
+export async function createCourse(
+  data: CoursePayload,
+): Promise<ActionResult<{ courseId: string; notifications?: WorkshopNotifyResult }>> {
   const session = await assertAdmin();
 
   try {
-    const workshopDate = data.workshopDate ? workshopDateToIso(data.workshopDate) : "";
-    if (data.isLive && data.workshopDate && !workshopDate) return { error: "Selecciona una fecha válida para el workshop." };
+    const dateResult = resolveWorkshopDateForSave(data.workshopDate);
+    if (data.isLive && dateResult.error) return { error: dateResult.error };
+    const workshopDate = dateResult.date;
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     let finalInstructorId = session.user.id as string;
@@ -121,12 +127,30 @@ export async function createCourse(data: CoursePayload): Promise<ActionResult<{ 
       },
     });
 
+    let notifications: WorkshopNotifyResult | undefined;
+    if (
+      data.notifyClients &&
+      data.isLive &&
+      workshopDate &&
+      data.status === "PUBLISHED"
+    ) {
+      notifications = await notifyWorkshopNewDate({
+        courseId: curso.id,
+        title: data.title,
+        slug: nextSlug,
+        dateIso: workshopDate,
+        time: data.workshopTime,
+        location: data.location,
+        price: data.price,
+      });
+    }
+
     revalidatePath("/dashboard/cursos");
     revalidatePath("/cursos");
     revalidatePath("/workshops");
     revalidatePath("/workshops/calendario");
     revalidateCourseCaches();
-    return { success: true, courseId: curso.id };
+    return { success: true, courseId: curso.id, notifications };
   } catch (error: unknown) {
     console.error("Error creating course:", error);
     return { error: error instanceof Error ? error.message : "Error interno al crear el curso." };
@@ -156,12 +180,16 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
   }
 }
 
-export async function updateCourse(courseId: string, data: CoursePayload): Promise<ActionResult> {
+export async function updateCourse(
+  courseId: string,
+  data: CoursePayload,
+): Promise<ActionResult<{ notifications?: WorkshopNotifyResult }>> {
   const session = await assertAdmin();
 
   try {
-    const workshopDate = data.workshopDate ? workshopDateToIso(data.workshopDate) : "";
-    if (data.isLive && data.workshopDate && !workshopDate) return { error: "Selecciona una fecha válida para el workshop." };
+    const dateResult = resolveWorkshopDateForSave(data.workshopDate);
+    if (data.isLive && dateResult.error) return { error: dateResult.error };
+    const workshopDate = dateResult.date;
     const course = await prisma.curso.findUnique({
       where: { id: courseId },
       include: { _count: { select: { inscritos: true } } },
@@ -227,6 +255,19 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
       prisma.curso.update({ where: { id: courseId }, data: updateData }),
     ]);
 
+    let notifications: WorkshopNotifyResult | undefined;
+    if (data.notifyClients && data.isLive && workshopDate && data.status === "PUBLISHED") {
+      notifications = await notifyWorkshopNewDate({
+        courseId,
+        title: data.title,
+        slug: nextSlug,
+        dateIso: workshopDate,
+        time: data.workshopTime,
+        location: data.location,
+        price: data.price,
+      });
+    }
+
     revalidatePath("/dashboard/cursos");
     revalidatePath(`/dashboard/cursos/${courseId}`);
     revalidatePath("/cursos");
@@ -236,7 +277,7 @@ export async function updateCourse(courseId: string, data: CoursePayload): Promi
     revalidatePath(`/cursos/${nextSlug}`);
     if (data.isLive) revalidatePath(`/workshop/${nextSlug}`);
     revalidateCourseCaches();
-    return { success: true };
+    return { success: true, notifications };
   } catch (error: unknown) {
     console.error("Error updating course:", error);
     return { error: error instanceof Error ? error.message : "Error interno al actualizar el curso." };

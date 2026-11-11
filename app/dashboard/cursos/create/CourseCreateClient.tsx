@@ -45,6 +45,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
   const [location, setLocation] = useState(WORKSHOP_LOCATION);
   const [workshopDate, setWorkshopDate] = useState("");
   const [workshopTime, setWorkshopTime] = useState("09:00 AM — 05:00 PM");
+  const [notifyClients, setNotifyClients] = useState(true);
 
   // Publicación
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED" | "SCHEDULED">("PUBLISHED");
@@ -117,6 +118,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
         location: isLive ? location : undefined,
         workshopDate: isLive ? workshopDate : undefined,
         workshopTime: isLive ? workshopTime : undefined,
+        notifyClients: isLive ? notifyClients : false,
         status,
         publishedAt: status === "SCHEDULED" ? publishedAt : undefined,
         instructorId: undefined,
@@ -192,7 +194,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
               isLive={isLive}
               onChange={setIsLive}
               onlineDescription="Contenido grabado por módulos y lecciones en video. Acceso permanente 24/7."
-              workshopDescription="Taller intensivo en vivo con ubicación física, fecha fijada y cupos limitados."
+              workshopDescription="Taller intensivo en vivo con ubicación física, fecha opcional y cupos limitados."
             />
 
             {isLive && (
@@ -203,6 +205,8 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
                 onLocationChange={setLocation}
                 onDateChange={setWorkshopDate}
                 onTimeChange={setWorkshopTime}
+                notifyClients={notifyClients}
+                onNotifyClientsChange={setNotifyClients}
               />
             )}
 

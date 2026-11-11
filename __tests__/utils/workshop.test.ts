@@ -3,8 +3,11 @@ import {
   formatWorkshopDateLabel,
   parseWorkshopDetails,
   parseWorkshopLocalDate,
+  publicWorkshopDateLabel,
+  resolveWorkshopDateForSave,
   serializeWorkshopDetails,
   workshopDateToIso,
+  WORKSHOP_DATE_PENDING,
   WORKSHOP_LOCATION,
 } from "@/lib/utils/workshop";
 
@@ -125,5 +128,30 @@ describe("parseWorkshopLocalDate / formatWorkshopDateLabel", () => {
 
   it("devuelve el valor original si no es ISO", () => {
     expect(formatWorkshopDateLabel("Sábado próximo")).toBe("Sábado próximo");
+  });
+});
+
+describe("publicWorkshopDateLabel / resolveWorkshopDateForSave", () => {
+  it("muestra Programando Fecha cuando no hay calendario", () => {
+    expect(publicWorkshopDateLabel("")).toBe(WORKSHOP_DATE_PENDING);
+    expect(publicWorkshopDateLabel(undefined)).toBe(WORKSHOP_DATE_PENDING);
+    expect(publicWorkshopDateLabel(WORKSHOP_DATE_PENDING)).toBe(WORKSHOP_DATE_PENDING);
+  });
+
+  it("formatea fechas ISO para el público", () => {
+    expect(publicWorkshopDateLabel("2026-10-04").toLowerCase()).toContain("octubre");
+  });
+
+  it("permite guardar sin fecha o con etiqueta pendiente", () => {
+    expect(resolveWorkshopDateForSave("")).toEqual({ date: "" });
+    expect(resolveWorkshopDateForSave(WORKSHOP_DATE_PENDING)).toEqual({ date: "" });
+    expect(resolveWorkshopDateForSave("2026-10-04")).toEqual({ date: "2026-10-04" });
+  });
+
+  it("rechaza fechas imposibles", () => {
+    expect(resolveWorkshopDateForSave("2026-02-31")).toEqual({
+      date: "",
+      error: "Selecciona una fecha válida para el workshop.",
+    });
   });
 });

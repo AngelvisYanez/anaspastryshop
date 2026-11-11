@@ -9,7 +9,11 @@ import AddToBagButton from "@/components/cart/AddToBagButton";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import Link from "next/link";
 import Image from "next/image";
-import { WORKSHOP_LOCATION, type WorkshopDetails } from "@/lib/utils/workshop";
+import {
+  publicWorkshopDateLabel,
+  WORKSHOP_LOCATION,
+  type WorkshopDetails,
+} from "@/lib/utils/workshop";
 import { getCourseEmbedUrl } from "./courseEmbed";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
@@ -105,7 +109,7 @@ export function CourseDetailHero({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-white/15 text-[11px]">
                       <div className="flex items-center gap-2">
                         <Calendar size={14} className="text-pink-300 shrink-0" />
-                        <span><strong>Fecha:</strong> {workshopInfo?.workshopDate || "Próximamente"}</span>
+                        <span><strong>Fecha:</strong> {publicWorkshopDateLabel(workshopInfo?.workshopDate)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="text-pink-300 shrink-0" />

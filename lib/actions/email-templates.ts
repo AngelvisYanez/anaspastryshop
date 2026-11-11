@@ -13,6 +13,7 @@ import {
   sendPaymentRejectedEmail,
   sendCoursePurchaseEmail,
   sendAdminNewUserEmail,
+  sendWorkshopNewDateEmail,
   getEmailTemplatePreview,
 } from "@/lib/email";
 
@@ -138,6 +139,16 @@ export async function sendTestEmail(
           "USER",
           "+584121234567",
         );
+        break;
+      case "WORKSHOP_NEW_DATE":
+        await sendWorkshopNewDateEmail(TEST_EMAIL, TEST_NAME, {
+          title: "Tortas Básicas",
+          dateLabel: "Sábado, 15 de noviembre de 2026",
+          time: "09:00 AM — 05:00 PM",
+          location: "Coro, Falcón, Venezuela",
+          slug: "tortas-basicas",
+          price: 45,
+        });
         break;
       default:
         return { error: "Tipo de email no válido." };
