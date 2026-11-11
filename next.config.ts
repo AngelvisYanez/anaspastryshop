@@ -40,6 +40,13 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Query strings on local `/api/course-image/...` covers require an explicit
+    // localPatterns entry (Next.js 16). Omit `search` to allow any `?v=` stamp.
+    localPatterns: [
+      { pathname: "/api/course-image/**" },
+      { pathname: "/api/gallery-image/**" },
+      { pathname: "/**", search: "" },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
