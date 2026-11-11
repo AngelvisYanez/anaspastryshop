@@ -30,6 +30,7 @@ async function getPublicCourses() {
   cacheLife("hours");
   cacheTag("cursos");
   return prisma.curso.findMany({
+    omit: { image: true },
     where: {
       OR: [
         { status: "PUBLISHED" },
@@ -94,7 +95,7 @@ async function CursosContent() {
           image: resolveCourseCover({
             title: c.title,
             slug: c.slug ?? workshopInfo.slug,
-            image: c.image,
+            image: `/api/course-image/${c.id}`,
             isWorkshop: workshopInfo.isWorkshop,
           }),
           category: c.category,

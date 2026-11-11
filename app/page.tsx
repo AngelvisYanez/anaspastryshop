@@ -13,6 +13,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 import type { FormacionCardData } from "@/components/FormacionCard";
 import { getWorkshopBySlug } from "@/lib/data/workshops";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
@@ -67,7 +68,7 @@ async function getData() {
       image: resolveCourseCover({
         title: c.title,
         slug: slug ?? c.slug ?? undefined,
-        image: c.image,
+        image: courseImageUrl(c.id, c.image),
         isWorkshop: w.isWorkshop,
       }),
       category: c.category,
@@ -99,7 +100,7 @@ async function getData() {
             slug: true,
             title: true,
             category: true,
-            image: true,
+            image: false,
             price: true,
             description: true,
             level: true,
@@ -112,7 +113,7 @@ async function getData() {
           orderBy: { createdAt: "desc" },
           take: 12,
         })
-        .then((rows) => (rows as CourseRow[]).map(toCard)),
+        .then((rows) => (rows as Omit<CourseRow, 'image'>[]).map((row) => toCard({ ...row, image: `/api/course-image/${row.id}` }))),
       prisma.curso
         .findMany({
           where: {
@@ -127,7 +128,7 @@ async function getData() {
             slug: true,
             title: true,
             category: true,
-            image: true,
+            image: false,
             price: true,
             description: true,
             level: true,
@@ -140,7 +141,7 @@ async function getData() {
           orderBy: { createdAt: "desc" },
           take: 12,
         })
-        .then((rows) => (rows as CourseRow[]).map(toCard)),
+        .then((rows) => (rows as Omit<CourseRow, 'image'>[]).map((row) => toCard({ ...row, image: `/api/course-image/${row.id}` }))),
     ]);
 
     if (workshops.length === 0 && onlineCourses.length === 0) {

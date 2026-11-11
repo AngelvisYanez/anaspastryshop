@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Clock, BarChart2, PlayCircle, ShoppingBag } from "lucide-react";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 
 export const metadata = {
   title: "Mis Workshops & Cursos",
@@ -60,7 +61,7 @@ async function MisCursosContent() {
     image: resolveCourseCover({
       title: curso.title,
       slug: curso.slug ?? undefined,
-      image: curso.image,
+      image: courseImageUrl(curso.id, curso.image),
       isWorkshop: Boolean(curso.isLive),
     }),
   }));

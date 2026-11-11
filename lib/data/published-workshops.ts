@@ -22,7 +22,7 @@ export async function getPublishedWorkshopRows() {
         title: true,
         description: true,
         price: true,
-        image: true,
+        image: false,
         content: true,
         isLive: true,
         level: true,
@@ -30,7 +30,7 @@ export async function getPublishedWorkshopRows() {
       },
       orderBy: { createdAt: "desc" },
     });
-    return dedupeWorkshopRows(rows);
+    return dedupeWorkshopRows(rows.map((row) => ({ ...row, image: `/api/course-image/${row.id}` })));
   } catch (error) {
     console.error("Unable to load published workshops:", error);
     return [];

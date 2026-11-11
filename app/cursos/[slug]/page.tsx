@@ -11,6 +11,7 @@ import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { getWorkshopBySlug } from "@/lib/data/workshops";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { checkUserCourseAccess } from "./checkUserCourseAccess";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 import { labelsForEnabledProviders } from "@/components/checkout/manualProviders";
 import {
   buildBreadcrumbJsonLd,
@@ -84,7 +85,7 @@ async function resolveCourse(param: string): Promise<ResolvedCourse | null> {
 
   return {
     kind: "course",
-    course,
+    course: { ...course, image: courseImageUrl(course.id, course.image) },
     canonicalSlug: course.slug ?? onlineCourse?.slug ?? null,
     isOnlineCatalog,
   };
