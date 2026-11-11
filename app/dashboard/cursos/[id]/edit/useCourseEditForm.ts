@@ -44,9 +44,10 @@ export function useCourseEditForm(course: any) {
     const iso = workshopDateToIso(initialWorkshop.workshopDate);
     return iso ? formatWorkshopDateLabel(iso) : "";
   });
-  const [workshopTime, setWorkshopTime] = useState(
-    initialWorkshop.workshopTime || "09:00 AM — 05:00 PM",
-  );
+  const [workshopTime, setWorkshopTime] = useState(() => {
+    const iso = workshopDateToIso(initialWorkshop.workshopDate);
+    return iso ? initialWorkshop.workshopTime || "" : "";
+  });
   const [notifyClients, setNotifyClients] = useState(false);
   const [status] = useState<"DRAFT" | "PUBLISHED" | "SCHEDULED">(
     (course.status as "DRAFT" | "PUBLISHED" | "SCHEDULED") || "PUBLISHED",

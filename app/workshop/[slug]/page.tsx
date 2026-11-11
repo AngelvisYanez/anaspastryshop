@@ -8,7 +8,12 @@ import RelatedFormaciones from "@/components/RelatedFormaciones";
 import { getWorkshopBySlug, getAllWorkshops, toFormacionCard } from "@/lib/data/workshops";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
-import { parseWorkshopDetails, publicWorkshopDateLabel } from "@/lib/utils/workshop";
+import {
+  hasFixedWorkshopSchedule,
+  parseWorkshopDetails,
+  publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
+} from "@/lib/utils/workshop";
 import { WorkshopDetailHero } from "./WorkshopDetailHero";
 import { WorkshopDetailBody } from "./WorkshopDetailBody";
 import {
@@ -18,6 +23,7 @@ import {
   GEO,
   getSiteUrl,
   SITE_WHATSAPP,
+  workshopAvailabilityWhatsAppUrl,
 } from "@/lib/seo";
 
 interface PageProps {
@@ -83,6 +89,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
   });
   if (!course) notFound();
   const details = parseWorkshopDetails(course.content, course.isLive, course.title);
+  const scheduleReady = hasFixedWorkshopSchedule(details.workshopDate, details.workshopTime);
   const workshop = {
     ...catalogWorkshop,
     price: course.price,
@@ -90,15 +97,17 @@ async function WorkshopDetailContent({ params }: PageProps) {
     // static catalog fotos — those never update when the admin changes the cover.
     image: course.image ?? null,
     schedule: publicWorkshopDateLabel(details.workshopDate),
-    startTime: details.workshopTime ?? catalogWorkshop.startTime,
+    startTime: publicWorkshopTimeLabel(details.workshopDate, details.workshopTime) ?? "",
+    scheduleReady,
   };
 
   const depositAmount = Math.round(workshop.price * 0.5);
   const balanceAmount = workshop.price - depositAmount;
-  const waText = encodeURIComponent(
-    `¡Hola Chef Anais! Me interesa información e inscripción para el taller presencial: "${workshop.title}" ($${workshop.price} USD). ¿Cuáles son las próximas fechas disponibles?`,
-  );
-  const waUrl = `https://wa.me/${SITE_WHATSAPP}?text=${waText}`;
+  const waUrl = scheduleReady
+    ? `https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent(
+        `¡Hola Chef Anais! Me interesa información e inscripción para el taller presencial: "${workshop.title}" ($${workshop.price} USD). ¿Cuáles son las próximas fechas disponibles?`,
+      )}`
+    : workshopAvailabilityWhatsAppUrl(workshop.title, workshop.price);
   const courseId = course.id;
   const siteUrl = getSiteUrl();
   const relatedItems = getAllWorkshops().filter((item) => item.slug !== slug).flatMap((item) => {
@@ -115,7 +124,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
       price: row.price,
       image: row.image,
       workshopDate: publicWorkshopDateLabel(info.workshopDate),
-      workshopTime: info.workshopTime,
+      workshopTime: publicWorkshopTimeLabel(info.workshopDate, info.workshopTime),
     })];
   }).slice(0, 3);
 

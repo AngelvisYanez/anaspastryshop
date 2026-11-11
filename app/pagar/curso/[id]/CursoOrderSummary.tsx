@@ -4,6 +4,7 @@ import { MapPin, Calendar, Clock } from "lucide-react";
 import type { CouponResult } from "@/lib/actions/coupons";
 import {
   publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
   WORKSHOP_LOCATION,
   type WorkshopDetails,
 } from "@/lib/utils/workshop";
@@ -23,6 +24,11 @@ export function CursoOrderSummary({
   workshopInfo?: WorkshopDetails;
   appliedCoupon: CouponResult | null;
 }) {
+  const publicTime = publicWorkshopTimeLabel(
+    workshopInfo?.workshopDate,
+    workshopInfo?.workshopTime,
+  );
+
   return (
     <div className="bg-card border border-card-border rounded-3xl p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -51,10 +57,12 @@ export function CursoOrderSummary({
                   <Calendar size={12} className="text-accent" />
                   {publicWorkshopDateLabel(workshopInfo?.workshopDate)}
                 </span>
-                <span className="flex items-center gap-1">
-                  <Clock size={12} className="text-accent" />
-                  {workshopInfo?.workshopTime || "09:00 AM — 05:00 PM"}
-                </span>
+                {publicTime && (
+                  <span className="flex items-center gap-1">
+                    <Clock size={12} className="text-accent" />
+                    {publicTime}
+                  </span>
+                )}
               </div>
             </div>
           ) : (

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import CheckoutCurso from "./CheckoutCurso";
-import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { hasFixedWorkshopSchedule, parseWorkshopDetails } from "@/lib/utils/workshop";
 import { bagIdLookupOr } from "@/lib/utils/bagCourseLookup";
 
 export const metadata = {
@@ -54,6 +54,14 @@ async function CursoCheckoutContent({ params }: { params: Promise<{ id: string }
   }
 
   const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
+
+  if (
+    workshopInfo.isWorkshop &&
+    !hasFixedWorkshopSchedule(workshopInfo.workshopDate, workshopInfo.workshopTime)
+  ) {
+    const slug = workshopInfo.slug || course.slug;
+    redirect(slug ? `/workshop/${slug}` : "/workshops");
+  }
 
   return (
     <CheckoutCurso

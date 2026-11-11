@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Clock, Calendar, MapPin, Sparkles } from "lucide-react";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
-import { WORKSHOP_LOCATION_SHORT } from "@/lib/utils/workshop";
+import { WORKSHOP_DATE_PENDING, WORKSHOP_LOCATION_SHORT } from "@/lib/utils/workshop";
 
 export function WorkshopDetailHero({
   workshop,
@@ -16,11 +16,14 @@ export function WorkshopDetailHero({
     level: string;
     duration: string;
     startTime: string;
+    schedule?: string;
+    scheduleReady?: boolean;
     image?: string | null;
   };
   depositAmount: number;
 }) {
   const coverSrc = workshop.image?.trim() || null;
+  const scheduleReady = Boolean(workshop.scheduleReady && workshop.startTime);
 
   return (
     <section className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
@@ -71,8 +74,14 @@ export function WorkshopDetailHero({
               <div className="bg-brand-purple-deep/90 p-3 rounded-2xl border border-white/15 flex items-center gap-2.5">
                 <Calendar size={18} className="text-pink-300 shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-[11px] text-white/85 uppercase">Horario</p>
-                  <p className="font-bold truncate">{workshop.startTime}</p>
+                  <p className="text-[11px] text-white/85 uppercase">
+                    {scheduleReady ? "Horario" : "Fecha"}
+                  </p>
+                  <p className="font-bold truncate">
+                    {scheduleReady
+                      ? workshop.startTime
+                      : workshop.schedule || WORKSHOP_DATE_PENDING}
+                  </p>
                 </div>
               </div>
 

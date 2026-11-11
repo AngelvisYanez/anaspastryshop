@@ -44,7 +44,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
   // Workshop Logistics
   const [location, setLocation] = useState(WORKSHOP_LOCATION);
   const [workshopDate, setWorkshopDate] = useState("");
-  const [workshopTime, setWorkshopTime] = useState("09:00 AM — 05:00 PM");
+  const [workshopTime, setWorkshopTime] = useState("");
   const [notifyClients, setNotifyClients] = useState(true);
 
   // Publicación

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath, updateTag } from "next/cache";
 import type { ActionResult } from "@/lib/types";
-import { resolveWorkshopDateForSave, serializeWorkshopDetails } from "@/lib/utils/workshop";
+import { resolveWorkshopScheduleForSave, serializeWorkshopDetails } from "@/lib/utils/workshop";
 import { uniqueSlug } from "@/lib/utils/slug";
 import { notifyWorkshopNewDate, type WorkshopNotifyResult } from "@/lib/actions/workshop-notifications";
 
@@ -72,9 +72,10 @@ export async function createCourse(
   const session = await assertAdmin();
 
   try {
-    const dateResult = resolveWorkshopDateForSave(data.workshopDate);
-    if (data.isLive && dateResult.error) return { error: dateResult.error };
-    const workshopDate = dateResult.date;
+    const schedule = resolveWorkshopScheduleForSave(data.workshopDate, data.workshopTime);
+    if (data.isLive && schedule.error) return { error: schedule.error };
+    const workshopDate = schedule.date;
+    const workshopTime = schedule.time;
     const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     let finalInstructorId = session.user.id as string;
@@ -88,7 +89,7 @@ export async function createCourse(
       slug: nextSlug,
       location: data.location,
       workshopDate,
-      workshopTime: data.workshopTime,
+      workshopTime,
     });
 
     const curso = await prisma.curso.create({
@@ -139,7 +140,7 @@ export async function createCourse(
         title: data.title,
         slug: nextSlug,
         dateIso: workshopDate,
-        time: data.workshopTime,
+        time: workshopTime,
         location: data.location,
         price: data.price,
       });
@@ -187,9 +188,10 @@ export async function updateCourse(
   const session = await assertAdmin();
 
   try {
-    const dateResult = resolveWorkshopDateForSave(data.workshopDate);
-    if (data.isLive && dateResult.error) return { error: dateResult.error };
-    const workshopDate = dateResult.date;
+    const schedule = resolveWorkshopScheduleForSave(data.workshopDate, data.workshopTime);
+    if (data.isLive && schedule.error) return { error: schedule.error };
+    const workshopDate = schedule.date;
+    const workshopTime = schedule.time;
     const course = await prisma.curso.findUnique({
       where: { id: courseId },
       include: { _count: { select: { inscritos: true } } },
@@ -203,7 +205,7 @@ export async function updateCourse(
       isWorkshop: data.isLive,
       location: data.location,
       workshopDate,
-      workshopTime: data.workshopTime,
+      workshopTime,
     }, course.content);
 
     // La URL pública depende del slug, así que solo se recalcula si falta o si
@@ -262,7 +264,7 @@ export async function updateCourse(
         title: data.title,
         slug: nextSlug,
         dateIso: workshopDate,
-        time: data.workshopTime,
+        time: workshopTime,
         location: data.location,
         price: data.price,
       });

@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, Calendar, ArrowRight } from "lucide-react";
+import { Clock, Calendar, ArrowRight, MessageCircle } from "lucide-react";
 import AddToBagButton from "@/components/cart/AddToBagButton";
 import FormacionCover from "@/components/FormacionCover";
-import { WORKSHOP_DATE_PENDING, workshopDateToIso } from "@/lib/utils/workshop";
+import {
+  hasFixedWorkshopSchedule,
+  WORKSHOP_DATE_PENDING,
+} from "@/lib/utils/workshop";
+import { workshopAvailabilityWhatsAppUrl } from "@/lib/seo";
 
 export interface FormacionCardData {
   id: string;
@@ -35,7 +39,7 @@ function detailHrefFor(course: FormacionCardData) {
 
 function FormacionCardMeta({ course }: { course: FormacionCardData }) {
   const dateLabel = course.workshopDate || WORKSHOP_DATE_PENDING;
-  const hasFixedDate = Boolean(workshopDateToIso(course.workshopDate));
+  const scheduleReady = hasFixedWorkshopSchedule(course.workshopDate, course.workshopTime);
 
   return (
     <div className="flex items-center justify-between text-xs text-muted font-medium pt-3 border-t border-card-border/60">
@@ -43,10 +47,10 @@ function FormacionCardMeta({ course }: { course: FormacionCardData }) {
         <Calendar size={13} className="text-accent shrink-0" />
         {dateLabel}
       </span>
-      {hasFixedDate && (
+      {scheduleReady && course.workshopTime && (
         <span className="flex items-center gap-1.5 text-foreground font-semibold">
           <Clock size={13} className="text-accent shrink-0" />
-          {course.workshopTime || "09:00 AM — 05:00 PM"}
+          {course.workshopTime}
         </span>
       )}
     </div>
@@ -57,6 +61,8 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
   const isWorkshop = course.isWorkshop;
   const detailHref = detailHrefFor(course);
   const bagId = course.bagId ?? course.id;
+  const canPurchase =
+    !isWorkshop || hasFixedWorkshopSchedule(course.workshopDate, course.workshopTime);
 
   const viewActionLabel = course.hasAccess
     ? "Entrar al Curso"
@@ -119,7 +125,11 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
             </span>
           </div>
 
-          <div className={`grid gap-2 ${course.hasAccess ? "grid-cols-1" : "grid-cols-2"}`}>
+          <div
+            className={`grid gap-2 ${
+              course.hasAccess ? "grid-cols-1" : "grid-cols-2"
+            }`}
+          >
             <Link
               href={detailHref}
               className="h-10 bg-accent-solid hover:bg-accent-solid-hover text-white px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-accent-solid/20 w-full min-w-0"
@@ -128,7 +138,7 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
               <ArrowRight size={13} className="shrink-0" />
             </Link>
 
-            {!course.hasAccess && (
+            {!course.hasAccess && canPurchase && (
               <AddToBagButton
                 compact
                 labelAdd="Añadir"
@@ -142,6 +152,19 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
                   isWorkshop,
                 }}
               />
+            )}
+
+            {!course.hasAccess && !canPurchase && (
+              <a
+                href={workshopAvailabilityWhatsAppUrl(course.title, course.price)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B3D2E] px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md w-full min-w-0"
+                aria-label={`Consultar disponibilidad de ${course.title} por WhatsApp`}
+              >
+                <MessageCircle size={13} className="shrink-0" />
+                <span className="truncate">Consultar</span>
+              </a>
             )}
           </div>
         </div>

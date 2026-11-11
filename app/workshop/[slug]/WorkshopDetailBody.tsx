@@ -19,6 +19,8 @@ export function WorkshopDetailBody({
     spots: number;
     price: number;
     schedule: string;
+    startTime?: string;
+    scheduleReady?: boolean;
     duration: string;
     isDecorationWorkshop: boolean;
     legacySlug?: string | null;
@@ -33,6 +35,7 @@ export function WorkshopDetailBody({
   courseId: string;
   waUrl: string;
 }) {
+  const scheduleReady = Boolean(workshop.scheduleReady && workshop.startTime);
   return (
       <section className="py-14 sm:py-20 page-container w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
@@ -122,7 +125,7 @@ export function WorkshopDetailBody({
                 workshopTitle={workshop.shortTitle}
                 location={WORKSHOP_LOCATION}
                 workshopDate={workshop.schedule}
-                workshopTime={workshop.duration}
+                workshopTime={scheduleReady ? workshop.startTime : undefined}
                 price={workshop.price}
                 isDecorationWorkshop={workshop.isDecorationWorkshop}
                 showCta={false}
@@ -135,10 +138,12 @@ export function WorkshopDetailBody({
             <div className="sticky top-28 bg-card border-2 border-accent/40 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
               <div>
                 <h3 className="text-xl font-black text-foreground tracking-tight">
-                  Reserva tu Puesto
+                  {scheduleReady ? "Reserva tu Puesto" : "Fecha por Confirmar"}
                 </h3>
                 <p className="text-xs text-muted font-medium mt-1">
-                  Congela tu asistencia de forma formal. Los cupos se asignan por estricto orden de pago comprobado.
+                  {scheduleReady
+                    ? "Congela tu asistencia de forma formal. Los cupos se asignan por estricto orden de pago comprobado."
+                    : "Este workshop aún no tiene fecha ni hora fijadas. Cuando se programen, podrás reservar tu cupo aquí."}
                 </p>
               </div>
 
@@ -148,46 +153,66 @@ export function WorkshopDetailBody({
                   <span className="text-xs font-bold text-muted">Inversión Total:</span>
                   <span className="text-2xl font-black text-foreground font-display font-mono">${workshop.price} USD</span>
                 </div>
-                <div className="border-t border-card-border/60 pt-2.5 space-y-2 text-xs font-semibold">
-                  <div className="flex justify-between text-pink-900 dark:text-pink-400 font-bold">
-                    <span>50% para Reservar:</span>
-                    <span className="font-mono">${depositAmount} USD</span>
+                {scheduleReady && (
+                  <div className="border-t border-card-border/60 pt-2.5 space-y-2 text-xs font-semibold">
+                    <div className="flex justify-between text-pink-900 dark:text-pink-400 font-bold">
+                      <span>50% para Reservar:</span>
+                      <span className="font-mono">${depositAmount} USD</span>
+                    </div>
+                    <div className="flex justify-between text-muted">
+                      <span>50% restante al ingresar:</span>
+                      <span className="font-mono">${balanceAmount} USD</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-muted">
-                    <span>50% restante al ingresar:</span>
-                    <span className="font-mono">${balanceAmount} USD</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <Link
-                  href={`/pagar/curso/${courseId}`}
-                  className="w-full bg-accent-solid hover:bg-accent-solid-hover text-white py-3.5 px-5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg shadow-accent-solid/30 hover:shadow-accent-solid/50 transition"
-                >
-                  Reservar Cupo Formal (${depositAmount} USD) <ArrowRight size={15} />
-                </Link>
+                {scheduleReady ? (
+                  <>
+                    <Link
+                      href={`/pagar/curso/${courseId}`}
+                      className="w-full bg-accent-solid hover:bg-accent-solid-hover text-white py-3.5 px-5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg shadow-accent-solid/30 hover:shadow-accent-solid/50 transition"
+                    >
+                      Reservar Cupo Formal (${depositAmount} USD) <ArrowRight size={15} />
+                    </Link>
 
-                <AddToBagButton
-                  item={{
-                    id: courseId,
-                    title: workshop.shortTitle,
-                    price: workshop.price,
-                    image: workshop.image ?? null,
-                    isWorkshop: true,
-                  }}
-                  variant="solid"
-                />
+                    <AddToBagButton
+                      item={{
+                        id: courseId,
+                        title: workshop.shortTitle,
+                        price: workshop.price,
+                        image: workshop.image ?? null,
+                        isWorkshop: true,
+                      }}
+                      variant="solid"
+                    />
 
-                <a
-                  href={waUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B3D2E] py-3 px-4 rounded-2xl text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-md transition"
-                >
-                  <MessageCircle size={16} /> Consultar Fechas por WhatsApp
-                </a>
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B3D2E] py-3 px-4 rounded-2xl text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-md transition"
+                    >
+                      <MessageCircle size={16} /> Consultar por WhatsApp
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B3D2E] py-3.5 px-5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider text-center flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/25 transition"
+                    >
+                      <MessageCircle size={16} /> Consultar disponibilidad por WhatsApp
+                    </a>
+                    <p className="text-[11px] text-muted font-medium text-center leading-relaxed">
+                      Escríbenos a Ana&apos;s Pastry Shop para saber cuándo estará disponible este workshop.
+                    </p>
+                  </>
+                )}
               </div>
 
               {/* Checklist */}

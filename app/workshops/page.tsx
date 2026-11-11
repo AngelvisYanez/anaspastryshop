@@ -9,7 +9,11 @@ import { Clock, Users, MapPin, CheckCircle2, CalendarDays } from "lucide-react";
 import { buildBreadcrumbJsonLd, buildPageMetadata, GEO } from "@/lib/seo";
 import { getPublishedWorkshopRows } from "@/lib/data/published-workshops";
 import { getCalendarEvents } from "@/lib/data/workshop-schedule";
-import { parseWorkshopDetails, publicWorkshopDateLabel } from "@/lib/utils/workshop";
+import {
+  parseWorkshopDetails,
+  publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
+} from "@/lib/utils/workshop";
 import { getWorkshopBySlug } from "@/lib/data/workshops";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -41,7 +45,7 @@ export default async function WorkshopsPage() {
       price: row.price,
       image: row.image,
       workshopDate: publicWorkshopDateLabel(details.workshopDate),
-      workshopTime: details.workshopTime,
+      workshopTime: publicWorkshopTimeLabel(details.workshopDate, details.workshopTime),
     });
     return {
       id: row.id,
@@ -56,7 +60,7 @@ export default async function WorkshopsPage() {
       isWorkshop: true,
       category: "Workshops Presenciales",
       workshopDate: publicWorkshopDateLabel(details.workshopDate),
-      workshopTime: details.workshopTime,
+      workshopTime: publicWorkshopTimeLabel(details.workshopDate, details.workshopTime),
       workshopLocation: details.location,
     };
   });

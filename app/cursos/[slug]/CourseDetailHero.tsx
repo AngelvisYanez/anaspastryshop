@@ -3,17 +3,20 @@
 import { m } from "framer-motion";
 import {
   ArrowRight, CheckCircle, ChevronRight,
-  MapPin, Calendar, Clock, Sparkles, CreditCard,
+  MapPin, Calendar, Clock, Sparkles, CreditCard, MessageCircle,
 } from "lucide-react";
 import AddToBagButton from "@/components/cart/AddToBagButton";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import Link from "next/link";
 import Image from "next/image";
 import {
+  hasFixedWorkshopSchedule,
   publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
   WORKSHOP_LOCATION,
   type WorkshopDetails,
 } from "@/lib/utils/workshop";
+import { workshopAvailabilityWhatsAppUrl } from "@/lib/seo";
 import { getCourseEmbedUrl } from "./courseEmbed";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import CourseCoverPlaceholder from "@/components/CourseCoverPlaceholder";
@@ -42,6 +45,13 @@ export function CourseDetailHero({
     image: course.image,
     isWorkshop,
   });
+  const scheduleReady =
+    !isWorkshop ||
+    hasFixedWorkshopSchedule(workshopInfo?.workshopDate, workshopInfo?.workshopTime);
+  const publicTime = publicWorkshopTimeLabel(
+    workshopInfo?.workshopDate,
+    workshopInfo?.workshopTime,
+  );
 
   return (
     <section className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden min-h-[100svh] xl:min-h-0">
@@ -111,10 +121,12 @@ export function CourseDetailHero({
                         <Calendar size={14} className="text-pink-300 shrink-0" />
                         <span><strong>Fecha:</strong> {publicWorkshopDateLabel(workshopInfo?.workshopDate)}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="text-pink-300 shrink-0" />
-                        <span><strong>Horario:</strong> {workshopInfo?.workshopTime || "09:00 AM — 05:00 PM"}</span>
-                      </div>
+                      {publicTime && (
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} className="text-pink-300 shrink-0" />
+                          <span><strong>Horario:</strong> {publicTime}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -197,7 +209,7 @@ export function CourseDetailHero({
                       </span>
                     </div>
 
-                    {isWorkshop && (
+                    {isWorkshop && scheduleReady && (
                       <div className="pt-3 border-t border-white/15 space-y-1.5 text-xs font-medium text-white/90">
                         <p className="flex justify-between">
                           <span className="text-white/70">50% Reserva hoy:</span>
@@ -210,23 +222,41 @@ export function CourseDetailHero({
                       </div>
                     )}
 
-                    <Link
-                      href={`/pagar/curso/${course.id}`}
-                      className="w-full bg-accent-solid text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2.5 hover:bg-accent-solid-hover transition text-xs uppercase tracking-widest shadow-xl shadow-accent-solid/30"
-                    >
-                      {isWorkshop ? "Reservar Mi Cupo al Workshop" : "Comprar Curso Online"} <ArrowRight size={14} />
-                    </Link>
+                    {scheduleReady ? (
+                      <>
+                        <Link
+                          href={`/pagar/curso/${course.id}`}
+                          className="w-full bg-accent-solid text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2.5 hover:bg-accent-solid-hover transition text-xs uppercase tracking-widest shadow-xl shadow-accent-solid/30"
+                        >
+                          {isWorkshop ? "Reservar Mi Cupo al Workshop" : "Comprar Curso Online"} <ArrowRight size={14} />
+                        </Link>
 
-                    <AddToBagButton
-                      item={{
-                        id: course.id,
-                        title: course.title,
-                        price: course.price,
-                        image: coverSrc,
-                        isWorkshop,
-                      }}
-                      variant="solid"
-                    />
+                        <AddToBagButton
+                          item={{
+                            id: course.id,
+                            title: course.title,
+                            price: course.price,
+                            image: coverSrc,
+                            isWorkshop,
+                          }}
+                          variant="solid"
+                        />
+                      </>
+                    ) : (
+                      <div className="space-y-3">
+                        <a
+                          href={workshopAvailabilityWhatsAppUrl(course.title, course.price)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-[#0B3D2E] py-4 rounded-2xl font-black flex items-center justify-center gap-2.5 transition text-xs uppercase tracking-widest shadow-xl shadow-[#25D366]/25"
+                        >
+                          <MessageCircle size={16} /> Consultar disponibilidad por WhatsApp
+                        </a>
+                        <p className="text-[11px] text-white/75 font-medium text-center leading-relaxed">
+                          Escríbenos a Ana&apos;s Pastry Shop para saber cuándo estará disponible este workshop.
+                        </p>
+                      </div>
+                    )}
 
                     {paymentMethods.length > 0 && (
                       <div className="pt-3 border-t border-white/15 space-y-1.5 text-xs font-bold">

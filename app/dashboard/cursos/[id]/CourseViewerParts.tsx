@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import {
   publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
   WORKSHOP_LOCATION,
   type WorkshopDetails,
 } from "@/lib/utils/workshop";
@@ -40,6 +41,11 @@ export function WorkshopLogisticsBanner({
   workshopInfo: WorkshopDetails;
   instructorName: string | null;
 }) {
+  const publicTime = publicWorkshopTimeLabel(
+    workshopInfo.workshopDate,
+    workshopInfo.workshopTime,
+  );
+
   return (
     <div className="bg-gradient-to-br from-brand-purple via-brand-purple-deep to-brand-purple-deep border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 w-80 h-80 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
@@ -82,15 +88,15 @@ export function WorkshopLogisticsBanner({
             <p className="text-[11px] text-white/60 mt-1">Jornada intensiva programada</p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-pink-300 text-xs font-bold uppercase tracking-wider mb-1">
-              <Clock size={15} /> Horario
+          {publicTime && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-pink-300 text-xs font-bold uppercase tracking-wider mb-1">
+                <Clock size={15} /> Horario
+              </div>
+              <p className="text-sm font-black text-white">{publicTime}</p>
+              <p className="text-[11px] text-white/60 mt-1">Puntualidad requerida</p>
             </div>
-            <p className="text-sm font-black text-white">
-              {workshopInfo.workshopTime || "09:00 AM — 05:00 PM"}
-            </p>
-            <p className="text-[11px] text-white/60 mt-1">Puntualidad requerida</p>
-          </div>
+          )}
         </div>
       </div>
     </div>

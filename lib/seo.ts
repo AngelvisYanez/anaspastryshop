@@ -26,6 +26,17 @@ export const SITE_WHATSAPP = "584121658015";
 export const SITE_INSTAGRAM = "https://www.instagram.com/anaspastryshopve/";
 export const SITE_INSTAGRAM_HANDLE = "@anaspastryshopve";
 
+/** WhatsApp de Ana's Pastry Shop para consultar cuándo estará disponible un workshop. */
+export function workshopAvailabilityWhatsAppUrl(
+  title: string,
+  price?: number,
+): string {
+  const pricePart = typeof price === "number" ? ` ($${price} USD)` : "";
+  const text =
+    `¡Hola Ana's Pastry Shop! Quiero consultar cuándo estará disponible el workshop "${title}"${pricePart}. ¿Me pueden indicar la fecha y el horario?`;
+  return `https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent(text)}`;
+}
+
 /** Sede presencial (Coro, Falcón). */
 export const GEO = {
   streetAddress:

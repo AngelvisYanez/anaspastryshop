@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   formatWorkshopDateLabel,
+  hasFixedWorkshopSchedule,
   parseWorkshopDetails,
   parseWorkshopLocalDate,
   publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
   resolveWorkshopDateForSave,
+  resolveWorkshopScheduleForSave,
   serializeWorkshopDetails,
   workshopDateToIso,
   WORKSHOP_DATE_PENDING,
@@ -12,11 +15,12 @@ import {
 } from "@/lib/utils/workshop";
 
 describe("parseWorkshopDetails", () => {
-  it("marca workshop por isLive y aplica sede canónica", () => {
+  it("marca workshop por isLive y aplica sede canónica sin inventar horario", () => {
     const result = parseWorkshopDetails(null, true);
     expect(result.isWorkshop).toBe(true);
     expect(result.location).toBe(WORKSHOP_LOCATION);
-    expect(result.workshopTime).toContain("09:00");
+    expect(result.workshopDate).toBe(WORKSHOP_DATE_PENDING);
+    expect(result.workshopTime).toBeUndefined();
   });
 
   it("detecta workshop por título aunque isLive sea false", () => {
@@ -60,7 +64,7 @@ describe("parseWorkshopDetails", () => {
 });
 
 describe("serializeWorkshopDetails", () => {
-  it("serializa con defaults de sede y horario", () => {
+  it("serializa sin horario cuando no hay fecha", () => {
     const json = serializeWorkshopDetails({
       isWorkshop: true,
       slug: "ganache",
@@ -71,7 +75,7 @@ describe("serializeWorkshopDetails", () => {
       slug: "ganache",
       spots: 10,
       location: WORKSHOP_LOCATION,
-      workshopTime: "09:00 AM — 05:00 PM",
+      workshopTime: "",
       workshopDate: "",
       notes: "",
     });
@@ -131,11 +135,21 @@ describe("parseWorkshopLocalDate / formatWorkshopDateLabel", () => {
   });
 });
 
-describe("publicWorkshopDateLabel / resolveWorkshopDateForSave", () => {
+describe("public labels / schedule save", () => {
   it("muestra Programando Fecha cuando no hay calendario", () => {
     expect(publicWorkshopDateLabel("")).toBe(WORKSHOP_DATE_PENDING);
     expect(publicWorkshopDateLabel(undefined)).toBe(WORKSHOP_DATE_PENDING);
     expect(publicWorkshopDateLabel(WORKSHOP_DATE_PENDING)).toBe(WORKSHOP_DATE_PENDING);
+  });
+
+  it("no muestra hora sin fecha fija", () => {
+    expect(publicWorkshopTimeLabel("", "09:00 AM — 05:00 PM")).toBeUndefined();
+    expect(publicWorkshopTimeLabel("2026-10-04", "")).toBeUndefined();
+    expect(publicWorkshopTimeLabel("2026-10-04", "09:00 AM — 05:00 PM")).toBe(
+      "09:00 AM — 05:00 PM",
+    );
+    expect(hasFixedWorkshopSchedule("2026-10-04", "09:00 AM — 05:00 PM")).toBe(true);
+    expect(hasFixedWorkshopSchedule("", "09:00 AM — 05:00 PM")).toBe(false);
   });
 
   it("formatea fechas ISO para el público", () => {
@@ -146,6 +160,22 @@ describe("publicWorkshopDateLabel / resolveWorkshopDateForSave", () => {
     expect(resolveWorkshopDateForSave("")).toEqual({ date: "" });
     expect(resolveWorkshopDateForSave(WORKSHOP_DATE_PENDING)).toEqual({ date: "" });
     expect(resolveWorkshopDateForSave("2026-10-04")).toEqual({ date: "2026-10-04" });
+  });
+
+  it("exige horario cuando hay fecha", () => {
+    expect(resolveWorkshopScheduleForSave("2026-10-04", "")).toEqual({
+      date: "2026-10-04",
+      time: "",
+      error: "Indica el horario del workshop junto con la fecha.",
+    });
+    expect(resolveWorkshopScheduleForSave("2026-10-04", "09:00 AM — 05:00 PM")).toEqual({
+      date: "2026-10-04",
+      time: "09:00 AM — 05:00 PM",
+    });
+    expect(resolveWorkshopScheduleForSave("", "09:00 AM — 05:00 PM")).toEqual({
+      date: "",
+      time: "",
+    });
   });
 
   it("rechaza fechas imposibles", () => {

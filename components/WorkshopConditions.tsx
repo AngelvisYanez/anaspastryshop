@@ -34,8 +34,10 @@ function buildWorkshopConditions({
       tag: "Horarios y Duración",
       accentColor: "border-pink-500/20 text-pink-700 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/30",
       title: "Jornada Completa de 8 Horas",
-      desc: `Inicio puntual a las ${workshopTime ? workshopTime.split("—")[0].trim() : "9:00 AM"}. Finalización estimada entre 4:00 PM y 5:00 PM. Se agradece puntualidad para aprovechar cada técnica y preparación al máximo.`,
-      highlight: workshopTime || "9:00 AM a 5:00 PM",
+      desc: workshopTime
+        ? `Inicio puntual a las ${workshopTime.split("—")[0].trim()}. Finalización según el horario publicado. Se agradece puntualidad para aprovechar cada técnica y preparación al máximo.`
+        : "La jornada es intensiva de 8 horas. El horario exacto se publicará junto con la fecha del workshop.",
+      highlight: workshopTime || "Horario por confirmar",
     },
     {
       icon: CreditCard,

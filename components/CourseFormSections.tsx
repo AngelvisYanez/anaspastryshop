@@ -4,6 +4,7 @@ import { BellRing, Calendar, Clock, MapPin, Sparkles, Video } from "lucide-react
 import {
   formatWorkshopDateLabel,
   WORKSHOP_DATE_PENDING,
+  WORKSHOP_TIME_DEFAULT,
   workshopDateToIso,
 } from "@/lib/utils/workshop";
 
@@ -143,7 +144,13 @@ export function WorkshopLogistics({
               value={isoDate}
               onChange={(e) => {
                 const nextIso = e.target.value;
-                onDateChange(nextIso ? formatWorkshopDateLabel(nextIso) : "");
+                if (nextIso) {
+                  onDateChange(formatWorkshopDateLabel(nextIso));
+                  if (!time.trim()) onTimeChange(WORKSHOP_TIME_DEFAULT);
+                } else {
+                  onDateChange("");
+                  onTimeChange("");
+                }
               }}
               onClick={(e) => openDatePicker(e.currentTarget)}
               className={`${inputClass} pl-10 cursor-pointer`}
@@ -156,26 +163,30 @@ export function WorkshopLogistics({
           )}
           {isoDate ? (
             <p className="mt-1.5 text-[11px] text-muted font-medium">
-              Se guardará como: {formatWorkshopDateLabel(isoDate)}
+              Se guardará como: {formatWorkshopDateLabel(isoDate)}. Debes indicar también el horario.
             </p>
           ) : (
             <p className="mt-1.5 text-[11px] text-muted font-medium">
-              Sin fecha fija, en la página pública se mostrará «{WORKSHOP_DATE_PENDING}».
+              Sin fecha ni hora, en público se mostrará «{WORKSHOP_DATE_PENDING}» y no se podrá comprar.
             </p>
           )}
         </div>
         <div>
           <label htmlFor="course-workshop-time" className={labelClass}>
             <Clock size={13} className="text-accent" /> Horario del Workshop
+            {!isoDate && (
+              <span className="font-medium text-muted normal-case">(con la fecha)</span>
+            )}
           </label>
           <input
             id="course-workshop-time"
             type="text"
-            required
+            required={Boolean(isoDate)}
+            disabled={!isoDate}
             value={time}
             onChange={(e) => onTimeChange(e.target.value)}
-            placeholder="Ej. 09:00 AM — 05:00 PM"
-            className={inputClass}
+            placeholder={isoDate ? "Ej. 09:00 AM — 05:00 PM" : "Primero elige una fecha"}
+            className={`${inputClass} disabled:opacity-60 disabled:cursor-not-allowed`}
           />
         </div>
       </div>

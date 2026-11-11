@@ -18,8 +18,10 @@ export const WORKSHOP_LOCATION_SHORT = "Coro, Falcón";
 /** Texto público cuando el workshop aún no tiene fecha fijada. */
 export const WORKSHOP_DATE_PENDING = "Programando Fecha";
 
+/** Horario por defecto al fijar una fecha en el panel admin. */
+export const WORKSHOP_TIME_DEFAULT = "09:00 AM — 05:00 PM";
+
 const DEFAULT_WORKSHOP_LOCATION = WORKSHOP_LOCATION;
-const DEFAULT_WORKSHOP_TIME = "09:00 AM — 05:00 PM";
 
 const LEGACY_WORKSHOP_LOCATIONS = [
   "Caracas, Las Mercedes — Sede Ana's Pastry Shop",
@@ -58,7 +60,7 @@ export function parseWorkshopDetails(
       isWorkshop,
       location: resolveWorkshopLocation(undefined, isWorkshop),
       workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
-      workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
+      workshopTime: undefined,
     };
   }
 
@@ -67,13 +69,15 @@ export function parseWorkshopDetails(
     if (typeof parsed === "object" && parsed !== null) {
       const explicitIsWorkshop = parsed.isWorkshop !== undefined ? Boolean(parsed.isWorkshop) : isWorkshop;
       const storedDate = typeof parsed.workshopDate === "string" ? parsed.workshopDate.trim() : "";
+      const storedTime = typeof parsed.workshopTime === "string" ? parsed.workshopTime.trim() : "";
       return {
         isWorkshop: explicitIsWorkshop,
         slug: parsed.slug,
         spots: parsed.spots,
         location: resolveWorkshopLocation(parsed.location, explicitIsWorkshop),
         workshopDate: storedDate || (explicitIsWorkshop ? WORKSHOP_DATE_PENDING : undefined),
-        workshopTime: parsed.workshopTime || (explicitIsWorkshop ? DEFAULT_WORKSHOP_TIME : undefined),
+        // Sin fecha/hora guardadas no inventamos horario público.
+        workshopTime: storedTime || undefined,
         notes: parsed.notes,
       };
     }
@@ -83,7 +87,7 @@ export function parseWorkshopDetails(
       isWorkshop,
       location: resolveWorkshopLocation(content, isWorkshop),
       workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
-      workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
+      workshopTime: undefined,
     };
   }
 
@@ -91,7 +95,7 @@ export function parseWorkshopDetails(
     isWorkshop,
     location: resolveWorkshopLocation(undefined, isWorkshop),
     workshopDate: isWorkshop ? WORKSHOP_DATE_PENDING : undefined,
-    workshopTime: isWorkshop ? DEFAULT_WORKSHOP_TIME : undefined,
+    workshopTime: undefined,
   };
 }
 
@@ -113,7 +117,9 @@ export function serializeWorkshopDetails(details: WorkshopDetails, existingConte
     spots: details.spots ?? existing.spots,
     location: details.location?.trim() || DEFAULT_WORKSHOP_LOCATION,
     workshopDate: details.workshopDate?.trim() || "",
-    workshopTime: details.workshopTime?.trim() || DEFAULT_WORKSHOP_TIME,
+    workshopTime: details.workshopDate?.trim()
+      ? details.workshopTime?.trim() || ""
+      : "",
     notes: details.notes?.trim() || "",
   });
 }
@@ -191,6 +197,24 @@ export function publicWorkshopDateLabel(value: string | null | undefined): strin
   return iso ? formatWorkshopDateLabel(iso) : WORKSHOP_DATE_PENDING;
 }
 
+/** Horario público solo si hay fecha y hora fijadas; si no, no se muestra. */
+export function publicWorkshopTimeLabel(
+  date: string | null | undefined,
+  time: string | null | undefined,
+): string | undefined {
+  const trimmedTime = time?.trim() || "";
+  if (!workshopDateToIso(date) || !trimmedTime) return undefined;
+  return trimmedTime;
+}
+
+/** True solo cuando el workshop tiene fecha y hora programadas (listo para reserva). */
+export function hasFixedWorkshopSchedule(
+  date: string | null | undefined,
+  time: string | null | undefined,
+): boolean {
+  return Boolean(publicWorkshopTimeLabel(date, time));
+}
+
 /**
  * Normaliza la fecha del admin al guardar.
  * Vacío o etiquetas pendientes → ""; fechas inválidas con forma de fecha → error.
@@ -212,4 +236,27 @@ export function resolveWorkshopDateForSave(
   }
 
   return { date: "" };
+}
+
+/**
+ * Fecha + hora al guardar. Sin fecha → horario vacío.
+ * Con fecha → el horario es obligatorio.
+ */
+export function resolveWorkshopScheduleForSave(
+  dateValue: string | null | undefined,
+  timeValue: string | null | undefined,
+): { date: string; time: string; error?: string } {
+  const dateResult = resolveWorkshopDateForSave(dateValue);
+  if (dateResult.error) return { date: "", time: "", error: dateResult.error };
+
+  const time = timeValue?.trim() || "";
+  if (!dateResult.date) return { date: "", time: "" };
+  if (!time) {
+    return {
+      date: dateResult.date,
+      time: "",
+      error: "Indica el horario del workshop junto con la fecha.",
+    };
+  }
+  return { date: dateResult.date, time };
 }

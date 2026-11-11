@@ -8,7 +8,12 @@ import {
 } from "lucide-react";
 import WorkshopConditions from "@/components/WorkshopConditions";
 import Link from "next/link";
-import type { WorkshopDetails } from "@/lib/utils/workshop";
+import {
+  hasFixedWorkshopSchedule,
+  publicWorkshopDateLabel,
+  publicWorkshopTimeLabel,
+  type WorkshopDetails,
+} from "@/lib/utils/workshop";
 import { COURSE_FAQS, ONLINE_COURSE_FAQS } from "./courseFaqs";
 
 export function CourseDetailBody({
@@ -146,11 +151,20 @@ export function CourseDetailBody({
                   <WorkshopConditions
                     workshopTitle={course.title}
                     location={workshopInfo?.location}
-                    workshopDate={workshopInfo?.workshopDate}
-                    workshopTime={workshopInfo?.workshopTime}
+                    workshopDate={publicWorkshopDateLabel(workshopInfo?.workshopDate)}
+                    workshopTime={publicWorkshopTimeLabel(
+                      workshopInfo?.workshopDate,
+                      workshopInfo?.workshopTime,
+                    )}
                     price={course.price}
                     isDecorationWorkshop={isDecoration}
-                    showCta={!hasPaid}
+                    showCta={
+                      !hasPaid &&
+                      hasFixedWorkshopSchedule(
+                        workshopInfo?.workshopDate,
+                        workshopInfo?.workshopTime,
+                      )
+                    }
                   />
                 </div>
               )}
