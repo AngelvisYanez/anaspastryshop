@@ -85,7 +85,7 @@ async function resolveCourse(param: string): Promise<ResolvedCourse | null> {
 
   return {
     kind: "course",
-    course: { ...course, image: courseImageUrl(course.id, course.image) },
+    course: { ...course, image: courseImageUrl(course.id, course.image, course.updatedAt) },
     canonicalSlug: course.slug ?? onlineCourse?.slug ?? null,
     isOnlineCatalog,
   };

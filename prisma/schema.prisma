@@ -54,6 +54,7 @@ model Curso {
   publishedAt   DateTime?
   instructorId  String
   createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   courseModules CourseModule[]   @relation("CursoToModules")
   instructor    User             @relation("MentorCursos", fields: [instructorId], references: [id])
   inscritos     Inscription[]

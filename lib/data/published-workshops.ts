@@ -1,6 +1,8 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { dedupeWorkshopRows } from "@/lib/data/workshop-schedule";
+import { courseImageUrl } from "@/lib/data/course-image-url";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
 
 export async function getPublishedWorkshopRows() {
   "use cache";
@@ -23,6 +25,7 @@ export async function getPublishedWorkshopRows() {
         description: true,
         price: true,
         image: false,
+        updatedAt: true,
         content: true,
         isLive: true,
         level: true,
@@ -30,7 +33,13 @@ export async function getPublishedWorkshopRows() {
       },
       orderBy: { createdAt: "desc" },
     });
-    return dedupeWorkshopRows(rows.map((row) => ({ ...row, image: `/api/course-image/${row.id}` })));
+    const images = await getCompactCourseImages(rows.map((row) => row.id));
+    return dedupeWorkshopRows(
+      rows.map((row) => ({
+        ...row,
+        image: courseImageUrl(row.id, images.get(row.id), row.updatedAt),
+      })),
+    );
   } catch (error) {
     console.error("Unable to load published workshops:", error);
     return [];

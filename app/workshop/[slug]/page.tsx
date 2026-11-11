@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${workshop.shortTitle} — Workshop Presencial en ${GEO.shortAddress}`,
     description: `${workshop.subtitle}. Workshop presencial intensivo de 8 horas en Coro, Falcón, Venezuela. Cupo de ${workshop.spots} personas. Inversión: $${course?.price ?? workshop.price} USD.`,
     path: `/workshop/${workshop.slug}`,
-    images: [{ url: workshop.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }],
+    images: [{ url: course?.image || workshop.image, width: 1200, height: 630, alt: `${workshop.shortTitle} — Ana's Pastry Shop Venezuela` }],
     keywords: [
       `${workshop.shortTitle} Coro`,
       "workshop pastelería Venezuela",
@@ -111,6 +111,7 @@ async function WorkshopDetailContent({ params }: PageProps) {
       id: row.id,
       bagId: row.id,
       price: row.price,
+      image: row.image,
       workshopDate: date ? formatWorkshopDateLabel(date) : "Próximamente",
       workshopTime: info.workshopTime,
     })];

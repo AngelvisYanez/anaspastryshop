@@ -8,12 +8,14 @@ import VenezuelaCoverage from "@/components/VenezuelaCoverage";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
 import { courseImageUrl } from "@/lib/data/course-image-url";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
 import type { FormacionCardData } from "@/components/FormacionCard";
 import { getWorkshopBySlug } from "@/lib/data/workshops";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
@@ -43,6 +45,7 @@ async function getData() {
     title: string;
     category: string;
     image: string | null;
+    updatedAt: Date;
     price: number;
     description: string | null;
     level: string | null;
@@ -68,7 +71,7 @@ async function getData() {
       image: resolveCourseCover({
         title: c.title,
         slug: slug ?? c.slug ?? undefined,
-        image: courseImageUrl(c.id, c.image),
+        image: courseImageUrl(c.id, c.image, c.updatedAt),
         isWorkshop: w.isWorkshop,
       }),
       category: c.category,
@@ -84,64 +87,52 @@ async function getData() {
     };
   };
 
+  const courseSelect = {
+    id: true,
+    slug: true,
+    title: true,
+    category: true,
+    image: false as const,
+    updatedAt: true,
+    price: true,
+    description: true,
+    level: true,
+    totalHours: true,
+    totalClasses: true,
+    isLive: true,
+    content: true,
+    _count: { select: { courseModules: true } },
+  };
+
+  async function loadCards(where: Prisma.CursoWhereInput): Promise<FormacionCardData[]> {
+    const rows = await prisma.curso.findMany({
+      where,
+      select: courseSelect,
+      orderBy: { createdAt: "desc" },
+      take: 12,
+    });
+    const images = await getCompactCourseImages(rows.map((row) => row.id));
+    return rows.map((row) =>
+      toCard({ ...row, image: images.get(row.id) ?? null }),
+    );
+  }
+
   try {
     const [workshops, onlineCourses] = await Promise.all([
-      prisma.curso
-        .findMany({
-          where: {
-            category: "Workshops Presenciales",
-            OR: [
-              { status: "PUBLISHED" },
-              { status: "SCHEDULED", publishedAt: { lte: new Date() } },
-            ],
-          },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            category: true,
-            image: false,
-            price: true,
-            description: true,
-            level: true,
-            totalHours: true,
-            totalClasses: true,
-            isLive: true,
-            content: true,
-            _count: { select: { courseModules: true } },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 12,
-        })
-        .then((rows) => (rows as Omit<CourseRow, 'image'>[]).map((row) => toCard({ ...row, image: `/api/course-image/${row.id}` }))),
-      prisma.curso
-        .findMany({
-          where: {
-            category: "Cursos Online",
-            OR: [
-              { status: "PUBLISHED" },
-              { status: "SCHEDULED", publishedAt: { lte: new Date() } },
-            ],
-          },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            category: true,
-            image: false,
-            price: true,
-            description: true,
-            level: true,
-            totalHours: true,
-            totalClasses: true,
-            isLive: true,
-            content: true,
-            _count: { select: { courseModules: true } },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 12,
-        })
-        .then((rows) => (rows as Omit<CourseRow, 'image'>[]).map((row) => toCard({ ...row, image: `/api/course-image/${row.id}` }))),
+      loadCards({
+        category: "Workshops Presenciales",
+        OR: [
+          { status: "PUBLISHED" },
+          { status: "SCHEDULED", publishedAt: { lte: new Date() } },
+        ],
+      }),
+      loadCards({
+        category: "Cursos Online",
+        OR: [
+          { status: "PUBLISHED" },
+          { status: "SCHEDULED", publishedAt: { lte: new Date() } },
+        ],
+      }),
     ]);
 
     if (workshops.length === 0 && onlineCourses.length === 0) {

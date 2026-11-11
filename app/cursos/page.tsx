@@ -6,6 +6,8 @@ import PublicCoursesClient from "./PublicCoursesClient";
 import type { Metadata } from "next";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { resolveCourseCover } from "@/lib/data/onlineCourseCovers";
+import { courseImageUrl } from "@/lib/data/course-image-url";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
 import { ONLINE_COURSES_DATA, toOnlineFormacionCard } from "@/lib/data/online-courses";
 import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
@@ -29,14 +31,14 @@ async function getPublicCourses() {
   "use cache";
   cacheLife("hours");
   cacheTag("cursos");
-  return prisma.curso.findMany({
-    omit: { image: true },
+  const rows = await prisma.curso.findMany({
     where: {
       OR: [
         { status: "PUBLISHED" },
         { status: "SCHEDULED", publishedAt: { lte: new Date() } },
       ],
     },
+    omit: { image: true },
     include: {
       instructor: {
         select: {
@@ -52,6 +54,8 @@ async function getPublicCourses() {
     },
     orderBy: { createdAt: "desc" },
   });
+  const images = await getCompactCourseImages(rows.map((row) => row.id));
+  return rows.map((row) => ({ ...row, image: images.get(row.id) ?? null }));
 }
 
 async function CursosContent() {
@@ -95,7 +99,7 @@ async function CursosContent() {
           image: resolveCourseCover({
             title: c.title,
             slug: c.slug ?? workshopInfo.slug,
-            image: `/api/course-image/${c.id}`,
+            image: courseImageUrl(c.id, c.image, c.updatedAt),
             isWorkshop: workshopInfo.isWorkshop,
           }),
           category: c.category,

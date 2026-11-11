@@ -61,7 +61,7 @@ async function MisCursosContent() {
     image: resolveCourseCover({
       title: curso.title,
       slug: curso.slug ?? undefined,
-      image: courseImageUrl(curso.id, curso.image),
+      image: courseImageUrl(curso.id, curso.image, curso.updatedAt),
       isWorkshop: Boolean(curso.isLive),
     }),
   }));
