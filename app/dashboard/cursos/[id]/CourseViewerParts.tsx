@@ -168,6 +168,7 @@ export function CourseModulesPanel({
                   alt={course.title}
                   fill
                   sizes="100vw"
+                  unoptimized={course.image.startsWith("/api/dashboard/")}
                   className="object-cover opacity-80"
                 />
                 <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center p-6 text-center text-white">

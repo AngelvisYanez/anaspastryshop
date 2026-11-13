@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import DashboardCourseViewer from "./DashboardCourseViewer";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,6 +27,7 @@ export default async function DashboardCoursePage({
     auth(),
     prisma.curso.findUnique({
       where: { id },
+      omit: { image: true },
       include: {
         instructor: {
           select: {
@@ -91,10 +94,14 @@ export default async function DashboardCoursePage({
   }
 
   const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
+  const image = (await getCompactCourseImages([id])).get(id);
+  const imageUrl = image?.startsWith("data:image/") && course.status !== "PUBLISHED"
+    ? `/api/dashboard/course-image/${id}?v=${course.updatedAt.getTime()}`
+    : courseImageUrl(id, image, course.updatedAt);
 
   return (
     <DashboardCourseViewer
-      course={course as any}
+      course={{ ...course, image: imageUrl ?? "" } as any}
       workshopInfo={workshopInfo}
       canManage={canManage}
       hasAccess={hasAccess}
