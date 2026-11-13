@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import CourseEditClient from "./CourseEditClient";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 
 async function EditContent({ id }: { id: string }) {
   const session = await auth();
@@ -12,7 +14,10 @@ async function EditContent({ id }: { id: string }) {
 
   const course = await prisma.curso.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true, title: true, description: true, price: true, content: true,
+      introVideo: true, isLive: true, liveUrl: true, language: true,
+      level: true, status: true, publishedAt: true, updatedAt: true,
       courseModules: {
         include: { lessons: true },
         orderBy: { order: "asc" }
@@ -25,9 +30,14 @@ async function EditContent({ id }: { id: string }) {
 
   if (!course) redirect("/dashboard/cursos");
 
+  const image = (await getCompactCourseImages([id])).get(id);
+  const imageUrl = image?.startsWith("data:image/") && course.status !== "PUBLISHED"
+    ? `/api/dashboard/course-image/${id}?v=${course.updatedAt.getTime()}`
+    : courseImageUrl(id, image, course.updatedAt);
+
   return (
     <div className="max-w-5xl mx-auto">
-      <CourseEditClient key={course.id} course={course} hasEnrolledStudents={course._count.inscritos > 0} />
+      <CourseEditClient key={course.id} course={{ ...course, image: imageUrl }} hasEnrolledStudents={course._count.inscritos > 0} />
     </div>
   );
 }

@@ -2,9 +2,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
-import { PlusCircle, Video, Users, Clock, FileText, Globe, MapPin, Calendar, Sparkles, BookOpen } from "lucide-react";
+import { PlusCircle, Video, Users, Clock, FileText, Globe, MapPin, Calendar, BookOpen } from "lucide-react";
 import CourseActions from "./CourseActions";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { getCompactCourseImages } from "@/lib/data/compact-course-images";
+import { courseImageUrl } from "@/lib/data/course-image-url";
 
 function StatusBadge({ status, publishedAt }: { status: string; publishedAt: Date | null }) {
   if (status === "DRAFT") {
@@ -38,12 +40,14 @@ export default async function CursosDashboardPage() {
   }
 
   const cursos = await prisma.curso.findMany({
-    include: {
-      instructor: true,
+    select: {
+      id: true, title: true, description: true, price: true, content: true,
+      isLive: true, status: true, publishedAt: true, updatedAt: true,
       _count: { select: { inscritos: true, courseModules: true } },
     },
     orderBy: { createdAt: "desc" },
   });
+  const images = await getCompactCourseImages(cursos.map((c) => c.id));
 
   return (
     <div className="max-w-7xl mx-auto w-full">
@@ -84,18 +88,24 @@ export default async function CursosDashboardPage() {
           {cursos.map((c) => {
             const workshop = parseWorkshopDetails(c.content, c.isLive, c.title);
             const isWorkshop = workshop.isWorkshop;
+            const image = images.get(c.id);
+            const imageUrl = image?.startsWith("data:image/") && c.status !== "PUBLISHED"
+              ? `/api/dashboard/course-image/${c.id}?v=${c.updatedAt.getTime()}`
+              : courseImageUrl(c.id, image, c.updatedAt);
 
             return (
               <div key={c.id} className="relative bg-card rounded-2xl border border-card-border p-5 flex flex-col hover:shadow-lg transition h-full group">
                 <CourseActions courseId={c.id} hasEnrolled={c._count.inscritos > 0} />
                 
                 <Link href={`/dashboard/cursos/${c.id}`} className="block">
-                  {c.image ? (
+                  {imageUrl ? (
                     <div className="relative w-full aspect-square bg-card-hover rounded-xl mb-4 overflow-hidden">
-                      {c.image.startsWith("data:") ? (
-                        <img src={c.image} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      {imageUrl.startsWith("/api/dashboard/") ? (
+                        // The private image route needs the browser session cookie.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={imageUrl} alt={c.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
-                        <Image src={c.image} alt={c.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <Image src={imageUrl} alt={c.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                       )}
                     </div>
                   ) : (

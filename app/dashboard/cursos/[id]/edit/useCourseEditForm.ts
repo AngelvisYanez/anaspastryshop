@@ -35,6 +35,7 @@ export function useCourseEditForm(course: any) {
   const [price, setPrice] = useState(() => course.price.toString());
   const [introVideo, setIntroVideo] = useState(course.introVideo || "");
   const [coverImage, setCoverImage] = useState(course.image || "");
+  const initialCoverImage = course.image || "";
   const [isLive, setIsLive] = useState(course.isLive || initialWorkshop.isWorkshop);
   const [liveUrl] = useState(course.liveUrl || "");
   const [location, setLocation] = useState(
@@ -127,7 +128,7 @@ export function useCourseEditForm(course: any) {
         totalClasses,
         language: course.language || "Español",
         level: course.level || "Intermedio",
-        image: coverImage || undefined,
+        image: coverImage === initialCoverImage ? undefined : coverImage,
         introVideo: introVideo || undefined,
         isLive,
         liveUrl: isLive ? liveUrl : undefined,
