@@ -6,6 +6,7 @@ import { Video, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { createCourse } from "@/lib/actions/cursos";
 import ImageUploader from "@/components/ImageUploader";
+import CourseRecipeField from "@/components/CourseRecipeField";
 import IntroVideoField from "@/components/IntroVideoField";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
@@ -37,6 +38,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
   
   // Media y Streaming
   const [introVideo, setIntroVideo] = useState("");
+  const [recipePdfId, setRecipePdfId] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [isLive, setIsLive] = useState(false);
   const [liveUrl, setLiveUrl] = useState("");
@@ -99,7 +101,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
     setLoading(true);
     setError(null);
 
-    const totalClasses = modules.reduce((acc, m) => acc + m.tasks.length, 0);
+    const totalClasses = isLive ? 0 : modules.reduce((acc, m) => acc + m.tasks.length, 0);
     const totalHours = Math.ceil(totalClasses * 0.5) || 1;
 
     try {
@@ -113,6 +115,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
         level: "General",
         image: coverImage || undefined,
         introVideo: introVideo || undefined,
+        recipePdfId: isLive ? null : recipePdfId || null,
         isLive,
         liveUrl: isLive ? liveUrl : undefined,
         location: isLive ? location : undefined,
@@ -122,7 +125,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
         status,
         publishedAt: status === "SCHEDULED" ? publishedAt : undefined,
         instructorId: undefined,
-        modules: modules.map(m => ({
+        modules: (isLive ? [] : modules).map(m => ({
           title: m.title,
           videoUrl: m.videoUrl || undefined,
           lessons: m.tasks.map(t => ({
@@ -250,10 +253,11 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
               <div className="block text-sm font-bold text-foreground mb-2">Imagen de Portada</div>
               <ImageUploader value={coverImage} onChange={setCoverImage} />
             </div>
+            {!isLive && <div className="md:col-span-2"><CourseRecipeField value={recipePdfId} onChange={setRecipePdfId} /></div>}
           </div>
         </div>
 
-        <CourseModulesEditor
+        {!isLive && <CourseModulesEditor
           modules={modules}
           sectionTitle={
             isLive
@@ -274,7 +278,7 @@ export default function CourseCreateClient({ isAdmin }: { isAdmin: boolean }) {
           onAddTask={handleAddTask}
           onTaskChange={handleTaskChange}
           onRemoveTask={handleRemoveTask}
-        />
+        />}
 
         {/* Submit */}
         <div className="flex justify-end gap-4">

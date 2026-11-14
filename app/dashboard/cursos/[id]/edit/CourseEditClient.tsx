@@ -3,6 +3,7 @@
 import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import ImageUploader from "@/components/ImageUploader";
+import CourseRecipeField from "@/components/CourseRecipeField";
 import IntroVideoField from "@/components/IntroVideoField";
 import { CourseFormHeader } from "@/components/CourseFormHeader";
 import { ModalitySelector, WorkshopLogistics } from "@/components/CourseFormSections";
@@ -157,13 +158,14 @@ export default function CourseEditClient({
                   </label>
                   <IntroVideoField value={form.introVideo} onChange={form.setIntroVideo} className={`${fieldClass} placeholder:text-muted text-sm`} />
                 </div>
+                {!form.isLive && <CourseRecipeField value={form.recipePdfId} onChange={form.setRecipePdfId} />}
               </div>
             </section>
           </aside>
         </div>
 
         {/* Módulos a ancho completo */}
-        <CourseModulesEditor
+        {!form.isLive && <CourseModulesEditor
           modules={form.modules}
           sectionStep={4}
           sectionTitle={
@@ -187,7 +189,7 @@ export default function CourseEditClient({
           onAddTask={form.handleAddTask}
           onTaskChange={form.handleTaskChange}
           onRemoveTask={form.handleRemoveTask}
-        />
+        />}
 
         <div className="sticky bottom-4 z-20 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-2xl border border-card-border bg-card/95 backdrop-blur-md p-3 sm:p-4 shadow-lg">
           <Link

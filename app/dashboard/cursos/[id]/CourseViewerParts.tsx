@@ -45,6 +45,7 @@ export function WorkshopLogisticsBanner({
     workshopInfo.workshopDate,
     workshopInfo.workshopTime,
   );
+  const location = workshopInfo.location || WORKSHOP_LOCATION;
 
   return (
     <div className="bg-gradient-to-br from-brand-purple via-brand-purple-deep to-brand-purple-deep border-2 border-accent/30 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
@@ -73,7 +74,7 @@ export function WorkshopLogisticsBanner({
               <MapPin size={15} /> Ubicación
             </div>
             <p className="text-sm font-black text-white">
-              {workshopInfo.location || WORKSHOP_LOCATION}
+              {location}
             </p>
             <p className="text-[11px] text-white/60 mt-1">Punto de encuentro exclusivo</p>
           </div>
@@ -97,6 +98,23 @@ export function WorkshopLogisticsBanner({
               <p className="text-[11px] text-white/60 mt-1">Puntualidad requerida</p>
             </div>
           )}
+        </div>
+        <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+          <iframe
+            title="Mapa de la ubicación del workshop"
+            src={`https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="h-72 w-full border-0"
+          />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-bold text-white underline underline-offset-4"
+          >
+            <MapPin size={16} /> Abrir ubicación en Google Maps
+          </a>
         </div>
       </div>
     </div>

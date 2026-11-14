@@ -70,6 +70,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
           </Link>
 
           <NavbarDesktopNav
+            formations={nav.formations}
             pathname={pathname}
             linkColor={theme.linkColor}
             workshopsOpen={nav.workshopsDropdownOpen}
@@ -102,6 +103,7 @@ export default function Navbar({ forceSolid = false }: { forceSolid?: boolean } 
 
         {nav.isOpen && (
           <NavbarMobileDrawer
+            formations={nav.formations}
             hasSession={!!nav.session}
             hasMisCursos={nav.hasMisCursos}
             workshopsOpen={nav.mobileWorkshopsOpen}

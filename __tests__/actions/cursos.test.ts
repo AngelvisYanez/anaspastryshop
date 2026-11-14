@@ -76,7 +76,7 @@ describe("cursos admin flows", () => {
     await expect(createCourse(basePayload)).rejects.toThrow(/No autorizado/);
   });
 
-  it("crea curso con slug y totalClasses derivados", async () => {
+  it("crea workshop sin módulos aunque lleguen en el payload", async () => {
     mockPrisma.curso.findUnique.mockResolvedValue(null);
     mockPrisma.curso.create.mockResolvedValue({ id: "course-1" });
 
@@ -87,7 +87,8 @@ describe("cursos admin flows", () => {
         data: expect.objectContaining({
           title: "Taller de Fondant",
           slug: "taller-de-fondant",
-          totalClasses: 2,
+          totalClasses: 0,
+          courseModules: { create: [] },
           isLive: true,
           instructorId: "admin-1",
         }),

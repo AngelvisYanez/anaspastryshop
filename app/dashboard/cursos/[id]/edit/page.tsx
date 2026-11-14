@@ -16,7 +16,7 @@ async function EditContent({ id }: { id: string }) {
     where: { id },
     select: {
       id: true, title: true, description: true, price: true, content: true,
-      introVideo: true, isLive: true, liveUrl: true, language: true,
+      introVideo: true, recipePdfId: true, isLive: true, liveUrl: true, language: true,
       level: true, status: true, publishedAt: true, updatedAt: true,
       courseModules: {
         include: { lessons: true },

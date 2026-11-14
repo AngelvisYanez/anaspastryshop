@@ -131,7 +131,7 @@ export default function FormacionCard({ course }: { course: FormacionCardData })
             }`}
           >
             <Link
-              href={detailHref}
+              href={course.hasAccess ? `/dashboard/cursos/${bagId}` : detailHref}
               className="h-10 bg-accent-solid hover:bg-accent-solid-hover text-white px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-accent-solid/20 w-full min-w-0"
             >
               <span className="truncate">{viewActionLabel}</span>

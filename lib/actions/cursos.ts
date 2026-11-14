@@ -45,6 +45,7 @@ export type CoursePayload = {
   level: string;
   image?: string;
   introVideo?: string;
+  recipePdfId?: string | null;
   isLive: boolean;
   liveUrl?: string;
   status: "DRAFT" | "PUBLISHED" | "SCHEDULED";
@@ -76,7 +77,11 @@ export async function createCourse(
     if (data.isLive && schedule.error) return { error: schedule.error };
     const workshopDate = schedule.date;
     const workshopTime = schedule.time;
-    const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+    const modules = data.isLive ? [] : data.modules;
+    if (data.recipePdfId && !(await prisma.courseRecipePdf.findUnique({ where: { id: data.recipePdfId }, select: { id: true } }))) {
+      return { error: "El recetario PDF no existe. Vuelve a subirlo." };
+    }
+    const totalClasses = modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     let finalInstructorId = session.user.id as string;
     if (data.instructorId && data.instructorId !== session.user.id) {
@@ -105,6 +110,7 @@ export async function createCourse(
         level: data.level,
         image: data.image,
         introVideo: data.introVideo,
+        recipePdfId: data.isLive ? null : data.recipePdfId,
         isLive: data.isLive,
         liveUrl: data.liveUrl,
         content: workshopContent,
@@ -112,7 +118,7 @@ export async function createCourse(
         publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
         instructorId: finalInstructorId,
         courseModules: {
-          create: data.modules.map((m, mIndex) => ({
+          create: modules.map((m, mIndex) => ({
             title: m.title,
             videoUrl: m.videoUrl,
             order: mIndex,
@@ -201,7 +207,11 @@ export async function updateCourse(
 
     if (!course) return { error: "Curso no encontrado" };
 
-    const totalClasses = data.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+    const modules = data.isLive ? [] : data.modules;
+    if (data.recipePdfId && !(await prisma.courseRecipePdf.findUnique({ where: { id: data.recipePdfId }, select: { id: true } }))) {
+      return { error: "El recetario PDF no existe. Vuelve a subirlo." };
+    }
+    const totalClasses = modules.reduce((acc, m) => acc + m.lessons.length, 0);
 
     const workshopContent = serializeWorkshopDetails({
       isWorkshop: data.isLive,
@@ -229,13 +239,14 @@ export async function updateCourse(
       level: data.level,
       image: data.image,
       introVideo: data.introVideo,
+      recipePdfId: data.isLive ? null : data.recipePdfId,
       isLive: data.isLive,
       liveUrl: data.liveUrl,
       content: workshopContent,
       status: data.status,
       publishedAt: data.status === "SCHEDULED" && data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
       courseModules: {
-        create: data.modules.map((m, mIndex) => ({
+        create: modules.map((m, mIndex) => ({
           title: m.title,
           videoUrl: m.videoUrl,
           order: mIndex,

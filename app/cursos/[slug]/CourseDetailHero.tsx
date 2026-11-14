@@ -192,7 +192,7 @@ export function CourseDetailHero({
                     </div>
 
                     <Link
-                      href={isWorkshop ? `/dashboard/cursos/${course.id}` : `/cursos/${course.slug ?? course.id}`}
+                      href={`/dashboard/cursos/${course.id}`}
                       className="w-full bg-accent-solid hover:bg-accent-solid-hover text-white py-3.5 rounded-xl font-black flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition shadow-md"
                     >
                       {isWorkshop ? "Ver Detalles en tu Dashboard" : "Entrar al Curso"} <ArrowRight size={14} />

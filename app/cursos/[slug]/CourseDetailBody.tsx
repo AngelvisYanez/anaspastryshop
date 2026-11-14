@@ -38,7 +38,7 @@ export function CourseDetailBody({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
             <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <div className="flex items-center gap-2 mb-2">
+              {!isWorkshop && hasPaid && <><div className="flex items-center gap-2 mb-2">
                 <span className="w-1 h-4 bg-accent rounded-full" />
                 <p className="text-[11px] font-black uppercase tracking-widest text-accent">
                   {isWorkshop ? "Programa del Taller" : "Módulos & Lecciones"}
@@ -145,6 +145,8 @@ export function CourseDetailBody({
                 )}
               </div>
 
+              </>}
+
               {/* Conditions Component exclusively for in-person workshops */}
               {isWorkshop && (
                 <div className="mb-16">
@@ -198,10 +200,10 @@ export function CourseDetailBody({
                   <span className="text-muted">Duración</span>
                   <span className="font-bold text-foreground">{course.totalHours} horas</span>
                 </div>
-                <div className="flex justify-between py-2">
+                {!isWorkshop && hasPaid && <div className="flex justify-between py-2">
                   <span className="text-muted">Módulos</span>
                   <span className="font-bold text-foreground">{course.courseModules.length} módulos</span>
-                </div>
+                </div>}
                 <div className="flex justify-between py-2">
                   <span className="text-muted">Insumos & Guía</span>
                   <span className="font-bold text-emerald-600">Incluidos</span>

@@ -36,6 +36,7 @@ interface CourseViewerProps {
     price: number;
     image: string;
     videoUrl?: string | null;
+    recipePdfId?: string | null;
     totalHours: number;
     content?: string | null;
     isLive?: boolean;
@@ -103,7 +104,7 @@ export default function DashboardCourseViewer({
         </div>
       </div>
 
-      {isWorkshop && (
+      {isWorkshop && hasAccess && (
         <WorkshopLogisticsBanner
           workshopInfo={workshopInfo}
           instructorName={course.instructor.name}
@@ -112,12 +113,15 @@ export default function DashboardCourseViewer({
 
       {!hasAccess && <CourseAccessGuard courseId={course.id} />}
 
-      {hasAccess && (
-        <CourseModulesPanel
-          course={course}
-          selectedModuleIndex={selectedModuleIndex}
-          onSelectModule={setSelectedModuleIndex}
-        />
+      {hasAccess && !isWorkshop && (
+        <>
+          {course.recipePdfId && <a href={`/api/courses/${course.id}/recipe`} className="inline-flex rounded-xl bg-accent-solid px-5 py-3 text-sm font-bold text-white">Descargar recetario PDF</a>}
+          <CourseModulesPanel
+            course={course}
+            selectedModuleIndex={selectedModuleIndex}
+            onSelectModule={setSelectedModuleIndex}
+          />
+        </>
       )}
     </div>
   );

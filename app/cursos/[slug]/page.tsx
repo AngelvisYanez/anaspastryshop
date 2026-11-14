@@ -186,7 +186,7 @@ async function CourseContent({ params }: PageProps) {
         })}
       />
       <CourseDetailClient
-        course={course}
+        course={hasPaid ? course : { ...course, courseModules: [] }}
         hasPaid={hasPaid}
         workshopInfo={workshopInfo}
         paymentMethods={paymentMethods}

@@ -34,6 +34,7 @@ export function useCourseEditForm(course: any) {
   const [description, setDescription] = useState(course.description);
   const [price, setPrice] = useState(() => course.price.toString());
   const [introVideo, setIntroVideo] = useState(course.introVideo || "");
+  const [recipePdfId, setRecipePdfId] = useState(course.recipePdfId || "");
   const [coverImage, setCoverImage] = useState(course.image || "");
   const initialCoverImage = course.image || "";
   const [isLive, setIsLive] = useState(course.isLive || initialWorkshop.isWorkshop);
@@ -116,7 +117,7 @@ export function useCourseEditForm(course: any) {
     setLoading(true);
     setError(null);
 
-    const totalClasses = modules.reduce((acc, m) => acc + m.tasks.length, 0);
+    const totalClasses = isLive ? 0 : modules.reduce((acc, m) => acc + m.tasks.length, 0);
     const totalHours = Math.ceil(totalClasses * 0.5) || 1;
 
     try {
@@ -130,6 +131,7 @@ export function useCourseEditForm(course: any) {
         level: course.level || "Intermedio",
         image: coverImage === initialCoverImage ? undefined : coverImage,
         introVideo: introVideo || undefined,
+        recipePdfId: isLive ? null : recipePdfId || null,
         isLive,
         liveUrl: isLive ? liveUrl : undefined,
         location: isLive ? location : undefined,
@@ -138,7 +140,7 @@ export function useCourseEditForm(course: any) {
         notifyClients: isLive ? notifyClients : false,
         status,
         publishedAt: status === "SCHEDULED" ? publishedAt : undefined,
-        modules: modules.map((m) => ({
+        modules: (isLive ? [] : modules).map((m) => ({
           title: m.title,
           videoUrl: m.videoUrl || undefined,
           lessons: m.tasks.map((t) => ({
@@ -168,6 +170,8 @@ export function useCourseEditForm(course: any) {
     price,
     setPrice,
     introVideo,
+    recipePdfId,
+    setRecipePdfId,
     setIntroVideo,
     coverImage,
     setCoverImage,

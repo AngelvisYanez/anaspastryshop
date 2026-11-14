@@ -5,10 +5,10 @@ import {
   ChevronRight, ChevronDown, Sparkles, GraduationCap, LogOut,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { WORKSHOPS_DATA } from "@/lib/data/workshops";
-import { ONLINE_COURSES_DATA } from "@/lib/data/online-courses";
+import type { NavbarCourse, NavbarWorkshop } from "@/components/navbarFormations";
 
 export function NavbarMobileDrawer({
+  formations,
   hasSession,
   hasMisCursos,
   workshopsOpen,
@@ -17,6 +17,7 @@ export function NavbarMobileDrawer({
   onToggleCourses,
   onClose,
 }: {
+  formations: { workshops: NavbarWorkshop[]; courses: NavbarCourse[] } | null;
   hasSession: boolean;
   hasMisCursos: boolean;
   workshopsOpen: boolean;
@@ -79,18 +80,20 @@ export function NavbarMobileDrawer({
               >
                 &rarr; Calendario de fechas
               </Link>
-              {WORKSHOPS_DATA.map((w) => (
+              {!formations && <p className="p-2 text-xs text-muted">Cargando workshops...</p>}
+              {formations?.workshops.length === 0 && <p className="p-2 text-xs text-muted">No hay workshops publicados.</p>}
+              {formations?.workshops.map((w) => (
                 <Link
-                  key={w.slug}
-                  href={`/workshop/${w.slug}`}
+                  key={w.id}
+                  href={w.href}
                   onClick={onClose}
                   className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
                 >
                   <div className="flex items-center gap-2 truncate">
                     <span className="text-[9px] font-black text-pink-600 dark:text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded">
-                      {w.spots}p
+                      {w.spots ? `${w.spots}p` : "Taller"}
                     </span>
-                    <span className="truncate">{w.shortTitle}</span>
+                    <span className="truncate">{w.title}</span>
                   </div>
                   <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
                     ${w.price}
@@ -133,15 +136,17 @@ export function NavbarMobileDrawer({
               >
                 &rarr; Ver Catálogo Completo de Cursos Online
               </Link>
-              {ONLINE_COURSES_DATA.map((c) => (
+              {!formations && <p className="p-2 text-xs text-muted">Cargando cursos...</p>}
+              {formations?.courses.length === 0 && <p className="p-2 text-xs text-muted">No hay cursos publicados.</p>}
+              {formations?.courses.map((c) => (
                 <Link
                   key={c.id}
-                  href={`/cursos/${c.slug}`}
+                  href={c.href}
                   onClick={onClose}
                   className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
                 >
                   <div className="truncate">
-                    <span className="block truncate font-semibold">{c.shortTitle}</span>
+                    <span className="block truncate font-semibold">{c.title}</span>
                     <span className="text-[11px] text-muted">
                       {c.totalClasses} clases · {c.totalHours}h
                     </span>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/components/cart/CartContext";
+import type { NavbarCourse, NavbarWorkshop } from "@/components/navbarFormations";
 
 interface SiteConfig {
   logoUrl?: string;
@@ -21,6 +22,7 @@ export function useNavbarState() {
   const [mobileWorkshopsOpen, setMobileWorkshopsOpen] = useState(false);
   const [mobileCoursesOpen, setMobileCoursesOpen] = useState(false);
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({});
+  const [formations, setFormations] = useState<{ workshops: NavbarWorkshop[]; courses: NavbarCourse[] } | null>(null);
   const { data: session } = useSession();
   const { items: cartItems, openCart, isOpen: isCartOpen } = useCart();
 
@@ -42,6 +44,16 @@ export function useNavbarState() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!workshopsDropdownOpen && !coursesDropdownOpen && !mobileWorkshopsOpen && !mobileCoursesOpen) return;
+    const controller = new AbortController();
+    fetch("/api/navigation/formations", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("HTTP error")))
+      .then((data) => setFormations(data))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [workshopsDropdownOpen, coursesDropdownOpen, mobileWorkshopsOpen, mobileCoursesOpen]);
 
   // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- the "Mis cursos" link depends on the client session, which is only known after hydration
   useEffect(() => {
@@ -89,6 +101,7 @@ export function useNavbarState() {
   };
 
   return {
+    formations,
     isOpen,
     setIsOpen,
     scrolled,

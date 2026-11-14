@@ -4,8 +4,7 @@ import Link from "next/link";
 import {
   Sparkles, ChevronDown, GraduationCap, Clock, BookOpen,
 } from "lucide-react";
-import { WORKSHOPS_DATA } from "@/lib/data/workshops";
-import { ONLINE_COURSES_DATA } from "@/lib/data/online-courses";
+import type { NavbarCourse, NavbarWorkshop } from "@/components/navbarFormations";
 
 function NavLinkUnderline({
   href,
@@ -32,6 +31,7 @@ function NavLinkUnderline({
 }
 
 export function NavbarDesktopNav({
+  formations,
   pathname,
   linkColor,
   workshopsOpen,
@@ -45,6 +45,7 @@ export function NavbarDesktopNav({
   hasSession,
   hasMisCursos,
 }: {
+  formations: { workshops: NavbarWorkshop[]; courses: NavbarCourse[] } | null;
   pathname: string;
   linkColor: string;
   workshopsOpen: boolean;
@@ -126,28 +127,30 @@ export function NavbarDesktopNav({
             </div>
 
             <div className="grid grid-cols-2 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
-              {WORKSHOPS_DATA.map((w) => (
+              {!formations && <p className="col-span-2 p-3 text-xs text-muted">Cargando workshops...</p>}
+              {formations?.workshops.length === 0 && <p className="col-span-2 p-3 text-xs text-muted">No hay workshops publicados.</p>}
+              {formations?.workshops.map((w) => (
                 <Link
-                  key={w.slug}
-                  href={`/workshop/${w.slug}`}
+                  key={w.id}
+                  href={w.href}
                   onClick={onCloseWorkshops}
                   className="p-2.5 rounded-2xl hover:bg-card-hover transition-colors group flex flex-col justify-between border border-transparent hover:border-accent/20"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
-                        {w.spots} Cupos
+                        {w.spots ? `${w.spots} Cupos` : "Workshop"}
                       </span>
                       <span className="text-[11px] font-black text-foreground font-mono">
                         ${w.price} USD
                       </span>
                     </div>
                     <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
-                      {w.shortTitle}
+                      {w.title}
                     </p>
                   </div>
                   <span className="text-[11px] text-muted mt-1 truncate">
-                    {w.schedule.split("(")[0].trim()} · {w.startTime}
+                    {w.schedule}{w.time ? ` · ${w.time}` : ""}
                   </span>
                 </Link>
               ))}
@@ -162,7 +165,7 @@ export function NavbarDesktopNav({
                 onClick={onCloseWorkshops}
                 className="font-bold text-foreground hover:text-accent"
               >
-                Ver los 8 Talleres Completos
+                Ver todos los talleres
               </Link>
             </div>
           </div>
@@ -212,28 +215,24 @@ export function NavbarDesktopNav({
             </div>
 
             <div className="space-y-1.5 max-h-[360px] overflow-y-auto pr-1">
-              {ONLINE_COURSES_DATA.map((c) => (
+              {!formations && <p className="p-3 text-xs text-muted">Cargando cursos...</p>}
+              {formations?.courses.length === 0 && <p className="p-3 text-xs text-muted">No hay cursos publicados.</p>}
+              {formations?.courses.map((c) => (
                 <Link
                   key={c.id}
-                  href={`/cursos/${c.slug}`}
+                  href={c.href}
                   onClick={onCloseCourses}
                   className="p-3 rounded-2xl hover:bg-card-hover transition-colors group flex items-center justify-between border border-transparent hover:border-accent/20"
                 >
                   <div className="flex-1 pr-3">
                     <div className="flex items-center gap-2 mb-1">
-                      {c.badge && (
-                        <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
-                          {c.badge}
-                        </span>
-                      )}
                       <span className="text-[11px] text-muted font-medium">
                         {c.totalClasses} clases · {c.totalHours} hrs
                       </span>
                     </div>
                     <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
-                      {c.shortTitle}
+                      {c.title}
                     </p>
-                    <p className="text-[11px] text-muted line-clamp-1 mt-0.5">{c.subtitle}</p>
                   </div>
                   <div className="text-right shrink-0">
                     <span className="text-xs font-black text-foreground font-mono block">
