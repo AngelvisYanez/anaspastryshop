@@ -13,7 +13,7 @@ export const COURSE_FAQS = [
   },
   {
     q: "¿Cuáles son los métodos de pago aceptados?",
-    a: "Aceptamos Pago Móvil en Bolívares a tasa oficial BCV, Zelle con código QR, Binance Pay en USDT y efectivo en divisas.",
+    a: "Aceptamos Pago Móvil, Binance Pay en USDT y efectivo en divisas.",
   },
 ];
 
@@ -33,6 +33,6 @@ export const ONLINE_COURSE_FAQS = [
   },
   {
     q: "¿Cuáles son los métodos de pago aceptados?",
-    a: "Aceptamos Pago Móvil en Bolívares a tasa oficial BCV, Zelle con código QR, Binance Pay en USDT y efectivo en divisas.",
+    a: "Aceptamos Pago Móvil, Binance Pay en USDT y efectivo en divisas.",
   },
 ];

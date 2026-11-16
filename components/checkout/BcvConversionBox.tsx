@@ -28,17 +28,17 @@ export function BcvConversionBox({
             <p className="text-2xl sm:text-3xl font-black text-foreground font-mono">
               {totalBolivares !== null
                 ? `Bs. ${totalBolivares.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                : "Calculando..."}
+                : bcvLoading ? "Consultando tasa..." : "Tasa no disponible"}
             </p>
             {totalBolivares !== null && <CopyButton text={totalBolivares.toFixed(2)} />}
           </div>
         </div>
         <div className="bg-card/90 rounded-xl px-3.5 py-2 border border-card-border text-left sm:text-right shrink-0">
-          <p className="text-[11px] font-bold text-muted">Tasa BCV del día</p>
+          <p className="text-[11px] font-bold text-muted">Tasa BCV del euro</p>
           <p className="text-xs font-black text-foreground font-mono">
             {effectiveBcvRate
-              ? `1 USD = Bs. ${effectiveBcvRate.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-              : "Obteniendo..."}
+              ? `1 EUR = Bs. ${effectiveBcvRate.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : bcvLoading ? "Consultando..." : "No disponible"}
           </p>
           {bcvDateLabel && (
             <p className="text-[9px] text-muted truncate max-w-[150px]">Fecha: {bcvDateLabel}</p>

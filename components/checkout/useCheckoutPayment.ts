@@ -44,7 +44,7 @@ export function useCheckoutPayment({
     else if (!zoomQrUrl && el.open) el.close();
   }, [zoomQrUrl]);
 
-  // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- gateways and BCV must be live at checkout time on the client
+  // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- gateways and euro BCV rate must be current at checkout
   // react-doctor-disable-next-line react-doctor/no-set-state-after-await-in-effect -- cancelled guard skips updates after unmount
   useEffect(() => {
     if (!enabled) return;
@@ -69,12 +69,12 @@ export function useCheckoutPayment({
           const first = PROVIDER_ORDER.find((k) => active.some((g) => g.provider === k));
           if (first) setSelectedMethod(first);
         }
-
         if (bcvRes.ok) {
           const data = await bcvRes.json();
           if (cancelled) return;
-          if (data.rate || (data.success && data.rate)) {
-            setBcvRate(data.rate);
+          const rate = Number(data.rate);
+          if (data.success && Number.isFinite(rate) && rate > 0) {
+            setBcvRate(rate);
             setBcvDate(data.date || null);
           }
         }
@@ -94,13 +94,7 @@ export function useCheckoutPayment({
   const activeGateway = gateways.find((g) => g.provider === selectedMethod);
   const config = activeGateway?.config || {};
 
-  const gatewayRate = config.bcvRate
-    ? parseFloat(config.bcvRate)
-    : config.customBcvRate
-      ? parseFloat(config.customBcvRate)
-      : null;
-  const effectiveBcvRate =
-    gatewayRate && !Number.isNaN(gatewayRate) && gatewayRate > 0 ? gatewayRate : bcvRate;
+  const effectiveBcvRate = bcvRate;
   const totalBolivares =
     effectiveBcvRate && amountUsd > 0 ? round2(amountUsd * effectiveBcvRate) : null;
 

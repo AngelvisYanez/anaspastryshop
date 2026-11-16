@@ -48,7 +48,6 @@ describe("manualProviders", () => {
     );
     expect(PROVIDER_ORDER).toEqual([
       "PAGO_MOVIL",
-      "ZELLE",
       "BINANCE",
       "BANK_TRANSFER",
     ]);
@@ -57,6 +56,6 @@ describe("manualProviders", () => {
   it("labelsForEnabledProviders respeta orden y filtra deshabilitados", () => {
     expect(
       labelsForEnabledProviders(["STRIPE", "ZELLE", "PAGO_MOVIL"]),
-    ).toEqual(["Pago Móvil BCV", "Zelle QR", "Tarjeta (Stripe)"]);
+    ).toEqual(["Pago Móvil", "Tarjeta (Stripe)"]);
   });
 });

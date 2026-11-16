@@ -65,8 +65,8 @@ export const GATEWAYS: GatewayDef[] = [
   },
   {
     provider: "PAGO_MOVIL",
-    label: "Pago Móvil (en Dólares con tasa BCV)",
-    description: "Pagos en bolívares calculados al cambio oficial BCV. Verificación manual por comprobante.",
+    label: "Pago Móvil",
+    description: "Pagos en bolívares calculados con la tasa BCV del euro. Verificación manual por comprobante.",
     type: "manual",
     Icon: Smartphone,
     color: "emerald",
@@ -75,7 +75,6 @@ export const GATEWAYS: GatewayDef[] = [
       { key: "phoneNumber", label: "Teléfono Pago Móvil", placeholder: "Ej. 0414-1234567", extra: true },
       { key: "idNumber", label: "Cédula o RIF", placeholder: "Ej. V-12345678 o J-12345678", extra: true },
       { key: "holderName", label: "Nombre del Titular", placeholder: "Ej. Ana Flores", extra: true },
-      { key: "customBcvRate", label: "Tasa BCV Manual (Opcional - solo si deseas forzar una tasa en vez de la API)", placeholder: "Ej. 807.39", extra: true },
       { key: "instructions", label: "Instrucciones adicionales", placeholder: "Ej. Coloca tu número de cédula en el concepto y sube la captura legible.", extra: true },
     ],
   },

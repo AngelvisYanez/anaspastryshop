@@ -14,7 +14,7 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
       <div>
         <h2 className="text-xl font-black text-foreground">Métodos de Pago</h2>
         <p className="text-muted text-sm font-medium mt-1">
-          Configura tus cuentas para pagos manuales por verificación de comprobante (Pago Móvil con tasa BCV, Zelle con QR, Binance Pay con QR) y pasarelas automáticas.
+          Configura tus cuentas para pagos manuales por verificación de comprobante y pasarelas automáticas. Pago Móvil usa la tasa BCV del euro.
         </p>
       </div>
 

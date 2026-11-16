@@ -21,7 +21,7 @@ export type PaymentInscription = {
 const METHOD_LABELS: Record<string, string> = {
   BANK_TRANSFER: "Transferencia Bancaria",
   ZELLE: "Zelle",
-  PAGO_MOVIL: "Pago Móvil (BCV)",
+  PAGO_MOVIL: "Pago Móvil",
   BINANCE: "Binance Pay",
   USDT: "USDT",
   TRANSFERENCIA: "Transferencia",

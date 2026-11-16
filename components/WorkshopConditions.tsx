@@ -45,11 +45,11 @@ function buildWorkshopConditions({
       accentColor: "border-purple-500/20 text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30",
       title: "50% de Reserva + 50% al Ingresar",
       desc: reservationAmount
-        ? `El cupo se reserva formalmente con el 50% ($${reservationAmount} USD). Los $${remainderAmount} USD restantes deben ser cancelados el mismo día del taller al ingresar a clase. Métodos: Pago Móvil (Tasa BCV), Zelle, Binance Pay o Efectivo.`
-        : "El cupo se reserva formalmente con el 50% del valor del workshop. El monto restante debe ser cancelado el mismo día del workshop al ingresar a clase. Métodos: Pago Móvil (Tasa BCV), Zelle, Binance Pay o Efectivo.",
+        ? `El cupo se reserva formalmente con el 50% ($${reservationAmount} USD). Los $${remainderAmount} USD restantes deben ser cancelados el mismo día del taller al ingresar a clase. Métodos: Pago Móvil, Binance Pay o Efectivo.`
+        : "El cupo se reserva formalmente con el 50% del valor del workshop. El monto restante debe ser cancelado el mismo día del workshop al ingresar a clase. Métodos: Pago Móvil, Binance Pay o Efectivo.",
       highlight: reservationAmount
         ? `Reserva $${reservationAmount} USD · Saldo $${remainderAmount} USD`
-        : "Pago Móvil · Zelle · Binance · Efectivo",
+        : "Pago Móvil · Binance · Efectivo",
     },
     {
       icon: AlertTriangle,

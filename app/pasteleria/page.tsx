@@ -178,7 +178,7 @@ export default function PasteleriaPage() {
             Opciones de pago cómodas y transparentes
           </h2>
           <p className="text-muted text-sm max-w-xl mx-auto mb-8 font-medium">
-            Aceptamos transferencias y pagos en Bolívares (Pago Móvil a tasa oficial BCV del día), Efectivo físico, Zelle y Binance Pay.
+            Aceptamos Pago Móvil, efectivo físico y Binance Pay.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">

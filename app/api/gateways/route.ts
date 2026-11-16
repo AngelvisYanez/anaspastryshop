@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const gateways = await prisma.paymentGatewayConfig.findMany({
-      where: { isEnabled: true },
+      where: { isEnabled: true, provider: { not: "ZELLE" } },
       select: {
         provider: true,
         extraConfig: true,

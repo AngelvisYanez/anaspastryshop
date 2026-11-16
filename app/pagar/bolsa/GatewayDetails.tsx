@@ -32,9 +32,8 @@ function MethodPanels({
         <PaymentMethodHeader
           icon={<Smartphone size={20} />}
           iconClassName="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-          title="Pago Móvil (Tasa Oficial BCV)"
-          badge={{ text: "BCV Oficial", className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" }}
-          subtitle="Calculado al cambio oficial del Banco Central de Venezuela"
+          title="Pago Móvil"
+          subtitle="Precio en USD calculado en bolívares con la tasa BCV del euro"
         />
         <BcvConversionBox
           totalBolivares={totalBolivares}
@@ -295,7 +294,8 @@ export default function GatewayDetails({
             uploadingReceipt ||
             !reference.trim() ||
             !receiptImage ||
-            submitDisabled
+            submitDisabled ||
+            (selectedMethod === "PAGO_MOVIL" && totalBolivares === null)
           }
           className="w-full bg-accent-solid hover:bg-accent-solid-hover text-white py-4 rounded-2xl font-bold transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent-solid/25"
         >
