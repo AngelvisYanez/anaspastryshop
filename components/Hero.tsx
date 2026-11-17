@@ -9,7 +9,7 @@ const HERO_ALT =
   "Anais Flores en su cocina de pastelería, junto a tres batidoras";
 
 const { props: { srcSet: desktopHeroSrcSet } } = getImageProps({
-  src: "/hero-escritorio.jpg",
+  src: "/hero.png",
   alt: HERO_ALT,
   fill: true,
   sizes: "100vw",
