@@ -10,8 +10,8 @@ export default function CourseRecipeField({ value, onChange }: {
   const [error, setError] = useState<string | null>(null);
 
   async function upload(file: File) {
-    if (file.type !== "application/pdf" || file.size === 0 || file.size > 15 * 1024 * 1024) {
-      setError("Selecciona un PDF de hasta 15 MB.");
+    if (file.type !== "application/pdf" || file.size === 0 || file.size > 25 * 1024 * 1024) {
+      setError("Selecciona un PDF de hasta 25 MB.");
       return;
     }
     setUploading(true);
@@ -32,7 +32,7 @@ export default function CourseRecipeField({ value, onChange }: {
 
   return <div className="space-y-2">
     <label htmlFor="course-recipe" className="block text-sm font-bold text-foreground">Recetario del curso (PDF)</label>
-    <p className="text-xs text-muted">Disponible para descargar cuando se apruebe la compra. Máximo 15 MB.</p>
+    <p className="text-xs text-muted">Disponible para descargar cuando se apruebe la compra. Máximo 25 MB.</p>
     <input id="course-recipe" type="file" accept="application/pdf,.pdf" disabled={uploading}
       className="block w-full text-sm text-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-accent-solid file:px-3 file:py-2 file:text-white disabled:opacity-50"
       onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(file); event.target.value = ""; }} />
