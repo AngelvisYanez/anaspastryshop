@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,6 +12,9 @@ import {
   Sparkles,
   Video,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from "lucide-react";
 import {
   publicWorkshopDateLabel,
@@ -145,6 +149,7 @@ export function CourseModulesPanel({
   course,
   selectedModuleIndex,
   onSelectModule,
+  exitHref,
 }: {
   course: {
     title: string;
@@ -157,7 +162,10 @@ export function CourseModulesPanel({
   };
   selectedModuleIndex: number;
   onSelectModule: (index: number) => void;
+  exitHref: string;
 }) {
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const moduleContent = useRef<HTMLDivElement>(null);
   const activeModule = course.courseModules[selectedModuleIndex] || null;
   const currentVideoUrl = activeModule?.videoUrl || course.videoUrl || null;
   const embedUrl = getCourseEmbedUrl(currentVideoUrl);
@@ -165,10 +173,43 @@ export function CourseModulesPanel({
     (acc, m) => acc + (m.lessons?.length || 0),
     0,
   );
+  const moduleCount = course.courseModules.length;
+
+  function selectModule(index: number) {
+    if (index < 0 || index >= moduleCount || index === selectedModuleIndex) return;
+    onSelectModule(index);
+    moduleContent.current?.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    if (!touchStart.current || moduleCount < 2) return;
+    const deltaX = event.changedTouches[0].clientX - touchStart.current.x;
+    const deltaY = event.changedTouches[0].clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (Math.abs(deltaX) < 65 || Math.abs(deltaX) < Math.abs(deltaY) * 1.3) return;
+    const nextIndex = selectedModuleIndex + (deltaX < 0 ? 1 : -1);
+    selectModule(nextIndex);
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <div className="lg:col-span-8 space-y-6">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-background lg:static lg:z-auto lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+      <div className="flex shrink-0 items-center justify-between border-b border-card-border bg-card px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:hidden">
+        <div className="min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-widest text-accent">Curso online</p>
+          <p className="truncate text-sm font-bold text-foreground">{course.title}</p>
+        </div>
+        <Link href={exitHref} aria-label="Salir del curso" className="ml-3 rounded-full border border-card-border p-2 text-foreground">
+          <X size={20} />
+        </Link>
+      </div>
+      <div
+        ref={moduleContent}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pb-6 lg:col-span-8 lg:space-y-6 lg:overflow-visible lg:pb-0"
+        onTouchStart={(event) => {
+          touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+        }}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="bg-card border border-card-border rounded-2xl overflow-hidden shadow-sm">
           <div className="relative aspect-video w-full bg-[#180520] flex items-center justify-center">
             {embedUrl ? (
@@ -269,7 +310,25 @@ export function CourseModulesPanel({
         )}
       </div>
 
-      <div className="lg:col-span-4 bg-card border border-card-border rounded-2xl p-5 shadow-sm space-y-4">
+      {moduleCount > 0 && (
+        <nav aria-label="Navegación entre módulos" className="shrink-0 border-t border-card-border bg-card px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <button type="button" onClick={() => selectModule(selectedModuleIndex - 1)} disabled={selectedModuleIndex === 0} aria-label="Módulo anterior" className="flex size-11 shrink-0 items-center justify-center rounded-full border border-card-border text-foreground disabled:opacity-30">
+              <ChevronLeft size={22} />
+            </button>
+            <div className="min-w-0 text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-accent">{selectedModuleIndex + 1} de {moduleCount}</p>
+              <p className="truncate text-xs font-bold text-foreground">{activeModule?.title}</p>
+              <p className="text-[10px] text-muted">Desliza para cambiar de módulo</p>
+            </div>
+            <button type="button" onClick={() => selectModule(selectedModuleIndex + 1)} disabled={selectedModuleIndex === moduleCount - 1} aria-label="Módulo siguiente" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent-solid text-white disabled:opacity-30">
+              <ChevronRight size={22} />
+            </button>
+          </div>
+        </nav>
+      )}
+
+      <div className="hidden lg:col-span-4 lg:block bg-card border border-card-border rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-card-border">
           <div>
             <h3 className="font-black text-sm text-foreground">Temario del Curso</h3>

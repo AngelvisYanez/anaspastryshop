@@ -120,6 +120,7 @@ export default function DashboardCourseViewer({
             course={course}
             selectedModuleIndex={selectedModuleIndex}
             onSelectModule={setSelectedModuleIndex}
+            exitHref={isManager ? "/dashboard/cursos" : "/dashboard/mis-cursos"}
           />
         </>
       )}
