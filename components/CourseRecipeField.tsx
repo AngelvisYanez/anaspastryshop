@@ -17,12 +17,20 @@ export default function CourseRecipeField({ value, onChange }: {
     setUploading(true);
     setError(null);
     try {
-      const body = new FormData();
-      body.append("recipe", file);
-      const response = await fetch("/api/course-recipes", { method: "POST", body });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "No se pudo subir el recetario.");
-      onChange(result.id);
+      let uploadId: string | undefined;
+      for (let offset = 0; offset < file.size; offset += 3 * 1024 * 1024) {
+        const body = new FormData();
+        body.append("recipe", file.slice(offset, offset + 3 * 1024 * 1024, file.type), file.name);
+        if (uploadId) body.append("uploadId", uploadId);
+        const response = await fetch("/api/course-recipes", { method: "POST", body });
+        const result = response.headers.get("content-type")?.includes("application/json")
+          ? await response.json() : null;
+        if (!response.ok || !result?.id) {
+          throw new Error(result?.error || "No se pudo subir el recetario. Inténtalo de nuevo.");
+        }
+        uploadId = result.id;
+      }
+      if (uploadId) onChange(uploadId);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo subir el recetario.");
     } finally {
