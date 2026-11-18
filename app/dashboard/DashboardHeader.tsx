@@ -31,10 +31,14 @@ type Notification = {
   description: string;
   time: string;
   read: boolean;
+  href: string;
 };
 
-function timeAgo(date: Date): string {
+function timeAgo(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
   const diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 0) return "hace un momento";
   if (diff < 60) return "hace un momento";
   if (diff < 3600) return `hace ${Math.floor(diff / 60)}m`;
   if (diff < 86400) return `hace ${Math.floor(diff / 3600)}h`;
@@ -166,7 +170,7 @@ export default function DashboardHeader({
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-[min(100vw-1.5rem,24rem)] sm:w-96 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-100">
+            <div className="fixed top-14 left-3 right-3 w-auto sm:absolute sm:top-full sm:left-auto sm:right-0 sm:mt-2 sm:w-96 bg-card border border-card-border rounded-xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-100">
               <div className="p-4 border-b border-card-border flex items-center justify-between">
                 <div>
                   <p className="font-bold text-sm text-foreground">Notificaciones</p>
@@ -184,7 +188,7 @@ export default function DashboardHeader({
                 )}
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-card-border">
+              <div className="max-h-[min(70dvh,28rem)] overflow-y-auto divide-y divide-card-border">
                 {loading ? (
                   <div className="p-8 text-center text-xs text-muted">Cargando...</div>
                 ) : notifications.length === 0 ? (
@@ -194,8 +198,10 @@ export default function DashboardHeader({
                   </div>
                 ) : (
                   notifications.map((n) => (
-                    <div
+                    <Link
                       key={n.id}
+                      href={n.href}
+                      onClick={() => setNotifOpen(false)}
                       className={`p-3.5 flex gap-3 hover:bg-card-hover transition-colors ${
                         !n.read ? "bg-accent/5" : ""
                       }`}
@@ -204,9 +210,9 @@ export default function DashboardHeader({
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-bold text-foreground leading-snug">{n.title}</p>
                         <p className="text-[11px] text-muted leading-relaxed mt-0.5">{n.description}</p>
-                        <p className="text-[11px] text-muted/50 mt-1">{timeAgo(new Date(n.time))}</p>
+                        <p className="text-[11px] text-muted/50 mt-1">{timeAgo(n.time)}</p>
                       </div>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>

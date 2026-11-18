@@ -2,12 +2,36 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-function timeAgo(date: Date): string {
-  const diff = (Date.now() - date.getTime()) / 1000;
-  if (diff < 60) return "hace un momento";
-  if (diff < 3600) return `hace ${Math.floor(diff / 60)}m`;
-  if (diff < 86400) return `hace ${Math.floor(diff / 3600)}h`;
-  return `hace ${Math.floor(diff / 86400)}d`;
+const ACTION_TITLES: Record<string, string> = {
+  CREATE: "Creación", UPDATE: "Actualización", DELETE: "Eliminación",
+  APPROVE: "Aprobación", REVOKE: "Revocación", REGISTER: "Nuevo registro",
+  APPROVE_PAYMENT: "Pago aprobado", APPROVE_PASTRY_PAYMENT: "Pago de pastelería aprobado",
+  APPROVE_COURSE_PAYMENT: "Pago de formación aprobado", REJECT_PAYMENT: "Pago rechazado",
+  COURSE_PAYMENT_SUBMITTED: "Comprobante de formación enviado",
+  PASTRY_SERVICE_PAYMENT_SUBMITTED: "Comprobante de pastelería enviado",
+  REACTIVATE: "Cuenta reactivada", SUSPEND: "Cuenta suspendida",
+};
+
+const ENTITY_TITLES: Record<string, string> = {
+  USER: "usuario", CURSO: "curso o workshop", CATEGORY: "categoría",
+  INSCRIPTION: "inscripción", PASTRY_SERVICE: "servicio de pastelería",
+};
+
+function describeLog(action: string, entityType: string) {
+  const entity = ENTITY_TITLES[entityType] ?? "registro";
+  if (action === "DELETE") return `Se eliminó un ${entity}`;
+  if (action === "CREATE") return `Se creó un ${entity}`;
+  if (action === "UPDATE") return `Se actualizó un ${entity}`;
+  const title = ACTION_TITLES[action] ?? "Actividad registrada";
+  return entityType === "INSCRIPTION" && action.includes("PAYMENT") ? title : `${title}: ${entity}`;
+}
+
+function destination(action: string, entityType: string, role: string) {
+  if (role !== "ADMIN") return entityType === "INSCRIPTION" ? "/dashboard/mis-cursos" : "/dashboard";
+  if (entityType === "INSCRIPTION") return "/dashboard/pagos";
+  if (entityType === "USER") return "/dashboard/usuarios";
+  if (entityType === "CURSO") return "/dashboard/cursos";
+  return "/dashboard/logs";
 }
 
 export async function GET() {
@@ -24,6 +48,7 @@ export async function GET() {
     description: string;
     time: string;
     read: boolean;
+    href: string;
   }> = [];
 
   try {
@@ -43,8 +68,9 @@ export async function GET() {
           type: "warning",
           title: `${pendingPayments} pago${pendingPayments > 1 ? "s" : ""} pendiente${pendingPayments > 1 ? "s" : ""}`,
           description: "Hay inscripciones esperando validación manual.",
-          time: "ahora",
+          time: new Date().toISOString(),
           read: false,
+          href: "/dashboard/pagos",
         });
       }
 
@@ -54,12 +80,13 @@ export async function GET() {
           type: log.action === "REGISTER" ? "success" : "info",
           title: log.action === "REGISTER"
             ? `Nuevo registro: ${log.user?.name ?? "Usuario"}`
-            : `${log.action}: ${log.entityType}`,
+            : describeLog(log.action, log.entityType),
           description: log.action === "REGISTER"
             ? "Un nuevo usuario se registró en la plataforma."
             : `Acción realizada por ${log.user?.name ?? "sistema"}.`,
-          time: timeAgo(log.createdAt),
+          time: log.createdAt.toISOString(),
           read: true,
+          href: destination(log.action, log.entityType, role),
         });
       }
     } else {
@@ -73,10 +100,11 @@ export async function GET() {
         notifications.push({
           id: log.id,
           type: "info",
-          title: log.action,
-          description: `${log.entityType} actualizado.`,
-          time: timeAgo(log.createdAt),
+          title: describeLog(log.action, log.entityType),
+          description: "Consulta el estado de este proceso.",
+          time: log.createdAt.toISOString(),
           read: true,
+          href: destination(log.action, log.entityType, role),
         });
       }
     }
