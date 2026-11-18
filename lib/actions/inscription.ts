@@ -15,7 +15,7 @@ async function queueAdminNotice(tx: TransactionClient, eventKey: string, titles:
   if (!phone) return;
   await tx.whatsAppNotification.create({ data: {
     eventKey: `admin:${eventKey}`, phone,
-    text: adminPaymentText("submitted", titles, customer, amount), kind: "TRANSACTIONAL",
+    text: adminPaymentText("submitted", titles, customer, amount), kind: "ADMIN",
   } });
 }
 

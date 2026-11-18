@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { workshopNewDateWhatsAppText } from "@/lib/whatsapp-notifications";
+import { adminPaymentText, paymentSubmittedText, workshopNewDateWhatsAppText } from "@/lib/whatsapp-notifications";
+
+describe("payment WhatsApp recipients", () => {
+  it("uses distinct customer and administrator messages", () => {
+    const customer = paymentSubmittedText(["Tortas Básicas"]);
+    const admin = adminPaymentText("submitted", ["Tortas Básicas"], "María", 45);
+
+    expect(customer).toContain("Comprobante recibido");
+    expect(customer).not.toContain("Nuevo comprobante pendiente de revisión");
+    expect(customer).not.toContain("dashboard/pagos");
+    expect(admin).toContain("Nuevo comprobante pendiente de revisión");
+    expect(admin).toContain("dashboard/pagos");
+  });
+});
 
 describe("workshopNewDateWhatsAppText", () => {
   it("includes date, link and opt-out note", () => {

@@ -73,7 +73,7 @@ export async function approvePayment(inscriptionId: string) {
           eventKey: `admin:payment-approved:${inscriptionId}`,
           phone: adminPhone,
           text: adminPaymentText("approved", [inscription.curso?.title ?? "Servicio de Pastelería"], inscription.user.name, inscription.amountPaid),
-          kind: "TRANSACTIONAL",
+          kind: "ADMIN",
         } });
       }
       return result;

@@ -78,6 +78,13 @@ async function dispatch() {
     let sendTimer;
     let timedOut = false;
     try {
+      if (item.kind === 'ADMIN' || item.eventKey.startsWith('admin:')) {
+        const admins = await query('SELECT "id" FROM "User" WHERE "role"=\'ADMIN\' AND "isActive"=TRUE AND REGEXP_REPLACE("whatsappNumber",\'[^0-9]\',\'\',\'g\')=$1 LIMIT 1', item.phone);
+        if (!admins.length) {
+          await exec('UPDATE "WhatsAppNotification" SET "status"=\'cancelled\', "lastError"=\'El número destinatario no pertenece a un administrador activo\', "lockedAt"=NULL WHERE "id"=$1', item.id);
+          continue;
+        }
+      }
       if (item.kind === 'MARKETING') {
         const allowed = await query('SELECT "id" FROM "User" WHERE "id"=$1 AND "whatsappMarketing"=TRUE AND REGEXP_REPLACE("whatsappNumber",\'[^0-9]\',\'\',\'g\')=$2 AND EXISTS (SELECT 1 FROM "Inscription" WHERE "userId"=$1 AND "status"=\'APPROVED\')', item.userId, item.phone);
         if (!allowed.length) { await exec('UPDATE "WhatsAppNotification" SET "status"=\'cancelled\', "lockedAt"=NULL WHERE "id"=$1', item.id); continue; }
