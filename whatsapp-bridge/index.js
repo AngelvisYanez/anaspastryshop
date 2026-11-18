@@ -10,9 +10,10 @@ if (!apiKey) throw new Error('BRIDGE_API_KEY es obligatoria');
 const logger = Pino({ level: process.env.LOG_LEVEL || 'silent' });
 const app = express();
 app.use(express.json());
-const state = { sock: null, status: 'close', qr: null, starting: false, stopping: false };
+const state = { sock: null, status: 'close', qr: null, pairingCode: null, starting: false, stopping: false };
 let reconnectTimer = null;
 let sessionGeneration = 0;
+let pairingRequest = false;
 const pendingCredentialWrites = new Set();
 
 async function start() {
@@ -38,12 +39,12 @@ async function start() {
       if (state.sock !== sock) return;
       if (qr) state.qr = await QRCode.toDataURL(qr);
       if (connection === 'open') {
-        state.status = 'open'; state.qr = null;
+        state.status = 'open'; state.qr = null; state.pairingCode = null;
         await exec('INSERT INTO "WhatsAppConnection" ("instance","linkedAt") VALUES ($1,NOW()) ON CONFLICT ("instance") DO UPDATE SET "linkedAt"=EXCLUDED."linkedAt"', 'default');
         void dispatch();
       }
       if (connection === 'close') {
-        state.sock = null; state.status = 'close'; state.qr = null;
+        state.sock = null; state.status = 'close'; state.qr = null; state.pairingCode = null;
         if (state.stopping) return;
         if (lastDisconnect?.error?.output?.statusCode === DisconnectReason.loggedOut) {
           await clearSession('default');
@@ -84,7 +85,7 @@ async function dispatch() {
 
 app.get('/health', (_req, res) => res.json({ ok: true, connected: state.status === 'open' }));
 app.use((req, res, next) => req.get('apikey') === apiKey ? next() : res.status(401).json({ error: 'No autorizado' }));
-app.get('/instance/connectionState/default', (_req, res) => res.json({ instance: { state: state.status }, qr: state.qr }));
+app.get('/instance/connectionState/default', (_req, res) => res.json({ instance: { state: state.status }, qr: state.qr, pairingCode: state.pairingCode }));
 app.get('/instance/connect/default', async (_req, res) => {
   try {
     await start();
@@ -92,12 +93,37 @@ app.get('/instance/connect/default', async (_req, res) => {
     res.json({ state: state.status, qr: state.qr });
   } catch { res.status(503).json({ error: 'No se pudo iniciar la sesión de WhatsApp. Revisa la base de datos y los logs de Render.' }); }
 });
+app.post('/instance/pairing-code/default', async (req, res) => {
+  const phone = String(req.body?.phone ?? '').replace(/\D/g, '');
+  if (!/^[1-9]\d{7,14}$/.test(phone)) return res.status(400).json({ error: 'Escribe el número con código de país, sin el signo +.' });
+  if (state.status === 'open') return res.status(409).json({ error: 'Desvincula la cuenta actual antes de solicitar otro código.' });
+  if (pairingRequest) return res.status(409).json({ error: 'Ya se está generando un código. Espera unos segundos.' });
+  pairingRequest = true;
+  try {
+    await start();
+    // Baileys can request a code only after its socket receives the first QR.
+    for (let i = 0; i < 20 && !state.qr && state.status !== 'open'; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    if (!state.sock || !state.qr || state.status === 'open') {
+      return res.status(503).json({ error: 'WhatsApp aún no está listo. Intenta de nuevo en unos segundos.' });
+    }
+    const sock = state.sock;
+    const code = await sock.requestPairingCode(phone);
+    if (state.sock !== sock || state.status === 'open') return res.status(409).json({ error: 'La sesión cambió. Consulta el estado e intenta de nuevo.' });
+    state.pairingCode = code;
+    res.json({ state: state.status, pairingCode: code });
+  } catch (error) {
+    console.error('No se pudo solicitar el código de vinculación:', error);
+    res.status(503).json({ error: 'No se pudo generar el código. Intenta de nuevo en unos segundos.' });
+  } finally { pairingRequest = false; }
+});
 app.delete('/instance/logout/default', async (_req, res) => {
   state.stopping = true;
   sessionGeneration++;
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
   const oldSocket = state.sock;
-  state.sock = null; state.status = 'close'; state.qr = null;
+  state.sock = null; state.status = 'close'; state.qr = null; state.pairingCode = null;
   try {
     try { await oldSocket?.logout(); } catch { /* already disconnected */ }
     oldSocket?.end(undefined);
