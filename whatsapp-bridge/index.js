@@ -75,18 +75,31 @@ async function dispatch() {
     const rows = await query(`UPDATE "WhatsAppNotification" SET "status"='sending', "lockedAt"=NOW(), "attempts"="attempts"+1 WHERE "id"=(SELECT "id" FROM "WhatsAppNotification" WHERE "status"='pending' AND "availableAt"<=NOW() ORDER BY "createdAt" FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING *`);
     const item = rows[0];
     if (!item) break;
+    let sendTimer;
+    let timedOut = false;
     try {
       if (item.kind === 'MARKETING') {
         const allowed = await query('SELECT "id" FROM "User" WHERE "id"=$1 AND "whatsappMarketing"=TRUE AND REGEXP_REPLACE("whatsappNumber",\'[^0-9]\',\'\',\'g\')=$2 AND EXISTS (SELECT 1 FROM "Inscription" WHERE "userId"=$1 AND "status"=\'APPROVED\')', item.userId, item.phone);
         if (!allowed.length) { await exec('UPDATE "WhatsAppNotification" SET "status"=\'cancelled\', "lockedAt"=NULL WHERE "id"=$1', item.id); continue; }
       }
-      const response = await state.sock.sendMessage(`${item.phone}@s.whatsapp.net`, { text: item.text });
+      const response = await Promise.race([
+        state.sock.sendMessage(`${item.phone}@s.whatsapp.net`, { text: item.text }),
+        new Promise((_, reject) => {
+          sendTimer = setTimeout(() => {
+            timedOut = true;
+            reject(new Error('WhatsApp no confirmó el envío en 45 segundos'));
+          }, 45000);
+        }),
+      ]);
       await exec('UPDATE "WhatsAppNotification" SET "status"=\'sent\', "sentAt"=NOW(), "messageId"=$2, "lockedAt"=NULL WHERE "id"=$1', item.id, response?.key?.id || null);
       sent++;
       await new Promise((resolve) => setTimeout(resolve, 1500));
     } catch (error) {
       // A timeout after send can be ambiguous. Leave the item for manual review to avoid duplicate sends.
       await exec('UPDATE "WhatsAppNotification" SET "status"=\'needs_review\', "lastError"=$2, "lockedAt"=NULL WHERE "id"=$1', item.id, String(error?.message || error).slice(0, 500));
+      if (timedOut) break;
+    } finally {
+      clearTimeout(sendTimer);
     }
   }
   return sent;
