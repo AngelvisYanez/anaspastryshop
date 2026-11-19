@@ -1,13 +1,13 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { GATEWAYS, type GatewayConfig } from "./gatewayShared";
 import { GatewayCard } from "./GatewayCard";
 
 export default function GatewayManager({ configs }: { configs: GatewayConfig[] }) {
   const configMap = Object.fromEntries(configs.map((c) => [c.provider, c]));
 
-  const automatic = GATEWAYS.filter((g) => g.type === "automatic");
-  const manual = GATEWAYS.filter((g) => g.type === "manual");
+  const methods = [...GATEWAYS].sort((a, b) => Number(a.type === "automatic") - Number(b.type === "automatic"));
 
   return (
     <div className="max-w-4xl space-y-10">
@@ -18,35 +18,19 @@ export default function GatewayManager({ configs }: { configs: GatewayConfig[] }
         </p>
       </div>
 
-      <div className="space-y-8">
-        <div>
-          <div className="flex items-center gap-2 mb-4 ml-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <p className="text-xs font-black uppercase tracking-widest text-muted">
-              Métodos Manuales con Verificación de Comprobante
-            </p>
-          </div>
-          <div className="space-y-4">
-            {manual.map((def) => (
-              <GatewayCard key={def.provider} def={def} initialConfig={configMap[def.provider]} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2 mb-4 ml-1">
-            <span className="w-2 h-2 rounded-full bg-accent" />
-            <p className="text-xs font-black uppercase tracking-widest text-muted">
-              Pasarelas Automáticas
-            </p>
-          </div>
-          <div className="space-y-4">
-            {automatic.map((def) => (
-              <GatewayCard key={def.provider} def={def} initialConfig={configMap[def.provider]} />
-            ))}
-          </div>
-        </div>
-      </div>
+      <DataView title="Métodos de pago" dateLabel="Fecha de última modificación" items={methods}
+        row={(def) => {
+          const saved = configMap[def.provider];
+          return {
+            date: saved?.updatedAt,
+            values: [def.label, def.type === "automatic" ? "Automático" : "Manual",
+              saved ? (saved.isEnabled ? "Activo" : "Inactivo") : "Sin configurar"],
+          };
+        }}>
+        {(visible) => <div className="dashboard-data-cards">
+          {visible.map((def) => <GatewayCard key={def.provider} def={def} initialConfig={configMap[def.provider]} />)}
+        </div>}
+      </DataView>
     </div>
   );
 }

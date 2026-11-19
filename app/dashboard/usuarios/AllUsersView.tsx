@@ -1,10 +1,12 @@
 "use client";
+import { DataView } from "../data-view/DataView";
+import { avatarPath } from "@/lib/avatar";
 import { useState, useTransition } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
   Users, Mail, Calendar, BookOpen,
   ShieldCheck, Hash, Pencil, Trash2,
-  X, Loader2, AlertTriangle, Lock, Unlock, Search, Filter,
+  X, AlertTriangle, Lock, Unlock, Search,
 } from "lucide-react";
 import { adminEditUser, adminDeleteUser, adminToggleUserStatus } from "@/lib/actions/user";
 import Image from "next/image";
@@ -171,19 +173,13 @@ const STATS = [
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-card rounded-xl border border-card-border shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center py-16 text-center">
-            <div className="w-12 h-12 rounded-xl bg-section-alt flex items-center justify-center mb-3">
-              <Filter size={18} className="text-muted/40" />
-            </div>
-            <p className="text-sm font-bold text-muted">Sin resultados</p>
-            <p className="text-xs text-muted/60 mt-1">Prueba con otros filtros o términos de búsqueda</p>
-          </div>
-        ) : (
-          <div className="max-w-full overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left">
+      <DataView title="Usuarios" items={filtered} filterKey={tab + "/" + search} dateLabel="Fecha de registro"
+        row={(user) => ({ date: user.createdAt, values: [user.name, user.email,
+          user.role === "ADMIN" ? "Administrador" : "Alumno", user.isActive ? "Activo" : "Suspendido",
+          `${user._count.inscripciones} inscripciones`] })}>
+        {(visible) => (
+          <div className="max-w-full overflow-x-auto rounded-xl border border-card-border bg-card">
+            <table className="dashboard-data-table w-full min-w-[720px] text-left">
               <thead>
                 <tr className="border-b border-card-border bg-section-alt/60">
                   <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted">Usuario</th>
@@ -195,13 +191,13 @@ const STATS = [
                 </tr>
               </thead>
               <tbody className="divide-y divide-card-border">
-                {filtered.map((user) => (
+                {visible.map((user) => (
                   <tr key={user.id} className={`hover:bg-card-hover transition-colors ${!user.isActive ? "opacity-50" : ""}`}>
-                    <td className="py-3.5 pl-5 pr-3">
+                    <td data-label="Usuario" className="py-3.5 pl-5 pr-3">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-pink-500 rounded-lg shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden">
                           {user.image
-                            ? <Image src={user.image} alt={user.name || ""} width={36} height={36} className="w-full h-full object-cover" />
+                            ? <Image src={user.image} alt={user.name || ""} width={36} height={36} unoptimized={user.image.startsWith(avatarPath)} className="w-full h-full object-cover" />
                             : (user.name || user.email).split(" ").map((w: string) => w[0]).join("").substring(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -211,29 +207,29 @@ const STATS = [
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-3">
+                    <td data-label="Email" className="py-3.5 px-3">
                       <div className="flex items-center gap-1.5 text-xs text-muted font-medium">
                         <Mail size={12} className="text-muted/40 shrink-0" />
                         <span className="truncate max-w-[180px]">{user.email}</span>
                       </div>
                     </td>
 
-<td className="py-3.5 px-3">{getRoleBadge(user)}</td>
+                    <td data-label="Rol" className="py-3.5 px-3">{getRoleBadge(user)}</td>
 
-                    <td className="py-3.5 px-3 text-center">
+                    <td data-label="Cursos" className="py-3.5 px-3 text-center">
                       <span className="inline-flex items-center gap-1 bg-section-alt text-foreground px-2.5 py-1 rounded-lg text-xs font-black">
                         <Hash size={10} /> {user._count.inscripciones}
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-3">
+                    <td data-label="Registro" className="py-3.5 px-3">
                       <div className="flex items-center gap-1.5 text-xs text-muted font-medium whitespace-nowrap">
                         <Calendar size={12} className="text-muted/40 shrink-0" />
-                        <span suppressHydrationWarning>{new Date(user.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}</span>
+                        <span suppressHydrationWarning>{new Date(user.createdAt).toLocaleDateString("es-ES", { timeZone: "America/Caracas", day: "numeric", month: "short", year: "numeric" })}</span>
                       </div>
                     </td>
 
-                    <td className="py-3.5 pl-3 pr-5">
+                    <td data-label="Acciones" className="py-3.5 pl-3 pr-5">
                       {user.id === currentUserId ? (
                         <span className="text-xs text-muted/40 font-bold block text-right">—</span>
                       ) : (
@@ -258,15 +254,7 @@ const STATS = [
             </table>
           </div>
         )}
-
-        {filtered.length > 0 && (
-          <div className="px-5 py-3 border-t border-card-border bg-section-alt/40">
-            <p className="text-xs text-muted font-medium">
-              {filtered.length} {filtered.length === 1 ? "usuario" : "usuarios"}{search ? ` encontrados para "${search}"` : ""}
-            </p>
-          </div>
-        )}
-      </div>
+      </DataView>
 
       {editingUser && (
         <EditUserDialog

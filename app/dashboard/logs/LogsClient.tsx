@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
-import { Calendar, Tag, Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+
+
+import { Calendar, Tag, Search, Filter } from "lucide-react";
 
 type Log = {
   id: string;
@@ -205,43 +205,32 @@ const ALL_ACTIONS = [
   { value: "REVOKE", label: "Revocación" },
 ];
 
-const PAGE_SIZE = 20;
+import { DataPaginator, DataToolbar } from "../data-view/DataView";
+import type { DateRange, ViewMode } from "../data-view/filters";
+import { useDataQuery } from "../data-view/use-data-query";
+import { getLogReport } from "./report-action";
 
 export default function LogsClient({
   logs,
   total,
   page,
+  size,
+  range,
+  mode,
   search,
   action,
 }: {
   logs: Log[];
   total: number;
   page: number;
+  size: number;
+  range: DateRange;
+  mode: ViewMode;
   search: string;
   action: string;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const to = Math.min(page * PAGE_SIZE, total);
-
-  const updateParams = useCallback(
-    (updates: Record<string, string>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      Object.entries(updates).forEach(([k, v]) => {
-        if (v) params.set(k, v);
-        else params.delete(k);
-      });
-      startTransition(() => {
-        router.push(`${pathname}?${params.toString()}`);
-      });
-    },
-    [pathname, router, searchParams]
-  );
+  const { updateParams, isPending } = useDataQuery();
+  const from = (page - 1) * size + 1;
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -259,13 +248,16 @@ export default function LogsClient({
             <input
               id="logs-search"
               name="search"
-              defaultValue={search}
+            key={search}
+            defaultValue={search}
+            disabled={isPending}
               placeholder="Buscar usuario..."
               className="w-full bg-card border border-card-border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-accent transition text-foreground placeholder:text-muted"
             />
           </div>
           <button
             type="submit"
+            disabled={isPending}
             className="px-4 py-2.5 bg-card border border-card-border rounded-xl text-sm font-bold text-muted hover:text-accent hover:border-accent transition"
           >
             Buscar
@@ -278,6 +270,7 @@ export default function LogsClient({
           <select
             id="logs-action"
             value={action}
+            disabled={isPending}
             onChange={(e) => updateParams({ action: e.target.value, page: "1" })}
             className="bg-card border border-card-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:border-accent transition max-w-[240px]"
           >
@@ -288,7 +281,17 @@ export default function LogsClient({
         </div>
       </div>
 
-      <div className={`bg-card rounded-xl border border-card-border shadow-sm overflow-hidden transition-opacity ${isPending ? "opacity-60" : ""}`}>
+      <DataToolbar title="Registro de eventos" range={range} mode={mode} total={total} busy={isPending}
+        onRange={(range) => updateParams({ ...range, page: "" })}
+        onMode={(mode) => updateParams({ view: mode })}
+        report={async () => (await getLogReport(search, action, range)).map((log) => ({
+          date: log.createdAt,
+          values: [log.user.name, log.user.email, ACTION_LABELS[log.action] ?? log.action,
+            ENTITY_LABELS[log.entityType] ?? log.entityType, formatDetails(log.details)],
+        }))}
+      />
+
+      <div data-view-mode={mode} className={`bg-card rounded-xl border border-card-border shadow-sm overflow-hidden transition-opacity ${isPending ? "opacity-60" : ""}`}>
         {logs.length === 0 ? (
           <div className="flex flex-col items-center py-16 px-4 text-center">
             <div className="w-12 h-12 rounded-xl bg-section-alt flex items-center justify-center mb-4">
@@ -299,7 +302,7 @@ export default function LogsClient({
           </div>
         ) : (
           <div className="max-w-full overflow-x-auto">
-            <table className="w-full min-w-[680px] text-left">
+            <table className="dashboard-data-table w-full min-w-[680px] text-left">
               <thead>
                 <tr className="border-b border-card-border bg-section-alt/60">
                   <th className="py-3 pl-5 pr-3 text-[11px] font-black uppercase tracking-widest text-muted w-36">Fecha</th>
@@ -312,7 +315,7 @@ export default function LogsClient({
               <tbody className="divide-y divide-card-border">
                 {logs.map((log, i) => (
                   <tr key={log.id} className="hover:bg-card-hover transition-colors group">
-                    <td className="py-4 pl-5 pr-3 whitespace-nowrap">
+                    <td data-label="Fecha" className="py-4 pl-5 pr-3 whitespace-nowrap">
                       <div className="flex items-start gap-2">
                         <span className="text-[11px] font-bold text-muted/40 tabular-nums mt-0.5 w-5 text-right shrink-0">
                           {from + i}
@@ -320,19 +323,19 @@ export default function LogsClient({
                         <div className="flex flex-col">
                           <span suppressHydrationWarning className="text-xs font-bold text-foreground">
                             {new Date(log.createdAt).toLocaleDateString("es-ES", {
-                              day: "numeric", month: "short", year: "numeric",
+                              timeZone: "America/Caracas", day: "numeric", month: "short", year: "numeric",
                             })}
                           </span>
                           <span suppressHydrationWarning className="text-[11px] text-muted font-medium">
                             {new Date(log.createdAt).toLocaleTimeString("es-ES", {
-                              hour: "2-digit", minute: "2-digit",
+                              timeZone: "America/Caracas", hour: "2-digit", minute: "2-digit",
                             })}
                           </span>
                         </div>
                       </div>
                     </td>
 
-                    <td className="py-4 px-3">
+                    <td data-label="Usuario" className="py-4 px-3">
                       <div className="flex flex-col min-w-0">
                         <span className="text-sm font-bold text-foreground truncate max-w-[160px]">
                           {log.user.name || "Sin nombre"}
@@ -343,7 +346,7 @@ export default function LogsClient({
                       </div>
                     </td>
 
-                    <td className="py-4 px-3">
+                    <td data-label="Acción" className="py-4 px-3">
                       <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black tracking-wide inline-block whitespace-nowrap ${
                         ACTION_STYLES[log.action] ?? "bg-section-alt text-muted border border-card-border"
                       }`}>
@@ -351,7 +354,7 @@ export default function LogsClient({
                       </span>
                     </td>
 
-                    <td className="py-4 px-3">
+                    <td data-label="Entidad" className="py-4 px-3">
                       <div className={`flex items-center gap-1.5 text-xs font-bold whitespace-nowrap ${
                         ENTITY_COLORS[log.entityType] ?? "text-muted"
                       }`}>
@@ -360,7 +363,7 @@ export default function LogsClient({
                       </div>
                     </td>
 
-                    <td className="py-4 pl-3 pr-5 text-xs text-muted font-medium max-w-sm">
+                    <td data-label="Detalles" className="py-4 pl-3 pr-5 text-xs text-muted font-medium max-w-sm">
                       <span className="line-clamp-3 leading-relaxed">{formatDetails(log.details)}</span>
                     </td>
                   </tr>
@@ -371,35 +374,9 @@ export default function LogsClient({
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-xs text-muted font-medium">
-          {total === 0
-            ? "Sin resultados"
-            : `Mostrando ${from}–${to} de ${total} eventos`}
-        </p>
-
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => updateParams({ page: String(page - 1) })}
-            disabled={page <= 1 || isPending}
-            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition"
-            aria-label="Página anterior"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="px-3 py-1.5 text-xs font-bold text-foreground">
-            {page} / {totalPages}
-          </span>
-          <button
-            onClick={() => updateParams({ page: String(page + 1) })}
-            disabled={page >= totalPages || isPending}
-            className="p-2 bg-card border border-card-border rounded-xl text-muted hover:text-foreground disabled:opacity-30 transition"
-            aria-label="Página siguiente"
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      </div>
+      <DataPaginator title="Registro de eventos" page={page} size={size} total={total} busy={isPending}
+        onPage={(page) => updateParams({ page: String(page) })}
+        onSize={(size) => updateParams({ size: String(size), page: "" })} />
     </div>
   );
 }

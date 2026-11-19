@@ -1,5 +1,6 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -187,17 +188,14 @@ export default function CouponManager({
         </button>
       </div>
 
-      <div className="space-y-3">
-        {initialCoupons.length === 0 ? (
-          <div className="bg-card border border-card-border rounded-2xl p-10 text-center">
-            <p className="text-foreground font-bold">Sin cupones aún</p>
-            <p className="text-muted text-sm mt-1">Crea el primero para empezar a ofrecer descuentos.</p>
-          </div>
-        ) : (
-          initialCoupons.map((c) => (
+      <DataView title="Cupones" items={initialCoupons} dateLabel="Fecha de creación"
+        row={(c) => ({ date: c.createdAt, values: [c.code, c.description, `${c.discountPercent}% de descuento`,
+          c.isActive ? "Activo" : "Inactivo", `Mínimo ${c.minItems}`] })}>
+        {(visible, mode) => <div className="dashboard-data-cards">
+          {visible.map((c) => (
             <div
               key={c.id}
-              className="bg-card border border-card-border rounded-2xl p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between"
+              className={`bg-card border border-card-border rounded-2xl p-5 flex flex-col gap-4 justify-between ${mode === "list" ? "md:flex-row md:items-center" : ""}`}
             >
               <div className="min-w-0 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
@@ -262,9 +260,9 @@ export default function CouponManager({
                 </button>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>}
+      </DataView>
 
       {showForm && (
         <div

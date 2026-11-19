@@ -5,12 +5,13 @@ import { Suspense } from "react";
 import LogsClient from "./LogsClient";
 import { DashboardPage } from "../DashboardPage";
 
-const PAGE_SIZE = 20;
+import { logFilters } from "./log-filters";
+import { parsePage, parsePageSize, parseRange } from "../data-view/filters";
 
 export default async function LogsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string; action?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; action?: string; from?: string; to?: string; size?: string; view?: string }>;
 }) {
   const session = await auth();
 
@@ -19,34 +20,21 @@ export default async function LogsPage({
   }
 
   const params = await searchParams;
-  const page = Math.max(1, parseInt(params.page ?? "1", 10));
+  const size = parsePageSize(params.size, 20);
+  const range = parseRange(params.from, params.to);
   const search = params.search?.trim() ?? "";
   const action = params.action?.trim() ?? "";
 
-  const where = {
-    ...(search
-      ? {
-          user: {
-            OR: [
-              { name: { contains: search, mode: "insensitive" as const } },
-              { email: { contains: search, mode: "insensitive" as const } },
-            ],
-          },
-        }
-      : {}),
-    ...(action ? { action } : {}),
-  };
-
-  const [logs, total] = await Promise.all([
-    prisma.activityLog.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true, email: true, role: true } } },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }),
-    prisma.activityLog.count({ where }),
-  ]);
+  const where = logFilters(search, action, range);
+  const total = await prisma.activityLog.count({ where });
+  const page = Math.min(parsePage(params.page), Math.max(1, Math.ceil(total / size)));
+  const logs = await prisma.activityLog.findMany({
+    where,
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    include: { user: { select: { name: true, email: true, role: true } } },
+    skip: (page - 1) * size,
+    take: size,
+  });
 
   return (
     <DashboardPage
@@ -55,9 +43,12 @@ export default async function LogsPage({
     >
       <Suspense>
         <LogsClient
-          logs={logs as any}
+          logs={logs}
           total={total}
           page={page}
+          size={size}
+          range={range}
+          mode={params.view === "grid" ? "grid" : "list"}
           search={search}
           action={action}
         />

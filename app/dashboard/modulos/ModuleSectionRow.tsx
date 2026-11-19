@@ -50,7 +50,7 @@ export function ModuleSectionRow({
 
   return (
     <div
-      className={`p-4 transition-colors ${
+      className={`rounded-xl border border-card-border bg-card p-4 transition-colors ${
         !section.isActive ? "bg-card/50 opacity-70" : "hover:bg-card-hover/40"
       }`}
     >

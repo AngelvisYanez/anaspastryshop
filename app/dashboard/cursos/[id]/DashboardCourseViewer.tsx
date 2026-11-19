@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { parseWorkshopDetails, type WorkshopDetails } from "@/lib/utils/workshop";
+import type { CourseReviewProgress } from "@/lib/data/course-reviews";
+import { CourseReviewPrompt } from "@/components/CourseReviewPrompt";
 import {
   WorkshopLogisticsBanner,
   CourseAccessGuard,
@@ -50,6 +52,7 @@ interface CourseViewerProps {
   canManage?: boolean;
   isAdminOrInstructor?: boolean;
   workshopInfo?: WorkshopDetails;
+  reviewProgress?: CourseReviewProgress;
 }
 
 export default function DashboardCourseViewer({
@@ -58,12 +61,15 @@ export default function DashboardCourseViewer({
   canManage = false,
   isAdminOrInstructor = false,
   workshopInfo: passedWorkshopInfo,
+  reviewProgress,
 }: CourseViewerProps) {
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
   const isManager = canManage || isAdminOrInstructor;
   const workshopInfo =
     passedWorkshopInfo || parseWorkshopDetails(course.content, course.isLive, course.title);
   const isWorkshop = workshopInfo.isWorkshop;
+  const activeModule = course.courseModules[selectedModuleIndex];
+  const reviewsHref = canManage && !isWorkshop ? `/dashboard/cursos/${course.id}/resenas` : undefined;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -86,6 +92,11 @@ export default function DashboardCourseViewer({
         </div>
 
         <div className="flex items-center gap-2">
+          {reviewsHref && (
+            <Link href={reviewsHref} className="rounded-xl border border-card-border px-3.5 py-1.5 text-xs font-bold text-foreground">
+              Reseñas
+            </Link>
+          )}
           {isManager && (
             <Link
               href={`/dashboard/cursos/${course.id}/edit`}
@@ -121,6 +132,16 @@ export default function DashboardCourseViewer({
             selectedModuleIndex={selectedModuleIndex}
             onSelectModule={setSelectedModuleIndex}
             exitHref={isManager ? "/dashboard/cursos" : "/dashboard/mis-cursos"}
+            reviewsHref={reviewsHref}
+            reviewPrompt={activeModule && reviewProgress && (
+              <CourseReviewPrompt
+                key={activeModule.id}
+                courseId={course.id}
+                moduleId={activeModule.id}
+                moduleCount={course.courseModules.length}
+                progress={reviewProgress}
+              />
+            )}
           />
         </>
       )}

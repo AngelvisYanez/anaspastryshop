@@ -111,7 +111,7 @@ describe("payments admin flows", () => {
       eventKey: "payment-approved:i1", phone: "584121234567", kind: "TRANSACTIONAL",
     }) });
     expect(mockPrisma.whatsAppNotification.create).toHaveBeenCalledWith({ data: expect.objectContaining({
-      eventKey: "admin:payment-approved:i1", phone: "584121658015", kind: "TRANSACTIONAL",
+      eventKey: "admin:payment-approved:i1", phone: "584121658015", kind: "ADMIN",
     }) });
     delete process.env.WA_ADMIN_WHATSAPP;
     expect(sendCoursePurchaseEmail).toHaveBeenCalledWith(

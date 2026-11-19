@@ -1,5 +1,6 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { useState } from "react";
 import { Plus, X, CheckCircle } from "lucide-react";
 import { ModuleCreateForm } from "./ModuleCreateForm";
@@ -57,16 +58,18 @@ export default function PlatformModuleManager({
         />
       )}
 
-      <div className="bg-card border border-card-border rounded-2xl overflow-hidden shadow-sm">
-        <div className="divide-y divide-card-border">
-          {sections.map((section) => (
+      <DataView title="Módulos del sistema" items={sections} dateLabel="Fecha de configuración"
+        row={(section) => ({ date: section.createdAt, values: [section.name, section.slug,
+          section.isActive ? "Activo" : "Inactivo", section.roles.join(", ")] })}>
+        {(visible) => <div className="dashboard-data-cards">
+          {visible.map((section) => (
             <ModuleSectionRow
               key={section.id}
               section={section}
               onUpdated={(updated) => {
                 setSections((prev) =>
                   prev
-                    .map((s) => (s.id === updated.id ? updated : s))
+                    .map((s) => (s.slug === section.slug ? updated : s))
                     .sort((a, b) => a.order - b.order),
                 );
               }}
@@ -76,14 +79,8 @@ export default function PlatformModuleManager({
               onSuccess={triggerSuccess}
             />
           ))}
-
-          {sections.length === 0 && (
-            <div className="p-12 text-center text-muted text-xs">
-              No hay módulos configurados. Crea el primero haciendo clic en &quot;Nuevo Módulo&quot;.
-            </div>
-          )}
-        </div>
-      </div>
+        </div>}
+      </DataView>
     </div>
   );
 }

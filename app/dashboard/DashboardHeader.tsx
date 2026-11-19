@@ -90,7 +90,7 @@ export default function DashboardHeader({
       .then((r) => (r.ok ? r.json() : { notifications: [] }))
       .then((data) => {
         setNotifications(data.notifications ?? []);
-        setUnreadCount((data.notifications ?? []).filter((n: Notification) => !n.read).length);
+        setUnreadCount(data.unreadCount ?? 0);
       })
       .catch(() => setNotifications([]))
       .finally(() => setLoading(false));
@@ -98,11 +98,20 @@ export default function DashboardHeader({
 
   // react-doctor-disable-next-line react-doctor/no-fetch-in-effect -- the unread badge is per-session client state that must stay fresh after mutations, so it is fetched on mount
   useEffect(() => {
-    fetch("/api/notifications/count")
-      .then((r) => (r.ok ? r.json() : { count: 0 }))
-      .then((d) => setUnreadCount(d.count ?? 0))
-      .catch(() => {});
-  }, []);
+    if (user.role !== "ADMIN" || notifOpen) return;
+
+    function updateCount() {
+      if (document.visibilityState !== "visible") return;
+      fetch("/api/notifications/count")
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => { if (data) setUnreadCount(data.count ?? 0); })
+        .catch(() => {});
+    }
+
+    updateCount();
+    const interval = window.setInterval(updateCount, 60_000);
+    return () => window.clearInterval(interval);
+  }, [user.role, notifOpen]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -120,8 +129,13 @@ export default function DashboardHeader({
     try {
       const res = await fetch("/api/notifications", { method: "PATCH" });
       if (!res.ok) return;
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      setUnreadCount(0);
+      const updated = await fetch("/api/notifications");
+      if (!updated.ok) return;
+      const data = await updated.json();
+      setNotifications(data.notifications ?? []);
+      setUnreadCount(data.unreadCount ?? 0);
+    } catch {
+      // Keep the current list available for retry.
     } finally {
       setLoading(false);
     }
@@ -178,7 +192,7 @@ export default function DashboardHeader({
                     {unreadCount > 0 ? `${unreadCount} sin leer` : "Todo al día"}
                   </p>
                 </div>
-                {unreadCount > 0 && (
+                {notifications.some((n) => !n.read && n.id.startsWith("review-")) && (
                   <button
                     onClick={markAllAsRead}
                     className="text-[11px] font-bold text-accent hover:underline"

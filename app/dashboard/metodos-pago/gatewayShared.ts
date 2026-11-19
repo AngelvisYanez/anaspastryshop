@@ -5,6 +5,7 @@ import {
 export type GatewayConfig = {
   provider: string;
   isEnabled: boolean;
+  updatedAt?: Date;
   publicKey: string | null;
   secretKey: string | null;
   webhookSecret: string | null;

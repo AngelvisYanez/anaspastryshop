@@ -1,9 +1,10 @@
+import { DataCards } from "../data-view/DataView";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, PlayCircle, BookOpen, ArrowRight, MapPin, Calendar, Sparkles } from "lucide-react";
+import { Clock, PlayCircle, BookOpen, ArrowRight, MapPin, Calendar } from "lucide-react";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 
 export const metadata = {
@@ -49,14 +50,15 @@ export default async function MisCursosPage() {
     }),
   ]);
 
-  const courseMap = new Map<string, any>();
-  for (const p of purchases) {
-    if (p.curso) courseMap.set(p.cursoId, p.curso);
+  const courseMap = new Map<string, { course: NonNullable<(typeof purchases)[number]["curso"]>; enrolledAt: Date }>();
+  for (const { curso, createdAt } of [...purchases, ...approvedInscriptions]) {
+    if (!curso) continue;
+    const previous = courseMap.get(curso.id);
+    if (!previous || createdAt < previous.enrolledAt) {
+      courseMap.set(curso.id, { course: curso, enrolledAt: createdAt });
+    }
   }
-  for (const i of approvedInscriptions) {
-    if (i.curso && i.cursoId) courseMap.set(i.cursoId, i.curso);
-  }
-  const courses = Array.from(courseMap.values());
+  const courses = [...courseMap.values()].sort((a, b) => b.enrolledAt.getTime() - a.enrolledAt.getTime());
 
   return (
     <div className="max-w-7xl mx-auto w-full">
@@ -75,7 +77,8 @@ export default async function MisCursosPage() {
         </Link>
       </div>
 
-      {courses.length === 0 ? (
+      <DataCards title="Mis cursos y workshops" dateLabel="Fecha de inscripción o compra" initialMode="grid"
+        empty={courses.length === 0 ? (
         <div className="bg-card border border-card-border rounded-2xl p-12 text-center max-w-lg mx-auto shadow-sm">
           <div className="w-16 h-16 bg-accent-subtle rounded-2xl flex items-center justify-center mx-auto mb-4 text-accent">
             <BookOpen size={32} />
@@ -91,17 +94,18 @@ export default async function MisCursosPage() {
             Ver Catálogo Completo <ArrowRight size={14} />
           </Link>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {courses.map((curso) => {
+        ) : undefined}
+        items={courses.map(({ course: curso, enrolledAt }) => {
             const workshop = parseWorkshopDetails(curso.content, curso.isLive, curso.title);
             const isWorkshop = workshop.isWorkshop;
-
-            return (
+            return {
+              id: curso.id,
+              row: { date: enrolledAt, values: [curso.title, isWorkshop ? "Workshop presencial" : "Curso online", curso.instructor?.name || "Anais Flores"] },
+              card: (
               <Link key={curso.id} href={`/dashboard/cursos/${curso.id}`}>
                 <div className="bg-card border border-card-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-accent/30 transition group flex flex-col h-full">
                   {curso.image ? (
-                    <div className="relative w-full aspect-square bg-section-alt overflow-hidden">
+                    <div className="relative w-full dashboard-data-cover aspect-square bg-section-alt overflow-hidden">
                       <Image
                         src={curso.image}
                         alt={curso.title}
@@ -120,7 +124,7 @@ export default async function MisCursosPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="aspect-square bg-section-alt flex items-center justify-center">
+                    <div className="dashboard-data-cover aspect-square bg-section-alt flex items-center justify-center">
                       <PlayCircle size={36} className="text-muted/30" />
                     </div>
                   )}
@@ -171,10 +175,10 @@ export default async function MisCursosPage() {
                   </div>
                 </div>
               </Link>
-            );
+              ),
+            };
           })}
-        </div>
-      )}
+      />
     </div>
   );
 }

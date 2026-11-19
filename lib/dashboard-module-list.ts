@@ -1,6 +1,6 @@
 import { DASHBOARD_MODULES, isExistingModuleRoute } from './dashboard-modules';
 
-export type ModuleRecord = { id: string; name: string; slug: string; icon: string; order: number; isActive: boolean; roles: string[] };
+export type ModuleRecord = { id: string; name: string; slug: string; icon: string; order: number; isActive: boolean; roles: string[]; createdAt?: Date };
 
 export function listDashboardModules(records: ModuleRecord[]): ModuleRecord[] {
   const builtIns = DASHBOARD_MODULES.map((item, index) => {
@@ -13,6 +13,7 @@ export function listDashboardModules(records: ModuleRecord[]): ModuleRecord[] {
       order: saved?.order ?? (index + 1) * 10,
       isActive: saved?.isActive ?? true,
       roles: [...item.roles],
+      ...(saved?.createdAt ? { createdAt: saved.createdAt } : {}),
     };
   });
   const custom = records

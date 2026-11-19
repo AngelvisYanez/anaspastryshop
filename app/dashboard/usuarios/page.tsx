@@ -33,7 +33,7 @@ export default async function UsuariosPage() {
       description="Directorio de todos los usuarios registrados en la plataforma."
     >
       <AllUsersView
-        allUsers={allUsers as any}
+        allUsers={allUsers}
         currentUserId={session.user.id as string}
       />
     </DashboardPage>

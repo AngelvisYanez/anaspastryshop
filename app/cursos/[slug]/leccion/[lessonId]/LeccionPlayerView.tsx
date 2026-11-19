@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ChevronLeft, PlayCircle } from "lucide-react";
 import { getCourseEmbedUrl } from "@/app/cursos/[slug]/courseEmbed";
 
@@ -22,6 +23,7 @@ export function LeccionPlayerView({
   currentLesson,
   currentModule,
   modules,
+  reviewPrompt,
 }: {
   courseTitle: string;
   courseHref: string;
@@ -29,6 +31,7 @@ export function LeccionPlayerView({
   currentLesson: Lesson;
   currentModule: Module;
   modules: Module[];
+  reviewPrompt?: ReactNode;
 }) {
   const embedUrl = getCourseEmbedUrl(currentModule.videoUrl ?? null);
 
@@ -66,6 +69,7 @@ export function LeccionPlayerView({
           <h1 className="font-display text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter">
             {currentLesson.title}
           </h1>
+          {reviewPrompt && <div className="mb-6">{reviewPrompt}</div>}
           {currentLesson.summary && (
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-white/80 leading-relaxed">
               <h3 className="text-xs font-bold uppercase tracking-widest text-pink-300 mb-3">

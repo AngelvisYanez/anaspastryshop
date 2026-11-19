@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCourseReviewsReadAt } from "@/lib/data/course-reviews";
 
 const ACTION_TITLES: Record<string, string> = {
   CREATE: "Creación", UPDATE: "Actualización", DELETE: "Eliminación",
@@ -41,6 +42,7 @@ export async function GET() {
   }
 
   const role = (session.user as any).role as string;
+  let unreadCount = 0;
   const notifications: Array<{
     id: string;
     type: "success" | "warning" | "info";
@@ -53,14 +55,22 @@ export async function GET() {
 
   try {
     if (role === "ADMIN") {
-      const [pendingPayments, recentLogs] = await Promise.all([
+      const [pendingPayments, recentLogs, recentReviews, reviewsReadAt] = await Promise.all([
         prisma.inscription.count({ where: { status: "PENDING" } }),
         prisma.activityLog.findMany({
           take: 6,
           orderBy: { createdAt: "desc" },
           include: { user: { select: { name: true } } },
         }),
+        prisma.courseReview.findMany({
+          take: 6,
+          orderBy: { createdAt: "desc" },
+          select: { id: true, cursoId: true, createdAt: true, curso: { select: { title: true } } },
+        }),
+        getCourseReviewsReadAt(session.user.id),
       ]);
+      const unreadReviews = await prisma.courseReview.count({ where: { createdAt: { gt: reviewsReadAt } } });
+      unreadCount = unreadReviews + pendingPayments;
 
       if (pendingPayments > 0) {
         notifications.push({
@@ -71,6 +81,18 @@ export async function GET() {
           time: new Date().toISOString(),
           read: false,
           href: "/dashboard/pagos",
+        });
+      }
+
+      for (const review of recentReviews) {
+        notifications.push({
+          id: `review-${review.id}`,
+          type: "info",
+          title: "Nueva reseña de curso",
+          description: review.curso.title,
+          time: review.createdAt.toISOString(),
+          read: review.createdAt <= reviewsReadAt,
+          href: `/dashboard/cursos/${review.cursoId}/resenas#${review.id}`,
         });
       }
 
@@ -112,5 +134,27 @@ export async function GET() {
     // return empty list on DB error
   }
 
-  return NextResponse.json({ notifications });
+  return NextResponse.json({ notifications, unreadCount });
+}
+
+export async function PATCH() {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    return NextResponse.json({}, { status: 403 });
+  }
+
+  const latestReview = await prisma.courseReview.findFirst({
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  if (latestReview) {
+    await prisma.user.updateMany({
+      where: {
+        id: session.user.id,
+        OR: [{ courseReviewsReadAt: null }, { courseReviewsReadAt: { lt: latestReview.createdAt } }],
+      },
+      data: { courseReviewsReadAt: latestReview.createdAt },
+    });
+  }
+  return new NextResponse(null, { status: 204 });
 }

@@ -38,6 +38,7 @@ export async function getEmailTemplates(): Promise<EmailTemplateData[]> {
     title: string;
     preheader: string;
     isEnabled: boolean;
+    updatedAt: Date;
   }[] = [];
   try {
     stored = await (prisma as any).emailTemplate.findMany();
@@ -57,6 +58,7 @@ export async function getEmailTemplates(): Promise<EmailTemplateData[]> {
       title: db?.title || def.title,
       preheader: db?.preheader || def.preheader,
       isEnabled: db?.isEnabled ?? true,
+      updatedAt: db?.updatedAt,
     };
   });
 }

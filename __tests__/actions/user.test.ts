@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import sharp from "sharp";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -94,6 +95,36 @@ describe("updateProfile", () => {
         }),
       ),
     ).toEqual({ success: true });
+  });
+
+  it("guarda una foto optimizada y una ruta corta en la misma actualización", async () => {
+    const image = await sharp({
+      create: { width: 900, height: 700, channels: 3, background: "#f5ced9" },
+    }).png().toBuffer();
+    const fields = form({ name: "Ana" });
+    fields.set("avatar", new File([Uint8Array.from(image)], "foto.png", { type: "image/png" }));
+
+    expect(await updateProfile(fields)).toEqual({ success: true });
+    const [{ where, data }] = mockPrisma.user.update.mock.calls[0];
+    expect(where).toEqual({ id: "u1" });
+    expect(data.image).toMatch(/^\/api\/profile-avatar\/u1\?v=[a-f0-9-]+$/);
+    expect(data.avatar.upsert.update.data).toEqual(data.avatar.upsert.create.data);
+    expect(await sharp(data.avatar.upsert.create.data).metadata()).toMatchObject({
+      format: "webp", width: 512, height: 512,
+    });
+  });
+
+  it("rechaza un archivo ilegible aunque declare un tipo de imagen", async () => {
+    const fields = form({ name: "Ana" });
+    fields.set("avatar", new File(["<!doctype html>"], "foto.png", { type: "image/png" }));
+
+    expect(await updateProfile(fields)).toHaveProperty("error");
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("conserva la foto actual al editar los datos sin adjuntar una imagen", async () => {
+    await updateProfile(form({ name: "Ana" }));
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({ where: { id: "u1" }, data: { name: "Ana" } });
   });
 });
 

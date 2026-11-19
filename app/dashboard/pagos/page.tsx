@@ -4,26 +4,28 @@ import PaymentHistoryTable from "./PaymentHistoryTable";
 import { Clock, CheckCircle2, XCircle, DollarSign } from "lucide-react";
 import { DashboardPage } from "../DashboardPage";
 
-const HISTORY_PAGE_SIZE = 10;
+import { Suspense } from "react";
+import { DataCards } from "../data-view/DataView";
+import { parsePage, parsePageSize, parseRange } from "../data-view/filters";
 
 export default async function PagosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; from?: string; to?: string; size?: string; view?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
-  const histPage = Math.max(1, parseInt(pageParam ?? "1", 10));
+  const params = await searchParams;
+  const range = parseRange(params.from, params.to);
+  const size = parsePageSize(params.size, 10);
 
   const [pendingResult, historyResult, stats] = await Promise.all([
     getPendingPayments(),
-    getPaymentHistory(histPage, HISTORY_PAGE_SIZE),
+    getPaymentHistory(parsePage(params.page), size, range),
     getPaymentStats(),
   ]);
 
   const inscriptions = pendingResult.inscriptions ?? [];
   const history = historyResult.inscriptions ?? [];
   const historyTotal = historyResult.total ?? 0;
-  const historyPages = historyResult.pages ?? 0;
 
   const statCards = [
     {
@@ -93,21 +95,14 @@ export default async function PagosPage({
           )}
         </div>
 
-        {inscriptions.length === 0 ? (
-          <div className="bg-card rounded-xl p-8 sm:p-12 text-center border border-card-border shadow-sm flex flex-col items-center">
-            <div className="w-14 h-14 bg-green-50 dark:bg-green-950/20 rounded-xl flex items-center justify-center mb-4">
-              <CheckCircle2 className="text-green-500" size={28} />
-            </div>
-            <h3 className="text-base font-bold text-foreground">Todo al día</h3>
-            <p className="text-muted text-sm mt-1">No hay pagos pendientes por validar.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {inscriptions.map((inscription: any) => (
-              <PaymentCard key={inscription.id} inscription={inscription} />
-            ))}
-          </div>
-        )}
+        <DataCards title="Pagos pendientes" dateLabel="Fecha de recepción"
+          items={inscriptions.map((inscription) => ({
+            id: inscription.id,
+            row: { date: inscription.createdAt, values: [inscription.user.name, inscription.user.email,
+              inscription.curso?.title ?? "Servicio de pastelería", inscription.method, `USD ${inscription.amountPaid}`, "Pendiente"] },
+            card: <PaymentCard inscription={inscription} />,
+          }))}
+        />
       </section>
 
       <section>
@@ -118,13 +113,11 @@ export default async function PagosPage({
           )}
         </div>
 
-        <PaymentHistoryTable
-          inscriptions={history}
-          total={historyTotal}
-          page={histPage}
-          pages={historyPages}
-          pageSize={HISTORY_PAGE_SIZE}
-        />
+        <Suspense>
+          <PaymentHistoryTable inscriptions={history} total={historyTotal}
+            page={historyResult.page ?? 1} size={size} range={range}
+            mode={params.view === "grid" ? "grid" : "list"} />
+        </Suspense>
       </section>
     </DashboardPage>
   );

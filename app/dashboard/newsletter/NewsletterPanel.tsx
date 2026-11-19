@@ -1,5 +1,6 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { sendNewsletter, deleteNewsletterSubscriber } from "@/lib/actions/newsletter";
@@ -216,16 +217,14 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
           </button>
 
           {showSubscribers && (
-            <div className="border-t border-card-border divide-y divide-card-border max-h-[460px] overflow-y-auto custom-scrollbar">
-              {subscribers.length === 0 ? (
-                <div className="p-8 text-center">
-                  <p className="text-muted font-bold">No hay suscriptores aún.</p>
-                </div>
-              ) : (
-                subscribers.map((s) => (
+            <div className="border-t border-card-border p-3 sm:p-4">
+              <DataView title="Suscriptores" items={subscribers} dateLabel="Fecha de suscripción"
+                row={(s) => ({ date: s.subscribedAt, values: [s.email, s.name, s.isActive ? "Activo" : "Inactivo"] })}>
+                {(visible) => <div className="dashboard-data-cards">
+                  {visible.map((s) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between px-6 py-3 hover:bg-section-alt transition-colors"
+                    className="flex items-center justify-between min-w-0 rounded-xl border border-card-border bg-card px-4 py-3 hover:bg-section-alt transition-colors"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-foreground truncate">{s.email}</p>
@@ -255,8 +254,9 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
                       )}
                     </button>
                   </div>
-                ))
-              )}
+                  ))}
+                </div>}
+              </DataView>
             </div>
           )}
         </div>

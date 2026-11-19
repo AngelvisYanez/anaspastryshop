@@ -1,3 +1,4 @@
+import { DataCards } from "../data-view/DataView";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
@@ -42,7 +43,7 @@ export default async function CursosDashboardPage() {
   const cursos = await prisma.curso.findMany({
     select: {
       id: true, title: true, description: true, price: true, content: true,
-      isLive: true, status: true, publishedAt: true, updatedAt: true,
+      isLive: true, status: true, publishedAt: true, updatedAt: true, createdAt: true,
       _count: { select: { inscritos: true, courseModules: true } },
     },
     orderBy: { createdAt: "desc" },
@@ -67,7 +68,8 @@ export default async function CursosDashboardPage() {
         </Link>
       </div>
 
-      {cursos.length === 0 ? (
+      <DataCards title="Cursos online y workshops" dateLabel="Fecha de creación" initialMode="grid"
+        empty={cursos.length === 0 ? (
         <div className="bg-card rounded-2xl p-12 text-center border border-card-border shadow-sm flex flex-col items-center mb-10">
           <div className="w-16 h-16 bg-accent-subtle rounded-2xl flex items-center justify-center mb-4">
             <BookOpen className="text-accent" size={28} />
@@ -83,23 +85,24 @@ export default async function CursosDashboardPage() {
             Publicar Ahora
           </Link>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {cursos.map((c) => {
+        ) : undefined}
+        items={cursos.map((c) => {
             const workshop = parseWorkshopDetails(c.content, c.isLive, c.title);
             const isWorkshop = workshop.isWorkshop;
             const image = images.get(c.id);
             const imageUrl = image?.startsWith("data:image/") && c.status !== "PUBLISHED"
               ? `/api/dashboard/course-image/${c.id}?v=${c.updatedAt.getTime()}`
               : courseImageUrl(c.id, image, c.updatedAt);
-
-            return (
+            return {
+              id: c.id,
+              row: { date: c.createdAt, values: [c.title, isWorkshop ? "Workshop presencial" : "Curso online", c.status, `USD ${c.price}`, `${c._count.inscritos} alumnos`] },
+              card: (
               <div key={c.id} className="relative bg-card rounded-2xl border border-card-border p-5 flex flex-col hover:shadow-lg transition h-full group">
                 <CourseActions courseId={c.id} hasEnrolled={c._count.inscritos > 0} />
                 
                 <Link href={`/dashboard/cursos/${c.id}`} className="block">
                   {imageUrl ? (
-                    <div className="relative w-full aspect-square bg-card-hover rounded-xl mb-4 overflow-hidden">
+                    <div className="relative w-full dashboard-data-cover aspect-square bg-card-hover rounded-xl mb-4 overflow-hidden">
                       {imageUrl.startsWith("/api/dashboard/") ? (
                         // The private image route needs the browser session cookie.
                         // eslint-disable-next-line @next/next/no-img-element
@@ -109,7 +112,7 @@ export default async function CursosDashboardPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="w-full aspect-square bg-accent-subtle rounded-xl mb-4 flex items-center justify-center">
+                    <div className="w-full dashboard-data-cover aspect-square bg-accent-subtle rounded-xl mb-4 flex items-center justify-center">
                       <Video className="text-accent/40" size={28} />
                     </div>
                   )}
@@ -192,10 +195,10 @@ export default async function CursosDashboardPage() {
                   )}
                 </div>
               </div>
-            );
+              ),
+            };
           })}
-        </div>
-      )}
+      />
     </div>
   );
 }

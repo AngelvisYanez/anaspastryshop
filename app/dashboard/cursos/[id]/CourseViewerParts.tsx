@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -150,6 +150,8 @@ export function CourseModulesPanel({
   selectedModuleIndex,
   onSelectModule,
   exitHref,
+  reviewsHref,
+  reviewPrompt,
 }: {
   course: {
     title: string;
@@ -163,6 +165,8 @@ export function CourseModulesPanel({
   selectedModuleIndex: number;
   onSelectModule: (index: number) => void;
   exitHref: string;
+  reviewsHref?: string;
+  reviewPrompt?: ReactNode;
 }) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const moduleContent = useRef<HTMLDivElement>(null);
@@ -198,6 +202,7 @@ export function CourseModulesPanel({
           <p className="text-[10px] font-black uppercase tracking-widest text-accent">Curso online</p>
           <p className="truncate text-sm font-bold text-foreground">{course.title}</p>
         </div>
+        {reviewsHref && <Link href={reviewsHref} className="ml-auto pl-3 text-xs font-bold text-accent">Reseñas</Link>}
         <Link href={exitHref} aria-label="Salir del curso" className="ml-3 rounded-full border border-card-border p-2 text-foreground">
           <X size={20} />
         </Link>
@@ -267,6 +272,8 @@ export function CourseModulesPanel({
             </p>
           </div>
         </div>
+
+        {reviewPrompt}
 
         {activeModule && (
           <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm">

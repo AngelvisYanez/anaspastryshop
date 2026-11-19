@@ -5,6 +5,8 @@ import DashboardCourseViewer from "./DashboardCourseViewer";
 import { parseWorkshopDetails } from "@/lib/utils/workshop";
 import { getCompactCourseImages } from "@/lib/data/compact-course-images";
 import { courseImageUrl } from "@/lib/data/course-image-url";
+import { checkUserCourseAccess } from "@/app/cursos/[slug]/checkUserCourseAccess";
+import { getCourseReviewProgress } from "@/lib/data/course-reviews";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -52,7 +54,7 @@ export default async function DashboardCoursePage({
     }),
   ]);
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/iniciar-sesion");
   }
 
@@ -60,41 +62,16 @@ export default async function DashboardCoursePage({
     notFound();
   }
 
-  const role = session.user.role;
-  const isAdmin = role === "ADMIN";
-  const canManage = isAdmin;
-
-  let hasAccess = canManage;
-
-  if (!hasAccess) {
-    // Check if user has approved inscription
-    const inscription = await prisma.inscription.findFirst({
-      where: {
-        userId: session.user.id,
-        cursoId: course.id,
-        status: "APPROVED",
-      },
-    });
-
-    if (inscription) {
-      hasAccess = true;
-    } else {
-      // Check if user has completed CoursePurchase
-      const purchase = await prisma.coursePurchase.findFirst({
-        where: {
-          userId: session.user.id,
-          cursoId: course.id,
-          status: "COMPLETED",
-        },
-      });
-      if (purchase) {
-        hasAccess = true;
-      }
-    }
-  }
-
+  const canManage = session.user.role === "ADMIN";
   const workshopInfo = parseWorkshopDetails(course.content, course.isLive, course.title);
-  const image = (await getCompactCourseImages([id])).get(id);
+  const [hasAccess, images] = await Promise.all([
+    checkUserCourseAccess({ userId: session.user.id, role: session.user.role, courseId: id }),
+    getCompactCourseImages([id]),
+  ]);
+  const reviewProgress = hasAccess && !canManage && !workshopInfo.isWorkshop && course.courseModules.length > 0
+    ? await getCourseReviewProgress(id, session.user.id)
+    : undefined;
+  const image = images.get(id);
   const imageUrl = image?.startsWith("data:image/") && course.status !== "PUBLISHED"
     ? `/api/dashboard/course-image/${id}?v=${course.updatedAt.getTime()}`
     : courseImageUrl(id, image, course.updatedAt);
@@ -105,6 +82,7 @@ export default async function DashboardCoursePage({
       workshopInfo={workshopInfo}
       canManage={canManage}
       hasAccess={hasAccess}
+      reviewProgress={reviewProgress}
     />
   );
 }

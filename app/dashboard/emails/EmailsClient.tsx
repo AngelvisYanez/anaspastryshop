@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { DataView } from "../data-view/DataView";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Send,
@@ -223,12 +224,12 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
           </button>
 
           {showSubscribers && (
-            <div className="border-t border-card-border divide-y divide-card-border max-h-[460px] overflow-y-auto custom-scrollbar">
-              {subscribers.length === 0 ? (
-                <div className="p-8 text-center"><p className="text-muted font-bold">No hay suscriptores aún.</p></div>
-              ) : (
-                subscribers.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between px-6 py-3 hover:bg-section-alt transition-colors">
+            <div className="border-t border-card-border p-3 sm:p-4">
+              <DataView title="Suscriptores" items={subscribers} dateLabel="Fecha de suscripción"
+                row={(s) => ({ date: s.subscribedAt, values: [s.email, s.name, s.isActive ? "Activo" : "Inactivo"] })}>
+                {(visible) => <div className="dashboard-data-cards">
+                  {visible.map((s) => (
+                  <div key={s.id} className="flex items-center justify-between min-w-0 rounded-xl border border-card-border bg-card px-4 py-3 hover:bg-section-alt transition-colors">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-foreground truncate">{s.email}</p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -247,8 +248,9 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
                       {deletingId === s.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
                     </button>
                   </div>
-                ))
-              )}
+                  ))}
+                </div>}
+              </DataView>
             </div>
           )}
         </div>
@@ -258,30 +260,15 @@ function NewsletterTab({ subscribers }: { subscribers: Subscriber[] }) {
 }
 
 function NotificationsTab({ templates }: { templates: EmailTemplateData[] }) {
-  const userTemplates = templates.filter((t) => t.recipient === "USER");
-  const otherTemplates = templates.filter((t) => t.recipient !== "USER");
-
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-4">Emails a Usuarios</p>
-        <div className="space-y-3">
-          {userTemplates.map((t) => (
-            <TemplateCard key={t.type} template={t} />
-          ))}
-        </div>
-      </div>
-
-      {otherTemplates.length > 0 && (
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-widest text-muted mb-4">Otros Emails</p>
-          <div className="space-y-3">
-            {otherTemplates.map((t) => (
-              <TemplateCard key={t.type} template={t} />
-            ))}
-          </div>
-        </div>
-      )}
+    <div className="space-y-6">
+      <DataView title="Plantillas de correo" items={templates} dateLabel="Fecha de última modificación"
+        row={(t) => ({ date: t.updatedAt, values: [t.label, t.subject, t.recipient === "USER" ? "Usuarios" : "Otros destinatarios",
+          t.isEnabled ? "Activa" : "Inactiva"] })}>
+        {(visible) => <div className="dashboard-data-cards">
+          {visible.map((t) => <TemplateCard key={t.type} template={t} />)}
+        </div>}
+      </DataView>
 
       <div className="bg-section-alt rounded-xl p-5 border border-card-border">
         <p className="text-xs font-bold text-muted leading-relaxed">

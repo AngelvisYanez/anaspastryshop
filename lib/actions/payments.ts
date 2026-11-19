@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { dateBounds, parseRange, type DateRange } from "@/app/dashboard/data-view/filters";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
@@ -133,7 +134,7 @@ export async function approvePayment(inscriptionId: string) {
   }
 }
 
-export async function getPaymentHistory(page = 1, limit = 10) {
+export async function getPaymentHistory(page = 1, limit = 10, range?: DateRange) {
   const session = await auth();
 
   // @ts-ignore
@@ -141,26 +142,25 @@ export async function getPaymentHistory(page = 1, limit = 10) {
     throw new Error("No autorizado");
   }
 
-  const skip = (page - 1) * limit;
-
   try {
-    const [inscriptions, total] = await Promise.all([
-      prisma.inscription.findMany({
-        where: { status: { in: ["APPROVED", "REJECTED"] } },
-        include: {
-          user: { select: { name: true, email: true } },
-          curso: { select: { title: true, price: true } },
-        },
-        orderBy: { updatedAt: "desc" },
-        skip,
-        take: limit,
-      }),
-      prisma.inscription.count({
-        where: { status: { in: ["APPROVED", "REJECTED"] } },
-      }),
-    ]);
-
-    return { inscriptions, total, pages: Math.ceil(total / limit) };
+    const where = {
+      status: { in: ["APPROVED", "REJECTED"] },
+      updatedAt: range ? dateBounds(parseRange(range.from, range.to)) : undefined,
+    };
+    const total = await prisma.inscription.count({ where });
+    const pages = Math.ceil(total / limit);
+    const currentPage = Math.min(page, Math.max(1, pages));
+    const inscriptions = await prisma.inscription.findMany({
+      where,
+      include: {
+        user: { select: { name: true, email: true } },
+        curso: { select: { title: true, price: true } },
+      },
+      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+      skip: (currentPage - 1) * limit,
+      take: limit,
+    });
+    return { inscriptions, total, pages, page: currentPage };
   } catch (error) {
     console.error("Error fetching payment history:", error);
     return {

@@ -1,7 +1,7 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { useState, useRef, useTransition } from "react";
-import Image from "next/image";
 import {
   Plus,
   Trash2,
@@ -91,7 +91,7 @@ export default function GalleryManager({
     const [moved] = next.splice(idx, 1);
     next.splice(target, 0, moved);
 
-    setItems(next);
+    setItems(next.map((item, index) => index === target || index === idx ? { ...item, order: index } : item));
     startTransition(async () => {
       const movedItem = next[target];
       const swappedItem = next[idx];
@@ -132,7 +132,7 @@ export default function GalleryManager({
                 alt="Vista previa de la foto"
                 className="w-full max-h-64 object-cover"
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 max-sm:opacity-100 max-sm:bg-black/20">
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
@@ -239,30 +239,23 @@ export default function GalleryManager({
           </span>
         </h2>
 
-        {items.length === 0 ? (
-          <div className="bg-card border border-card-border rounded-2xl p-10 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-section-alt flex items-center justify-center">
-              <ImagePlus size={24} className="text-muted" />
-            </div>
-            <p className="font-bold text-foreground">Aún no hay fotos</p>
-            <p className="text-xs text-muted mt-1">
-              Si guardas el token de Instagram en Configuración, la página de Pastelería muestra el feed de la cuenta.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {items.map((item, idx) => (
+        <DataView title="Galería" items={items} initialMode="grid" dateLabel="Fecha de carga"
+          row={(item) => ({ date: item.createdAt, values: [item.caption || item.alt || "Sin descripción", item.order] })}>
+          {(visible) => <div className="dashboard-data-cards">
+            {visible.map((item) => {
+              const idx = items.findIndex((entry) => entry.id === item.id);
+              return (
               <div
                 key={item.id}
                 className="bg-card border border-card-border rounded-2xl overflow-hidden group"
               >
-                <div className="relative aspect-square">
+                <div className="relative dashboard-data-cover aspect-square">
                   <img
                     src={item.imageUrl}
                     alt={item.alt || "Creación de Ana's Pastry Shop"}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 max-sm:opacity-100 max-sm:bg-black/20">
                     <button
                       type="button"
                       onClick={() => handleDelete(item.id)}
@@ -304,9 +297,10 @@ export default function GalleryManager({
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+              );
+            })}
+          </div>}
+        </DataView>
       </div>
     </div>
   );

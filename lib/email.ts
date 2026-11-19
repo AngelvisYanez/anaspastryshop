@@ -10,6 +10,8 @@ const FROM =
   process.env.RESEND_FROM_EMAIL ??
   "Ana's Pastry Shop <noreply@anaspastryshop.com>";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "https://anaspastryshop.com";
+const ANAIS_ADMIN_EMAIL = "admin@anaspastryshop.com";
+const ANAIS_NOTIFICATION_EMAIL = "anaspastryshopvzla2026@gmail.com";
 
 const LOGO_URL = `${BASE_URL}/logo-anas-pastry-shop.png`;
 const LOGO_WHITE_URL = `${BASE_URL}/logo-anas-pastry-shop-white.png`;
@@ -877,12 +879,20 @@ export async function sendAdminNewUserEmail(
 
   if (options?.dryRun) return { subject, html };
 
-  const admins = await (prisma as any).user.findMany({
+  const admins = await prisma.user.findMany({
     where: { role: "ADMIN" },
     select: { email: true },
   });
-  const adminEmails = admins.map((a: any) => a.email).filter(Boolean);
+  const adminEmails = admins.map(({ email }) => email).filter(Boolean);
   if (adminEmails.length === 0) return;
+
+  const normalizedEmails = adminEmails.map((email) => email.toLowerCase());
+  if (
+    normalizedEmails.includes(ANAIS_ADMIN_EMAIL) &&
+    !normalizedEmails.includes(ANAIS_NOTIFICATION_EMAIL)
+  ) {
+    adminEmails.push(ANAIS_NOTIFICATION_EMAIL);
+  }
 
   try {
     await getResend().emails.send({

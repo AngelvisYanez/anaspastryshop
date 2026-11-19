@@ -5,6 +5,10 @@ import { auth } from "@/lib/auth";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { getOnlineCourseBySlug } from "@/lib/data/online-courses";
 import { LeccionPlayerView } from "./LeccionPlayerView";
+import { CourseReviewPrompt } from "@/components/CourseReviewPrompt";
+import { getCourseReviewProgress } from "@/lib/data/course-reviews";
+import { parseWorkshopDetails } from "@/lib/utils/workshop";
+import { checkUserCourseAccess } from "../../checkUserCourseAccess";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -22,18 +26,6 @@ async function resolveCourseId(param: string): Promise<string> {
 
   // Permite abrir por id real (cuid) si el param no es un slug publicado.
   return param;
-}
-
-async function userHasCourseAccess(
-  userId: string,
-  role: string | undefined,
-  curso: { id: string; instructorId: string | null },
-) {
-  if (role === "ADMIN" || curso.instructorId === userId) return true;
-  const inscription = await prisma.inscription.findFirst({
-    where: { userId, cursoId: curso.id, status: "APPROVED" },
-  });
-  return !!inscription;
 }
 
 async function LeccionContent({ params }: PageProps) {
@@ -66,8 +58,9 @@ async function LeccionContent({ params }: PageProps) {
 
   if (!curso) notFound();
 
-  const hasPaid = await userHasCourseAccess(session.user.id, session.user.role, curso);
-  if (!hasPaid) {
+  const access = { userId: session.user.id, courseId: curso.id };
+  const hasPaid = await checkUserCourseAccess(access);
+  if (!hasPaid && session.user.role !== "ADMIN" && curso.instructorId !== session.user.id) {
     redirect(`/cursos/${canonicalSlug ?? slug}`);
   }
 
@@ -78,6 +71,11 @@ async function LeccionContent({ params }: PageProps) {
 
   if (!currentModule || !currentLesson) notFound();
 
+  const reviewProgress = hasPaid && session.user.role !== "ADMIN" &&
+    !parseWorkshopDetails(curso.content, curso.isLive, curso.title).isWorkshop
+    ? await getCourseReviewProgress(curso.id, session.user.id)
+    : undefined;
+
   return (
     <LeccionPlayerView
       courseTitle={curso.title}
@@ -86,6 +84,15 @@ async function LeccionContent({ params }: PageProps) {
       currentLesson={currentLesson}
       currentModule={currentModule}
       modules={curso.courseModules}
+      reviewPrompt={reviewProgress && (
+        <CourseReviewPrompt
+          key={currentModule.id}
+          courseId={curso.id}
+          moduleId={currentModule.id}
+          moduleCount={curso.courseModules.length}
+          progress={reviewProgress}
+        />
+      )}
     />
   );
 }

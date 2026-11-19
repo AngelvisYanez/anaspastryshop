@@ -5,6 +5,9 @@ import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { logActivity } from "@/lib/logger";
+import type { Prisma } from "@prisma/client";
+import { avatarFileError, avatarPath } from "@/lib/avatar";
+import { randomUUID } from "node:crypto";
 
 async function assertAdmin() {
   const session = await auth();
@@ -29,33 +32,58 @@ function normalizeUserImage(raw: string | null | undefined): string | null {
 
 export async function updateProfile(formData: FormData) {
   const session = await auth();
+  const userId = session?.user?.id;
 
-  if (!session?.user) {
+  if (!userId) {
     throw new Error("No autorizado");
   }
 
-  const name = formData.get("name") as string;
-  const image = formData.get("image") as string;
-  const newPassword = formData.get("newPassword") as string;
+  const name = formData.get("name");
+  const image = formData.get("image");
+  const newPassword = formData.get("newPassword");
+  const upload = formData.get("avatar");
+  const removeAvatar = formData.get("removeAvatar") === "true";
+  if (typeof name !== "string" || !name.trim()) return { error: "Escribe tu nombre." };
+  if (name.trim().length > 120) return { error: "El nombre debe tener hasta 120 caracteres." };
 
   try {
-    const updateData: any = { 
-      name,
-      image: normalizeUserImage(image),
-      whatsappMarketing: formData.get("whatsappMarketing") === "on",
+    const updateData: Prisma.UserUpdateInput = {
+      name: name.trim(),
+      ...(formData.has("whatsappPreferences") || formData.has("whatsappMarketing")
+        ? { whatsappMarketing: formData.get("whatsappMarketing") === "on" }
+        : {}),
     };
 
-    if (newPassword && newPassword.trim() !== "") {
+    if (upload instanceof File && upload.name) {
+      const error = avatarFileError(upload);
+      if (error) return { error };
+      let data: Uint8Array<ArrayBuffer>;
+      try {
+        const { processAvatar } = await import("@/lib/process-avatar");
+        data = Uint8Array.from(await processAvatar(upload));
+      } catch {
+        return { error: "No se pudo leer la foto. Selecciona otro archivo JPG, PNG o WebP." };
+      }
+      updateData.image = `${avatarPath}${userId}?v=${randomUUID()}`;
+      updateData.avatar = { upsert: { create: { data }, update: { data } } };
+    } else if (removeAvatar) {
+      updateData.image = null;
+    } else if (typeof image === "string") {
+      updateData.image = normalizeUserImage(image);
+    }
+
+    if (typeof newPassword === "string" && newPassword.trim()) {
       updateData.password = await bcrypt.hash(newPassword, 10);
     }
 
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: updateData,
-    });
+    const update = prisma.user.update({ where: { id: userId }, data: updateData });
+    if (removeAvatar && !updateData.avatar) {
+      await prisma.$transaction([update, prisma.userAvatar.deleteMany({ where: { userId } })]);
+    } else {
+      await update;
+    }
 
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/settings");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error) {
     console.error("Error updating profile:", error);

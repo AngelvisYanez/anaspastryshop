@@ -18,6 +18,7 @@ export type PlatformSection = {
   order: number;
   isActive: boolean;
   roles: string[];
+  createdAt?: Date;
 };
 
 export function slugify(text: string) {

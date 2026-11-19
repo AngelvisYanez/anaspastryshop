@@ -58,4 +58,5 @@ export type EmailTemplateData = {
   title: string;
   preheader: string;
   isEnabled: boolean;
+  updatedAt?: Date;
 };

@@ -1,0 +1,57 @@
+.dashboard-data-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+[data-view-mode="grid"] .dashboard-data-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+[data-view-mode="list"] .dashboard-data-cover {
+  aspect-ratio: auto;
+  height: 9rem;
+}
+
+[data-view-mode="grid"] .dashboard-data-table {
+  display: block;
+  min-width: 0;
+}
+
+[data-view-mode="grid"] .dashboard-data-table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+[data-view-mode="grid"] .dashboard-data-table tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+[data-view-mode="grid"] .dashboard-data-table tbody tr {
+  display: block;
+  min-width: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+}
+
+[data-view-mode="grid"] .dashboard-data-table td {
+  display: block;
+  padding: 0.45rem 0.65rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+[data-view-mode="grid"] .dashboard-data-table td[data-label]::before {
+  display: block;
+  content: attr(data-label);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}

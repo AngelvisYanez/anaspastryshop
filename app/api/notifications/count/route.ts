@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getCourseReviewsReadAt } from "@/lib/data/course-reviews";
 
 export async function GET() {
   const session = await auth();
@@ -13,7 +14,13 @@ export async function GET() {
 
   try {
     if (role === "ADMIN") {
-      count = await prisma.inscription.count({ where: { status: "PENDING" } });
+      const [pendingPayments, unreadReviews] = await Promise.all([
+        prisma.inscription.count({ where: { status: "PENDING" } }),
+        getCourseReviewsReadAt(session.user.id).then((readAt) =>
+          prisma.courseReview.count({ where: { createdAt: { gt: readAt } } }),
+        ),
+      ]);
+      count = pendingPayments + unreadReviews;
     }
   } catch {
     count = 0;

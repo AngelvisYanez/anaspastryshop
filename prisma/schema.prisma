@@ -32,6 +32,16 @@ model User {
   coursePurchases    CoursePurchase[]
   lives              LiveStream[]    @relation("InstructorLives")
   webinars           Webinar[]       @relation("InstructorWebinars")
+  avatar             UserAvatar?
+  moduleCompletions  CourseModuleCompletion[]
+  courseReviews      CourseReview[]
+  courseReviewsReadAt DateTime?
+}
+
+model UserAvatar {
+  userId String @id
+  data   Bytes
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Curso {
@@ -60,6 +70,7 @@ model Curso {
   instructor    User             @relation("MentorCursos", fields: [instructorId], references: [id])
   inscritos     Inscription[]
   purchases     CoursePurchase[]
+  reviews       CourseReview[]
 }
 
 model IntroVideoUpload {
@@ -84,6 +95,32 @@ model CourseModule {
   createdAt DateTime @default(now())
   curso     Curso    @relation("CursoToModules", fields: [cursoId], references: [id], onDelete: Cascade)
   lessons   Lesson[] @relation("ModuleToLessons")
+  completions CourseModuleCompletion[]
+}
+
+model CourseModuleCompletion {
+  userId   String
+  moduleId String
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module   CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, moduleId])
+  @@index([moduleId])
+}
+
+model CourseReview {
+  id        String   @id @default(cuid())
+  cursoId   String
+  userId    String
+  comment   String
+  createdAt DateTime @default(now())
+  curso     Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cursoId, userId])
+  @@index([cursoId, createdAt])
+  @@index([createdAt])
+  @@index([userId])
 }
 
 model Lesson {

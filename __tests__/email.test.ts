@@ -1,12 +1,36 @@
 import { describe, expect, it, vi } from "vitest";
 
+const { findAdmins, sendEmail } = vi.hoisted(() => ({
+  findAdmins: vi.fn(),
+  sendEmail: vi.fn(),
+}));
+
 vi.mock("@/lib/prisma", () => ({
-  prisma: { emailTemplate: { findUnique: vi.fn().mockResolvedValue(null) } },
+  prisma: {
+    emailTemplate: { findUnique: vi.fn().mockResolvedValue(null) },
+    user: { findMany: findAdmins },
+  },
+}));
+
+vi.mock("resend", () => ({
+  Resend: class {
+    emails = { send: sendEmail };
+  },
 }));
 
 import { getEmailTemplatePreview, sendAdminNewUserEmail } from "@/lib/email";
 
 describe("email templates", () => {
+  it("sends new registration notices to both of Anais's addresses", async () => {
+    findAdmins.mockResolvedValueOnce([{ email: "admin@anaspastryshop.com" }]);
+
+    await sendAdminNewUserEmail("María", "maria@example.com", "USER", null);
+
+    expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
+      to: ["admin@anaspastryshop.com", "anaspastryshopvzla2026@gmail.com"],
+    }));
+  });
+
   it("shows the complete registration details safely in the admin email", async () => {
     const result = await sendAdminNewUserEmail(
       "María del Carmen Pérez",

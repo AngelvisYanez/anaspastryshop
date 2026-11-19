@@ -1,10 +1,11 @@
 "use client";
 
+import { DataView } from "../data-view/DataView";
 import { useState } from "react";
 import { Eye, EyeOff, Save, Loader2, CheckCircle, ChevronDown } from "lucide-react";
 import { saveApiConfig } from "@/lib/actions/platformApi";
 
-type ApiConfigRecord = { provider: string; label: string; config: Record<string, string> };
+type ApiConfigRecord = { provider: string; label: string; config: Record<string, string>; updatedAt: Date };
 
 type FieldDef = { key: string; label: string; placeholder: string; secret?: boolean; hint?: string };
 
@@ -179,13 +180,16 @@ export default function ApiConfigManager({ configs }: { configs: ApiConfigRecord
           Token de Instagram para el feed y el ID de conversiones de Meta.
         </p>
       </div>
-      {API_PROVIDERS.map((def) => (
-        <ApiCard
-          key={def.provider}
-          def={def}
-          initial={configs.find((c) => c.provider === def.provider)}
-        />
-      ))}
+      <DataView title="Integraciones" dateLabel="Fecha de última modificación" items={API_PROVIDERS}
+        row={(def) => {
+          const saved = configs.find((config) => config.provider === def.provider);
+          return { date: saved?.updatedAt, values: [def.label, saved ? "Configurada" : "Sin configurar"] };
+        }}>
+        {(visible) => <div className="dashboard-data-cards">
+          {visible.map((def) => <ApiCard key={def.provider} def={def}
+            initial={configs.find((config) => config.provider === def.provider)} />)}
+        </div>}
+      </DataView>
     </div>
   );
 }
