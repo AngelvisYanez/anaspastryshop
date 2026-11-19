@@ -1,9 +1,16 @@
-import Script from "next/script";
-import { getMetaPixelId } from "@/lib/meta-pixel";
+"use client";
 
-export async function MetaPixelSlot() {
-  const pixelId = await getMetaPixelId();
-  if (!pixelId) return null;
+import { usePathname } from "next/navigation";
+import Script from "next/script";
+
+export function MetaPixel({ pixelId }: { pixelId: string }) {
+  const pathname = usePathname();
+  if (
+    pathname === "/restablecer-contrasena" ||
+    pathname === "/unsubscribe" ||
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/")
+  ) return null;
 
   return (
     <>
@@ -15,6 +22,7 @@ export async function MetaPixelSlot() {
           height="1"
           width="1"
           style={{ display: "none" }}
+          referrerPolicy="no-referrer"
           src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
           alt=""
         />

@@ -4,7 +4,8 @@ import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import JsonLd from "@/components/JsonLd";
-import { MetaPixelSlot } from "@/components/MetaPixel";
+import { MetaPixel } from "@/components/MetaPixel";
+import { getMetaPixelId } from "@/lib/meta-pixel";
 import {
   buildOrganizationJsonLd,
   buildPageMetadata,
@@ -77,6 +78,11 @@ export const metadata: Metadata = {
     email: true,
   },
 };
+
+async function MetaPixelSlot() {
+  const pixelId = await getMetaPixelId();
+  return pixelId ? <MetaPixel pixelId={pixelId} /> : null;
+}
 
 export default function RootLayout({
   children,

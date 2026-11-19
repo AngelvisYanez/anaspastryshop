@@ -39,6 +39,11 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("next/server", () => ({ after: vi.fn() }));
+vi.mock("@/lib/meta-conversions", () => ({ sendMetaPurchase: vi.fn() }));
+
+import { after } from "next/server";
+import { sendMetaPurchase } from "@/lib/meta-conversions";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import {
@@ -137,6 +142,36 @@ describe("payments admin flows", () => {
     }) });
     expect(mockPrisma.curso.findUnique).not.toHaveBeenCalled();
     expect(sendCoursePurchaseEmail).not.toHaveBeenCalled();
+  });
+
+  it("programa la conversión solo si gana la aprobación del pago", async () => {
+    vi.stubEnv("META_CONVERSIONS_ACCESS_TOKEN", "test-token");
+    try {
+      mockPrisma.inscription.findUnique.mockResolvedValue({
+        id: "i3",
+        cursoId: null,
+        status: "PENDING",
+        amountPaid: 25,
+        user: { email: "a@test.com" },
+      });
+      mockPrisma.inscription.updateMany.mockResolvedValueOnce({ count: 1 })
+        .mockResolvedValueOnce({ count: 0 });
+
+      expect(await approvePayment("i3")).toEqual({ success: true });
+      expect(await approvePayment("i3")).toEqual({ error: "Este pago ya fue procesado" });
+      expect(after).toHaveBeenCalledTimes(1);
+      const callback = vi.mocked(after).mock.calls[0][0];
+      if (typeof callback !== "function") throw new Error("Expected a conversion callback");
+      await callback();
+      expect(sendMetaPurchase).toHaveBeenCalledWith({
+        id: "i3",
+        amount: 25,
+        email: "a@test.com",
+        approvedAt: expect.any(Number),
+      });
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it("rejectPayment marca REJECTED y notifica", async () => {

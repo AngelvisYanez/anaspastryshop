@@ -20,6 +20,12 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Píxel de Meta y API de conversiones
+
+El sitio registra `PageView` con el píxel `1470119374448900` de forma predeterminada. Puedes cambiar el ID desde la configuración de APIs del panel administrativo.
+
+Para enviar `Purchase` cuando se aprueba un pago manual, configura `META_CONVERSIONS_ACCESS_TOKEN` como variable de entorno privada del servidor. Genera el token en el Administrador de eventos de Meta para el mismo conjunto de datos que usa el píxel. Para verificar la integración en «Probar eventos», configura temporalmente `META_CONVERSIONS_TEST_EVENT_CODE` y aprueba un pago de prueba.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

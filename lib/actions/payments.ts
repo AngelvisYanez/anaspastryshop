@@ -5,6 +5,8 @@ import { dateBounds, parseRange, type DateRange } from "@/app/dashboard/data-vie
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { sendMetaPurchase } from "@/lib/meta-conversions";
 import { adminPaymentText, adminWhatsAppNumber, paymentApprovedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
 import {
   sendCoursePurchaseEmail,
@@ -80,6 +82,15 @@ export async function approvePayment(inscriptionId: string) {
       return result;
     });
     if (updated.count === 0) return { error: "Este pago ya fue procesado" };
+    if (process.env.META_CONVERSIONS_ACCESS_TOKEN?.trim()) {
+      const purchase = {
+        id: inscriptionId,
+        amount: inscription.amountPaid,
+        email: inscription.user.email,
+        approvedAt: Math.floor(Date.now() / 1000),
+      };
+      after(() => sendMetaPurchase(purchase));
+    }
     await wakeWhatsAppBridge();
 
     if (!inscription.cursoId) {

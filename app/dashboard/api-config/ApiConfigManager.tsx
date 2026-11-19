@@ -36,14 +36,14 @@ const API_PROVIDERS: ApiDef[] = [
   {
     provider: "meta",
     label: "Meta",
-    description: "Seguimiento de visitas desde campañas de Meta",
+    description: "Seguimiento de visitas y compras para campañas de Meta",
     color: "blue",
     fields: [
       {
         key: "pixelId",
-        label: "ID de la API de conversiones",
-        placeholder: "123456789012345",
-        hint: "ID numérico del píxel, el mismo del conjunto de datos de la API de conversiones. Si lo guardas, la página registra las visitas para atribuir las campañas.",
+        label: "ID del píxel de Meta",
+        placeholder: "1470119374448900",
+        hint: "El sitio usa el píxel predeterminado si dejas este campo vacío. Para enviar compras, configura META_CONVERSIONS_ACCESS_TOKEN en el servidor con un token del mismo conjunto de datos.",
       },
     ],
   },
