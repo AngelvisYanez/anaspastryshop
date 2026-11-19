@@ -82,7 +82,11 @@ function withConnectionParams(url: string | undefined): string | undefined {
 
   try {
     const parsed = new URL(url);
-    parsed.searchParams.set("connection_limit", "4");
+    // Prisma CLI keeps the direct URL for migrations.
+    if (parsed.hostname === "db.prisma.io") {
+      parsed.hostname = "pooled.db.prisma.io";
+    }
+    parsed.searchParams.set("connection_limit", "1");
     parsed.searchParams.set("connect_timeout", "10");
     parsed.searchParams.set("pool_timeout", "20");
     return parsed.toString();
