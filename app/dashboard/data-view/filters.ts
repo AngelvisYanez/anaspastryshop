@@ -1,6 +1,6 @@
 export type DateRange = { from: string; to: string };
 export type ViewMode = "list" | "grid";
-export type ReportRow = { date?: Date | string | null; values: (string | number | null | undefined)[] };
+export type ReportRow = { date?: Date | string | null; values: (string | number | null | undefined)[]; heading?: boolean };
 
 export const pageSizes = [10, 20, 50, 100];
 export const emptyRange: DateRange = { from: "", to: "" };

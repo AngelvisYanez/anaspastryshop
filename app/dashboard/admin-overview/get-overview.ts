@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { dateBounds } from "../data-view/filters";
 import { summarizeOverview, type ActivityItem, type ChartItem, type OverviewFilter, type OverviewStats, type PaymentBucket, type StudentBucket } from "./overview";
 
-export async function getOverview(filter: OverviewFilter): Promise<OverviewStats> {
+export async function getOverview(filter: OverviewFilter, activityScope: "recent" | "all" | "none" = "recent"): Promise<OverviewStats> {
   const { gte, lte } = dateBounds(filter.range);
   // Prisma stores these fields as timezone-free UTC timestamps.
   const range = (column: Prisma.Sql) => Prisma.sql`
@@ -53,12 +53,12 @@ export async function getOverview(filter: OverviewFilter): Promise<OverviewStats
       WHERE f.status = 'APPROVED'
       GROUP BY c."id", c."title" ORDER BY value DESC, c."title", c."id" LIMIT 5
     `,
-    prisma.$queryRaw<ActivityItem[]>`
+    activityScope === "none" ? [] : prisma.$queryRaw<ActivityItem[]>`
       ${events}
       SELECT f.id, f.at, f.method, f.status, f.amount, u."name", u."email", c."title"
       FROM filtered f INNER JOIN "User" u ON u."id" = f."userId"
       LEFT JOIN "Curso" c ON c."id" = f."cursoId"
-      ORDER BY f.at DESC, f.id DESC LIMIT 12
+      ORDER BY f.at DESC, f.id DESC ${activityScope === "recent" ? Prisma.sql`LIMIT 12` : Prisma.empty}
     `,
   ]);
 

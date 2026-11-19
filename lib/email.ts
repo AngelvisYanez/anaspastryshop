@@ -99,6 +99,50 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 }
 
+export async function sendDailyCloseEmail({ day, students, revenue, methods, statuses }: {
+  day: string;
+  students: { name: string | null; email: string }[];
+  revenue: number;
+  methods: { name: string; value: number }[];
+  statuses: { APPROVED: number; PENDING: number; REJECTED: number };
+}) {
+  const to = process.env.DAILY_CLOSE_EMAIL?.trim() || ANAIS_NOTIFICATION_EMAIL;
+  const money = new Intl.NumberFormat("es-VE", { style: "currency", currency: "USD", currencyDisplay: "code" });
+  const dayLabel = new Intl.DateTimeFormat("es-VE", { dateStyle: "long", timeZone: "UTC" })
+    .format(new Date(`${day}T00:00:00Z`));
+  const url = `${BASE_URL}/dashboard?from=${encodeURIComponent(day)}&to=${encodeURIComponent(day)}`;
+  const names = students.map((student) => `${student.name || "Sin nombre"} (${student.email})`);
+  const methodLines = methods.map(({ name, value }) => `${name} · ${money.format(value)}`);
+  const lines = [
+    `Ingresos confirmados · ${money.format(revenue)}`,
+    `Pagos aprobados · ${statuses.APPROVED}`,
+    `Pagos pendientes · ${statuses.PENDING}`,
+    `Pagos rechazados · ${statuses.REJECTED}`,
+  ];
+  const htmlList = (items: string[]) => `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  const heading = `Cierre del día · ${dayLabel}`;
+  const registrations = `Nuevos alumnos (${students.length})`;
+  const body = `
+    <h1 style="margin:0 0 8px;color:${BRAND_DARK};font-size:24px;">${escapeHtml(heading)}</h1>
+    <p style="color:${MUTED};">Hora de Caracas</p>
+    ${htmlList(lines)}
+    <h2 style="color:${BRAND_DARK};font-size:17px;">Ingresos por método</h2>
+    ${methodLines.length ? htmlList(methodLines) : "<p>Sin ingresos confirmados.</p>"}
+    <h2 style="color:${BRAND_DARK};font-size:17px;">${registrations}</h2>
+    ${names.length ? htmlList(names) : "<p>No hubo registros nuevos.</p>"}
+    <p><a href="${escapeHtml(url)}" style="color:${ACCENT};font-weight:bold;">Ver el resumen en el panel</a></p>`;
+  const result = await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: `Cierre diario · ${day} · Ana's Pastry Shop`,
+    html: buildEmail(heading, body),
+    text: [heading, ...lines, "", "Ingresos por método", ...methodLines,
+      "", registrations, ...(names.length ? names : ["No hubo registros nuevos."]), "", url].join("\n"),
+  }, { idempotencyKey: `daily-close/${day}` });
+  if (result.error?.name === "invalid_idempotent_request") return; // A prior invocation already used the day's key.
+  if (result.error || !result.data?.id) throw new Error("Resend no confirmó el correo de cierre.");
+}
+
 function buildEmail(preheader: string, body: string, audience: "user" | "admin" = "user"): string {
   return `<!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/xhtml">

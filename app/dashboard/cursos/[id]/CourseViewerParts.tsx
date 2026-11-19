@@ -14,6 +14,7 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Download,
   X,
 } from "lucide-react";
 import {
@@ -145,12 +146,22 @@ export function CourseAccessGuard({ courseId }: { courseId: string }) {
   );
 }
 
+export function CourseRecipeDownload({ href }: { href: string }) {
+  return (
+    <a href={href} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-solid px-4 py-2 text-sm font-bold text-white hover:bg-accent-solid-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+      <Download size={16} aria-hidden="true" />
+      Descargar recetario <span className="text-xs">PDF</span>
+    </a>
+  );
+}
+
 export function CourseModulesPanel({
   course,
   selectedModuleIndex,
   onSelectModule,
   exitHref,
   reviewsHref,
+  recipeHref,
   reviewPrompt,
 }: {
   course: {
@@ -166,6 +177,7 @@ export function CourseModulesPanel({
   onSelectModule: (index: number) => void;
   exitHref: string;
   reviewsHref?: string;
+  recipeHref?: string;
   reviewPrompt?: ReactNode;
 }) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -197,16 +209,19 @@ export function CourseModulesPanel({
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-background lg:static lg:z-auto lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
-      <div className="flex shrink-0 items-center justify-between border-b border-card-border bg-card px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:hidden">
-        <div className="min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-widest text-accent">Curso online</p>
-          <p className="truncate text-sm font-bold text-foreground">{course.title}</p>
+      <header className="shrink-0 space-y-2 border-b border-card-border bg-card px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-4 lg:hidden">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent">Curso online</p>
+            <p className="truncate text-sm font-bold text-foreground">{course.title}</p>
+          </div>
+          {reviewsHref && <Link href={reviewsHref} className="shrink-0 text-xs font-bold text-accent">Reseñas</Link>}
+          <Link href={exitHref} aria-label="Salir del curso" className="grid size-11 shrink-0 place-items-center rounded-full border border-card-border text-foreground">
+            <X size={20} aria-hidden="true" />
+          </Link>
         </div>
-        {reviewsHref && <Link href={reviewsHref} className="ml-auto pl-3 text-xs font-bold text-accent">Reseñas</Link>}
-        <Link href={exitHref} aria-label="Salir del curso" className="ml-3 rounded-full border border-card-border p-2 text-foreground">
-          <X size={20} />
-        </Link>
-      </div>
+        {recipeHref && <CourseRecipeDownload href={recipeHref} />}
+      </header>
       <div
         ref={moduleContent}
         className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pb-6 lg:col-span-8 lg:space-y-6 lg:overflow-visible lg:pb-0"

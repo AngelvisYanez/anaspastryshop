@@ -10,6 +10,7 @@ import {
   WorkshopLogisticsBanner,
   CourseAccessGuard,
   CourseModulesPanel,
+  CourseRecipeDownload,
 } from "./CourseViewerParts";
 
 interface Lesson {
@@ -70,6 +71,7 @@ export default function DashboardCourseViewer({
   const isWorkshop = workshopInfo.isWorkshop;
   const activeModule = course.courseModules[selectedModuleIndex];
   const reviewsHref = canManage && !isWorkshop ? `/dashboard/cursos/${course.id}/resenas` : undefined;
+  const recipeHref = !course.isLive && course.recipePdfId ? `/api/courses/${course.id}/recipe` : undefined;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -126,13 +128,14 @@ export default function DashboardCourseViewer({
 
       {hasAccess && !isWorkshop && (
         <>
-          {course.recipePdfId && <a href={`/api/courses/${course.id}/recipe`} className="inline-flex rounded-xl bg-accent-solid px-5 py-3 text-sm font-bold text-white">Descargar recetario PDF</a>}
+          {recipeHref && <div className="hidden lg:block"><CourseRecipeDownload href={recipeHref} /></div>}
           <CourseModulesPanel
             course={course}
             selectedModuleIndex={selectedModuleIndex}
             onSelectModule={setSelectedModuleIndex}
             exitHref={isManager ? "/dashboard/cursos" : "/dashboard/mis-cursos"}
             reviewsHref={reviewsHref}
+            recipeHref={recipeHref}
             reviewPrompt={activeModule && reviewProgress && (
               <CourseReviewPrompt
                 key={activeModule.id}

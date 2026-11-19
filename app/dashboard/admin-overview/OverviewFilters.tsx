@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, FileDown } from "lucide-react";
 import { useDataQuery } from "../data-view/use-data-query";
 import { paymentMethods, periods, type OverviewFilter } from "./overview";
 
@@ -10,6 +10,7 @@ const field = "min-h-10 min-w-0 rounded-lg border border-card-border bg-card px-
 export function OverviewFilters({ filter }: { filter: OverviewFilter }) {
   const { updateParams, isPending } = useDataQuery();
   const [error, setError] = useState("");
+  const reportQuery = new URLSearchParams({ ...filter.range, method: filter.method, period: "all" });
   function apply(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -32,8 +33,14 @@ export function OverviewFilters({ filter }: { filter: OverviewFilter }) {
     <section className="min-w-0 rounded-2xl border border-card-border bg-section-alt p-3 sm:p-4" aria-label="Filtros del resumen" aria-busy={isPending}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="flex items-center gap-2 text-xs font-bold text-foreground"><CalendarDays size={16} className="text-accent" /> Período de análisis</p>
-        <p className="text-xs text-muted">{isPending ? "Actualizando…" : filter.range.from || filter.range.to
-          ? `${filter.range.from || "Inicio"} a ${filter.range.to || "Hoy"} · Caracas` : "Histórico completo · Caracas"}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-xs text-muted">{isPending ? "Actualizando…" : filter.range.from || filter.range.to
+            ? `${filter.range.from || "Inicio"} a ${filter.range.to || "Hoy"} · Caracas` : "Histórico completo · Caracas"}</p>
+          <a href={isPending ? undefined : `/api/dashboard/overview-report?${reportQuery}`} aria-disabled={isPending}
+            className={`${field} inline-flex items-center gap-1.5 hover:border-accent aria-disabled:opacity-50`}>
+            <FileDown size={15} aria-hidden="true" /> Exportar PDF
+          </a>
+        </div>
       </div>
       <div className="flex flex-wrap items-end gap-2.5">
         <div className="flex flex-wrap gap-1" role="group" aria-label="Períodos rápidos">
