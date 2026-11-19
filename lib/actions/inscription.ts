@@ -1,14 +1,11 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logActivity } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/lib/rate-limit";
-import { Prisma } from "@prisma/client";
+import { withSerializableRetry, type TransactionClient } from "@/lib/serializable-transaction";
 import { adminPaymentText, adminWhatsAppNumber, paymentSubmittedText, wakeWhatsAppBridge } from "@/lib/whatsapp-notifications";
-
-type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
 async function queueAdminNotice(tx: TransactionClient, eventKey: string, titles: string[], customer: string | null | undefined, amount: number) {
   const phone = adminWhatsAppNumber();
@@ -25,25 +22,6 @@ function validWhatsapp(number: string | undefined): number is string {
 
 function normalizedWhatsapp(number: string) {
   return number.replace(/[\s()-]/g, "");
-}
-
-async function withSerializableRetry<T>(
-  operation: (tx: TransactionClient) => Promise<T>,
-): Promise<T> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      return await prisma.$transaction(operation, {
-        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
-      });
-    } catch (error) {
-      if (!(error instanceof Prisma.PrismaClientKnownRequestError)
-        || error.code !== "P2034"
-        || attempt === 2) {
-        throw error;
-      }
-    }
-  }
-  throw new Error("No se pudo completar la transacción");
 }
 
 export type PaymentMethod =

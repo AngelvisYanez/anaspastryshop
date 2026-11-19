@@ -5,6 +5,7 @@ export const DASHBOARD_MODULES = [
   { slug: 'galeria', name: 'Galería & Instagram', href: '/dashboard/galeria', icon: 'Images', roles: ['ADMIN'] },
   { slug: 'usuarios', name: 'Usuarios', href: '/dashboard/usuarios', icon: 'Users', roles: ['ADMIN'] },
   { slug: 'pagos', name: 'Pagos', href: '/dashboard/pagos', icon: 'CreditCard', roles: ['ADMIN'] },
+  { slug: 'venta-guiada', name: 'Venta guiada', href: '/dashboard/venta-guiada', icon: 'ShoppingBag', roles: ['ADMIN'] },
   { slug: 'cupones', name: 'Cupones', href: '/dashboard/cupones', icon: 'Tag', roles: ['ADMIN'] },
   { slug: 'metodos-pago', name: 'Métodos de Pago', href: '/dashboard/metodos-pago', icon: 'Wallet', roles: ['ADMIN'] },
   { slug: 'emails', name: 'Emails', href: '/dashboard/emails', icon: 'Mail', roles: ['ADMIN'] },

@@ -36,6 +36,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import {
   adminDeleteUser,
+  adminEditUser,
   adminToggleUserStatus,
   updateProfile,
 } from "@/lib/actions/user";
@@ -125,6 +126,41 @@ describe("updateProfile", () => {
   it("conserva la foto actual al editar los datos sin adjuntar una imagen", async () => {
     await updateProfile(form({ name: "Ana" }));
     expect(mockPrisma.user.update).toHaveBeenCalledWith({ where: { id: "u1" }, data: { name: "Ana" } });
+  });
+});
+
+describe("adminEditUser", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ user: { id: "admin-1", role: "ADMIN" } } as never);
+  });
+
+  it("guarda contacto y acceso junto con la foto del usuario editado", async () => {
+    const image = await sharp({ create: { width: 48, height: 48, channels: 3, background: "#fff" } }).png().toBuffer();
+    const fields = form({
+      name: " Ana ", email: " ANA@EXAMPLE.COM ", role: "USER", isActive: "false",
+      deactivationReason: "Solicitud de la usuaria", whatsappNumber: "+58 (412) 123-4567",
+      whatsappMarketing: "on", isApproved: "on",
+    });
+    fields.set("avatar", new File([Uint8Array.from(image)], "foto.png", { type: "image/png" }));
+
+    expect(await adminEditUser("u1", fields)).toEqual({ success: true });
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: "u1" },
+      data: expect.objectContaining({
+        name: "Ana", email: "ana@example.com", role: "USER", isActive: false,
+        deactivationReason: "Solicitud de la usuaria", whatsappNumber: "+584121234567",
+        whatsappMarketing: true, isApproved: true,
+        image: expect.stringContaining("/api/profile-avatar/u1?v="),
+        avatar: expect.objectContaining({ upsert: expect.any(Object) }),
+      }),
+    });
+  });
+
+  it("protege el rol y el acceso de la propia cuenta administradora", async () => {
+    const fields = form({ name: "Admin", email: "admin@example.com", role: "USER", isActive: "true" });
+    expect(await adminEditUser("admin-1", fields)).toHaveProperty("error");
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
   });
 });
 

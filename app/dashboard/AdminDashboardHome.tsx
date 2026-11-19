@@ -1,175 +1,175 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import {
-  Users, Clock, TrendingUp, TrendingDown, Wallet,
-} from "lucide-react";
-import { AdminRevenueChart } from "@/app/dashboard/charts/AdminCharts";
+import { useCallback, useState, useSyncExternalStore } from "react";
+import { Activity, ArrowUpRight, BadgeCheck, ChartNoAxesCombined, CircleDollarSign, Clock3, CreditCard, Percent, SlidersHorizontal, UserRoundPlus, XCircle } from "lucide-react";
+import SectionTabs from "./SectionTabs";
+import { OverviewFilters } from "./admin-overview/OverviewFilters";
+import { WidgetEditor } from "./admin-overview/WidgetEditor";
+import { paymentMethods, paymentStatuses, type ChartItem, type OverviewFilter, type OverviewStats } from "./admin-overview/overview";
+import { defaultWidgetSnapshot, readWidgets, widgets, type Widget, type WidgetId } from "./admin-overview/widgets";
 
-export type AdminDashboardStats = {
-  userGrowth: number;
-  revenueGrowth: number;
-  totalRevenue: number;
-  registrationsByDay: { date: string; revenue: number }[];
-  revenueByDay: { date: string; revenue: number }[];
-  paymentMethodsData: { name: string; value: number }[];
-  pendingPayments: number;
-  totalUsers: number;
-};
+const OverviewChart = dynamic(() => import("./admin-overview/OverviewChart"), {
+  ssr: false,
+  loading: () => <div aria-label="Cargando gráfico" className="h-60 animate-pulse rounded-xl bg-section-alt" />,
+});
+const money = new Intl.NumberFormat("es-VE", { style: "currency", currency: "USD", currencyDisplay: "code" });
+const count = new Intl.NumberFormat("es-VE");
+const percent = new Intl.NumberFormat("es-VE", { style: "percent", maximumFractionDigits: 1 });
+const date = new Intl.DateTimeFormat("es-VE", { dateStyle: "medium", timeZone: "America/Caracas" });
+const day = new Intl.DateTimeFormat("es-VE", { day: "numeric", month: "short", timeZone: "UTC" });
+const month = new Intl.DateTimeFormat("es-VE", { month: "short", year: "2-digit", timeZone: "UTC" });
 
-export type RecentInscription = {
-  id: string;
-  amountPaid: number;
-  method: string;
-  status: string;
-  createdAt: Date;
-  user: { name: string | null; email: string } | null;
-  curso: { title: string } | null;
-};
+function subscribeToWidgets(listener: () => void) {
+  window.addEventListener("storage", listener);
+  window.addEventListener("admin-dashboard-widgets", listener);
+  return () => {
+    window.removeEventListener("storage", listener);
+    window.removeEventListener("admin-dashboard-widgets", listener);
+  };
+}
 
-export function AdminDashboardHome({
-  adminStats,
-  lastInscriptions,
-}: {
-  adminStats: AdminDashboardStats;
-  lastInscriptions: RecentInscription[];
+export function AdminDashboardHome({ adminId, stats, filter }: {
+  adminId: string; stats: OverviewStats; filter: OverviewFilter;
 }) {
+  const storageKey = `admin-dashboard-widgets:v1:${adminId}`;
+  const getSnapshot = useCallback(() => {
+    try { return localStorage.getItem(storageKey) ?? defaultWidgetSnapshot; }
+    catch { return defaultWidgetSnapshot; }
+  }, [storageKey]);
+  const snapshot = useSyncExternalStore(subscribeToWidgets, getSnapshot, () => defaultWidgetSnapshot);
+  const [temporary, setTemporary] = useState<Widget[] | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [message, setMessage] = useState("");
+  const selected = temporary ?? readWidgets(snapshot);
+
+  function save(next: Widget[]) {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(next));
+      window.dispatchEvent(new Event("admin-dashboard-widgets"));
+      setTemporary(null);
+      setMessage("Panel guardado.");
+    } catch {
+      setTemporary(next);
+      setMessage("Panel actualizado para esta visita. El navegador no pudo guardar las preferencias.");
+    }
+    setEditing(false);
+  }
+
+  const metrics = {
+    revenue: { value: money.format(stats.revenue), icon: CircleDollarSign },
+    approved: { value: count.format(stats.statuses.APPROVED), icon: BadgeCheck },
+    pending: { value: count.format(stats.statuses.PENDING), icon: Clock3 },
+    rejected: { value: count.format(stats.statuses.REJECTED), icon: XCircle },
+    students: { value: count.format(stats.registrations), icon: UserRoundPlus },
+    average: { value: stats.average === null ? "—" : money.format(stats.average), icon: CreditCard },
+    approvalRate: { value: stats.approvalRate === null ? "—" : percent.format(stats.approvalRate), icon: Percent },
+  };
+  const temporal = (key: "revenue" | "students" | "approvals") => stats.timeline.map((point) => ({
+    name: (filter.bucket === "month" ? month : day).format(new Date(`${point.day}T00:00:00Z`)),
+    value: point[key],
+  }));
+  const chartData = {
+    revenueTrend: temporal("revenue"),
+    studentsTrend: temporal("students"),
+    approvalsTrend: temporal("approvals"),
+    methods: stats.methods,
+    statuses: Object.entries(stats.statuses).map(([id, value]) => ({
+      name: paymentStatuses[id as keyof typeof paymentStatuses], value,
+    })),
+    topCourses: stats.topCourses,
+  } satisfies Partial<Record<WidgetId, ChartItem[]>>;
+  const interval = { day: "Por día", week: "Por semana", month: "Por mes" }[filter.bucket];
+
+  const dashboard = selected.length ? (
+    <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-12">
+      {selected.map((item) => {
+        const definition = widgets[item.id];
+        const metric = item.id in metrics ? metrics[item.id as keyof typeof metrics] : null;
+        if (metric) {
+          const Icon = metric.icon;
+          return (
+            <article key={item.id} className={`min-w-0 rounded-2xl border border-card-border bg-card p-3 shadow-sm sm:p-4 ${item.wide ? "col-span-full" : "lg:col-span-4"}`}>
+              <div className="flex items-start justify-between gap-2">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent-subtle text-accent"><Icon size={18} aria-hidden="true" /></span>
+                {item.id === "pending" && <Link href="/dashboard/pagos" aria-label="Ir a pagos pendientes" className="rounded-lg p-2 text-muted hover:bg-section-alt hover:text-accent"><ArrowUpRight size={16} /></Link>}
+              </div>
+              <h3 className="mt-3 text-xs font-bold text-muted sm:text-sm">{definition.label}</h3>
+              <p className="mt-1 break-words text-lg font-black leading-tight tabular-nums text-foreground sm:text-2xl">{metric.value}</p>
+              <p className="mt-1.5 text-xs leading-snug text-muted">{definition.description}</p>
+            </article>
+          );
+        }
+        const data = chartData[item.id as keyof typeof chartData];
+        return (
+          <article key={item.id} className={`col-span-2 min-w-0 rounded-2xl border border-card-border bg-card p-3 shadow-sm sm:p-5 ${item.wide ? "lg:col-span-12" : "lg:col-span-6"}`}>
+            <header className="mb-4 flex items-start gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-section-alt text-accent"><ChartNoAxesCombined size={17} aria-hidden="true" /></span>
+              <div className="min-w-0">
+                <h3 className="text-sm font-black text-foreground sm:text-base">{definition.label}</h3>
+                <p className="mt-0.5 text-xs text-muted">{definition.description}{definition.kind === "trend" ? ` · ${interval}` : ""}</p>
+              </div>
+            </header>
+            <OverviewChart data={data} chart={item.chart} label={definition.label}
+              categorical={definition.kind === "breakdown"} currency={item.id === "methods" || item.id === "revenueTrend"} />
+          </article>
+        );
+      })}
+    </div>
+  ) : <div className="rounded-2xl border border-dashed border-card-border bg-card p-8 text-center text-sm text-muted">
+    El panel está vacío. Añade tus indicadores y gráficos en Personalizar widgets.
+  </div>;
+
   return (
-    <>
-      <div className="space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div className="bg-card p-4 sm:p-6 rounded-2xl border border-card-border shadow-sm">
-              <div className="flex justify-between items-start mb-3 sm:mb-4">
-                <div className="p-2 sm:p-3 bg-accent-subtle text-accent rounded-xl"><Wallet size={16} /></div>
-                <div className={`flex items-center gap-1 text-[9px] sm:text-[11px] font-black px-1.5 sm:px-2 py-1 rounded-lg ${adminStats.revenueGrowth >= 0 ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"}`}>
-                  {adminStats.revenueGrowth >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                  {Math.abs(adminStats.revenueGrowth)}%
-                </div>
-              </div>
-              <p className="text-[9px] sm:text-[11px] font-bold uppercase text-muted/60 tracking-widest mb-1">Ingresos Totales</p>
-              <p className="font-display text-2xl sm:text-3xl font-black text-foreground italic">${adminStats.totalRevenue}</p>
-              <p className="text-[9px] sm:text-[11px] text-muted font-bold mt-1.5 sm:mt-2">Pagos individuales validados</p>
-            </div>
-
-            <div className="bg-card p-4 sm:p-6 rounded-2xl border border-card-border shadow-sm">
-              <div className="flex justify-between items-start mb-3 sm:mb-4">
-                <div className="p-2 sm:p-3 bg-accent-subtle text-accent rounded-xl"><Users size={16} /></div>
-                <div className={`flex items-center gap-1 text-[9px] sm:text-[11px] font-black px-1.5 sm:px-2 py-1 rounded-lg ${adminStats.userGrowth >= 0 ? "text-green-600 bg-green-50 dark:bg-green-950/30" : "text-red-600 bg-red-50 dark:bg-red-950/30"}`}>
-                  {adminStats.userGrowth >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                  {Math.abs(adminStats.userGrowth)}%
-                </div>
-              </div>
-              <p className="text-[9px] sm:text-[11px] font-bold uppercase text-muted/60 tracking-widest mb-1">Alumnos Registrados</p>
-              <p className="font-display text-2xl sm:text-3xl font-black text-foreground italic">{adminStats.totalUsers}</p>
-              <p className="text-[9px] sm:text-[11px] text-muted font-bold mt-1.5 sm:mt-2">Comunidad de pastelería</p>
-            </div>
-
-            <Link href="/dashboard/pagos" className="bg-card p-4 sm:p-6 rounded-2xl border border-card-border shadow-sm hover:shadow-md hover:border-accent/30 transition sm:col-span-2 lg:col-span-1">
-              <div className="flex justify-between items-start mb-3 sm:mb-4">
-                <div className="p-2 sm:p-3 bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-xl"><Clock size={16} /></div>
-                <span className="text-[9px] sm:text-[11px] font-black uppercase text-muted/60 tracking-widest">Validación</span>
-              </div>
-              <p className="text-[9px] sm:text-[11px] font-bold uppercase text-muted/60 tracking-widest mb-1">Pagos Pendientes</p>
-              <p className="font-display text-2xl sm:text-3xl font-black text-foreground italic">{adminStats.pendingPayments}</p>
-              <p className="text-[9px] sm:text-[11px] text-muted font-bold mt-1.5 sm:mt-2">Por verificar en administración</p>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-card p-4 sm:p-6 md:p-8 rounded-2xl border border-card-border shadow-sm">
-              <div className="flex justify-between items-center mb-4 sm:mb-6">
-                <div className="min-w-0">
-                  <h3 className="text-sm sm:text-base font-black text-foreground">Resumen de Ingresos</h3>
-                  <p className="text-[11px] sm:text-xs text-muted font-bold">Últimos 14 días</p>
-                </div>
-              </div>
-              <div className="h-[250px] sm:h-[300px]">
-                <AdminRevenueChart data={adminStats.revenueByDay} />
-              </div>
-            </div>
-
-            <div className="bg-card p-4 sm:p-6 md:p-8 rounded-2xl border border-card-border shadow-sm">
-              <div className="flex justify-between items-center mb-4 sm:mb-6">
-                <div>
-                  <h3 className="text-sm sm:text-base font-black text-foreground">Crecimiento de Alumnos</h3>
-                  <p className="text-[11px] sm:text-xs text-muted font-bold">Nuevos registros diarios</p>
-                </div>
-              </div>
-              <div className="h-[250px] sm:h-[300px]">
-                <AdminRevenueChart data={adminStats.registrationsByDay} />
-              </div>
-            </div>
-          </div>
-      {/* Recent inscriptions table */}
-
-        <div className="bg-card rounded-2xl border border-card-border overflow-hidden shadow-sm">
-          <div className="p-4 sm:p-6 border-b border-card-border flex justify-between items-center">
-            <div>
-              <h3 className="font-black text-foreground text-sm sm:text-base">Últimas Inscripciones & Pagos</h3>
-              <p className="text-xs text-muted font-medium">Alumnos inscritos recientemente a formaciones</p>
-            </div>
-            <Link href="/dashboard/pagos" className="text-xs font-bold text-accent hover:underline">
-              Ver todos →
-            </Link>
-          </div>
-
-          <div className="max-w-full overflow-x-auto">
-            <table className="w-full min-w-[640px] text-xs text-left">
-              <thead className="bg-section-alt text-muted uppercase tracking-wider font-bold">
-                <tr>
-                  <th className="px-4 sm:px-6 py-3">Alumno</th>
-                  <th className="px-4 sm:px-6 py-3">Formación</th>
-                  <th className="px-4 sm:px-6 py-3">Monto</th>
-                  <th className="px-4 sm:px-6 py-3">Método</th>
-                  <th className="px-4 sm:px-6 py-3">Estado</th>
-                  <th className="px-4 sm:px-6 py-3">Fecha</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-card-border">
-                {lastInscriptions.length > 0 ? (
-                  lastInscriptions.map((insc) => (
-                    <tr key={insc.id} className="hover:bg-section-alt/50 transition-colors">
-                      <td className="px-4 sm:px-6 py-3.5 font-bold text-foreground">
-                        {insc.user?.name || "Usuario"}
-                        <span className="block text-[11px] text-muted font-normal">{insc.user?.email}</span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-3.5 text-foreground font-medium truncate max-w-[150px]">
-                        {insc.curso?.title || "Formación General"}
-                      </td>
-                      <td className="px-4 sm:px-6 py-3.5 font-mono font-bold text-foreground">
-                        ${insc.amountPaid} USD
-                      </td>
-                      <td className="px-4 sm:px-6 py-3.5">
-                        <span className="font-bold text-muted">{insc.method}</span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-3.5">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
-                            insc.status === "APPROVED"
-                              ? "bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400"
-                              : insc.status === "PENDING"
-                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
-                              : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400"
-                          }`}
-                        >
-                          {insc.status}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-3.5 text-muted">
-                        {new Date(insc.createdAt).toLocaleDateString("es-ES")}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-muted">
-                      No hay registros de inscripciones todavía.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+    <div className="min-w-0 space-y-4 sm:space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-base font-black text-foreground sm:text-lg">Rendimiento del negocio</h2>
+          {filter.method && <p className="text-xs text-muted">Método activo: {paymentMethods[filter.method]}. Los registros de alumnos se filtran por fecha.</p>}
         </div>
+        <button type="button" onClick={() => { setMessage(""); setEditing(true); }} aria-haspopup="dialog"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-card-border bg-card px-3 text-sm font-bold text-accent hover:bg-accent-subtle">
+          <SlidersHorizontal size={16} />Personalizar widgets
+        </button>
       </div>
-    </>
+      {message && <p role="status" className="text-xs font-semibold text-muted">{message}</p>}
+      <OverviewFilters filter={filter} />
+      <SectionTabs label="Resumen de administración" tabs={[
+        { label: "Indicadores y gráficos", content: dashboard },
+        { label: "Actividad reciente", content: <OverviewActivity stats={stats} /> },
+      ]} />
+      {editing && <WidgetEditor initial={selected} onClose={() => setEditing(false)} onSave={save} />}
+    </div>
+  );
+}
+
+function OverviewActivity({ stats }: { stats: OverviewStats }) {
+  return (
+    <section aria-labelledby="overview-activity" className="rounded-2xl border border-card-border bg-card p-3 sm:p-5">
+      <header className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <h3 id="overview-activity" className="flex items-center gap-2 font-black text-foreground"><Activity size={17} className="text-accent" /> Últimos pagos del período</h3>
+        <Link href="/dashboard/pagos" className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-accent">Abrir pagos <ArrowUpRight size={14} /></Link>
+      </header>
+      {stats.activity.length ? (
+        <ul className="divide-y divide-card-border">
+          {stats.activity.map((payment) =>
+            <li key={`${payment.id}-${payment.method}`} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 py-3 text-sm sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto]">
+              <div className="min-w-0">
+                <p className="break-words font-bold text-foreground">{payment.title ?? "Servicio de pastelería"}</p>
+                <p className="break-words text-xs text-muted">{payment.name || payment.email}</p>
+              </div>
+              <div className="col-start-1 row-start-2 text-xs text-muted sm:col-auto sm:row-auto">
+                <p>{paymentMethods[payment.method]}</p><time dateTime={payment.at.toISOString()}>{date.format(payment.at)}</time>
+              </div>
+              <div className="col-start-2 row-span-2 row-start-1 text-right sm:col-auto sm:row-auto">
+                <p className="font-bold tabular-nums text-foreground">{money.format(payment.amount)}</p>
+                <span className="text-xs text-muted">{{ APPROVED: "Aprobado", PENDING: "Pendiente", REJECTED: "Rechazado" }[payment.status]}</span>
+              </div>
+            </li>
+          )}
+        </ul>
+      ) : <p className="py-8 text-center text-sm text-muted">No hay pagos con los filtros seleccionados.</p>}
+    </section>
   );
 }

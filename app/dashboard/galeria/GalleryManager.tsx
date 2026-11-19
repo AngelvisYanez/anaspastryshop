@@ -1,5 +1,6 @@
 "use client";
 
+import SectionTabs from "../SectionTabs";
 import { DataView } from "../data-view/DataView";
 import { useState, useRef, useTransition } from "react";
 import {
@@ -115,6 +116,81 @@ export default function GalleryManager({
         </p>
       )}
 
+      <SectionTabs label="Secciones de galería" tabs={[
+        { label: "Fotos de la galería", count: items.length, content: (
+      <div>
+        <h2 className="font-black text-foreground mb-4">
+          Fotos en la galería
+          <span className="ml-2 text-xs font-bold text-muted bg-section-alt border border-card-border px-2 py-0.5 rounded-full">
+            {items.length}
+          </span>
+        </h2>
+
+        <DataView title="Galería" items={items} initialMode="grid" dateLabel="Fecha de carga"
+          row={(item) => ({ date: item.createdAt, values: [item.caption || item.alt || "Sin descripción", item.order] })}>
+          {(visible) => <div className="dashboard-data-cards">
+            {visible.map((item) => {
+              const idx = items.findIndex((entry) => entry.id === item.id);
+              return (
+              <div
+                key={item.id}
+                className="bg-card border border-card-border rounded-2xl overflow-hidden group"
+              >
+                <div className="relative dashboard-data-cover aspect-square">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.alt || "Creación de Ana's Pastry Shop"}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 max-sm:opacity-100 max-sm:bg-black/20">
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id)}
+                      disabled={isPending}
+                      className="bg-card text-red-500 rounded-lg p-2 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-60"
+                      title="Eliminar"
+                      aria-label="Eliminar foto"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => reorder(item.id, -1)}
+                      disabled={isPending || idx === 0}
+                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
+                      title="Subir"
+                      aria-label="Mover hacia arriba"
+                    >
+                      <ChevronUp size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => reorder(item.id, 1)}
+                      disabled={isPending || idx === items.length - 1}
+                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
+                      title="Bajar"
+                      aria-label="Mover hacia abajo"
+                    >
+                      <ChevronDown size={15} />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <p className="text-[11px] font-bold text-foreground truncate">
+                    {item.caption || item.alt || "Sin descripción"}
+                  </p>
+                  <p className="text-[10px] text-muted mt-0.5">
+                    Posición {idx + 1}
+                  </p>
+                </div>
+              </div>
+              );
+            })}
+          </div>}
+        </DataView>
+      </div>
+        ) },
+        { label: "Agregar foto", content: (
       <form
         onSubmit={handleCreate}
         className="bg-card border border-card-border rounded-2xl p-6 space-y-5"
@@ -230,78 +306,8 @@ export default function GalleryManager({
           Agregar a la galería
         </button>
       </form>
-
-      <div>
-        <h2 className="font-black text-foreground mb-4">
-          Fotos en la galería
-          <span className="ml-2 text-xs font-bold text-muted bg-section-alt border border-card-border px-2 py-0.5 rounded-full">
-            {items.length}
-          </span>
-        </h2>
-
-        <DataView title="Galería" items={items} initialMode="grid" dateLabel="Fecha de carga"
-          row={(item) => ({ date: item.createdAt, values: [item.caption || item.alt || "Sin descripción", item.order] })}>
-          {(visible) => <div className="dashboard-data-cards">
-            {visible.map((item) => {
-              const idx = items.findIndex((entry) => entry.id === item.id);
-              return (
-              <div
-                key={item.id}
-                className="bg-card border border-card-border rounded-2xl overflow-hidden group"
-              >
-                <div className="relative dashboard-data-cover aspect-square">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.alt || "Creación de Ana's Pastry Shop"}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 max-sm:opacity-100 max-sm:bg-black/20">
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(item.id)}
-                      disabled={isPending}
-                      className="bg-card text-red-500 rounded-lg p-2 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-60"
-                      title="Eliminar"
-                      aria-label="Eliminar foto"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => reorder(item.id, -1)}
-                      disabled={isPending || idx === 0}
-                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
-                      title="Subir"
-                      aria-label="Mover hacia arriba"
-                    >
-                      <ChevronUp size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => reorder(item.id, 1)}
-                      disabled={isPending || idx === items.length - 1}
-                      className="bg-card text-foreground rounded-lg p-2 hover:bg-accent-solid hover:text-white transition-colors disabled:opacity-40"
-                      title="Bajar"
-                      aria-label="Mover hacia abajo"
-                    >
-                      <ChevronDown size={15} />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-3">
-                  <p className="text-[11px] font-bold text-foreground truncate">
-                    {item.caption || item.alt || "Sin descripción"}
-                  </p>
-                  <p className="text-[10px] text-muted mt-0.5">
-                    Posición {idx + 1}
-                  </p>
-                </div>
-              </div>
-              );
-            })}
-          </div>}
-        </DataView>
-      </div>
+        ) },
+      ]} />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { logActivity } from "@/lib/logger";
 import { rateLimit } from "@/lib/rate-limit";
+import { accountSetupBinding } from "@/lib/account-setup";
+import { withSerializableRetry } from "@/lib/serializable-transaction";
 import {
   sendWelcomeEmail,
   sendPasswordResetEmail,
@@ -172,29 +174,36 @@ export async function resetPassword(formData: FormData) {
   }
 
   try {
-    const record = await prisma.passwordResetToken.findUnique({
-      where: { token },
-    });
-
-    if (!record || record.used || record.expiresAt < new Date()) {
-      return {
-        error: "El enlace no es válido o ha expirado. Solicita uno nuevo.",
-      };
-    }
+    const invalidLink = { error: "El enlace no es válido o ha expirado. Solicita uno nuevo." };
+    const inspect = await prisma.passwordResetToken.findUnique({ where: { token } });
+    if (!inspect || inspect.used || (inspect.expiresAt && inspect.expiresAt <= new Date()) ||
+        (!inspect.expiresAt && !inspect.setupBinding)) return invalidLink;
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    return await withSerializableRetry(async (tx) => {
+      const record = await tx.passwordResetToken.findUnique({ where: { token } });
+      if (!record || record.used || (record.expiresAt && record.expiresAt <= new Date()) ||
+          (!record.expiresAt && !record.setupBinding)) return invalidLink;
 
-    await prisma.user.update({
-      where: { email: record.email },
-      data: { password: hashedPassword },
+      if (record.setupBinding) {
+        const user = await tx.user.findUnique({
+          where: { email: record.email },
+          select: { id: true, password: true, isActive: true, role: true },
+        });
+        if (!user?.isActive || user.role !== "USER" ||
+            accountSetupBinding(user.id, user.password) !== record.setupBinding) return invalidLink;
+        const changed = await tx.user.updateMany({
+          where: { id: user.id, password: user.password, isActive: true, role: "USER" },
+          data: { password: hashedPassword },
+        });
+        if (!changed.count) return invalidLink;
+      } else {
+        await tx.user.update({ where: { email: record.email }, data: { password: hashedPassword } });
+      }
+
+      await tx.passwordResetToken.update({ where: { token }, data: { used: true } });
+      return { success: true };
     });
-
-    await prisma.passwordResetToken.update({
-      where: { token },
-      data: { used: true },
-    });
-
-    return { success: true };
   } catch (error) {
     console.error("Error en resetPassword:", error);
     return { error: "Ocurrió un error al restablecer la contraseña" };

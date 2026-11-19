@@ -58,7 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       if (user) {
         token.role = (user as any).role;
         token.id = user.id;
@@ -68,15 +68,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       const userId = token.id || token.sub;
-      if (trigger === "update" && typeof userId === "string") {
+      if (!user && typeof userId === "string") {
         const profile = await prisma.user.findUnique({
           where: { id: userId },
-          select: { name: true, image: true },
+          select: { name: true, email: true, image: true, role: true, isApproved: true, isActive: true, deactivationReason: true },
         });
-        if (profile) {
-          token.name = profile.name;
-          token.picture = sessionSafeImage(profile.image) ?? undefined;
-        }
+        if (!profile) return null;
+        token.name = profile.name;
+        token.email = profile.email;
+        token.picture = sessionSafeImage(profile.image) ?? undefined;
+        token.role = profile.isActive ? profile.role : "USER";
+        token.isApproved = profile.isApproved;
+        token.isActive = profile.isActive;
+        token.deactivationReason = profile.deactivationReason;
       }
 
       // Drop oversized legacy pictures already sitting in existing cookies.

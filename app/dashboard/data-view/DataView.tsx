@@ -56,35 +56,35 @@ export function DataToolbar({ title, range, mode, onRange, onMode, report, total
   }
 
   return (
-    <div className="mb-4 space-y-3 rounded-xl border border-card-border bg-section-alt p-3 sm:p-4">
-      <form ref={rangeForm} key={range.from + "/" + range.to} onSubmit={applyRange} aria-label={`Fechas de ${title}`} className="flex flex-wrap items-end gap-2">
-        {dateLabel && <p className="w-full text-xs font-semibold text-muted">{dateLabel}</p>}
-        <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
-          Desde <input type="date" name="from" defaultValue={range.from} className={control} disabled={busy} />
+    <div className="dashboard-toolbar mb-4 rounded-xl border border-card-border bg-section-alt p-3">
+      {dateLabel && <p className="mb-2 text-xs font-semibold text-muted">{dateLabel}</p>}
+      <div className="dashboard-toolbar-controls">
+      <form ref={rangeForm} key={range.from + "/" + range.to} onSubmit={applyRange} aria-label={`Fechas de ${title}`} className="dashboard-toolbar-dates">
+        <label className="dashboard-date-field text-xs font-semibold text-muted">
+          <span>Desde</span><input type="date" name="from" defaultValue={range.from} className={`${control} min-w-0 w-full p-1.5`} disabled={busy} />
         </label>
-        <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
-          Hasta <input type="date" name="to" defaultValue={range.to} className={control} disabled={busy} />
+        <label className="dashboard-date-field text-xs font-semibold text-muted">
+          <span>Hasta</span><input type="date" name="to" defaultValue={range.to} className={`${control} min-w-0 w-full p-1.5`} disabled={busy} />
         </label>
         <button className={control} disabled={busy}>Aplicar</button>
       </form>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div role="group" aria-label="Rangos rápidos" className="flex flex-wrap gap-1">
+        <div role="group" aria-label="Rangos rápidos" className="dashboard-toolbar-presets">
           {[[1, "Hoy"], [7, "7 días"], [30, "30 días"], [90, "90 días"], [0, "Todos"]].map(([days, label]) => (
             <button key={days} type="button" className={control} disabled={busy} onClick={() => applyQuickRange(Number(days))}>{label}</button>
           ))}
         </div>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-1">
           <div role="group" aria-label="Modo de vista" className="flex gap-1">
-            <button type="button" className={`${control} aria-pressed:border-accent aria-pressed:bg-accent-subtle`} aria-pressed={mode === "list"} disabled={busy} onClick={() => onMode("list")}><List size={15} />Lista</button>
-            <button type="button" className={`${control} aria-pressed:border-accent aria-pressed:bg-accent-subtle`} aria-pressed={mode === "grid"} disabled={busy} onClick={() => onMode("grid")}><LayoutGrid size={15} />Cuadrícula</button>
+            <button type="button" title="Lista" aria-label="Lista" className={`${control} aria-pressed:border-accent aria-pressed:bg-accent-subtle`} aria-pressed={mode === "list"} disabled={busy} onClick={() => onMode("list")}><List size={15} /></button>
+            <button type="button" title="Cuadrícula" aria-label="Cuadrícula" className={`${control} aria-pressed:border-accent aria-pressed:bg-accent-subtle`} aria-pressed={mode === "grid"} disabled={busy} onClick={() => onMode("grid")}><LayoutGrid size={15} /></button>
           </div>
           <button type="button" className={control} disabled={busy || exporting || total === 0} onClick={exportReport}>
-            <FileDown size={15} />{exporting ? "Generando…" : "Exportar PDF"}
+            <FileDown size={15} />{exporting ? "Generando…" : "PDF"}
           </button>
         </div>
       </div>
-      {(range.from || range.to) && <p className="text-xs text-muted">Rango activo · {range.from || "Inicio"} a {range.to || "Actualidad"}</p>}
-      {error && <p role="alert" className="text-xs font-semibold text-red-600 dark:text-red-400">{error}</p>}
+      {(range.from || range.to) && <p className="mt-2 text-xs text-muted">Rango activo · {range.from || "Inicio"} a {range.to || "Actualidad"}</p>}
+      {error && <p role="alert" className="mt-2 text-xs font-semibold text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }

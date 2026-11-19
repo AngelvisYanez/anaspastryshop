@@ -7,12 +7,14 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     passwordResetToken: {
       create: vi.fn(),
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -36,6 +38,7 @@ vi.mock("@/lib/rate-limit", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { accountSetupBinding } from "@/lib/account-setup";
 import {
   checkPreloginStatus,
   registerUser,
@@ -49,12 +52,14 @@ const mockPrisma = prisma as unknown as {
     findFirst: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
+    updateMany: ReturnType<typeof vi.fn>;
   };
   passwordResetToken: {
     create: ReturnType<typeof vi.fn>;
     findUnique: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
   };
+  $transaction: ReturnType<typeof vi.fn>;
 };
 
 function form(data: Record<string, string>) {
@@ -262,6 +267,7 @@ describe("resetPassword", () => {
   });
 
   it("actualiza password y marca token usado", async () => {
+    mockPrisma.$transaction.mockImplementation((callback) => callback(prisma));
     mockPrisma.passwordResetToken.findUnique.mockResolvedValue({
       token: "t",
       email: "ana@test.com",
@@ -288,5 +294,22 @@ describe("resetPassword", () => {
       where: { token: "t" },
       data: { used: true },
     });
+  });
+
+  it("acepta el enlace inicial sin vencimiento y lo consume al guardar la contraseña", async () => {
+    mockPrisma.$transaction.mockImplementation((callback) => callback(prisma));
+    mockPrisma.passwordResetToken.findUnique.mockResolvedValue({
+      token: "t", email: "ana@test.com", used: false, expiresAt: null,
+      setupBinding: accountSetupBinding("u1", "initial-hash"),
+    });
+    mockPrisma.user.findUnique.mockResolvedValue({ id: "u1", password: "initial-hash", isActive: true, role: "USER" });
+    mockPrisma.user.updateMany.mockResolvedValue({ count: 1 });
+    const request = form({ token: "t", password: "password1", confirmPassword: "password1" });
+    expect(await resetPassword(request)).toEqual({ success: true });
+    expect(mockPrisma.passwordResetToken.update).toHaveBeenCalledWith({ where: { token: "t" }, data: { used: true } });
+
+    mockPrisma.user.findUnique.mockResolvedValue({ id: "u1", password: "different-hash", isActive: true, role: "USER" });
+    expect(await resetPassword(request)).toHaveProperty("error");
+    expect(mockPrisma.user.updateMany).toHaveBeenCalledOnce();
   });
 });

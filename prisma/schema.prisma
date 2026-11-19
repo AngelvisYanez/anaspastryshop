@@ -332,7 +332,8 @@ model PasswordResetToken {
   id        String   @id @default(cuid())
   token     String   @unique
   email     String
-  expiresAt DateTime
+  expiresAt DateTime?
+  setupBinding String?
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }

@@ -1,3 +1,4 @@
+import SectionTabs from "../SectionTabs";
 import { getPendingPayments, getPaymentHistory, getPaymentStats } from "@/lib/actions/payments";
 import PaymentCard from "./PaymentCard";
 import PaymentHistoryTable from "./PaymentHistoryTable";
@@ -66,17 +67,17 @@ export default async function PagosPage({
       title="Pagos"
       description="Valida comprobantes pendientes y consulta el historial de cobros."
     >
-      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
         {statCards.map(({ icon: Icon, value, label, bgClass, textClass }) => (
           <div
             key={label}
-            className="bg-card p-3.5 sm:p-5 rounded-xl border border-card-border shadow-sm flex items-center gap-3 sm:gap-4"
+            className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-card-border bg-card p-3 shadow-sm sm:flex-row sm:items-center sm:gap-4 sm:p-5"
           >
             <div className={`p-2.5 sm:p-3.5 ${bgClass} ${textClass} rounded-xl shrink-0`}>
               <Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground leading-none truncate">
+              <p className="break-all text-lg font-black leading-none text-foreground sm:text-2xl lg:text-3xl">
                 {value}
               </p>
               <p className="text-[11px] sm:text-xs lg:text-sm text-muted font-bold mt-1">{label}</p>
@@ -85,40 +86,29 @@ export default async function PagosPage({
         ))}
       </div>
 
-      <section>
-        <div className="flex items-center gap-3 mb-4 sm:mb-5">
-          <h2 className="text-base sm:text-lg font-black text-foreground">Pagos Pendientes</h2>
-          {inscriptions.length > 0 && (
-            <span className="bg-orange-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
-              {inscriptions.length}
-            </span>
-          )}
-        </div>
-
-        <DataCards title="Pagos pendientes" dateLabel="Fecha de recepción"
-          items={inscriptions.map((inscription) => ({
-            id: inscription.id,
-            row: { date: inscription.createdAt, values: [inscription.user.name, inscription.user.email,
-              inscription.curso?.title ?? "Servicio de pastelería", inscription.method, `USD ${inscription.amountPaid}`, "Pendiente"] },
-            card: <PaymentCard inscription={inscription} />,
-          }))}
-        />
-      </section>
-
-      <section>
-        <div className="flex items-center gap-3 mb-4 sm:mb-5">
-          <h2 className="text-base sm:text-lg font-black text-foreground">Historial de Pagos</h2>
-          {historyTotal > 0 && (
-            <span className="text-sm text-muted font-bold">{historyTotal} registros</span>
-          )}
-        </div>
-
-        <Suspense>
-          <PaymentHistoryTable inscriptions={history} total={historyTotal}
-            page={historyResult.page ?? 1} size={size} range={range}
-            mode={params.view === "grid" ? "grid" : "list"} />
-        </Suspense>
-      </section>
+      <SectionTabs label="Secciones de pagos" initialTab={params.page || params.from || params.to || params.size || params.view ? 1 : 0}
+        tabs={[
+          {
+            label: "Pagos pendientes", count: inscriptions.length,
+            content: <DataCards title="Pagos pendientes" dateLabel="Fecha de recepción"
+              items={inscriptions.map((inscription) => ({
+                id: inscription.id,
+                row: { date: inscription.createdAt, values: [inscription.user.name, inscription.user.email,
+                  inscription.curso?.title ?? "Servicio de pastelería", inscription.method, `USD ${inscription.amountPaid}`, "Pendiente"] },
+                card: <PaymentCard inscription={inscription} />,
+              }))}
+            />,
+          },
+          {
+            label: "Historial de pagos",
+            content: <Suspense>
+              <PaymentHistoryTable inscriptions={history} total={historyTotal}
+                page={historyResult.page ?? 1} size={size} range={range}
+                mode={params.view === "grid" ? "grid" : "list"} />
+            </Suspense>,
+          },
+        ]}
+      />
     </DashboardPage>
   );
 }

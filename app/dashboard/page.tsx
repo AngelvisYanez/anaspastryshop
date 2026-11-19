@@ -1,10 +1,9 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { UserDashboardHome } from "@/app/dashboard/UserDashboardHome";
-import {
-  AdminDashboardHome,
-  type AdminDashboardStats,
-} from "@/app/dashboard/AdminDashboardHome";
+import { AdminDashboardHome } from "./AdminDashboardHome";
+import { getOverview } from "./admin-overview/get-overview";
+import { parseOverviewFilter } from "./admin-overview/overview";
 
 export const metadata = {
   title: "Dashboard",
@@ -53,113 +52,9 @@ async function getUserCourses(userId: string) {
   };
 }
 
-async function getAdminStats(): Promise<AdminDashboardStats> {
-  const now = new Date();
-  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-
-  const [
-    recentInscriptions,
-    recentUsers,
-    currentRevenue,
-    previousRevenue,
-    currentUsersCount,
-    previousUsersCount,
-    totalRevenue,
-    methods,
-    pendingPayments,
-    totalUsers,
-  ] = await Promise.all([
-    prisma.inscription.findMany({
-      where: { createdAt: { gte: fourteenDaysAgo }, status: "APPROVED" },
-      select: { createdAt: true, amountPaid: true },
-    }),
-    prisma.user.findMany({
-      where: { createdAt: { gte: fourteenDaysAgo } },
-      select: { createdAt: true },
-    }),
-    prisma.inscription.aggregate({
-      where: { createdAt: { gte: thirtyDaysAgo }, status: "APPROVED" },
-      _sum: { amountPaid: true },
-    }),
-    prisma.inscription.aggregate({
-      where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo }, status: "APPROVED" },
-      _sum: { amountPaid: true },
-    }),
-    prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    prisma.user.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
-    prisma.inscription.aggregate({
-      where: { status: "APPROVED" },
-      _sum: { amountPaid: true },
-    }),
-    prisma.inscription.groupBy({
-      by: ["method"],
-      where: { status: "APPROVED" },
-      _sum: { amountPaid: true },
-    }),
-    prisma.inscription.count({ where: { status: "PENDING" } }),
-    prisma.user.count(),
-  ]);
-
-  const daysMap = new Map<string, { date: string; amount: number; count: number; users: number }>();
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    const key = d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
-    daysMap.set(key, { date: key, amount: 0, count: 0, users: 0 });
-  }
-
-  for (const item of recentInscriptions) {
-    const key = new Date(item.createdAt).toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "short",
-    });
-    const current = daysMap.get(key);
-    if (current) {
-      current.amount += item.amountPaid;
-      current.count += 1;
-    }
-  }
-
-  for (const item of recentUsers) {
-    const key = new Date(item.createdAt).toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "short",
-    });
-    const current = daysMap.get(key);
-    if (current) current.users += 1;
-  }
-
-  const calculateGrowth = (current: number, previous: number) => {
-    if (previous === 0) return current > 0 ? 100 : 0;
-    return Math.round(((current - previous) / previous) * 100);
-  };
-
-  return {
-    userGrowth: calculateGrowth(currentUsersCount, previousUsersCount),
-    revenueGrowth: calculateGrowth(
-      currentRevenue._sum.amountPaid || 0,
-      previousRevenue._sum.amountPaid || 0
-    ),
-    totalRevenue: totalRevenue._sum.amountPaid || 0,
-    registrationsByDay: Array.from(daysMap.values()).map((d) => ({
-      date: d.date,
-      revenue: d.users,
-    })),
-    revenueByDay: Array.from(daysMap.values()).map((d) => ({
-      date: d.date,
-      revenue: d.amount,
-    })),
-    paymentMethodsData: methods.map((m) => ({
-      name: m.method || "Otro",
-      value: m._sum.amountPaid || 0,
-    })),
-    pendingPayments,
-    totalUsers,
-  };
-}
-
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await auth();
   if (!session?.user) return null;
 
@@ -168,19 +63,8 @@ export default async function DashboardPage() {
   const userId = session.user.id;
 
   const userData = role === "USER" && userId ? await getUserCourses(userId) : null;
-  const adminStats = role === "ADMIN" ? await getAdminStats() : null;
-
-  const lastInscriptions =
-    role === "ADMIN"
-      ? await prisma.inscription.findMany({
-          take: 5,
-          orderBy: { createdAt: "desc" },
-          include: {
-            user: { select: { name: true, email: true } },
-            curso: { select: { title: true } },
-          },
-        })
-      : [];
+  const filter = role === "ADMIN" ? parseOverviewFilter(await searchParams) : null;
+  const adminStats = filter ? await getOverview(filter) : null;
 
   return (
     <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto">
@@ -202,11 +86,8 @@ export default async function DashboardPage() {
         />
       )}
 
-      {role === "ADMIN" && adminStats && (
-        <AdminDashboardHome
-          adminStats={adminStats}
-          lastInscriptions={lastInscriptions}
-        />
+      {userId && filter && adminStats && (
+        <AdminDashboardHome adminId={userId} filter={filter} stats={adminStats} />
       )}
     </div>
   );

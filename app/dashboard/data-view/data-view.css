@@ -55,3 +55,65 @@
   font-weight: 700;
   margin-bottom: 0.15rem;
 }
+.dashboard-toolbar {
+  container-type: inline-size;
+}
+
+.dashboard-toolbar-controls {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.dashboard-toolbar-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.375rem;
+}
+
+.dashboard-toolbar-dates > button {
+  grid-column: 1 / -1;
+}
+
+.dashboard-date-field {
+  display: grid;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.dashboard-toolbar-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.dashboard-toolbar-presets > button {
+  flex: 1 0 auto;
+  padding-inline: 0.5rem;
+}
+
+@container (min-width: 25rem) {
+  .dashboard-toolbar-dates {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  }
+  .dashboard-toolbar-dates > button {
+    grid-column: auto;
+  }
+}
+
+@container (min-width: 45rem) {
+  .dashboard-toolbar-controls {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+  }
+  .dashboard-toolbar-dates {
+    align-items: center;
+  }
+  .dashboard-date-field {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+  .dashboard-toolbar-presets {
+    flex-wrap: nowrap;
+  }
+}

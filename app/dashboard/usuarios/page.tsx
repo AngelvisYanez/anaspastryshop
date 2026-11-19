@@ -19,6 +19,8 @@ export default async function UsuariosPage() {
       image: true,
       role: true,
       isApproved: true,
+      whatsappNumber: true,
+      whatsappMarketing: true,
       isActive: true,
       deactivationReason: true,
       createdAt: true,

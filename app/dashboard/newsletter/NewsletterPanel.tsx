@@ -1,23 +1,14 @@
 "use client";
 
-import { DataView } from "../data-view/DataView";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { sendNewsletter, deleteNewsletterSubscriber } from "@/lib/actions/newsletter";
-import {
-  Send, Loader2, Trash2,
-  ChevronDown, ChevronUp, Users,
-} from "lucide-react";
+import SectionTabs from "../SectionTabs";
+import { SubscriberList, type Subscriber } from "./SubscriberList";
+import { sendNewsletter } from "@/lib/actions/newsletter";
+import { Loader2, Send } from "lucide-react";
 import { NewsletterStats } from "@/components/NewsletterStats";
 import { NewsletterResultBanner } from "@/components/NewsletterResultBanner";
 
-type Subscriber = {
-  id: string;
-  email: string;
-  name: string | null;
-  isActive: boolean;
-  subscribedAt: Date;
-};
+
 
 const TEMPLATES = [
   {
@@ -54,7 +45,6 @@ const TEMPLATES = [
 ];
 
 export default function NewsletterPanel({ subscribers }: { subscribers: Subscriber[] }) {
-  const router = useRouter();
 
   const [subject, setSubject] = useState("");
   const [title, setTitle] = useState("");
@@ -62,8 +52,6 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
   const [content, setContent] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ sent?: number; failed?: number; whatsappQueued?: number; error?: string } | null>(null);
-  const [showSubscribers, setShowSubscribers] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   function applyTemplate(templateId: string) {
     const t = TEMPLATES.find((t) => t.id === templateId);
@@ -88,16 +76,6 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
     }
   }
 
-  async function handleDelete(id: string) {
-    setDeletingId(id);
-    try {
-      await deleteNewsletterSubscriber(id);
-      router.refresh();
-    } finally {
-      setDeletingId(null);
-    }
-  }
-
   const activeCount = subscribers.filter((s) => s.isActive).length;
 
   return (
@@ -108,8 +86,9 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
         inactive={subscribers.filter((s) => !s.isActive).length}
       />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-card rounded-xl border border-card-border shadow-sm p-6">
+      <SectionTabs label="Secciones de newsletter" tabs={[
+        { label: "Campaña", content: (
+          <div className="bg-card rounded-xl border border-card-border shadow-sm p-4 sm:p-6">
           <h2 className="text-base font-black text-foreground mb-4">Redactar Campaña</h2>
 
           <div className="mb-4">
@@ -197,70 +176,9 @@ export default function NewsletterPanel({ subscribers }: { subscribers: Subscrib
               : `Enviar boletín por email y WhatsApp`}
           </button>
         </div>
-
-        <div className="bg-card rounded-xl border border-card-border shadow-sm overflow-hidden">
-          <button
-            onClick={() => setShowSubscribers((v) => !v)}
-            className="w-full flex items-center justify-between p-6 hover:bg-card-hover transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Users size={16} className="text-accent" />
-              <h2 className="text-base font-black text-foreground">
-                Suscriptores ({subscribers.length})
-              </h2>
-            </div>
-            {showSubscribers ? (
-              <ChevronUp size={15} className="text-muted" />
-            ) : (
-              <ChevronDown size={15} className="text-muted" />
-            )}
-          </button>
-
-          {showSubscribers && (
-            <div className="border-t border-card-border p-3 sm:p-4">
-              <DataView title="Suscriptores" items={subscribers} dateLabel="Fecha de suscripción"
-                row={(s) => ({ date: s.subscribedAt, values: [s.email, s.name, s.isActive ? "Activo" : "Inactivo"] })}>
-                {(visible) => <div className="dashboard-data-cards">
-                  {visible.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-center justify-between min-w-0 rounded-xl border border-card-border bg-card px-4 py-3 hover:bg-section-alt transition-colors"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate">{s.email}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {s.name && <p className="text-xs text-muted font-medium">{s.name}</p>}
-                        <span
-                          className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                            s.isActive
-                              ? "bg-green-100 dark:bg-green-950/30 text-green-600"
-                              : "bg-red-100 dark:bg-red-950/30 text-red-500"
-                          }`}
-                        >
-                          {s.isActive ? "Activo" : "Inactivo"}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleDelete(s.id)}
-                      disabled={deletingId === s.id}
-                      aria-label={`Eliminar suscripción de ${s.email}`}
-                      className="ml-4 p-1.5 text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition disabled:opacity-50"
-                    >
-                      {deletingId === s.id ? (
-                        <Loader2 size={13} className="animate-spin" />
-                      ) : (
-                        <Trash2 size={13} />
-                      )}
-                    </button>
-                  </div>
-                  ))}
-                </div>}
-              </DataView>
-            </div>
-          )}
-        </div>
-      </div>
+        ) },
+        { label: "Suscriptores", count: subscribers.length, content: <SubscriberList subscribers={subscribers} /> },
+      ]} />
     </div>
   );
 }
