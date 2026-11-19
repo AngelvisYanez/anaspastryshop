@@ -23,6 +23,7 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
   const [lookup, setLookup] = useState<{ email: string; student: Student | null } | null>(null);
+  const [enteringNewStudent, setEnteringNewStudent] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [courseId, setCourseId] = useState("");
@@ -39,6 +40,7 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const preview = receipt?.preview;
   const course = courses.find(({ id }) => id === courseId);
+  const showStudentDetails = lookup ? !lookup.student : enteringNewStudent;
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
@@ -51,11 +53,16 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
 
   async function checkStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
+    if (showStudentDetails && !name.trim()) {
+      setError("Escribe el nombre completo del alumno.");
+      return;
+    }
+    if (showStudentDetails && !/^\+[1-9]\d{7,14}$/.test(phone.replace(/[\s()-]/g, ""))) {
+      setError("Escribe el WhatsApp con código de país. Ejemplo +58 412 123 4567.");
+      return;
+    }
     if (lookup) {
-      if (!lookup.student && !/^\+[1-9]\d{7,14}$/.test(phone.replace(/[\s()-]/g, ""))) {
-        setError("Escribe el WhatsApp con código de país. Ejemplo +58 412 123 4567.");
-        return;
-      }
       goTo(1);
       return;
     }
@@ -67,6 +74,8 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
       else if (result.email && result.student !== undefined) {
         setEmail(result.email);
         setLookup({ email: result.email, student: result.student });
+        setEnteringNewStudent(false);
+        if (enteringNewStudent && !result.student) goTo(1);
       }
     } catch {
       setError("No se pudo consultar el correo.");
@@ -131,7 +140,7 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
       <div className="flex flex-wrap gap-2">
         <Link href="/dashboard/pagos?page=1" className={primary}>Ver historial de pagos</Link>
         <button type="button" className={secondary} onClick={() => {
-          setComplete(null); setCopyStatus(""); setLookup(null); setEmail(""); setName(""); setPhone("");
+          setComplete(null); setCopyStatus(""); setLookup(null); setEnteringNewStudent(false); setEmail(""); setName(""); setPhone("");
           setCourseId(""); setAmount(""); setMethod(""); setReference(""); goTo(0);
         }}>Registrar otra venta</button>
       </div>
@@ -152,24 +161,38 @@ export default function GuidedSaleForm({ courses }: { courses: Course[] }) {
         {error && <p role="alert" className="mb-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">{error}</p>}
 
         {step === 0 && <form onSubmit={checkStudent} className="space-y-4">
-          <label className={label}>Correo del alumno
-            <input type="email" autoComplete="off" value={email} required maxLength={254} className={field} disabled={busy}
-              onChange={(event) => {
-                setEmail(event.target.value); setLookup(null); setName(""); setPhone(""); setError("");
-                setMethod(""); setReference(""); setReceipt(null);
-              }} />
-          </label>
-          {lookup && (lookup.student ? <div className="rounded-xl border border-card-border bg-section-alt p-3 text-sm">
+          <fieldset className="min-w-0 space-y-3">
+            {showStudentDetails && <legend className="mb-2 text-sm font-bold text-foreground">Datos del alumno nuevo</legend>}
+            <label className={label}>Correo electrónico del alumno
+              <input name="email" type="email" autoComplete="off" value={email} required maxLength={254} className={field} disabled={busy}
+                onChange={(event) => {
+                  setEmail(event.target.value); setLookup(null); setEnteringNewStudent(showStudentDetails); setError("");
+                  if (!showStudentDetails) { setName(""); setPhone(""); }
+                  setMethod(""); setReference(""); setReceipt(null);
+                }} />
+            </label>
+            {showStudentDetails && <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className={label}>Nombre completo<input name="name" value={name} onChange={(event) => setName(event.target.value)} maxLength={120} required disabled={busy} className={field} /></label>
+                <label className={label}>WhatsApp con código de país<input name="whatsapp" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={30} required disabled={busy} placeholder="+58 412 123 4567" className={field} /></label>
+              </div>
+              <p className="text-sm text-muted">Se creará una cuenta para este correo al autorizar la venta.</p>
+            </>}
+          </fieldset>
+          {lookup?.student && <div className="rounded-xl border border-card-border bg-section-alt p-3 text-sm">
             <p className="font-bold text-foreground">Cuenta encontrada · {lookup.student.name || lookup.email}</p>
             {lookup.student.whatsappNumber && <p className="mt-0.5 text-muted">WhatsApp {lookup.student.whatsappNumber}</p>}
-          </div> : <div className="space-y-3">
-            <p className="text-sm text-muted">Se creará una cuenta para este correo al autorizar la venta.</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className={label}>Nombre completo<input value={name} onChange={(event) => setName(event.target.value)} maxLength={120} required className={field} /></label>
-              <label className={label}>WhatsApp con código de país<input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={30} required placeholder="+58 412 123 4567" className={field} /></label>
-            </div>
-          </div>)}
-          <button className={primary} disabled={busy}>{lookup ? <ArrowRight size={16} /> : <Search size={16} />}{busy ? "Buscando…" : lookup ? "Continuar" : "Buscar cuenta"}</button>
+          </div>}
+          <div className="flex flex-wrap gap-2">
+            <button type="submit" className={primary} disabled={busy}>
+              {lookup || enteringNewStudent ? <ArrowRight size={16} /> : <Search size={16} />}
+              {busy ? "Consultando correo…" : lookup || enteringNewStudent ? "Continuar" : "Buscar cuenta"}
+            </button>
+            {!lookup && <button type="button" className={secondary} disabled={busy} onClick={() => {
+              setEnteringNewStudent(!enteringNewStudent);
+              setError("");
+            }}>{enteringNewStudent ? "Buscar una cuenta existente" : "Registrar alumno nuevo"}</button>}
+          </div>
         </form>}
 
         {step === 1 && <form onSubmit={checkPayment} className="space-y-4">

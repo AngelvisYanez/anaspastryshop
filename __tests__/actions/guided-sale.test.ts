@@ -53,7 +53,7 @@ describe("guided sale", () => {
     expect(result.sale).toEqual({ id: "i1", email: "alumna@example.test", student: "Ana", course: "Repostería" });
     expect(result.setupPath).toMatch(/^\/restablecer-contrasena\?token=[a-f0-9]{64}$/);
     expect(tx.user.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ role: "USER", isApproved: true, whatsappNumber: "+584121234567" }),
+      data: expect.objectContaining({ name: "Ana", email: "alumna@example.test", role: "USER", isApproved: true, whatsappNumber: "+584121234567" }),
     }));
     expect(tx.inscription.create).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({
