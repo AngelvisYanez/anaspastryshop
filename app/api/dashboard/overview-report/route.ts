@@ -1,7 +1,10 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { auth } from "@/lib/auth";
 import { getOverview } from "@/app/dashboard/admin-overview/get-overview";
 import { parseOverviewFilter, paymentMethods, paymentStatuses } from "@/app/dashboard/admin-overview/overview";
-import { createReport, reportFilename } from "@/app/dashboard/data-view/download-report";
+import { createReport, reportLogoPath } from "@/app/dashboard/data-view/create-report";
+import { reportFilename } from "@/app/dashboard/data-view/download-report";
 import type { ReportRow } from "@/app/dashboard/data-view/filters";
 
 const title = "Rendimiento del negocio";
@@ -39,7 +42,8 @@ export async function GET(request: Request) {
     })),
   ];
   const method = filter.method ? paymentMethods[filter.method] : "Todos los métodos";
-  const pdf = await createReport(title, filter.range, rows, `${method} · Caracas`);
+  const logo = await readFile(join(process.cwd(), "public", reportLogoPath)).catch(() => undefined);
+  const pdf = await createReport(title, filter.range, rows, `${method} · Caracas`, logo);
   return new Response(Uint8Array.from(pdf), {
     headers: {
       "Content-Type": "application/pdf",
