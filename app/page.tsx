@@ -168,10 +168,10 @@ export default async function Home() {
       <section className="py-20 md:py-24 page-container">
         <div className="mb-10 md:mb-12">
           <h2 className="font-display text-3xl md:text-5xl font-black text-foreground tracking-tight">
-            Workshops & Cursos Online
+            Estos son nuestros cursos online y workshops
           </h2>
           <p className="text-muted font-medium mt-3 max-w-2xl">
-            Talleres presenciales en Coro, Falcón (Venezuela), y cursos online disponibles en cualquier país.
+            Elige el curso o workshop que más te guste para iniciarte en la pastelería o mejorar tus técnicas con Anais Flores.
           </p>
         </div>
 
@@ -193,14 +193,14 @@ export default async function Home() {
               Capacítate hoy
             </h2>
             <p className="text-muted text-sm md:text-base leading-relaxed">
-              Reserva un workshop en Coro o empieza un curso online desde donde estés. Técnicas profesionales con Anais Flores, insumos incluidos en presencial y aprendizaje a tu ritmo en online.
+              Empieza un curso online y aprende a tu ritmo con Anais Flores, o reserva un workshop presencial para practicar con todos los insumos incluidos.
             </p>
           </div>
           <Link
             href="/cursos"
             className="shrink-0 bg-accent-solid text-white px-8 py-4 rounded-xl font-bold text-base inline-flex items-center justify-center gap-3 hover:bg-accent-solid-hover transition-colors"
           >
-            Reserva tu cupo <ArrowRight size={20} />
+            Explora los cursos online <ArrowRight size={20} />
           </Link>
         </div>
       </section>

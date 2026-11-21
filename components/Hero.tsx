@@ -23,7 +23,7 @@ export default function Hero({
   userName?: string | null;
 }) {
   const ctaUrl = isLoggedIn ? "/dashboard" : "/cursos";
-  const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Workshops & Cursos";
+  const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Cursos Online";
 
   return (
     <section className="relative min-h-svh flex items-end lg:items-center overflow-hidden bg-section-alt text-foreground pb-10 lg:pt-32 lg:pb-16">
@@ -54,7 +54,7 @@ export default function Hero({
               <span className="text-accent">la pastelería profesional?</span>
             </h1>
             <p className="text-sm sm:text-base text-muted leading-relaxed mb-6 lg:mb-8 max-w-xl">
-              Workshops en Coro, Falcón, y cursos online para todo el mundo: cada técnica, receta y método paso a paso, sin secretos.
+              Cursos Online &amp; Workshops para todo el mundo. Domina las técnicas de la pastelería profesional con recetas explicadas paso a paso, sin secretos.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start lg:gap-4">

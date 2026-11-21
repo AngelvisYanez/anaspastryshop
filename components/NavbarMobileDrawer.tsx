@@ -44,6 +44,62 @@ export function NavbarMobileDrawer({
         <div className="rounded-xl border border-card-border/70 overflow-hidden">
           <div className="flex items-center justify-between p-3 bg-section-alt">
             <Link
+              href="/cursos"
+              onClick={onClose}
+              className="font-black text-sm text-foreground flex items-center gap-1.5"
+            >
+              <GraduationCap size={14} className="text-accent" /> Cursos Online
+            </Link>
+            <button
+              onClick={onToggleCourses}
+              className="p-1 text-muted hover:text-foreground"
+              aria-label="Desplegar cursos online"
+            >
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-200 ${
+                  coursesOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {coursesOpen && (
+            <div className="p-2 space-y-1 bg-card border-t border-card-border/60">
+              <Link
+                href="/cursos"
+                onClick={onClose}
+                className="block p-2 rounded-lg text-xs font-bold text-accent hover:bg-card-hover"
+              >
+                &rarr; Ver Catálogo Completo de Cursos Online
+              </Link>
+              {!formations && <p className="p-2 text-xs text-muted">Cargando cursos...</p>}
+              {formations?.courses.length === 0 && <p className="p-2 text-xs text-muted">No hay cursos publicados.</p>}
+              {formations?.courses.map((c) => (
+                <Link
+                  key={c.id}
+                  href={c.href}
+                  onClick={onClose}
+                  className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
+                >
+                  <div className="truncate">
+                    <span className="block truncate font-semibold">{c.title}</span>
+                    <span className="text-[11px] text-muted">
+                      {c.totalClasses} clases · {c.totalHours}h
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
+                    ${c.price}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-card-border/70 overflow-hidden">
+          <div className="flex items-center justify-between p-3 bg-section-alt">
+            <Link
               href="/workshops"
               onClick={onClose}
               className="font-black text-sm text-pink-600 dark:text-pink-400 flex items-center gap-1.5"
@@ -97,62 +153,6 @@ export function NavbarMobileDrawer({
                   </div>
                   <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
                     ${w.price}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-xl border border-card-border/70 overflow-hidden">
-          <div className="flex items-center justify-between p-3 bg-section-alt">
-            <Link
-              href="/cursos"
-              onClick={onClose}
-              className="font-black text-sm text-foreground flex items-center gap-1.5"
-            >
-              <GraduationCap size={14} className="text-accent" /> Cursos Online
-            </Link>
-            <button
-              onClick={onToggleCourses}
-              className="p-1 text-muted hover:text-foreground"
-              aria-label="Desplegar cursos online"
-            >
-              <ChevronDown
-                size={16}
-                className={`transition-transform duration-200 ${
-                  coursesOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-          </div>
-
-          {coursesOpen && (
-            <div className="p-2 space-y-1 bg-card border-t border-card-border/60">
-              <Link
-                href="/cursos"
-                onClick={onClose}
-                className="block p-2 rounded-lg text-xs font-bold text-accent hover:bg-card-hover"
-              >
-                &rarr; Ver Catálogo Completo de Cursos Online
-              </Link>
-              {!formations && <p className="p-2 text-xs text-muted">Cargando cursos...</p>}
-              {formations?.courses.length === 0 && <p className="p-2 text-xs text-muted">No hay cursos publicados.</p>}
-              {formations?.courses.map((c) => (
-                <Link
-                  key={c.id}
-                  href={c.href}
-                  onClick={onClose}
-                  className="flex items-center justify-between p-2 rounded-lg text-xs text-foreground hover:bg-card-hover"
-                >
-                  <div className="truncate">
-                    <span className="block truncate font-semibold">{c.title}</span>
-                    <span className="text-[11px] text-muted">
-                      {c.totalClasses} clases · {c.totalHours}h
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-mono font-bold text-accent shrink-0 ml-2">
-                    ${c.price}
                   </span>
                 </Link>
               ))}

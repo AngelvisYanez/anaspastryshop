@@ -4,22 +4,10 @@ import { Cake, BookOpen, Palette, CheckCircle2 } from "lucide-react";
 
 const CARDS = [
   {
-    icon: Cake,
-    title: "Workshops Presenciales Intensivos",
-    description:
-      "Jornadas de 8 horas continuas (9:00 AM a 5:00 PM) con práctica individual desde cero en un ambiente completamente equipado.",
-    features: [
-      "Práctica 100% individual",
-      "Insumos de primera calidad incluidos",
-      "Te llevas tus creaciones a casa",
-      "Cupos reducidos para atención cercana",
-    ],
-  },
-  {
     icon: BookOpen,
-    title: "Técnicas & Métodos Exactos",
+    title: "Cursos online a tu ritmo",
     description:
-      "Aprende el porqué de cada paso: puntos de batido, temperaturas, hidratación y cómo evitar errores comunes para que tus recetas siempre salgan perfectas.",
+      "Aprende con clases en video desde donde estés. Sigue las recetas paso a paso y entiende cómo el batido, las temperaturas y la hidratación influyen en el resultado.",
     features: [
       "El porqué de cada ingrediente",
       "Técnicas infalibles de horneado",
@@ -37,6 +25,18 @@ const CARDS = [
       "Manejo de mangas y boquillas",
       "Estructuras y montaje seguro",
       "Presentación lista para la venta",
+    ],
+  },
+  {
+    icon: Cake,
+    title: "Workshops Presenciales Intensivos",
+    description:
+      "Jornadas de 8 horas continuas (9:00 AM a 5:00 PM) con práctica individual desde cero en un ambiente completamente equipado.",
+    features: [
+      "Práctica 100% individual",
+      "Insumos de primera calidad incluidos",
+      "Te llevas tus creaciones a casa",
+      "Cupos reducidos para atención cercana",
     ],
   },
 ];
@@ -57,7 +57,7 @@ export default function WhatYouGet() {
             <span className="text-on-purple-accent">tu experiencia formativa</span>
           </h2>
           <p className="text-on-purple-soft max-w-2xl mt-4 text-base md:text-lg">
-            Combinamos práctica intensiva individual, recetas comprobadas y acompañamiento cercano para que aprendas con total seguridad.
+            Aprende técnicas y recetas paso a paso con los cursos online y practica con la guía de Anais Flores en los workshops presenciales.
           </p>
         </m.div>
 

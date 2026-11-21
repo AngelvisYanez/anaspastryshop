@@ -23,8 +23,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-sm text-white/70 max-w-sm leading-relaxed">
-              Workshops presenciales en {GEO.shortAddress}, Venezuela, y cursos online de pastelería
-              disponibles en todo el mundo, con la Chef Anais Flores.
+              Cursos online de pastelería para todo el mundo y workshops presenciales con la chef Anais Flores.
             </p>
             <address className="not-italic text-xs text-white/55 leading-relaxed max-w-sm">
               {GEO.fullAddress}
@@ -40,7 +39,7 @@ export default function Footer() {
             </p>
             <ul className="space-y-3">
               {[
-                { label: "Workshops & Cursos", href: "/cursos" },
+                { label: "Cursos Online", href: "/cursos" },
                 { label: "Workshops Presenciales", href: "/workshops" },
                 { label: "Servicio de Pastelería", href: "/pasteleria" },
                 { label: "Sobre Anais", href: "/nosotros" },
@@ -75,7 +74,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={`https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent("Hola Anais! Deseo información sobre tus workshops y cursos online")}`}
+                  href={`https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent("¡Hola, Anais! Quisiera información sobre tus cursos online y workshops presenciales.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-white/60 hover:text-pink-300 transition-colors font-medium"
@@ -100,20 +99,20 @@ export default function Footer() {
             </p>
             <h2 className="text-base font-black text-white mb-2">Recibe próximas fechas y novedades</h2>
             <p className="text-sm text-white/60 mb-5">
-              Sé la primera en enterarte de workshops en Coro y nuevos cursos online disponibles en todo el mundo.
+              Entérate de los nuevos cursos online y de las próximas fechas de los workshops presenciales.
             </p>
             <NewsletterForm />
           </div>
         </div>
 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
-          <p>© 2026 Ana&apos;s Pastry Shop · {GEO.shortAddress}, Venezuela. Todos los derechos reservados.</p>
+          <p>© 2026 Ana&apos;s Pastry Shop. Todos los derechos reservados.</p>
           <div className="flex gap-6">
-            <Link href="/workshops" className="hover:text-white transition-colors">
-              Workshops Presenciales
-            </Link>
             <Link href="/cursos" className="hover:text-white transition-colors">
               Cursos Online Globales
+            </Link>
+            <Link href="/workshops" className="hover:text-white transition-colors">
+              Workshops Presenciales
             </Link>
             <Link href="/nosotros" className="hover:text-white transition-colors">
               Sobre la Instructora

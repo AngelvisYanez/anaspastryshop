@@ -72,107 +72,6 @@ export function NavbarDesktopNav({
       <NavLinkUnderline href="/" label="Inicio" linkColor={linkColor} active={pathname === "/"} />
 
       <div
-        id="workshops-dropdown-container"
-        className="relative"
-        onMouseEnter={onWorkshopsEnter}
-        onMouseLeave={onWorkshopsLeave}
-        onFocus={onWorkshopsEnter}
-        onBlur={onWorkshopsLeave}
-      >
-        <Link
-          href="/workshops"
-          className={`font-display text-sm font-semibold transition-colors relative group flex items-center gap-1.5 ${linkColor} ${
-            isWorkshopsActive ? "text-accent font-bold" : ""
-          }`}
-        >
-          Workshops Presenciales
-          <ChevronDown
-            size={14}
-            className={`transition-transform duration-200 ${
-              workshopsOpen ? "rotate-180 text-accent" : "opacity-70"
-            }`}
-          />
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition duration-300 group-hover:w-full" />
-        </Link>
-
-        {workshopsOpen && (
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-card border border-card-border rounded-3xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-card-border mb-2">
-              <div>
-                <p className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
-                  <Sparkles size={13} /> Workshops Presenciales
-                </p>
-                <p className="text-[11px] text-muted">Coro, Falcón · Práctica 100% en vivo</p>
-              </div>
-              <Link
-                href="/workshops"
-                onClick={onCloseWorkshops}
-                className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
-              >
-                Ver Cartelera &rarr;
-              </Link>
-            </div>
-
-            <div className="px-3 pb-2">
-              <Link
-                href="/workshops/calendario"
-                onClick={onCloseWorkshops}
-                className="flex items-center justify-between w-full rounded-2xl border border-accent/20 bg-accent/5 hover:bg-accent/10 px-3 py-2 transition-colors"
-              >
-                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Clock size={13} className="text-accent" /> Calendario de fechas
-                </span>
-                <span className="text-[11px] font-bold text-accent">Abrir →</span>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
-              {!formations && <p className="col-span-2 p-3 text-xs text-muted">Cargando workshops...</p>}
-              {formations?.workshops.length === 0 && <p className="col-span-2 p-3 text-xs text-muted">No hay workshops publicados.</p>}
-              {formations?.workshops.map((w) => (
-                <Link
-                  key={w.id}
-                  href={w.href}
-                  onClick={onCloseWorkshops}
-                  className="p-2.5 rounded-2xl hover:bg-card-hover transition-colors group flex flex-col justify-between border border-transparent hover:border-accent/20"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
-                        {w.spots ? `${w.spots} Cupos` : "Workshop"}
-                      </span>
-                      <span className="text-[11px] font-black text-foreground font-mono">
-                        ${w.price} USD
-                      </span>
-                    </div>
-                    <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
-                      {w.title}
-                    </p>
-                  </div>
-                  <span className="text-[11px] text-muted mt-1 truncate">
-                    {w.schedule}{w.time ? ` · ${w.time}` : ""}
-                  </span>
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-card-border flex items-center justify-between text-[11px] text-muted px-2">
-              <span className="flex items-center gap-1">
-                <Clock size={12} className="text-accent" /> Reserva con el 50%
-              </span>
-              <Link
-                href="/workshops"
-                onClick={onCloseWorkshops}
-                className="font-bold text-foreground hover:text-accent"
-              >
-                Ver todos los talleres
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div
         id="courses-dropdown-container"
         className="relative"
         onMouseEnter={onCoursesEnter}
@@ -272,6 +171,107 @@ export function NavbarDesktopNav({
                 className="font-bold text-foreground hover:text-accent"
               >
                 Ver Todos los Cursos Online
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div
+        id="workshops-dropdown-container"
+        className="relative"
+        onMouseEnter={onWorkshopsEnter}
+        onMouseLeave={onWorkshopsLeave}
+        onFocus={onWorkshopsEnter}
+        onBlur={onWorkshopsLeave}
+      >
+        <Link
+          href="/workshops"
+          className={`font-display text-sm font-semibold transition-colors relative group flex items-center gap-1.5 ${linkColor} ${
+            isWorkshopsActive ? "text-accent font-bold" : ""
+          }`}
+        >
+          Workshops Presenciales
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-200 ${
+              workshopsOpen ? "rotate-180 text-accent" : "opacity-70"
+            }`}
+          />
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition duration-300 group-hover:w-full" />
+        </Link>
+
+        {workshopsOpen && (
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-card border border-card-border rounded-3xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-card-border mb-2">
+              <div>
+                <p className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
+                  <Sparkles size={13} /> Workshops Presenciales
+                </p>
+                <p className="text-[11px] text-muted">Práctica 100% en vivo</p>
+              </div>
+              <Link
+                href="/workshops"
+                onClick={onCloseWorkshops}
+                className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
+              >
+                Ver Cartelera &rarr;
+              </Link>
+            </div>
+
+            <div className="px-3 pb-2">
+              <Link
+                href="/workshops/calendario"
+                onClick={onCloseWorkshops}
+                className="flex items-center justify-between w-full rounded-2xl border border-accent/20 bg-accent/5 hover:bg-accent/10 px-3 py-2 transition-colors"
+              >
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Clock size={13} className="text-accent" /> Calendario de fechas
+                </span>
+                <span className="text-[11px] font-bold text-accent">Abrir →</span>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
+              {!formations && <p className="col-span-2 p-3 text-xs text-muted">Cargando workshops...</p>}
+              {formations?.workshops.length === 0 && <p className="col-span-2 p-3 text-xs text-muted">No hay workshops publicados.</p>}
+              {formations?.workshops.map((w) => (
+                <Link
+                  key={w.id}
+                  href={w.href}
+                  onClick={onCloseWorkshops}
+                  className="p-2.5 rounded-2xl hover:bg-card-hover transition-colors group flex flex-col justify-between border border-transparent hover:border-accent/20"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-500/10 dark:bg-pink-500/20 px-2 py-0.5 rounded-md">
+                        {w.spots ? `${w.spots} Cupos` : "Workshop"}
+                      </span>
+                      <span className="text-[11px] font-black text-foreground font-mono">
+                        ${w.price} USD
+                      </span>
+                    </div>
+                    <p className="text-xs font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
+                      {w.title}
+                    </p>
+                  </div>
+                  <span className="text-[11px] text-muted mt-1 truncate">
+                    {w.schedule}{w.time ? ` · ${w.time}` : ""}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-card-border flex items-center justify-between text-[11px] text-muted px-2">
+              <span className="flex items-center gap-1">
+                <Clock size={12} className="text-accent" /> Reserva con el 50%
+              </span>
+              <Link
+                href="/workshops"
+                onClick={onCloseWorkshops}
+                className="font-bold text-foreground hover:text-accent"
+              >
+                Ver todos los talleres
               </Link>
             </div>
           </div>

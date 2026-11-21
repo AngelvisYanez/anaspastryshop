@@ -67,7 +67,7 @@ export const DEFAULT_TITLE =
   "Ana's Pastry Shop | Cursos Online Globales y Workshops en Venezuela";
 
 export const DEFAULT_DESCRIPTION =
-  "Cursos online de pastelería disponibles en todo el mundo y workshops presenciales en Coro, Falcón (Venezuela), con la Chef Anais Flores. Formación profesional desde cero, a tu ritmo.";
+  "Aprende pastelería profesional a tu ritmo con los cursos online de Anais Flores, disponibles en todo el mundo. También puedes practicar en sus workshops presenciales.";
 
 /** Keywords: online global + sede VE / Coro. */
 export const SITE_KEYWORDS = [
@@ -89,14 +89,13 @@ export const SITE_KEYWORDS = [
 
 export const FAQ_ITEMS = [
   {
-    question: "¿Dónde están ubicados los workshops presenciales?",
-    answer:
-      "Los workshops presenciales se dictan en nuestra sede de Coro, Falcón, Venezuela (Av. Tirso Salavarria, frente al museo de la UNEFM). Recibimos alumnas de todo el país y de la región.",
-  },
-  {
-    question: "¿Los cursos online están disponibles fuera de Venezuela?",
+    question: "¿Puedo hacer los cursos online desde cualquier país?",
     answer:
       "Sí. Los cursos online de Ana's Pastry Shop están disponibles en todo el mundo: puedes estudiar desde cualquier país con acceso a internet, en español y a tu ritmo.",
+  },
+  {
+    question: "¿Dónde se realizan los workshops presenciales?",
+    answer: "Los workshops se realizan en nuestra sede de Coro, Falcón, Venezuela.",
   },
   {
     question: "¿Los talleres incluyen insumos?",
@@ -106,7 +105,7 @@ export const FAQ_ITEMS = [
   {
     question: "¿Hacen tortas y pastelería a pedido?",
     answer:
-      "Ofrecemos servicio de pastelería, tortas de diseño y mesas dulces desde Coro, Falcón (Venezuela). Contáctanos por WhatsApp para disponibilidad según la zona.",
+      "Sí, hacemos tortas de diseño y mesas dulces a pedido. Contáctanos por WhatsApp para consultar la disponibilidad en tu zona.",
   },
 ] as const;
 

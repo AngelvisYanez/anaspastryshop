@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Globe2, MapPin, MonitorPlay } from "lucide-react";
-import { FAQ_ITEMS, GEO, ONLINE_REGIONS } from "@/lib/seo";
+import { FAQ_ITEMS, ONLINE_REGIONS } from "@/lib/seo";
 
 /**
- * Cobertura: workshops en Coro (VE) + cursos online a nivel global.
+ * Alcance de los cursos online y la formación presencial.
  * Sin landings por ciudad.
  */
 export default function VenezuelaCoverage() {
@@ -14,42 +14,18 @@ export default function VenezuelaCoverage() {
     >
       <div className="page-container">
         <div className="max-w-3xl mb-10 md:mb-12">
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-accent mb-3">
-            Venezuela y el mundo
-          </p>
           <h2
             id="coverage-heading"
             className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight"
           >
-            Formación presencial en Coro, cursos online globales
+            Cursos online para todo el mundo y workshops presenciales
           </h2>
           <p className="text-muted font-medium mt-3 leading-relaxed">
-            Workshops en {GEO.shortAddress}, Venezuela, y cursos online en español disponibles{" "}
-            <strong className="text-foreground font-semibold">en cualquier país</strong> con
-            acceso a internet.
+            Estudia pastelería en español desde cualquier país o practica en persona con Anais Flores.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-accent">
-              <MapPin size={18} aria-hidden />
-              <h3 className="font-display font-bold text-foreground text-lg">
-                Workshops en Coro
-              </h3>
-            </div>
-            <p className="text-sm text-muted leading-relaxed">
-              Talleres intensivos de 8 horas en nuestra sede de Coro, Falcón. Ideal si vives en
-              Venezuela o viajas a capacitarte en persona.
-            </p>
-            <Link
-              href="/workshops"
-              className="text-sm font-bold text-accent hover:underline inline-block"
-            >
-              Ver workshops presenciales →
-            </Link>
-          </div>
-
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-accent">
               <MonitorPlay size={18} aria-hidden />
@@ -66,6 +42,24 @@ export default function VenezuelaCoverage() {
               className="text-sm font-bold text-accent hover:underline inline-block"
             >
               Explorar cursos online →
+            </Link>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-accent">
+              <MapPin size={18} aria-hidden />
+              <h3 className="font-display font-bold text-foreground text-lg">
+                Workshops presenciales
+              </h3>
+            </div>
+            <p className="text-sm text-muted leading-relaxed">
+              Dedica 8 horas a practicar técnicas de pastelería con la guía de Anais Flores y todos los insumos incluidos.
+            </p>
+            <Link
+              href="/workshops"
+              className="text-sm font-bold text-accent hover:underline inline-block"
+            >
+              Ver workshops presenciales →
             </Link>
           </div>
 
@@ -118,10 +112,6 @@ export default function VenezuelaCoverage() {
             ))}
           </dl>
         </div>
-
-        <p className="mt-10 text-xs text-muted">
-          <strong className="text-foreground">Sede presencial:</strong> {GEO.fullAddress}
-        </p>
       </div>
     </section>
   );
