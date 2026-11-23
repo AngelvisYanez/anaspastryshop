@@ -8,6 +8,9 @@ export async function getMetaPixelId(): Promise<string | null> {
   cacheLife("hours");
   cacheTag("meta-pixel");
 
+  const envPixelId = process.env.META_PIXEL_ID?.trim();
+  if (envPixelId) return /^\d{5,20}$/.test(envPixelId) ? envPixelId : null;
+
   try {
     const row = await prisma.platformApiConfig.findUnique({
       where: { provider: "meta" },
