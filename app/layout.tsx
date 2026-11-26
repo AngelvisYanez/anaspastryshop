@@ -5,6 +5,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import JsonLd from "@/components/JsonLd";
 import { MetaPixel } from "@/components/MetaPixel";
+import SiteInsightsTracker from "@/components/SiteInsightsTracker";
 import { getMetaPixelId } from "@/lib/meta-pixel";
 import {
   buildOrganizationJsonLd,
@@ -101,6 +102,9 @@ export default function RootLayout({
       <body className={`${bodyFont.variable} ${displayFont.variable} ${serifFont.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}>
         <Suspense fallback={null}>
           <MetaPixelSlot />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SiteInsightsTracker />
         </Suspense>
         <Providers>{children}</Providers>
       </body>

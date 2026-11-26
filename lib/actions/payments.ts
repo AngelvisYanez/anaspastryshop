@@ -88,6 +88,10 @@ export async function approvePayment(inscriptionId: string) {
         amount: inscription.amountPaid,
         email: inscription.user.email,
         approvedAt: Math.floor(Date.now() / 1000),
+        phone: inscription.user.whatsappNumber,
+        name: inscription.user.name,
+        userId: inscription.user.id,
+        country: "ve",
       };
       after(() => sendMetaPurchase(purchase));
     }

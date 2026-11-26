@@ -152,7 +152,7 @@ describe("payments admin flows", () => {
         cursoId: null,
         status: "PENDING",
         amountPaid: 25,
-        user: { email: "a@test.com" },
+        user: { id: "u1", email: "a@test.com", name: "Ana", whatsappNumber: "+584121234567" },
       });
       mockPrisma.inscription.updateMany.mockResolvedValueOnce({ count: 1 })
         .mockResolvedValueOnce({ count: 0 });
@@ -168,6 +168,10 @@ describe("payments admin flows", () => {
         amount: 25,
         email: "a@test.com",
         approvedAt: expect.any(Number),
+        phone: "+584121234567",
+        name: "Ana",
+        userId: "u1",
+        country: "ve",
       });
     } finally {
       vi.unstubAllEnvs();

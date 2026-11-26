@@ -14,6 +14,7 @@ export const DASHBOARD_MODULES = [
   { slug: 'settings', name: 'Configuración', href: '/dashboard/settings', icon: 'Settings', roles: ['ADMIN', 'USER'] },
   { slug: 'modulos', name: 'Módulos del Sistema', href: '/dashboard/modulos', icon: 'Layers', roles: ['ADMIN'] },
   { slug: 'api-config', name: 'Configuración de APIs', href: '/dashboard/api-config', icon: 'Code', roles: ['ADMIN'] },
+  { slug: 'insights', name: 'Insights', href: '/dashboard/insights', icon: 'Activity', roles: ['ADMIN'] },
 ] as const;
 
 export const EXTRA_MODULE_ROUTES = ['/dashboard/cursos/create'] as const;

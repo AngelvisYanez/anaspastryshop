@@ -12,6 +12,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SiteInsightKind {
+  PAGE_VIEW
+  SECTION_VIEW
+  CLICK
+}
+
+model SiteInsightEvent {
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now())
+  path      String          @db.VarChar(160)
+  kind      SiteInsightKind
+  mobile    Boolean
+  section   String?         @db.VarChar(48)
+  cell      Int?
+
+  @@index([createdAt])
+  @@index([path, mobile, createdAt])
+}
+
 model User {
   id                 String        @id @default(cuid())
   name               String?

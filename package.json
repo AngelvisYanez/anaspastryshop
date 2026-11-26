@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
+        "predev": "prisma generate",
         "dev": "cross-env NODE_OPTIONS=\"--max-http-header-size=32768\" next dev",
         "build": "prisma migrate deploy && prisma generate && next build",
         "start": "next start",

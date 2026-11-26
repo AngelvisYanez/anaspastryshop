@@ -165,7 +165,7 @@ export default async function Home() {
 
       <Hero />
 
-      <section className="py-20 md:py-24 page-container">
+      <section data-insight-section="capacitaciones" className="py-20 md:py-24 page-container">
         <div className="mb-10 md:mb-12">
           <h2 className="font-display text-3xl md:text-5xl font-black text-foreground tracking-tight">
             Estos son nuestros cursos online y workshops
@@ -186,7 +186,7 @@ export default async function Home() {
 
       <VenezuelaCoverage />
 
-      <section className="py-16 md:py-20 page-container">
+      <section data-insight-section="explorar" className="py-16 md:py-20 page-container">
         <div className="border-t border-card-border pt-12 md:pt-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-xl">
             <h2 className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight mb-3">

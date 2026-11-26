@@ -43,7 +43,7 @@ const CARDS = [
 
 export default function WhatYouGet() {
   return (
-    <section className="w-full relative overflow-hidden bg-brand-purple py-20 md:py-24 text-on-purple">
+    <section data-insight-section="beneficios" className="w-full relative overflow-hidden bg-brand-purple py-20 md:py-24 text-on-purple">
       <div className="page-container relative z-10">
         <m.div
           initial={{ opacity: 0, y: 16 }}

@@ -34,7 +34,7 @@ export function CourseDetailBody({
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
 
   return (
-      <section className="page-container py-16 w-full">
+      <section data-insight-section="detalles" className="page-container py-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
             <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>

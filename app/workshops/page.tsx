@@ -75,7 +75,7 @@ export default async function WorkshopsPage() {
       />
       <Navbar />
 
-      <section className="relative flex flex-col justify-center pt-28 pb-14 xl:pt-36 xl:pb-16 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
+      <section data-insight-section="portada" className="relative flex flex-col justify-center pt-28 pb-14 xl:pt-36 xl:pb-16 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
         <div className="page-container relative z-10 text-center">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display tracking-tight text-white max-w-4xl mx-auto leading-[1.15]">
             Workshops Presenciales de{" "}
@@ -89,7 +89,7 @@ export default async function WorkshopsPage() {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 page-container w-full">
+      <section data-insight-section="catalogo" className="py-12 sm:py-16 page-container w-full">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10 sm:mb-12 text-sm font-semibold text-foreground">
           <div className="flex items-center gap-2.5 border border-card-border rounded-xl px-3 py-3 bg-card">
             <Clock size={16} className="text-accent shrink-0" />
@@ -138,7 +138,7 @@ export default async function WorkshopsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-section-alt border-y border-card-border">
+      <section data-insight-section="inscripcion" className="py-16 bg-section-alt border-y border-card-border">
         <div className="page-container">
           <div className="max-w-2xl mb-10">
             <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">

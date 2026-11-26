@@ -33,7 +33,7 @@ export default function PublicCoursesClient({
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 mb-10 text-white">
+      <div data-insight-section="portada" className="relative overflow-hidden bg-brand-purple pt-28 pb-14 xl:pt-36 xl:pb-16 mb-10 text-white">
         <div className="relative z-10 page-container text-center">
           <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4 leading-[1.12] max-w-4xl mx-auto">
             Cursos Online de{" "}
@@ -45,7 +45,7 @@ export default function PublicCoursesClient({
         </div>
       </div>
 
-      <div className="page-container pb-16 sm:pb-20">
+      <div data-insight-section="catalogo" className="page-container pb-16 sm:pb-20">
         {/* Search + Counter */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8 bg-card border border-card-border p-4 rounded-3xl shadow-sm">
           <div className="flex items-center gap-2 text-xs text-muted px-2">

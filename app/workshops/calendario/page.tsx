@@ -39,7 +39,7 @@ export default async function WorkshopsCalendarioPage() {
         subtitle="Fechas confirmadas en Coro, Falcón. En desktop, pasa el cursor sobre una sesión para abrir la ficha del taller; en móvil, tócala."
       />
 
-      <section className="py-8 sm:py-12 page-container w-full flex-1">
+      <section data-insight-section="calendario" className="py-8 sm:py-12 page-container w-full flex-1">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 sm:mb-10">
           <div className="flex items-center gap-2.5 border border-card-border rounded-xl px-3 py-3 bg-card">
             <CalendarDays size={16} className="text-accent shrink-0" />

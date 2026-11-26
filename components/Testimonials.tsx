@@ -55,7 +55,7 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   return (
-    <section className="w-full bg-background py-24 border-t border-card-border">
+    <section data-insight-section="testimonios" className="w-full bg-background py-24 border-t border-card-border">
       <div className="page-container">
         <m.div
           initial={{ opacity: 0, y: 20 }}

@@ -26,7 +26,7 @@ export default function Hero({
   const ctaText = isLoggedIn ? "Ir a mi panel" : "Ver Cursos Online";
 
   return (
-    <section className="relative min-h-svh flex items-end lg:items-center overflow-hidden bg-section-alt text-foreground pb-10 lg:pt-32 lg:pb-16">
+    <section data-insight-section="portada" className="relative min-h-svh flex items-end lg:items-center overflow-hidden bg-section-alt text-foreground pb-10 lg:pt-32 lg:pb-16">
       <picture className="absolute inset-0">
         <source media="(min-width: 1024px)" srcSet={desktopHeroSrcSet} />
         <Image

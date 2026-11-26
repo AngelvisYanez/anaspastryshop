@@ -60,7 +60,7 @@ export default function PasteleriaPage() {
       />
       <Navbar />
 
-      <section className="relative min-h-[52svh] sm:min-h-[48svh] flex items-end overflow-hidden text-white">
+      <section data-insight-section="portada" className="relative min-h-[52svh] sm:min-h-[48svh] flex items-end overflow-hidden text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/foto-5.webp"
@@ -80,7 +80,7 @@ export default function PasteleriaPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="py-24 page-container">
+      <section data-insight-section="servicios" className="py-24 page-container">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
             Diseñamos experiencias dulces a tu medida
@@ -129,7 +129,7 @@ export default function PasteleriaPage() {
       </Suspense>
 
       {/* Process Section */}
-      <section className="py-20 px-6 bg-section-alt border-y border-card-border">
+      <section data-insight-section="pedidos" className="py-20 px-6 bg-section-alt border-y border-card-border">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-14">
             <h2 className="text-3xl font-black text-foreground tracking-tight">
@@ -172,7 +172,7 @@ export default function PasteleriaPage() {
       </section>
 
       {/* Payment info section */}
-      <section className="py-20 px-6 max-w-5xl mx-auto">
+      <section data-insight-section="pagos" className="py-20 px-6 max-w-5xl mx-auto">
         <div className="bg-card border border-card-border rounded-3xl p-8 sm:p-12 shadow-sm text-center">
           <h2 className="text-2xl sm:text-3xl font-black text-foreground mb-4">
             Opciones de pago cómodas y transparentes

@@ -37,7 +37,7 @@ const ACHIEVEMENTS = [
 
 export default function Achievements() {
   return (
-    <section className="w-full relative overflow-hidden bg-background py-20 md:py-24 border-t border-card-border">
+    <section data-insight-section="logros" className="w-full relative overflow-hidden bg-background py-20 md:py-24 border-t border-card-border">
       <div className="page-container relative z-10">
         <m.div
           initial={{ opacity: 0, y: 16 }}

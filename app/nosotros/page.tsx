@@ -21,7 +21,7 @@ export default function NosotrosPage() {
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="relative flex min-h-[32rem] items-end overflow-hidden bg-brand-purple text-white sm:min-h-[38rem] lg:min-h-[46rem]" aria-labelledby="sobre-anais-heading">
+      <section data-insight-section="portada" className="relative flex min-h-[32rem] items-end overflow-hidden bg-brand-purple text-white sm:min-h-[38rem] lg:min-h-[46rem]" aria-labelledby="sobre-anais-heading">
         <Image src="/Anais (2).jpeg" alt="" fill priority sizes="100vw" className="object-cover object-[center_28%] lg:object-[center_12%]" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-purple via-brand-purple/55 to-brand-purple/15 lg:bg-gradient-to-r lg:from-brand-purple lg:via-brand-purple/65 lg:to-transparent" />
         <div className="page-container relative z-10 w-full pb-16 pt-32 sm:pb-20 lg:pb-28">
@@ -32,7 +32,7 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      <section className="page-container py-20 sm:py-24 lg:py-32" aria-labelledby="historia-heading">
+      <section data-insight-section="historia" className="page-container py-20 sm:py-24 lg:py-32" aria-labelledby="historia-heading">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
           <div className="relative mx-auto w-full max-w-lg lg:mx-0">
             <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-section-alt shadow-[0_25px_70px_-35px_rgba(43,9,56,0.55)]">
@@ -58,7 +58,7 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      <section className="bg-section-alt py-20 sm:py-24 lg:py-28" aria-labelledby="caracteristicas-heading">
+      <section data-insight-section="caracteristicas" className="bg-section-alt py-20 sm:py-24 lg:py-28" aria-labelledby="caracteristicas-heading">
         <div className="page-container">
           <div className="mb-10 max-w-2xl sm:mb-14">
             <span className="text-xs font-bold uppercase tracking-[0.25em] text-accent">Mi forma de enseñar</span>

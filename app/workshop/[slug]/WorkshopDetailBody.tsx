@@ -37,7 +37,7 @@ export function WorkshopDetailBody({
 }) {
   const scheduleReady = Boolean(workshop.scheduleReady && workshop.startTime);
   return (
-      <section className="py-14 sm:py-20 page-container w-full">
+      <section data-insight-section="detalles" className="py-14 sm:py-20 page-container w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Left Column: Workshop Program & Details */}
           <div className="lg:col-span-8 space-y-12">

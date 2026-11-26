@@ -26,7 +26,7 @@ export function WorkshopDetailHero({
   const scheduleReady = Boolean(workshop.scheduleReady && workshop.startTime);
 
   return (
-    <section className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
+    <section data-insight-section="portada" className="relative flex flex-col justify-center pb-10 xl:pt-36 xl:pb-28 bg-gradient-to-b from-brand-purple via-brand-purple-mid to-brand-purple-deep text-white overflow-hidden">
       <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#E82D8A_1px,transparent_1px)] [background-size:24px_24px]" />
 
       <div className="page-container relative z-10 w-full">

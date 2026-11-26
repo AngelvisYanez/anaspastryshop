@@ -9,6 +9,7 @@ import { FAQ_ITEMS, ONLINE_REGIONS } from "@/lib/seo";
 export default function VenezuelaCoverage() {
   return (
     <section
+      data-insight-section="cobertura"
       className="py-16 md:py-20 bg-section-alt border-y border-card-border"
       aria-labelledby="coverage-heading"
     >
