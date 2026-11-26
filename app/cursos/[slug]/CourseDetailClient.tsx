@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { WorkshopDetails } from "@/lib/utils/workshop";
 import { CourseDetailHero } from "./CourseDetailHero";
 import { CourseDetailBody } from "./CourseDetailBody";
+import { MetaTrackEvent } from "@/components/MetaTrackEvent";
 
 export default function CourseDetailClient({
   course,
@@ -29,6 +30,16 @@ export default function CourseDetailClient({
 
   return (
     <main className="min-h-screen bg-background">
+      <MetaTrackEvent
+        event="ViewContent"
+        params={{
+          value: course.price,
+          currency: "USD",
+          content_type: "product",
+          content_ids: [course.id],
+          content_name: course.title,
+        }}
+      />
       <Navbar />
       <CourseDetailHero
         course={course}

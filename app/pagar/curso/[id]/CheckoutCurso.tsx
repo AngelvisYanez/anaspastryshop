@@ -16,6 +16,7 @@ import { useCheckoutRegister } from "@/components/checkout/useCheckoutRegister";
 import { CheckoutRegisterForm } from "@/components/checkout/CheckoutRegisterForm";
 import { CheckoutErrorBanner } from "@/components/checkout/CheckoutErrorBanner";
 import { validateManualPayment } from "@/components/checkout/validateManualPayment";
+import { MetaTrackEvent } from "@/components/MetaTrackEvent";
 import { CursoPaymentStep, CursoSuccessStep } from "./CursoCheckoutSteps";
 
 interface CourseProps {
@@ -102,6 +103,16 @@ export default function CheckoutCurso({
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-16">
+      <MetaTrackEvent
+        event="InitiateCheckout"
+        params={{
+          value: course.price,
+          currency: "USD",
+          content_type: "product",
+          content_ids: [course.id],
+          content_name: course.title,
+        }}
+      />
       <PageHero
         backHref={`/cursos/${course.id}`}
         backLabel="Volver al Detalle"

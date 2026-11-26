@@ -5,6 +5,7 @@ import { ArrowLeft, Mail, Lock, User, Phone, Loader2, Eye, EyeOff } from "lucide
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/actions/auth";
+import { fireMetaEvent } from "@/components/MetaTrackEvent";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
@@ -41,6 +42,7 @@ export default function RegistroPage() {
         setError(result.error);
         return;
       }
+      fireMetaEvent("CompleteRegistration", { status: true });
       router.push("/cursos?bienvenida=true");
     } finally {
       setLoading(false);

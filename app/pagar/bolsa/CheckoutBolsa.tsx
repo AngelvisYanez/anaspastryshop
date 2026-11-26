@@ -18,6 +18,7 @@ import { useCheckoutRegister } from "@/components/checkout/useCheckoutRegister";
 import { CheckoutRegisterForm } from "@/components/checkout/CheckoutRegisterForm";
 import { CheckoutErrorBanner } from "@/components/checkout/CheckoutErrorBanner";
 import { validateManualPayment } from "@/components/checkout/validateManualPayment";
+import { MetaTrackEvent } from "@/components/MetaTrackEvent";
 import { type BagCourse } from "./BolsaOrderSummary";
 import { BolsaPaymentStep, BolsaSuccessStep } from "./BolsaCheckoutSteps";
 import { useCart } from "@/components/cart/CartContext";
@@ -115,6 +116,16 @@ export default function CheckoutBolsa({
 
   return (
     <main id="main-content" className="min-h-screen bg-background pb-16">
+      <MetaTrackEvent
+        event="InitiateCheckout"
+        params={{
+          value: total,
+          currency: "USD",
+          content_type: "product",
+          content_ids: courses.map((c) => c.id),
+          num_items: courses.length,
+        }}
+      />
       <PageHero
         backHref="/cursos"
         backLabel="Volver al Catálogo"
